@@ -74,6 +74,43 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
     return created[0]["id"]
 
 
+def cancel_stale_fight(
+    db: SupabaseClient,
+    event_id: str,
+    fighter_a_id: str,
+    fighter_b_id: str,
+    fighter_a_name: str,
+    fighter_b_name: str,
+) -> None:
+    """If either fighter already has a different scheduled fight in this
+    event, an opponent pulled out and Sherdog paired them with someone else
+    - the old matchup no longer happens. Mark it cancelled instead of
+    leaving a stale duplicate on the card; existing predictions on it stay
+    (voided, never graded) so tippers can see why it disappeared from
+    scoring rather than them silently vanishing."""
+    stale = db.select(
+        "fights",
+        {
+            "event_id": f"eq.{event_id}",
+            "status": "eq.scheduled",
+            "or": (
+                f"(fighter_a_id.eq.{fighter_a_id},fighter_b_id.eq.{fighter_a_id},"
+                f"fighter_a_id.eq.{fighter_b_id},fighter_b_id.eq.{fighter_b_id})"
+            ),
+            "select": "id,fighter_a_id,fighter_b_id",
+        },
+    )
+    for row in stale:
+        if {row["fighter_a_id"], row["fighter_b_id"]} == {fighter_a_id, fighter_b_id}:
+            continue
+        db.update("fights", {"status": "cancelled"}, {"id": f"eq.{row['id']}"})
+        affected = db.select("predictions", {"fight_id": f"eq.{row['id']}", "select": "id"})
+        print(
+            f"Soupeř se změnil, starý zápas (id {row['id']}) zrušen - nahrazen "
+            f"zápasem {fighter_a_name} vs {fighter_b_name}. Zasaženo tipů: {len(affected)}."
+        )
+
+
 def import_card(event_id: str) -> None:
     db = SupabaseClient()
 
@@ -109,6 +146,10 @@ def import_card(event_id: str) -> None:
         if existing:
             print(f"Zápas {fight['fighter_a']['name']} vs {fight['fighter_b']['name']} už existuje, přeskakuji.")
             continue
+
+        cancel_stale_fight(
+            db, event_id, fighter_a_id, fighter_b_id, fight["fighter_a"]["name"], fight["fighter_b"]["name"]
+        )
 
         db.insert(
             "fights",

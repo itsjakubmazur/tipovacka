@@ -99,14 +99,17 @@ export function FightTipCard({
     setTimeout(() => setSaved(false), 1500);
   }
 
+  const voided = fight.status === "cancelled" || fight.status === "no_contest";
+  const effectiveLocked = locked || voided;
+
   function selectWinner(id: string) {
-    if (locked) return;
+    if (effectiveLocked) return;
     setWinnerId(id);
     persist({ winnerId: id, method, round });
   }
 
   function selectMethod(m: Method) {
-    if (locked) return;
+    if (effectiveLocked) return;
     setMethod(m);
     const nextRound = m === "DECISION" ? null : round;
     setRound(nextRound);
@@ -114,13 +117,13 @@ export function FightTipCard({
   }
 
   function selectRound(r: number) {
-    if (locked) return;
+    if (effectiveLocked) return;
     setRound(r);
     persist({ winnerId, method, round: r });
   }
 
   async function clearTip() {
-    if (locked) return;
+    if (effectiveLocked) return;
     setSaving(true);
     setError(null);
     const { error } = await supabase
@@ -141,7 +144,6 @@ export function FightTipCard({
   }
 
   const showResult = fight.status === "completed";
-  const voided = fight.status === "cancelled" || fight.status === "no_contest";
 
   return (
     <div className="rounded-xl border border-neutral-200 p-4">
@@ -159,7 +161,7 @@ export function FightTipCard({
             </Badge>
           )}
         </div>
-        {!locked && winnerId && (
+        {!effectiveLocked && winnerId && (
           <button
             type="button"
             onClick={clearTip}
@@ -176,7 +178,7 @@ export function FightTipCard({
           <button
             key={fighter.id}
             type="button"
-            disabled={locked}
+            disabled={effectiveLocked}
             onClick={() => selectWinner(fighter.id)}
             className={cn(
               "flex flex-col items-center gap-2 rounded-lg border p-3 text-center transition-colors disabled:cursor-not-allowed",
@@ -218,7 +220,7 @@ export function FightTipCard({
           <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500">Způsob</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(METHOD_LABELS) as Method[]).map((m) => (
-              <Pill key={m} active={method === m} disabled={locked} onClick={() => selectMethod(m)}>
+              <Pill key={m} active={method === m} disabled={effectiveLocked} onClick={() => selectMethod(m)}>
                 {METHOD_LABELS[m]}
               </Pill>
             ))}
@@ -232,7 +234,7 @@ export function FightTipCard({
             <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500">Kolo</p>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (
-                <Pill key={r} active={round === r} disabled={locked} onClick={() => selectRound(r)}>
+                <Pill key={r} active={round === r} disabled={effectiveLocked} onClick={() => selectRound(r)}>
                   {r}.
                 </Pill>
               ))}
@@ -242,8 +244,13 @@ export function FightTipCard({
       </div>
 
       <div className="mt-3 h-4 text-xs text-neutral-500">
-        {saving && "Ukládám…"}
-        {!saving && saved && "Uloženo."}
+        {voided && winnerId
+          ? "Zápas se nekoná, tip se nezapočítá."
+          : saving
+            ? "Ukládám…"
+            : saved
+              ? "Uloženo."
+              : null}
         {error && <span className="text-red-600">{error}</span>}
       </div>
     </div>
