@@ -1,10 +1,9 @@
 """Sherdog event page parsing.
 
-Sherdog's markup has stayed fairly stable for years (it carries
-schema.org itemprop attributes for SEO), but it does shift occasionally
-and there's no official API, so this is best-effort: it tries a couple
-of selector variants and prints what it found so a broken selector is
-easy to spot from the GitHub Actions log rather than failing silently.
+Selectors verified against a working scraper for a current Sherdog event
+page (Sherdog still uses schema.org itemprop attributes): the full card is
+listed in `table.new_table.result tr[itemprop=subEvent]` rows, each with
+`div.fighter_list.left` / `div.fighter_list.right` for the two fighters.
 """
 
 import re
@@ -47,55 +46,56 @@ def fetch_soup(url: str) -> BeautifulSoup:
     return BeautifulSoup(resp.text, "lxml")
 
 
-def parse_fighter(fighter_el) -> dict:
-    name_el = fighter_el.select_one("[itemprop=name]") or fighter_el.select_one("a")
-    name = name_el.get_text(strip=True) if name_el else None
+def parse_fighter_side(side_el) -> dict:
+    name = " ".join(s.get_text(strip=True) for s in side_el.select("span[itemprop=name]"))
 
-    link = fighter_el.select_one("a[href*='/fighters/']")
-    slug = slug_from_href(link["href"]) if link else None
+    link = side_el.select_one("a[itemprop=url]") or side_el.select_one("a")
+    slug = slug_from_href(link.get("href")) if link else None
 
-    img = fighter_el.select_one("img")
+    img = side_el.select_one("img")
     photo_url = img["src"] if img and img.get("src") else None
     if photo_url and photo_url.startswith("/"):
         photo_url = f"https://www.sherdog.com{photo_url}"
 
-    classes = fighter_el.get("class") or []
-    won = "win" in classes or "winner" in classes
+    status_spans = side_el.select("div.fighter_result_data span")
+    status = status_spans[1].get_text(strip=True).lower() if len(status_spans) > 1 else ""
 
-    return {"name": name, "slug": slug, "photo_url": photo_url, "won": won}
+    return {
+        "name": name or None,
+        "slug": slug,
+        "photo_url": photo_url,
+        "won": status == "win",
+    }
 
 
 def parse_event(url: str) -> dict:
     soup = fetch_soup(url)
 
-    rows = soup.select("tr[itemprop=subEvent]")
-    if not rows:
-        rows = soup.select("div.fight_card .card_item, div.fight_card li")
+    rows = soup.select("table.new_table.result tr[itemprop=subEvent]")
 
     fights = []
     for row in rows:
-        fighter_els = row.select("div.fighter, div.fighter_result")
-        if len(fighter_els) != 2:
+        left = row.select_one("div.fighter_list.left")
+        right = row.select_one("div.fighter_list.right")
+        if not left or not right:
             continue
 
-        fighter_a = parse_fighter(fighter_els[0])
-        fighter_b = parse_fighter(fighter_els[1])
+        fighter_a = parse_fighter_side(left)
+        fighter_b = parse_fighter_side(right)
         if not fighter_a["name"] or not fighter_b["name"]:
             continue
 
-        weight_el = row.select_one(".weight_class, .weight")
+        weight_el = row.select_one("span.weight_class")
         weight_class = weight_el.get_text(strip=True) if weight_el else None
+        is_title_fight = bool(weight_class) and "title" in weight_class.lower()
 
-        title_text = row.get_text(" ", strip=True).lower()
-        is_title_fight = "title" in title_text
+        method_el = row.select_one("td.winby b")
+        method = normalize_method(method_el.get_text(strip=True)) if method_el else None
 
-        winby_el = row.select_one(".winby, .win_type, .footer .sub_line")
-        method = normalize_method(winby_el.get_text(" ", strip=True)) if winby_el else None
-
-        round_el = row.select_one(".round")
+        cells = row.select("td")
         round_num = None
-        if round_el:
-            match = re.search(r"\d+", round_el.get_text())
+        if cells:
+            match = re.search(r"\d+", cells[-2].get_text(strip=True))
             if match:
                 round_num = int(match.group())
 
@@ -118,13 +118,12 @@ def parse_event(url: str) -> dict:
         )
 
     # Sherdog lists the main event first; card_order in our DB counts up
-    # from the first prelim, so reverse and mark the last one as main event.
+    # from the first prelim, so mark it before reversing into that order.
+    if fights:
+        fights[0]["is_main_event"] = True
     fights.reverse()
     for i, fight in enumerate(fights, start=1):
         fight["card_order"] = i
-    if fights:
-        fights[-1]["is_main_event"] = True
-    for fight in fights:
         fight.setdefault("is_main_event", False)
 
     print(f"Sherdog parsing nalezl {len(fights)} zápasů na {url}")
