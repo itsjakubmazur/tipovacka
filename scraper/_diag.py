@@ -1,9 +1,11 @@
-"""Temporary probe - which Korkmaz matchup is currently live on Sherdog. Delete after investigation."""
+"""Temporary fix - cancel the stale Korkmaz vs Smielowski fight (opponent
+pulled out, replaced by Said-Khusein Akhyadov on Sherdog). Delete after use."""
 
-from sherdog import parse_event
+from supabase_client import SupabaseClient
 
-data = parse_event("https://www.sherdog.com/events/Oktagon-MMA-Oktagon-90-Fleury-vs-Aras-110588")
-for fight in data["fights"]:
-    a, b = fight["fighter_a"]["name"], fight["fighter_b"]["name"]
-    if "Korkmaz" in (a or "") or "Korkmaz" in (b or ""):
-        print(f"Live na Sherdogu: {a} vs {b}")
+STALE_FIGHT_ID = "9506415d-5281-4d8c-bb72-b6af5b11ad42"
+
+db = SupabaseClient()
+db.update("fights", {"status": "cancelled"}, {"id": f"eq.{STALE_FIGHT_ID}"})
+affected = db.select("predictions", {"fight_id": f"eq.{STALE_FIGHT_ID}", "select": "id"})
+print(f"Zápas {STALE_FIGHT_ID} zrušen. Zasaženo tipů: {len(affected)}.")
