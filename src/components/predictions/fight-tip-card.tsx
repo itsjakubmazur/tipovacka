@@ -146,7 +146,12 @@ export function FightTipCard({
   const showResult = fight.status === "completed";
 
   return (
-    <div className="rounded-xl border border-neutral-200 p-4">
+    <div
+      className={cn(
+        "rounded-xl border p-4",
+        voided ? "border-red-200 bg-red-50" : "border-neutral-200"
+      )}
+    >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
