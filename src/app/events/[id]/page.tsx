@@ -65,6 +65,7 @@ export default async function EventDetailPage({
           {new Date(event.event_date).toLocaleString("cs-CZ", {
             dateStyle: "long",
             timeStyle: "short",
+            timeZone: "Europe/Prague",
           })}
         </p>
         {locked && (

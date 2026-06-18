@@ -40,6 +40,7 @@ export default async function EventsPage() {
                   {new Date(event.event_date).toLocaleString("cs-CZ", {
                     dateStyle: "long",
                     timeStyle: "short",
+                    timeZone: "Europe/Prague",
                   })}
                 </p>
               </div>
