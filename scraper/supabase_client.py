@@ -37,6 +37,12 @@ class SupabaseClient:
         resp.raise_for_status()
         return resp.json()
 
+    def delete(self, table: str, filters: dict) -> list[dict]:
+        headers = {**self.headers, "Prefer": "return=representation"}
+        resp = requests.delete(f"{self.url}/rest/v1/{table}", headers=headers, params=filters)
+        resp.raise_for_status()
+        return resp.json()
+
     def rpc(self, fn_name: str, args: dict) -> object:
         resp = requests.post(f"{self.url}/rest/v1/rpc/{fn_name}", headers=self.headers, json=args)
         resp.raise_for_status()

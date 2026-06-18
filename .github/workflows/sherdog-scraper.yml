@@ -10,6 +10,7 @@ on:
         options:
           - card
           - results
+          - inspect
       event_id:
         description: "UUID galavečera (events.id v Supabase)"
         required: true
@@ -46,6 +47,11 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'results'
         working-directory: scraper
         run: python import_results.py --event-id "${{ inputs.event_id }}"
+
+      - name: Inspect event fights (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'inspect'
+        working-directory: scraper
+        run: python inspect_event.py --event-id "${{ inputs.event_id }}"
 
       - name: Import results (scheduled)
         if: github.event_name == 'schedule'
