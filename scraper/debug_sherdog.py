@@ -56,6 +56,17 @@ def main(event_id: str) -> None:
     idx = text.lower().find(" vs ")
     print(text[max(0, idx - 100): idx + 100])
 
+    print("--- div.fight_card HTML (truncated) ---")
+    fc = soup.select_one("div.fight_card")
+    print(str(fc)[:3000] if fc else None)
+
+    print("--- first tr[itemprop=subEvent] HTML (truncated) ---")
+    rows = soup.select("tr[itemprop=subEvent]")
+    print(str(rows[0])[:3000] if rows else None)
+
+    print("--- last tr[itemprop=subEvent] HTML (truncated) ---")
+    print(str(rows[-1])[:3000] if rows else None)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
