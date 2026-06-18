@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { FighterAvatar } from "@/components/fighter-avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { weightClassLabel } from "@/lib/weight-classes";
+import { X } from "lucide-react";
 import type { Fight, Method, Prediction } from "@/lib/types";
 
 const METHOD_LABELS: Record<Method, string> = {
@@ -116,22 +118,55 @@ export function FightTipCard({
     persist({ winnerId, method, round: r });
   }
 
+  async function clearTip() {
+    if (locked) return;
+    setSaving(true);
+    setError(null);
+    const { error } = await supabase
+      .from("predictions")
+      .delete()
+      .eq("user_id", userId)
+      .eq("fight_id", fight.id);
+    setSaving(false);
+    if (error) {
+      setError("Smazání se nepodařilo.");
+      return;
+    }
+    setWinnerId(null);
+    setMethod(null);
+    setRound(null);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  }
+
   const showResult = fight.status === "completed";
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
 
   return (
     <div className="rounded-xl border border-neutral-200 p-4">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        {fight.weight_class && <Badge variant="secondary">{fight.weight_class}</Badge>}
-        {fight.is_title_fight && <Badge variant="accent">Titulní zápas</Badge>}
-        {fight.is_main_event && <Badge variant="default">Main event</Badge>}
-        {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
-        {showResult && (
-          <Badge variant="outline">
-            Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
-            {fight.method ? METHOD_LABELS[fight.method] : ""}
-            {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
-          </Badge>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
+          {fight.is_title_fight && <Badge variant="accent">Titulní zápas</Badge>}
+          {fight.is_main_event && <Badge variant="default">Main event</Badge>}
+          {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
+          {showResult && (
+            <Badge variant="outline">
+              Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
+              {fight.method ? METHOD_LABELS[fight.method] : ""}
+              {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+            </Badge>
+          )}
+        </div>
+        {!locked && winnerId && (
+          <button
+            type="button"
+            onClick={clearTip}
+            className="flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-red-600"
+          >
+            <X className="size-3.5" />
+            Smazat tip
+          </button>
         )}
       </div>
 
@@ -151,6 +186,9 @@ export function FightTipCard({
           >
             <FighterAvatar name={fighter.name} photoUrl={fighter.photo_url} />
             <span className="text-sm font-semibold">{fighter.name}</span>
+            {fighter.record && (
+              <span className="text-xs text-neutral-500">{fighter.record}</span>
+            )}
           </button>
         ))}
       </div>

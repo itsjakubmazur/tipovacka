@@ -5,6 +5,7 @@ export type Fighter = {
   name: string;
   nickname: string | null;
   photo_url: string | null;
+  record: string | null;
 };
 
 export type Fight = {
