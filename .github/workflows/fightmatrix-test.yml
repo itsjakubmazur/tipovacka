@@ -1,0 +1,22 @@
+name: Fight Matrix probe (temporary)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Probe fightmatrix.com
+        working-directory: scraper
+        run: python test_fightmatrix.py
