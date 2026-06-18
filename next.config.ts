@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.sherdog.com",
       },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
     ],
   },
 };
