@@ -189,6 +189,12 @@ export function FightTipCard({
             {fighter.record && (
               <span className="text-xs text-neutral-500">{fighter.record}</span>
             )}
+            {fighter.fightmatrix_rank && (
+              <span className="text-xs text-neutral-500">
+                {fighter.fightmatrix_rank}
+                {fighter.fightmatrix_score != null && ` · ${fighter.fightmatrix_score} b.`}
+              </span>
+            )}
           </button>
         ))}
       </div>

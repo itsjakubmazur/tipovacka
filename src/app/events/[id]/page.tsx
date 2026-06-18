@@ -32,8 +32,8 @@ export default async function EventDetailPage({
     .select(
       `id, weight_class, is_title_fight, is_main_event, card_order, rounds, status,
        winner_fighter_id, method, result_round,
-       fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, record),
-       fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, record)`
+       fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, record, fightmatrix_rank, fightmatrix_score),
+       fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, record, fightmatrix_rank, fightmatrix_score)`
     )
     .eq("event_id", id)
     .order("card_order", { ascending: false });
