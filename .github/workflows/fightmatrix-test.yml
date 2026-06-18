@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: scraper
-        run: pip install requests
+        run: pip install requests beautifulsoup4 lxml
 
       - name: Probe fightmatrix.com
         working-directory: scraper
