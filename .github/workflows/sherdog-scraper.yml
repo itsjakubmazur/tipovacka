@@ -1,0 +1,53 @@
+name: Sherdog scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Co importovat"
+        required: true
+        type: choice
+        options:
+          - card
+          - results
+      event_id:
+        description: "UUID galavečera (events.id v Supabase)"
+        required: true
+        type: string
+  schedule:
+    # Po galavečerech (sobota/neděle) zkusí stáhnout výsledky pro
+    # poslední uzamčený galavečer; pokud Sherdog výsledky ještě nemá,
+    # skript se jen tiše ukončí a zkusí to znovu při dalším běhu.
+    - cron: "0 6,12,18 * * 0,1"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+
+      - name: Import card (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'card'
+        working-directory: scraper
+        run: python import_card.py --event-id "${{ inputs.event_id }}"
+
+      - name: Import results (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'results'
+        working-directory: scraper
+        run: python import_results.py --event-id "${{ inputs.event_id }}"
+
+      - name: Import results (scheduled)
+        if: github.event_name == 'schedule'
+        working-directory: scraper
+        run: python scheduled_results.py

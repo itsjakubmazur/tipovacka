@@ -44,12 +44,40 @@ Pokud nemáš Supabase CLI propojené, lze stejný SQL vložit ručně do
 Supabase → SQL Editor → Run (soubory v `supabase/migrations` se aplikují
 v pořadí podle názvu).
 
-## Scraper výsledků
+## Sherdog scraper
 
-Python skript v `scraper/` stahuje výsledky z Sherdogu a zapisuje je do
-Supabase přes service role key. Spouští se přes GitHub Actions
-(`.github/workflows`), ručně (`workflow_dispatch`) i podle cronu v okně
-galavečera.
+Python skripty v `scraper/` umí dvě věci, obě bez nutnosti cokoliv zadávat
+manuálně:
+
+- **`import_card.py`** - stáhne kartu zápasů (zápasníky + zápasy) z Sherdog
+  stránky galavečera a vytvoří je v Supabase (zápasníci se párují podle
+  `sherdog_slug`, případně podle jména).
+- **`import_results.py`** - po galavečeru stáhne výsledky, doplní vítěze/
+  způsob/kolo k existujícím zápasům a zavolá `recalculate_event_points`,
+  aby se přepočetly body všem hráčům.
+
+Obě se spouští přes GitHub Actions workflow `sherdog-scraper.yml`:
+
+- **Ručně**: GitHub → Actions → Sherdog scraper → Run workflow, vyber
+  `mode` (`card` nebo `results`) a vyplň `event_id` (UUID galavečera ze
+  Supabase tabulky `events`).
+- **Automaticky**: workflow běží i podle cronu (víkendy, několikrát po
+  galavečeru) a sám zkusí stáhnout výsledky pro každý galavečer, který už
+  začal, ale ještě nemá vyplněné výsledky. Je to bezpečné spustit
+  opakovaně - pokud Sherdog výsledky ještě nemá, skript se jen tiše
+  ukončí.
+
+Potřebné GitHub repo secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Hodnota |
+|---|---|
+| `SUPABASE_URL` | stejná URL jako `NEXT_PUBLIC_SUPABASE_URL` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` klíč (nikdy nevkládat do appky/Vercelu) |
+
+Sherdog nemá veřejné API, takže parsování HTML stránky se může při
+změně designu rozbít - pokud `import_card.py` nenajde žádné zápasy,
+vypíše to do logu Action běhu a je potřeba upravit selektory v
+`scraper/sherdog.py`.
 
 ## Nasazení
 
