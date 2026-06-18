@@ -16,9 +16,14 @@ from supabase_client import SupabaseClient
 
 def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
     if fighter.get("slug"):
-        existing = db.select("fighters", {"sherdog_slug": f"eq.{fighter['slug']}", "select": "id"})
+        existing = db.select(
+            "fighters", {"sherdog_slug": f"eq.{fighter['slug']}", "select": "id,photo_url"}
+        )
         if existing:
-            return existing[0]["id"]
+            row = existing[0]
+            if fighter.get("photo_url") and not row.get("photo_url"):
+                db.update("fighters", {"photo_url": fighter["photo_url"]}, {"id": f"eq.{row['id']}"})
+            return row["id"]
 
     existing_by_name = db.select(
         "fighters", {"name": f"eq.{fighter['name']}", "select": "id,sherdog_slug,photo_url"}
