@@ -30,9 +30,9 @@ DUPLICATES = [
 def main() -> None:
     db = SupabaseClient()
     for fight_id, fighter_to_delete, fighter_to_keep, slug in DUPLICATES:
-        db.update("fighters", {"sherdog_slug": slug}, {"id": f"eq.{fighter_to_keep}"})
         db.delete("fights", {"id": f"eq.{fight_id}"})
         db.delete("fighters", {"id": f"eq.{fighter_to_delete}"})
+        db.update("fighters", {"sherdog_slug": slug}, {"id": f"eq.{fighter_to_keep}"})
         print(f"Smazán duplicitní zápas {fight_id} a zápasník {fighter_to_delete}, "
               f"doplněn sherdog_slug={slug} k {fighter_to_keep}.")
 
