@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 const navItems = [
   { href: "/events", label: "Galavečery", icon: Swords },
@@ -59,6 +60,9 @@ export async function NavBar() {
               >
                 Přihlásit se
               </Link>
+            )}
+            {user && (
+              <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
             )}
           </nav>
         </div>
