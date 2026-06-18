@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 function initials(name: string) {
@@ -8,6 +9,8 @@ function initials(name: string) {
     .map((part) => part[0]?.toUpperCase())
     .join("");
 }
+
+const SIZE_PX = { sm: 40, md: 56, lg: 80 };
 
 export function FighterAvatar({
   name,
@@ -27,11 +30,13 @@ export function FighterAvatar({
   }[size];
 
   if (photoUrl) {
+    const px = SIZE_PX[size];
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={photoUrl}
         alt={name}
+        width={px}
+        height={px}
         className={cn(sizeClasses, "rounded-full object-cover", className)}
       />
     );
