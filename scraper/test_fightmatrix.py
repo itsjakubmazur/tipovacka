@@ -1,9 +1,7 @@
-"""Throwaway probe script: how is rank/score structured on fightmatrix.com,
-and does it have OKTAGON-tier fighters? Not part of the app - delete after
-the investigation.
+"""Throwaway probe script: structure of a Fight Matrix event page (does it
+list the full card with fighter rank/score?). Not part of the app - delete
+after the investigation.
 """
-
-import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,51 +11,20 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
+URL = "https://www.fightmatrix.com/upcoming-events/OKTAGON%2090:%20Fleury%20vs.%20Aras/110588/"
 
-def get(url):
-    resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
-    return resp
-
-
-def dump_forms(soup, label):
-    print(f"--- forms on {label} ---")
-    for form in soup.find_all("form"):
-        print("action=", form.get("action"), "method=", form.get("method"))
-        for inp in form.find_all(["input", "select"]):
-            print("   input:", inp.get("name"), inp.get("type"), inp.get("value"))
-
-
-# 1. Homepage - find the search form
-resp = get("https://www.fightmatrix.com/")
+resp = requests.get(URL, headers={"User-Agent": USER_AGENT}, timeout=30)
+print(f"{URL} -> {resp.status_code} ({len(resp.text)} bytes)")
 soup = BeautifulSoup(resp.text, "lxml")
-dump_forms(soup, "homepage")
 
-# 2. Fighter profile page - find rank/score elements
-resp = get("https://www.fightmatrix.com/fighter-profile/Michael+Page/91794/")
-soup = BeautifulSoup(resp.text, "lxml")
-print("\n--- fighter profile: elements mentioning rank/score/elo ---")
-for el in soup.find_all(string=re.compile(r"rank|score|elo|rating", re.I)):
-    text = el.strip()
-    if text:
-        print(repr(text[:120]))
+print("\n--- fighter-profile links on the page ---")
+for a in soup.find_all("a", href=True):
+    if "fighter-profile" in a["href"]:
+        print(a["href"], "|", a.get_text(strip=True))
 
-print("\n--- fighter profile: tables ---")
+print("\n--- tables ---")
 for i, table in enumerate(soup.find_all("table")):
     rows = table.find_all("tr")
     print(f"table[{i}] rows={len(rows)} class={table.get('class')} id={table.get('id')}")
-    if rows:
-        print("   first row text:", rows[0].get_text(" | ", strip=True)[:200])
-        if len(rows) > 1:
-            print("   2nd row text:", rows[1].get_text(" | ", strip=True)[:200])
-
-# 3. Division ranks page - structure of the list
-resp = get("https://www.fightmatrix.com/mma-ranks/welterweight/")
-soup = BeautifulSoup(resp.text, "lxml")
-print("\n--- welterweight ranks: tables ---")
-for i, table in enumerate(soup.find_all("table")):
-    rows = table.find_all("tr")
-    print(f"table[{i}] rows={len(rows)} class={table.get('class')} id={table.get('id')}")
-    if len(rows) > 2:
-        print("   header:", rows[0].get_text(" | ", strip=True)[:200])
-        print("   row1:", rows[1].get_text(" | ", strip=True)[:200])
-        print("   row2:", rows[2].get_text(" | ", strip=True)[:200])
+    for row in rows[:4]:
+        print("   row:", row.get_text(" | ", strip=True)[:250])
