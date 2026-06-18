@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { FighterAvatar } from "@/components/fighter-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -185,7 +186,20 @@ export function FightTipCard({
             )}
           >
             <FighterAvatar name={fighter.name} photoUrl={fighter.photo_url} />
-            <span className="text-sm font-semibold">{fighter.name}</span>
+            <span className="flex items-center gap-1.5 text-sm font-semibold">
+              {fighter.flag_code && (
+                <Image
+                  src={`https://www.sherdog.com/img/flags/big/${fighter.flag_code}.png`}
+                  alt={fighter.nationality ?? ""}
+                  title={fighter.nationality ?? undefined}
+                  width={16}
+                  height={11}
+                  unoptimized
+                  className="h-auto w-4"
+                />
+              )}
+              {fighter.name}
+            </span>
             {fighter.record && (
               <span className="text-xs text-neutral-500">{fighter.record}</span>
             )}

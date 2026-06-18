@@ -69,6 +69,14 @@ def _photo_url(img) -> str | None:
     return src
 
 
+def _absolute_url(href: str | None) -> str | None:
+    if not href:
+        return None
+    if href.startswith("/"):
+        return f"https://www.sherdog.com{href}"
+    return href
+
+
 def parse_fighter_side(side_el) -> dict:
     """Parses a fighter block, works for both the main-event `div.fighter`
     markup and the sub-event `div.fighter_list` markup."""
@@ -77,13 +85,40 @@ def parse_fighter_side(side_el) -> dict:
 
     link = side_el.select_one("a[itemprop=url]") or side_el.select_one("a")
     slug = slug_from_href(link.get("href")) if link else None
+    profile_url = _absolute_url(link.get("href")) if link else None
 
     photo_url = _photo_url(side_el.select_one("img"))
 
     result_el = side_el.select_one("span.final_result")
     won = bool(result_el) and "win" in result_el.get("class", [])
 
-    return {"name": name or None, "slug": slug, "photo_url": photo_url, "won": won}
+    return {
+        "name": name or None,
+        "slug": slug,
+        "profile_url": profile_url,
+        "photo_url": photo_url,
+        "won": won,
+    }
+
+
+def fetch_fighter_nationality(profile_url: str) -> dict:
+    """Nationality/flag only appear on a fighter's own Sherdog profile page
+    (e.g. `div.fighter-nationality strong[itemprop=nationality]` + an
+    `img.big_flag` whose src ends in `<country-code>.png`), not on the
+    event page."""
+    soup = fetch_soup(profile_url)
+
+    nat_el = soup.select_one("div.fighter-nationality strong[itemprop=nationality]")
+    nationality = nat_el.get_text(strip=True) if nat_el else None
+
+    flag_code = None
+    flag_img = soup.select_one("div.fighter-nationality img.big_flag")
+    if flag_img:
+        match = re.search(r"/([a-z]{2,3})\.png$", flag_img.get("src") or "")
+        if match:
+            flag_code = match.group(1)
+
+    return {"nationality": nationality, "flag_code": flag_code}
 
 
 def _winner_name(fighter_a: dict, fighter_b: dict) -> str | None:

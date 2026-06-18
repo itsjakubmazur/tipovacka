@@ -8,6 +8,8 @@ export type Fighter = {
   record: string | null;
   fightmatrix_rank: string | null;
   fightmatrix_score: number | null;
+  nationality: string | null;
+  flag_code: string | null;
 };
 
 export type Fight = {

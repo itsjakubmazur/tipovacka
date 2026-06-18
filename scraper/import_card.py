@@ -12,23 +12,40 @@ import argparse
 import sys
 
 from import_fightmatrix import import_fightmatrix
-from sherdog import parse_event
+from sherdog import fetch_fighter_nationality, parse_event
 from supabase_client import SupabaseClient
+
+
+def _fetch_nationality(profile_url: str | None) -> dict:
+    if not profile_url:
+        return {}
+    try:
+        return fetch_fighter_nationality(profile_url)
+    except Exception as exc:
+        print(f"Nepodařilo se zjistit národnost z {profile_url}: {exc}")
+        return {}
 
 
 def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
     if fighter.get("slug"):
         existing = db.select(
-            "fighters", {"sherdog_slug": f"eq.{fighter['slug']}", "select": "id,photo_url"}
+            "fighters",
+            {"sherdog_slug": f"eq.{fighter['slug']}", "select": "id,photo_url,nationality"},
         )
         if existing:
             row = existing[0]
+            patch = {}
             if fighter.get("photo_url") and not row.get("photo_url"):
-                db.update("fighters", {"photo_url": fighter["photo_url"]}, {"id": f"eq.{row['id']}"})
+                patch["photo_url"] = fighter["photo_url"]
+            if not row.get("nationality"):
+                patch.update(_fetch_nationality(fighter.get("profile_url")))
+            if patch:
+                db.update("fighters", patch, {"id": f"eq.{row['id']}"})
             return row["id"]
 
     existing_by_name = db.select(
-        "fighters", {"name": f"eq.{fighter['name']}", "select": "id,sherdog_slug,photo_url"}
+        "fighters",
+        {"name": f"eq.{fighter['name']}", "select": "id,sherdog_slug,photo_url,nationality"},
     )
     if existing_by_name:
         row = existing_by_name[0]
@@ -37,6 +54,8 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
             patch["sherdog_slug"] = fighter["slug"]
         if fighter.get("photo_url") and not row.get("photo_url"):
             patch["photo_url"] = fighter["photo_url"]
+        if not row.get("nationality"):
+            patch.update(_fetch_nationality(fighter.get("profile_url")))
         if patch:
             db.update("fighters", patch, {"id": f"eq.{row['id']}"})
         return row["id"]
@@ -48,6 +67,7 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
                 "name": fighter["name"],
                 "sherdog_slug": fighter.get("slug"),
                 "photo_url": fighter.get("photo_url"),
+                **_fetch_nationality(fighter.get("profile_url")),
             }
         ],
     )
