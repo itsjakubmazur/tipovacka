@@ -79,6 +79,17 @@ změně designu rozbít - pokud `import_card.py` nenajde žádné zápasy,
 vypíše to do logu Action běhu a je potřeba upravit selektory v
 `scraper/sherdog.py`.
 
+### Spuštění importu z admin UI
+
+V `/admin/events/[id]` jde po vyplnění odkazu na Sherdog kliknout na
+tlačítko "Stáhnout kartu ze Sherdogu" / "Stáhnout výsledky ze Sherdogu" —
+admin appka pak za tebe spustí stejný GitHub Actions workflow (není
+potřeba chodit do GitHub → Actions). Aby to fungovalo, appka potřebuje na
+Vercelu env proměnnou `GITHUB_DISPATCH_TOKEN` - GitHub osobní token
+(fine-grained, scoped jen na tento repo, s oprávněním "Actions: Read and
+write"). Bez něj tlačítka vrátí chybu, ale workflow lze stále spustit
+ručně přes GitHub → Actions → Run workflow.
+
 ## Nasazení
 
 Aplikace se nasazuje na Vercel, napojený na toto (private) GitHub repo —

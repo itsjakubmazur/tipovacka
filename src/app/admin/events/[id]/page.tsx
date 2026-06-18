@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EventSettingsForm } from "@/components/admin/event-settings-form";
 import { AddFightForm } from "@/components/admin/add-fight-form";
 import { AdminFightRow } from "@/components/admin/admin-fight-row";
+import { ImportSherdogButton } from "@/components/admin/import-sherdog-button";
 
 export default async function AdminEventPage({
   params,
@@ -30,7 +31,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, status, lock_at, auto_lock")
+    .select("id, number, name, status, lock_at, auto_lock, sherdog_event_url")
     .eq("id", id)
     .single();
 
@@ -79,10 +80,30 @@ export default async function AdminEventPage({
         initialLockAt={event.lock_at}
         initialAutoLock={event.auto_lock}
         initialStatus={event.status}
+        initialSherdogUrl={event.sherdog_event_url}
       />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Zápasy</h2>
+        <div className="flex flex-wrap gap-3">
+          <ImportSherdogButton
+            eventId={event.id}
+            mode="card"
+            label="Stáhnout kartu ze Sherdogu"
+            disabled={!event.sherdog_event_url}
+          />
+          <ImportSherdogButton
+            eventId={event.id}
+            mode="results"
+            label="Stáhnout výsledky ze Sherdogu"
+            disabled={!event.sherdog_event_url}
+          />
+        </div>
+        {!event.sherdog_event_url && (
+          <p className="text-sm text-neutral-500">
+            Nejdřív vyplň odkaz na Sherdog v nastavení galavečera výše.
+          </p>
+        )}
         <div className="flex flex-col gap-3">
           {sortedFights.map((fight, i) => (
             <AdminFightRow

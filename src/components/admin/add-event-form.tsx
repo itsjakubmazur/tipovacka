@@ -16,6 +16,7 @@ export function AddEventForm() {
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [location, setLocation] = useState("");
+  const [sherdogUrl, setSherdogUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,6 +32,7 @@ export function AddEventForm() {
       event_date: utcDate,
       lock_at: utcDate,
       location: location || null,
+      sherdog_event_url: sherdogUrl || null,
     });
 
     setSaving(false);
@@ -42,6 +44,7 @@ export function AddEventForm() {
     setName("");
     setEventDate("");
     setLocation("");
+    setSherdogUrl("");
     router.refresh();
   }
 
@@ -70,6 +73,15 @@ export function AddEventForm() {
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="location">Místo</Label>
           <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} />
+        </div>
+        <div className="col-span-2 flex flex-col gap-1.5">
+          <Label htmlFor="sherdog_url">Odkaz na Sherdog</Label>
+          <Input
+            id="sherdog_url"
+            placeholder="https://www.sherdog.com/events/..."
+            value={sherdogUrl}
+            onChange={(e) => setSherdogUrl(e.target.value)}
+          />
         </div>
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
