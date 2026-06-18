@@ -10,8 +10,6 @@ on:
         options:
           - card
           - results
-          - inspect
-          - cleanup_duplicates
       event_id:
         description: "UUID galavečera (events.id v Supabase)"
         required: true
@@ -48,16 +46,6 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'results'
         working-directory: scraper
         run: python import_results.py --event-id "${{ inputs.event_id }}"
-
-      - name: Inspect event fights (manual trigger)
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'inspect'
-        working-directory: scraper
-        run: python inspect_event.py --event-id "${{ inputs.event_id }}"
-
-      - name: Clean up duplicate fights (manual trigger, one-off)
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'cleanup_duplicates'
-        working-directory: scraper
-        run: python cleanup_duplicates.py
 
       - name: Import results (scheduled)
         if: github.event_name == 'schedule'
