@@ -15,6 +15,13 @@ GitHub Actions runner):
   most recent entry first. The same `tblRank` class is reused on event
   pages for the bout-by-bout table ("Bout | Weight" header), so the
   header text is checked to tell them apart.
+- The full listing of every upcoming event, across all promotions, is one
+  page: `/upcoming-events/`. Each event link's text ends with the
+  promotion in brackets (e.g. "OKTAGON 90: Fleury vs. Aras [Oktagon MMA]",
+  but formatting of the OKTAGON-specific part is inconsistent - sometimes
+  "OKTAGON 90:", sometimes "Oktagon MMA Oktagon 92:", sometimes
+  "Oktagon MMA - Oktagon 93"). This lets the OKTAGON event number be
+  matched against `events.number` without needing a per-event manual URL.
 """
 
 import re
@@ -58,6 +65,28 @@ def parse_event(url: str) -> list[dict]:
         fighters.append({"name": name, "profile_url": profile_url})
 
     return fighters
+
+
+def find_event_url(event_number: int) -> str | None:
+    """Finds the Fight Matrix event page URL for a given OKTAGON event
+    number by matching it against the "[Oktagon MMA]"-tagged entries on
+    the upcoming-events listing page."""
+    soup = fetch_soup(f"{BASE_URL}/upcoming-events/")
+
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if not re.match(r"^/upcoming-events/.+/\d+/?$", href):
+            continue
+
+        text = a.get_text(" ", strip=True)
+        if "[Oktagon MMA]" not in text:
+            continue
+
+        match = re.search(r"(?i)oktagon\s+(\d+)", text)
+        if match and int(match.group(1)) == event_number:
+            return href if href.startswith("http") else f"{BASE_URL}{href}"
+
+    return None
 
 
 def parse_fighter(url: str) -> dict | None:

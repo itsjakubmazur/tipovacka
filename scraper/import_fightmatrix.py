@@ -4,15 +4,21 @@ Usage:
     python import_fightmatrix.py --event-id <uuid>
 
 Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.
-The event row must already have fightmatrix_event_url set, and the card
-must already be imported (fighters/fights exist for the event).
+The card must already be imported (fighters/fights exist for the event).
+If the event has no fightmatrix_event_url yet, it's looked up by OKTAGON
+number on Fight Matrix's upcoming-events listing and saved back to the
+event row, so this only has to happen once per event.
+
+Run automatically by import_card.py right after a card import; failures
+here (e.g. event not found on Fight Matrix yet) are non-fatal so they
+never block the card import itself.
 """
 
 import argparse
 import sys
 import unicodedata
 
-from fightmatrix import parse_event, parse_fighter
+from fightmatrix import find_event_url, parse_event, parse_fighter
 from supabase_client import SupabaseClient
 
 
@@ -24,15 +30,25 @@ def normalize_name(name: str) -> str:
 def import_fightmatrix(event_id: str) -> None:
     db = SupabaseClient()
 
-    events = db.select("events", {"id": f"eq.{event_id}", "select": "id,fightmatrix_event_url"})
+    events = db.select("events", {"id": f"eq.{event_id}", "select": "id,number,fightmatrix_event_url"})
     if not events:
         print(f"Event {event_id} nenalezen.")
         sys.exit(1)
 
-    fightmatrix_url = events[0].get("fightmatrix_event_url")
+    event = events[0]
+    fightmatrix_url = event.get("fightmatrix_event_url")
     if not fightmatrix_url:
-        print("Event nemá vyplněnou fightmatrix_event_url.")
-        sys.exit(1)
+        if not event.get("number"):
+            print("Event nemá vyplněné číslo OKTAGONu, nejde dohledat na Fight Matrix.")
+            return
+
+        fightmatrix_url = find_event_url(event["number"])
+        if not fightmatrix_url:
+            print(f"OKTAGON {event['number']} jsem na Fight Matrix nenašel, zkusím to při dalším běhu.")
+            return
+
+        db.update("events", {"fightmatrix_event_url": fightmatrix_url}, {"id": f"eq.{event_id}"})
+        print(f"Nalezena Fight Matrix stránka eventu: {fightmatrix_url}")
 
     fights = db.select(
         "fights",
@@ -51,12 +67,12 @@ def import_fightmatrix(event_id: str) -> None:
 
     if not fighters_by_name:
         print("Event nemá žádné zápasy v DB, nejdřív naimportuj kartu ze Sherdogu.")
-        sys.exit(1)
+        return
 
     scraped = parse_event(fightmatrix_url)
     if not scraped:
         print("Na Fight Matrix stránce eventu jsem nenašel žádné zápasníky.")
-        sys.exit(1)
+        return
 
     updated = 0
     for entry in scraped:

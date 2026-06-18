@@ -1,4 +1,5 @@
-"""Import the fight card (fighters + fights) for an event from Sherdog.
+"""Import the fight card (fighters + fights) for an event from Sherdog,
+then fill in each fighter's Fight Matrix rank/score.
 
 Usage:
     python import_card.py --event-id <uuid>
@@ -10,6 +11,7 @@ The event row must already exist with sherdog_event_url set.
 import argparse
 import sys
 
+from import_fightmatrix import import_fightmatrix
 from sherdog import parse_event
 from supabase_client import SupabaseClient
 
@@ -108,6 +110,12 @@ def import_card(event_id: str) -> None:
         print(f"Vytvořen zápas: {fight['fighter_a']['name']} vs {fight['fighter_b']['name']}")
 
     print(f"Hotovo, vytvořeno {created} nových zápasů.")
+
+    print("Doplňuji Fight Matrix rank/skóre...")
+    try:
+        import_fightmatrix(event_id)
+    except SystemExit:
+        print("Fight Matrix import se nezdařil, karta ze Sherdogu je ale naimportovaná v pořádku.")
 
 
 if __name__ == "__main__":
