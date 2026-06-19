@@ -43,7 +43,7 @@ export default async function TipperDetailPage({
   if (eventId) {
     const { data: event } = await supabase
       .from("events")
-      .select("id, number, name, event_date, status, lock_at")
+      .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id")
       .eq("id", eventId)
       .single();
 
@@ -78,6 +78,17 @@ export default async function TipperDetailPage({
       (predictions ?? []).map((p) => [p.fight_id, p])
     );
 
+    const { data: bonusPrediction } = await supabase
+      .from("bonus_predictions")
+      .select("predicted_fotn_fight_id, points")
+      .eq("user_id", userId)
+      .eq("event_id", eventId)
+      .maybeSingle();
+
+    const bonusFight = bonusPrediction
+      ? (fights ?? []).find((f) => f.id === bonusPrediction.predicted_fotn_fight_id)
+      : null;
+
     return (
       <div className="flex flex-col gap-4 px-4 py-8">
         <div>
@@ -93,15 +104,33 @@ export default async function TipperDetailPage({
         {!locked ? (
           <p className="text-neutral-600">Tipy se zobrazí až po uzávěrce galavečera.</p>
         ) : (
-          <div className="flex flex-col gap-3">
-            {(fights ?? []).map((fight) => (
-              <TipBreakdownCard
-                key={fight.id}
-                fight={fight as unknown as Fight}
-                prediction={predictionByFight.get(fight.id) ?? null}
-              />
-            ))}
-          </div>
+          <>
+            {bonusFight && (
+              <div className="rounded-xl border border-neutral-200 p-4 text-sm">
+                <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
+                <p className="text-neutral-600">
+                  {(bonusFight as unknown as Fight).fighter_a.name} vs{" "}
+                  {(bonusFight as unknown as Fight).fighter_b.name}
+                  {bonusPrediction?.points != null && (
+                    <span className="ml-2 font-semibold">
+                      {bonusPrediction.points > 0
+                        ? `Trefeno! +${bonusPrediction.points} b.`
+                        : "Netrefeno."}
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+            <div className="flex flex-col gap-3">
+              {(fights ?? []).map((fight) => (
+                <TipBreakdownCard
+                  key={fight.id}
+                  fight={fight as unknown as Fight}
+                  prediction={predictionByFight.get(fight.id) ?? null}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     );

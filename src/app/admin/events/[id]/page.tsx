@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EventSettingsForm } from "@/components/admin/event-settings-form";
 import { AddFightForm } from "@/components/admin/add-fight-form";
 import { AdminFightRow } from "@/components/admin/admin-fight-row";
+import { AdminFotnForm } from "@/components/admin/admin-fotn-form";
 import { ImportSherdogButton } from "@/components/admin/import-sherdog-button";
 
 export default async function AdminEventPage({
@@ -31,7 +32,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, status, lock_at, auto_lock, sherdog_event_url")
+    .select("id, number, name, status, lock_at, auto_lock, sherdog_event_url, actual_fotn_fight_id")
     .eq("id", id)
     .single();
 
@@ -117,6 +118,17 @@ export default async function AdminEventPage({
         </div>
         <AddFightForm eventId={event.id} fighters={fighters ?? []} nextCardOrder={nextCardOrder} />
       </section>
+
+      {sortedFights.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Bonus tip</h2>
+          <AdminFotnForm
+            eventId={event.id}
+            fights={sortedFights}
+            initialFightId={event.actual_fotn_fight_id}
+          />
+        </section>
+      )}
     </div>
   );
 }

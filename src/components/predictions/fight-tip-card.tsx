@@ -44,11 +44,13 @@ export function FightTipCard({
   userId,
   initialPrediction,
   locked,
+  consensus,
 }: {
   fight: Fight;
   userId: string;
   initialPrediction: Prediction | null;
   locked: boolean;
+  consensus?: { fighterACount: number; fighterBCount: number; total: number };
 }) {
   const supabase = createClient();
 
@@ -209,6 +211,18 @@ export function FightTipCard({
               <span className="text-xs text-neutral-500">
                 {fighter.fightmatrix_rank}
                 {fighter.fightmatrix_score != null && ` · ${fighter.fightmatrix_score} b.`}
+              </span>
+            )}
+            {consensus && (
+              <span className="text-xs font-medium text-neutral-500">
+                {Math.round(
+                  ((fighter.id === fight.fighter_a.id
+                    ? consensus.fighterACount
+                    : consensus.fighterBCount) /
+                    consensus.total) *
+                    100
+                )}
+                % tipů
               </span>
             )}
           </button>

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
+import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { LockCountdown } from "@/components/lock-countdown";
 import type { Fight, Prediction } from "@/lib/types";
 
@@ -55,6 +56,35 @@ export default async function EventDetailPage({
     event.status === "completed" ||
     (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
 
+  const fotnOptions = (fights ?? []).map((rawFight) => {
+    const fight = rawFight as unknown as Fight;
+    return {
+      id: fight.id,
+      fighterAName: fight.fighter_a.name,
+      fighterBName: fight.fighter_b.name,
+    };
+  });
+
+  const { data: bonusPrediction } = await supabase
+    .from("bonus_predictions")
+    .select("predicted_fotn_fight_id, points")
+    .eq("user_id", user.id)
+    .eq("event_id", id)
+    .maybeSingle();
+
+  const consensusByFight = new Map<string, Map<string, number>>();
+  if (locked && fightIds.length) {
+    const { data: allPredictions } = await supabase
+      .from("predictions")
+      .select("fight_id, predicted_winner_id")
+      .in("fight_id", fightIds);
+    for (const p of allPredictions ?? []) {
+      const counts = consensusByFight.get(p.fight_id) ?? new Map<string, number>();
+      counts.set(p.predicted_winner_id, (counts.get(p.predicted_winner_id) ?? 0) + 1);
+      consensusByFight.set(p.fight_id, counts);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
@@ -83,16 +113,39 @@ export default async function EventDetailPage({
         )}
       </div>
 
+      <FotnPicker
+        eventId={id}
+        userId={user.id}
+        fights={fotnOptions}
+        initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
+        initialPoints={bonusPrediction?.points ?? null}
+        locked={locked}
+      />
+
       <div className="flex flex-col gap-3">
-        {(fights ?? []).map((fight) => (
-          <FightTipCard
-            key={fight.id}
-            fight={fight as unknown as Fight}
-            userId={user.id}
-            initialPrediction={predictionByFight.get(fight.id) ?? null}
-            locked={locked}
-          />
-        ))}
+        {(fights ?? []).map((rawFight) => {
+          const fight = rawFight as unknown as Fight;
+          const counts = consensusByFight.get(fight.id);
+          const total = counts ? Array.from(counts.values()).reduce((a, b) => a + b, 0) : 0;
+          return (
+            <FightTipCard
+              key={fight.id}
+              fight={fight}
+              userId={user.id}
+              initialPrediction={predictionByFight.get(fight.id) ?? null}
+              locked={locked}
+              consensus={
+                total > 0
+                  ? {
+                      fighterACount: counts?.get(fight.fighter_a.id) ?? 0,
+                      fighterBCount: counts?.get(fight.fighter_b.id) ?? 0,
+                      total,
+                    }
+                  : undefined
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );

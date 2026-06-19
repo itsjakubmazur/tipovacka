@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
+import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
 const navItems = [
   { href: "/events", label: "Galavečery", icon: Swords },
   { href: "/leaderboard", label: "Žebříček", icon: Trophy },
+  { href: "/groups", label: "Skupiny", icon: Users },
   { href: "/profile", label: "Profil", icon: User },
 ];
 
