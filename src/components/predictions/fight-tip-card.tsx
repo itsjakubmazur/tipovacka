@@ -242,7 +242,7 @@ export function FightTipCard({
             >
               <FighterPortrait
                 name={fighter.name}
-                photoUrl={fighter.fight_card_photo_url ?? fighter.photo_url}
+                photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
                 className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
               />
               <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">

@@ -24,16 +24,18 @@ Confirmed against live data fetched on a GitHub Actions runner:
 - Each fighter embedded in a fight already carries everything we need:
   name parts, nickname, a profile photo (imageProfile.url) and a
   separately-cropped fight-card photo (imageFightCard.url), a bio
-  (description, localized per language), pro and amateur MMA records
-  (scores.MMA_PROFI / scores.MMA_AMATEUR), height/native weight class/
-  birth date, an ISO-3166-1 alpha-2 nationality code (directly usable as
-  flag_code, same convention as the old Sherdog-sourced one), a profile
-  slug, and official/P4P rankings (including positionChange, the
-  movement since the last update).
+  (description, localized per language, and HTML-formatted - tags/
+  entities are stripped before storing), pro MMA record
+  (scores.MMA_PROFI), height/native weight class/birth date, an
+  ISO-3166-1 alpha-2 nationality code (directly usable as flag_code,
+  same convention as the old Sherdog-sourced one), a profile slug, and
+  official/P4P rankings (including positionChange, the movement since
+  the last update).
 - Completed fights also carry `time` - the clock reading at the finish,
   within the deciding round (e.g. "2:26") - distinct from `result_round`.
 """
 
+import html
 import re
 
 import requests
@@ -161,6 +163,17 @@ def _localized(value: dict | None) -> str | None:
     return text.strip() if isinstance(text, str) and text.strip() else None
 
 
+def _strip_html(text: str | None) -> str | None:
+    """Fighter bios come as HTML (<p>, <strong>, &nbsp;, ...) - this app
+    has nowhere that renders HTML, so flatten it to plain text."""
+    if not text:
+        return None
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html.unescape(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text or None
+
+
 def _rank_change(fighter: dict) -> int | None:
     """How many spots a fighter moved since the last ranking update -
     checked on the official ranking entry first, falling back to the
@@ -211,7 +224,7 @@ def normalize_fighter(fighter: dict) -> dict:
         "nickname": (fighter.get("nickName") or "").strip() or None,
         "photo_url": _localized((fighter.get("imageProfile") or {}).get("url")),
         "fight_card_photo_url": _localized((fighter.get("imageFightCard") or {}).get("url")),
-        "bio": _localized(fighter.get("description")),
+        "bio": _strip_html(_localized(fighter.get("description"))),
         "record": _record_label(fighter),
         "nationality": COUNTRY_NAMES.get(code, code) if code else None,
         "flag_code": code.lower() if code else None,

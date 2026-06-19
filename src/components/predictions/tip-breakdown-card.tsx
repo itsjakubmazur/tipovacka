@@ -80,7 +80,7 @@ export function TipBreakdownCard({
             >
               <FighterPortrait
                 name={fighter.name}
-                photoUrl={fighter.fight_card_photo_url ?? fighter.photo_url}
+                photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
                 className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
               />
               <div className="mt-1.5">
