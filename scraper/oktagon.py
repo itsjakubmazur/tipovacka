@@ -196,14 +196,14 @@ def _birth_date(fighter: dict) -> str | None:
 
 def _rank_label(fighter: dict) -> str | None:
     if fighter.get("champion"):
-        return "Mistr"
+        return "Šampion"
     if fighter.get("interimChampion"):
-        return "Interim mistr"
+        return "Interim šampion"
     for ranking in fighter.get("rankings") or []:
         if ranking.get("type") == "OFFICIAL":
             position = ranking.get("position")
             if position == "champion":
-                return "Mistr"
+                return "Šampion"
             if isinstance(position, int):
                 return f"#{position}"
     for ranking in fighter.get("otherRankings") or []:

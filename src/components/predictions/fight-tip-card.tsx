@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ageFromBirthDate, cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X, ArrowUp, ArrowDown, ChevronDown, ExternalLink } from "lucide-react";
+import { X, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 function Pill({
@@ -81,17 +81,6 @@ function FighterDetails({ fighter }: { fighter: Fighter }) {
       )}
       {bioOpen && fighter.bio && (
         <p className="px-1 text-left text-xs text-neutral-600 dark:text-neutral-400">{fighter.bio}</p>
-      )}
-      {fighter.oktagon_slug && (
-        <a
-          href={`https://oktagonmma.com/cs/zapasnici/${fighter.oktagon_slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-0.5 text-xs text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
-        >
-          Profil na OKTAGONu
-          <ExternalLink className="size-3" />
-        </a>
       )}
     </div>
   );
