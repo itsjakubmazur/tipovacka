@@ -90,29 +90,6 @@ def merge_event(db: SupabaseClient, event_id: str) -> None:
         else:
             fighter_pairs = [(legacy_a, new_b), (legacy_b, new_a)]
 
-        for legacy_fid, new_fid in fighter_pairs:
-            if legacy_fid == new_fid:
-                continue
-            new_fighter = fighters_by_id[new_fid]
-            db.update(
-                "fighters",
-                {
-                    "oktagon_fighter_id": new_fighter["oktagon_fighter_id"],
-                    "name": new_fighter["name"],
-                    "nickname": new_fighter["nickname"],
-                    "photo_url": new_fighter["photo_url"],
-                    "record": new_fighter["record"],
-                    "nationality": new_fighter["nationality"],
-                    "flag_code": new_fighter["flag_code"],
-                    "height_cm": new_fighter["height_cm"],
-                    "birth_date": new_fighter["birth_date"],
-                    "oktagon_rank": new_fighter["oktagon_rank"],
-                },
-                {"id": f"eq.{legacy_fid}"},
-            )
-            db.delete("fighters", {"id": f"eq.{new_fid}"})
-            merged_fighters += 1
-
         winner_fighter_id = None
         if new_fight["winner_fighter_id"] == new_a:
             winner_fighter_id = legacy_a
@@ -181,6 +158,32 @@ def merge_event(db: SupabaseClient, event_id: str) -> None:
         )
         db.delete("fights", {"id": f"eq.{new_fight['id']}"})
         merged_fights += 1
+
+        # Only now is the duplicate fighter row unreferenced by any fight,
+        # so it's safe to delete it and free up its oktagon_fighter_id
+        # (unique) for the update onto the legacy row right after.
+        for legacy_fid, new_fid in fighter_pairs:
+            if legacy_fid == new_fid:
+                continue
+            new_fighter = fighters_by_id[new_fid]
+            db.delete("fighters", {"id": f"eq.{new_fid}"})
+            db.update(
+                "fighters",
+                {
+                    "oktagon_fighter_id": new_fighter["oktagon_fighter_id"],
+                    "name": new_fighter["name"],
+                    "nickname": new_fighter["nickname"],
+                    "photo_url": new_fighter["photo_url"],
+                    "record": new_fighter["record"],
+                    "nationality": new_fighter["nationality"],
+                    "flag_code": new_fighter["flag_code"],
+                    "height_cm": new_fighter["height_cm"],
+                    "birth_date": new_fighter["birth_date"],
+                    "oktagon_rank": new_fighter["oktagon_rank"],
+                },
+                {"id": f"eq.{legacy_fid}"},
+            )
+            merged_fighters += 1
 
     if status_changed:
         db.rpc("recalculate_event_points", {"p_event_id": event_id})
