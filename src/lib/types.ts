@@ -12,6 +12,8 @@ export type Fighter = {
   oktagon_rank_change: number | null;
   oktagon_slug: string | null;
   weight_kg: number | null;
+  height_cm: number | null;
+  birth_date: string | null;
   nationality: string | null;
   flag_code: string | null;
 };

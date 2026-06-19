@@ -5,7 +5,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { ageFromBirthDate, cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { X, ArrowUp, ArrowDown, ChevronDown, ExternalLink } from "lucide-react";
@@ -58,8 +58,16 @@ function FighterDetails({ fighter }: { fighter: Fighter }) {
 
   return (
     <div className="flex w-full flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-      {fighter.weight_kg && (
-        <span className="text-xs text-neutral-400 dark:text-neutral-500">{fighter.weight_kg} kg</span>
+      {(fighter.weight_kg || fighter.height_cm || fighter.birth_date) && (
+        <span className="text-xs text-neutral-400 dark:text-neutral-500">
+          {[
+            fighter.weight_kg && `${fighter.weight_kg} kg`,
+            fighter.height_cm && `${fighter.height_cm} cm`,
+            fighter.birth_date && `${ageFromBirthDate(fighter.birth_date)} let`,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
       )}
       {fighter.bio && (
         <button
