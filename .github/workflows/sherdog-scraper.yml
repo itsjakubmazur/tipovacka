@@ -12,6 +12,7 @@ on:
           - results
           - fightmatrix
           - backfill_photos
+          - debug_oktagon
       event_id:
         description: "UUID galavečera (events.id v Supabase, není potřeba pro backfill_photos)"
         required: false
@@ -54,7 +55,7 @@ jobs:
         working-directory: scraper
         run: python backfill_photo_urls.py
 
-      - name: Debug oktagonmma.com fantasy page (temporary)
+      - name: Debug oktagonmma.com event pages (temporary)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'debug_oktagon'
         working-directory: scraper
-        run: python _debug_oktagon.py
+        run: python _debug_oktagon2.py
