@@ -139,8 +139,8 @@ def resolve_event_id(db: SupabaseClient, event: dict) -> int | None:
     return oktagon_event_id
 
 
-def _record_label(fighter: dict, score_type: str = "MMA_PROFI") -> str | None:
-    scores = (fighter.get("scores") or {}).get(score_type) or {}
+def _record_label(fighter: dict) -> str | None:
+    scores = (fighter.get("scores") or {}).get("MMA_PROFI") or {}
     wins, losses, draws = scores.get("wins"), scores.get("losses"), scores.get("draws")
     if wins is None and losses is None and draws is None:
         return None
@@ -212,8 +212,7 @@ def normalize_fighter(fighter: dict) -> dict:
         "photo_url": _localized((fighter.get("imageProfile") or {}).get("url")),
         "fight_card_photo_url": _localized((fighter.get("imageFightCard") or {}).get("url")),
         "bio": _localized(fighter.get("description")),
-        "record": _record_label(fighter, "MMA_PROFI"),
-        "amateur_record": _record_label(fighter, "MMA_AMATEUR"),
+        "record": _record_label(fighter),
         "nationality": COUNTRY_NAMES.get(code, code) if code else None,
         "flag_code": code.lower() if code else None,
         "height_cm": fighter.get("heightCm"),

@@ -10,6 +10,15 @@ import os
 import requests
 
 
+def _raise_with_body(resp: requests.Response) -> None:
+    """requests' default HTTPError drops the response body, which is
+    where PostgREST puts the actually useful error message - surface it
+    so a failed scraper run doesn't need a live API call to diagnose."""
+    if resp.ok:
+        return
+    raise requests.exceptions.HTTPError(f"{resp.status_code} {resp.url}: {resp.text}", response=resp)
+
+
 class SupabaseClient:
     def __init__(self):
         self.url = os.environ["SUPABASE_URL"].rstrip("/")
@@ -22,28 +31,28 @@ class SupabaseClient:
 
     def select(self, table: str, params: dict | None = None) -> list[dict]:
         resp = requests.get(f"{self.url}/rest/v1/{table}", headers=self.headers, params=params or {})
-        resp.raise_for_status()
+        _raise_with_body(resp)
         return resp.json()
 
     def insert(self, table: str, rows: list[dict]) -> list[dict]:
         headers = {**self.headers, "Prefer": "return=representation"}
         resp = requests.post(f"{self.url}/rest/v1/{table}", headers=headers, json=rows)
-        resp.raise_for_status()
+        _raise_with_body(resp)
         return resp.json()
 
     def update(self, table: str, values: dict, filters: dict) -> list[dict]:
         headers = {**self.headers, "Prefer": "return=representation"}
         resp = requests.patch(f"{self.url}/rest/v1/{table}", headers=headers, params=filters, json=values)
-        resp.raise_for_status()
+        _raise_with_body(resp)
         return resp.json()
 
     def delete(self, table: str, filters: dict) -> list[dict]:
         headers = {**self.headers, "Prefer": "return=representation"}
         resp = requests.delete(f"{self.url}/rest/v1/{table}", headers=headers, params=filters)
-        resp.raise_for_status()
+        _raise_with_body(resp)
         return resp.json()
 
     def rpc(self, fn_name: str, args: dict) -> object:
         resp = requests.post(f"{self.url}/rest/v1/rpc/{fn_name}", headers=self.headers, json=args)
-        resp.raise_for_status()
+        _raise_with_body(resp)
         return resp.json() if resp.text else None

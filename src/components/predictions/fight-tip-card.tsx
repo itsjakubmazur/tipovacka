@@ -58,9 +58,6 @@ function FighterDetails({ fighter }: { fighter: Fighter }) {
 
   return (
     <div className="flex w-full flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-      {fighter.amateur_record && (
-        <span className="text-xs text-neutral-400 dark:text-neutral-500">Am.: {fighter.amateur_record}</span>
-      )}
       {fighter.weight_kg && (
         <span className="text-xs text-neutral-400 dark:text-neutral-500">{fighter.weight_kg} kg</span>
       )}

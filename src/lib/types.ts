@@ -8,7 +8,6 @@ export type Fighter = {
   fight_card_photo_url: string | null;
   bio: string | null;
   record: string | null;
-  amateur_record: string | null;
   oktagon_rank: string | null;
   oktagon_rank_change: number | null;
   oktagon_slug: string | null;

@@ -33,7 +33,6 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
         "fight_card_photo_url": fighter["fight_card_photo_url"],
         "bio": fighter["bio"],
         "record": fighter["record"],
-        "amateur_record": fighter["amateur_record"],
         "nationality": fighter["nationality"],
         "flag_code": fighter["flag_code"],
         "height_cm": fighter["height_cm"],
