@@ -66,6 +66,7 @@ def import_results(event_id: str) -> None:
                 "winner_fighter_id": winner_id,
                 "method": fight["method"],
                 "result_round": fight["result_round"],
+                "result_time": fight["result_time"],
             },
             {"id": f"eq.{db_fight['id']}"},
         )

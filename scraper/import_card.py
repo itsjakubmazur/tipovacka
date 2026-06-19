@@ -30,12 +30,18 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
         "name": fighter["name"],
         "nickname": fighter["nickname"],
         "photo_url": fighter["photo_url"],
+        "fight_card_photo_url": fighter["fight_card_photo_url"],
+        "bio": fighter["bio"],
         "record": fighter["record"],
+        "amateur_record": fighter["amateur_record"],
         "nationality": fighter["nationality"],
         "flag_code": fighter["flag_code"],
         "height_cm": fighter["height_cm"],
+        "weight_kg": fighter["weight_kg"],
         "birth_date": fighter["birth_date"],
         "oktagon_rank": fighter["oktagon_rank"],
+        "oktagon_rank_change": fighter["oktagon_rank_change"],
+        "oktagon_slug": fighter["oktagon_slug"],
     }
     if existing:
         db.update("fighters", patch, {"id": f"eq.{existing[0]['id']}"})

@@ -5,8 +5,14 @@ export type Fighter = {
   name: string;
   nickname: string | null;
   photo_url: string | null;
+  fight_card_photo_url: string | null;
+  bio: string | null;
   record: string | null;
+  amateur_record: string | null;
   oktagon_rank: string | null;
+  oktagon_rank_change: number | null;
+  oktagon_slug: string | null;
+  weight_kg: number | null;
   nationality: string | null;
   flag_code: string | null;
 };
@@ -22,6 +28,7 @@ export type Fight = {
   winner_fighter_id: string | null;
   method: Method | null;
   result_round: number | null;
+  result_time: string | null;
   fighter_a: Fighter;
   fighter_b: Fighter;
 };

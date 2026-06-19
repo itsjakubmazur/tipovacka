@@ -22,10 +22,16 @@ Confirmed against live data fetched on a GitHub Actions runner:
   decisive wins. Draws and no-contests are both treated as our
   "no_contest" status - neither has a winner to grade.
 - Each fighter embedded in a fight already carries everything we need:
-  name parts, nickname, a clean photo URL (imageProfile.url), pro MMA
-  record (scores.MMA_PROFI), height/birth date, an ISO-3166-1 alpha-2
-  nationality code (directly usable as flag_code, same convention as the
-  old Sherdog-sourced one), and official/P4P rankings.
+  name parts, nickname, a profile photo (imageProfile.url) and a
+  separately-cropped fight-card photo (imageFightCard.url), a bio
+  (description, localized per language), pro and amateur MMA records
+  (scores.MMA_PROFI / scores.MMA_AMATEUR), height/native weight class/
+  birth date, an ISO-3166-1 alpha-2 nationality code (directly usable as
+  flag_code, same convention as the old Sherdog-sourced one), a profile
+  slug, and official/P4P rankings (including positionChange, the
+  movement since the last update).
+- Completed fights also carry `time` - the clock reading at the finish,
+  within the deciding round (e.g. "2:26") - distinct from `result_round`.
 """
 
 import re
@@ -133,8 +139,8 @@ def resolve_event_id(db: SupabaseClient, event: dict) -> int | None:
     return oktagon_event_id
 
 
-def _record_label(fighter: dict) -> str | None:
-    scores = (fighter.get("scores") or {}).get("MMA_PROFI") or {}
+def _record_label(fighter: dict, score_type: str = "MMA_PROFI") -> str | None:
+    scores = (fighter.get("scores") or {}).get(score_type) or {}
     wins, losses, draws = scores.get("wins"), scores.get("losses"), scores.get("draws")
     if wins is None and losses is None and draws is None:
         return None
@@ -143,6 +149,29 @@ def _record_label(fighter: dict) -> str | None:
     if no_contests:
         record += f" ({no_contests} NC)"
     return record
+
+
+def _localized(value: dict | None) -> str | None:
+    """OKTAGON keeps several text/image fields as an object keyed by
+    language code (cs/de/en/pl/...) - prefer Czech, fall back to whatever
+    is there."""
+    if not value:
+        return None
+    text = value.get("cs") or next(iter(value.values()), None)
+    return text.strip() if isinstance(text, str) and text.strip() else None
+
+
+def _rank_change(fighter: dict) -> int | None:
+    """How many spots a fighter moved since the last ranking update -
+    checked on the official ranking entry first, falling back to the
+    P4P one, since only one of them reliably carries `positionChange`."""
+    for ranking in fighter.get("rankings") or []:
+        if ranking.get("type") == "OFFICIAL" and isinstance(ranking.get("positionChange"), int):
+            return ranking["positionChange"]
+    for ranking in fighter.get("otherRankings") or []:
+        if ranking.get("type") == "P4P" and isinstance(ranking.get("positionChange"), int):
+            return ranking["positionChange"]
+    return None
 
 
 def _birth_date(fighter: dict) -> str | None:
@@ -172,21 +201,27 @@ def _rank_label(fighter: dict) -> str | None:
 
 def normalize_fighter(fighter: dict) -> dict:
     name = f"{(fighter.get('firstName') or '').strip()} {(fighter.get('lastName') or '').strip()}".strip()
-    image_url = (fighter.get("imageProfile") or {}).get("url") or {}
-    photo_url = image_url.get("cs") or next(iter(image_url.values()), None)
     code = fighter.get("nationality")
+    weight_class = fighter.get("weightClass") or {}
+    slugs = fighter.get("slugs") or ([] if not fighter.get("slug") else [fighter["slug"]])
 
     return {
         "oktagon_fighter_id": fighter["id"],
         "name": name,
         "nickname": (fighter.get("nickName") or "").strip() or None,
-        "photo_url": photo_url,
-        "record": _record_label(fighter),
+        "photo_url": _localized((fighter.get("imageProfile") or {}).get("url")),
+        "fight_card_photo_url": _localized((fighter.get("imageFightCard") or {}).get("url")),
+        "bio": _localized(fighter.get("description")),
+        "record": _record_label(fighter, "MMA_PROFI"),
+        "amateur_record": _record_label(fighter, "MMA_AMATEUR"),
         "nationality": COUNTRY_NAMES.get(code, code) if code else None,
         "flag_code": code.lower() if code else None,
         "height_cm": fighter.get("heightCm"),
+        "weight_kg": weight_class.get("weightKg"),
         "birth_date": _birth_date(fighter),
         "oktagon_rank": _rank_label(fighter),
+        "oktagon_rank_change": _rank_change(fighter),
+        "oktagon_slug": slugs[0] if slugs else None,
     }
 
 
@@ -196,6 +231,7 @@ def normalize_fight(fight: dict, index: int, total: int) -> dict:
     winner_side = None
     method = None
     result_round = None
+    result_time = None
 
     if result in ("DRAW", "NO_CONTEST"):
         status = "no_contest"
@@ -208,6 +244,7 @@ def normalize_fight(fight: dict, index: int, total: int) -> dict:
         method = RESULT_TYPE_TO_METHOD.get(fight.get("resultType"))
         if method and method != "DECISION":
             result_round = fight.get("numRounds")
+        result_time = fight.get("time") or None
 
     return {
         "oktagon_fight_id": fight["id"],
@@ -221,6 +258,7 @@ def normalize_fight(fight: dict, index: int, total: int) -> dict:
         "winner_side": winner_side,
         "method": method,
         "result_round": result_round,
+        "result_time": result_time,
     }
 
 

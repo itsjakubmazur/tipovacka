@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import type { Fight, Fighter, Prediction } from "@/lib/types";
 
 function FighterLabel({ fighter }: { fighter: Fighter }) {
@@ -79,12 +80,22 @@ export function TipBreakdownCard({
             >
               <FighterPortrait
                 name={fighter.name}
-                photoUrl={fighter.photo_url}
+                photoUrl={fighter.fight_card_photo_url ?? fighter.photo_url}
                 className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
               />
               <div className="mt-1.5">
                 <FighterLabel fighter={fighter} />
               </div>
+              {fighter.oktagon_rank && (
+                <span className="flex items-center gap-0.5 text-xs text-neutral-500 dark:text-neutral-300">
+                  {fighter.oktagon_rank}
+                  {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
+                    <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
+                      {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
+                    </span>
+                  )}
+                </span>
+              )}
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {isTip && <Badge variant="secondary">Tip</Badge>}
                 {isActualWinner && <Badge variant="accent">Výherce</Badge>}
@@ -107,6 +118,7 @@ export function TipBreakdownCard({
           <p className="text-neutral-700 dark:text-neutral-300">
             Výsledek: {fight.method ? METHOD_LABELS[fight.method] : ""}
             {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+            {fight.result_time ? ` · ${fight.result_time}` : ""}
           </p>
         )}
       </div>

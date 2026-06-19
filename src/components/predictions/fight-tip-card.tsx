@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X } from "lucide-react";
-import type { Fight, Method, Prediction } from "@/lib/types";
+import { X, ArrowUp, ArrowDown, ChevronDown, ExternalLink } from "lucide-react";
+import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 function Pill({
   active,
@@ -36,6 +36,59 @@ function Pill({
     >
       {children}
     </button>
+  );
+}
+
+function RankBadge({ fighter }: { fighter: Fighter }) {
+  if (!fighter.oktagon_rank) return null;
+  return (
+    <span className="flex items-center gap-0.5 text-xs text-neutral-500 dark:text-neutral-300">
+      {fighter.oktagon_rank}
+      {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
+        <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
+          {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function FighterDetails({ fighter }: { fighter: Fighter }) {
+  const [bioOpen, setBioOpen] = useState(false);
+
+  return (
+    <div className="flex w-full flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
+      {fighter.amateur_record && (
+        <span className="text-xs text-neutral-400 dark:text-neutral-500">Am.: {fighter.amateur_record}</span>
+      )}
+      {fighter.weight_kg && (
+        <span className="text-xs text-neutral-400 dark:text-neutral-500">{fighter.weight_kg} kg</span>
+      )}
+      {fighter.bio && (
+        <button
+          type="button"
+          onClick={() => setBioOpen((v) => !v)}
+          className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
+        >
+          O zápasníkovi
+          <ChevronDown className={cn("size-3 transition-transform", bioOpen && "rotate-180")} />
+        </button>
+      )}
+      {bioOpen && fighter.bio && (
+        <p className="px-1 text-left text-xs text-neutral-600 dark:text-neutral-400">{fighter.bio}</p>
+      )}
+      {fighter.oktagon_slug && (
+        <a
+          href={`https://oktagonmma.com/cs/zapasnici/${fighter.oktagon_slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-0.5 text-xs text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
+        >
+          Profil na OKTAGONu
+          <ExternalLink className="size-3" />
+        </a>
+      )}
+    </div>
   );
 }
 
@@ -160,6 +213,7 @@ export function FightTipCard({
               Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
               {fight.method ? METHOD_LABELS[fight.method] : ""}
               {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+              {fight.result_time ? ` · ${fight.result_time}` : ""}
             </Badge>
           )}
         </div>
@@ -177,56 +231,56 @@ export function FightTipCard({
 
       <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
         {[fight.fighter_a, fight.fighter_b].map((fighter) => (
-          <button
-            key={fighter.id}
-            type="button"
-            disabled={effectiveLocked}
-            onClick={() => selectWinner(fighter.id)}
-            className={cn(
-              "flex flex-col items-center gap-1.5 px-2 pb-3 text-center transition-colors disabled:cursor-not-allowed",
-              winnerId === fighter.id
-                ? "bg-[#FFD400]/10"
-                : "hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
-            )}
-          >
-            <FighterPortrait
-              name={fighter.name}
-              photoUrl={fighter.photo_url}
-              className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
-            />
-            <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">
-              {fighter.flag_code && (
-                <Image
-                  src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
-                  alt={fighter.nationality ?? ""}
-                  title={fighter.nationality ?? undefined}
-                  width={16}
-                  height={11}
-                  unoptimized
-                  className="h-auto w-4"
-                />
+          <div key={fighter.id} className="flex flex-col items-center gap-1.5 px-2 pb-3 text-center">
+            <button
+              type="button"
+              disabled={effectiveLocked}
+              onClick={() => selectWinner(fighter.id)}
+              className={cn(
+                "flex w-full flex-col items-center gap-1.5 pt-0 transition-colors disabled:cursor-not-allowed",
+                winnerId === fighter.id
+                  ? "bg-[#FFD400]/10"
+                  : "hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
               )}
-              {fighter.name}
-            </span>
-            {fighter.record && (
-              <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
-            )}
-            {fighter.oktagon_rank && (
-              <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.oktagon_rank}</span>
-            )}
-            {consensus && (
-              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                {Math.round(
-                  ((fighter.id === fight.fighter_a.id
-                    ? consensus.fighterACount
-                    : consensus.fighterBCount) /
-                    consensus.total) *
-                    100
+            >
+              <FighterPortrait
+                name={fighter.name}
+                photoUrl={fighter.fight_card_photo_url ?? fighter.photo_url}
+                className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
+              />
+              <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">
+                {fighter.flag_code && (
+                  <Image
+                    src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
+                    alt={fighter.nationality ?? ""}
+                    title={fighter.nationality ?? undefined}
+                    width={16}
+                    height={11}
+                    unoptimized
+                    className="h-auto w-4"
+                  />
                 )}
-                % tipů
+                {fighter.name}
               </span>
-            )}
-          </button>
+              {fighter.record && (
+                <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
+              )}
+              <RankBadge fighter={fighter} />
+              {consensus && (
+                <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
+                  {Math.round(
+                    ((fighter.id === fight.fighter_a.id
+                      ? consensus.fighterACount
+                      : consensus.fighterBCount) /
+                      consensus.total) *
+                      100
+                  )}
+                  % tipů
+                </span>
+              )}
+            </button>
+            <FighterDetails fighter={fighter} />
+          </div>
         ))}
       </div>
 
