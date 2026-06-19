@@ -1,0 +1,27 @@
+name: Debug fighter fields (dry run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      number:
+        description: "Číslo OKTAGONu, ze kterého se má vzít první zápasník (např. 89)"
+        required: true
+        type: string
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+
+      - name: Dump raw fighter JSON
+        working-directory: scraper
+        run: python debug_fighter_fields.py --number "${{ inputs.number }}"
