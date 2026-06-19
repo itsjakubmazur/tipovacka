@@ -7,14 +7,9 @@ import { FighterAvatar } from "@/components/fighter-avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
+import { METHOD_LABELS } from "@/lib/method-labels";
 import { X } from "lucide-react";
 import type { Fight, Method, Prediction } from "@/lib/types";
-
-const METHOD_LABELS: Record<Method, string> = {
-  "KO/TKO": "KO/TKO",
-  SUBMISSION: "Submission",
-  DECISION: "Rozhodnutí",
-};
 
 function Pill({
   active,

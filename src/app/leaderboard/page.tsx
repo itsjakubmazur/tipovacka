@@ -140,10 +140,11 @@ export default async function LeaderboardPage({
 
         {view === "event" &&
           eventRows.map((row, i) => (
-            <div
+            <Link
               key={row.user_id}
+              href={`/leaderboard/${row.user_id}?eventId=${selectedEvent.id}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border p-3",
+                "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
                 row.user_id === currentUserId
                   ? "border-[#FFD400] bg-[#FFD400]/10"
                   : "border-neutral-200"
@@ -161,15 +162,16 @@ export default async function LeaderboardPage({
                 </span>
                 <span className="text-lg font-bold">{row.points}</span>
               </div>
-            </div>
+            </Link>
           ))}
 
         {view === "season" &&
           seasonRows.map((row, i) => (
-            <div
+            <Link
               key={row.user_id}
+              href={`/leaderboard/${row.user_id}?season=${season}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border p-3",
+                "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
                 row.user_id === currentUserId
                   ? "border-[#FFD400] bg-[#FFD400]/10"
                   : "border-neutral-200"
@@ -182,7 +184,7 @@ export default async function LeaderboardPage({
                 <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
               </div>
               <span className="text-lg font-bold">{row.points}</span>
-            </div>
+            </Link>
           ))}
       </div>
     </div>
