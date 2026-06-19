@@ -53,7 +53,7 @@ export default async function AdminPage() {
               <span className="font-medium">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">{event.status}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-300">{event.status}</span>
             </Link>
           ))}
         </div>

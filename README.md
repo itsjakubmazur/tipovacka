@@ -27,6 +27,7 @@ Otevři http://localhost:3000.
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | vygenerováno pro push notifikace, viz sekce "Push notifikace" níže |
 
 `SUPABASE_SERVICE_ROLE_KEY` se nikdy nevkládá do appky ani repa — používá ho
 jen Python scraper přes GitHub Actions secrets.
@@ -89,6 +90,24 @@ Vercelu env proměnnou `GITHUB_DISPATCH_TOKEN` - GitHub osobní token
 (fine-grained, scoped jen na tento repo, s oprávněním "Actions: Read and
 write"). Bez něj tlačítka vrátí chybu, ale workflow lze stále spustit
 ručně přes GitHub → Actions → Run workflow.
+
+## Push notifikace
+
+Uživatel si v `/profile` může zapnout push upozornění na blížící se uzávěrku
+galavečera (pokud ještě nemá dotipováno). Funguje přes Web Push API a
+service worker (`public/sw.js`); odesílání běží jako GitHub Actions cron
+(`lock-reminders.yml`, `scraper/send_lock_reminders.py`), který se spouští
+každých 15 minut a hlídá `events.lock_at`.
+
+Potřebné VAPID klíče se vygenerují jednou (`npx web-push generate-vapid-keys`)
+a nastaví takto:
+
+| Proměnná | Kam |
+|---|---|
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Vercel → Project Settings → Environment Variables (veřejný klíč, bezpečné dát do appky) |
+| `VAPID_PUBLIC_KEY` | GitHub repo secret (stejná hodnota jako výše) |
+| `VAPID_PRIVATE_KEY` | GitHub repo secret — **nikdy nevkládat do appky/repa**, jen sem |
+| `VAPID_SUBJECT` | GitHub repo secret, např. `mailto:tvuj@email.cz` (kontakt požadovaný VAPID specifikací) |
 
 ## Nasazení
 

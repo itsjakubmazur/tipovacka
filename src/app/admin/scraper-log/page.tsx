@@ -64,7 +64,7 @@ export default async function ScraperLogPage() {
                 <span className="font-semibold">
                   {MODE_LABELS[run.mode] ?? run.mode}
                   {event && (
-                    <span className="ml-2 font-normal text-neutral-500 dark:text-neutral-400">
+                    <span className="ml-2 font-normal text-neutral-500 dark:text-neutral-300">
                       {event.number ? `OKTAGON ${event.number}` : event.name}
                     </span>
                   )}
@@ -78,7 +78,7 @@ export default async function ScraperLogPage() {
                   {STATUS_LABELS[run.status] ?? run.status}
                 </span>
               </div>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              <span className="text-xs text-neutral-500 dark:text-neutral-300">
                 {new Date(run.started_at).toLocaleString("cs-CZ", {
                   dateStyle: "short",
                   timeStyle: "medium",

@@ -55,7 +55,7 @@ export function AdminFotnForm({
   return (
     <form onSubmit={save} className="flex flex-wrap items-end gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+        <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">
           Fight of the Night
         </label>
         <select

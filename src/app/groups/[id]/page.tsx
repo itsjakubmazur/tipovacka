@@ -50,14 +50,14 @@ export default async function GroupDetailPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link href="/groups" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black">
+        <Link href="/groups" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black">
           ← Zpět na skupiny
         </Link>
         <h1 className="mt-1 text-xl font-bold">{group.name}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Kód pro pozvání kámošů: <span className="font-mono font-semibold">{group.invite_code}</span>
         </p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">Sezóna {season}</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-300">Sezóna {season}</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -76,7 +76,7 @@ export default async function GroupDetailPage({
             )}
           >
             <div className="flex items-center gap-3">
-              <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">{i + 1}.</span>
+              <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">{i + 1}.</span>
               <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
             </div>
             <span className="text-lg font-bold">{row.points}</span>

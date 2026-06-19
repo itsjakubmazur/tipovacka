@@ -129,7 +129,7 @@ export function AdminFightRow({
 
       <form onSubmit={saveResult} className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Stav</label>
+          <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Stav</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -146,7 +146,7 @@ export function AdminFightRow({
         {status === "completed" && (
           <>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Vítěz</label>
+              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Vítěz</label>
               <select
                 value={winnerId}
                 onChange={(e) => setWinnerId(e.target.value)}
@@ -158,7 +158,7 @@ export function AdminFightRow({
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Způsob</label>
+              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Způsob</label>
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value as Method)}
@@ -174,7 +174,7 @@ export function AdminFightRow({
             </div>
             {method !== "DECISION" && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Kolo</label>
+                <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Kolo</label>
                 <select
                   value={round}
                   onChange={(e) => setRound(e.target.value)}

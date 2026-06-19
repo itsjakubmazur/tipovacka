@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Minus, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -180,7 +181,7 @@ export default async function LeaderboardPage({
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">
+                  <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">
                     {rank}.
                   </span>
                   {delta != null && (
@@ -208,7 +209,7 @@ export default async function LeaderboardPage({
                   {row.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <span className="text-xs text-neutral-500 dark:text-neutral-300">
                     po {row.fights_scored} z {totalFights} zápasů
                   </span>
                   <span className="text-lg font-bold">{row.points}</span>
@@ -217,27 +218,9 @@ export default async function LeaderboardPage({
             );
           })}
 
-        {view === "season" &&
-          seasonRows.map((row, i) => (
-            <Link
-              key={row.user_id}
-              href={`/leaderboard/${row.user_id}?season=${season}`}
-              className={cn(
-                "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
-                row.user_id === currentUserId
-                  ? "border-[#FFD400] bg-[#FFD400]/10"
-                  : "border-neutral-200 dark:border-neutral-800"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">
-                  {i + 1}.
-                </span>
-                <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
-              </div>
-              <span className="text-lg font-bold">{row.points}</span>
-            </Link>
-          ))}
+        {view === "season" && seasonRows.length > 0 && (
+          <SeasonCompareList rows={seasonRows} season={season} currentUserId={currentUserId} />
+        )}
       </div>
     </div>
   );

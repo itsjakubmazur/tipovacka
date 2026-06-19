@@ -57,7 +57,7 @@ export function TipBreakdownCard({
                 ? "text-neutral-400"
                 : prediction.points > 0
                   ? "text-green-700"
-                  : "text-neutral-500 dark:text-neutral-400"
+                  : "text-neutral-500 dark:text-neutral-300"
             )}
           >
             {prediction.points == null ? "—" : `+${prediction.points} b.`}

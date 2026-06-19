@@ -63,7 +63,7 @@ export default async function EventsPage() {
                   {event.number ? `OKTAGON ${event.number}` : event.name}
                 </p>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-sm text-neutral-500 dark:text-neutral-300">
                   {new Date(event.event_date).toLocaleString("cs-CZ", {
                     dateStyle: "long",
                     timeStyle: "short",
@@ -71,7 +71,7 @@ export default async function EventsPage() {
                   })}
                 </p>
                 {user && !locked && totalFights > 0 && (
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-300">
                     Tipnuto {tippedCount} z {totalFights} zápasů
                   </p>
                 )}

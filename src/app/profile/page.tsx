@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
+import { PushNotificationToggle } from "@/components/push/push-notification-toggle";
 import { Badge } from "@/components/ui/badge";
 
 export default async function ProfilePage() {
@@ -26,6 +27,7 @@ export default async function ProfilePage() {
         {profile?.is_admin && <Badge variant="accent" className="mt-2">Admin</Badge>}
       </div>
       <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
+      <PushNotificationToggle userId={user.id} />
     </div>
   );
 }

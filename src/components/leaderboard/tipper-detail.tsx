@@ -93,7 +93,7 @@ export async function TipperDetail({
     return (
       <>
         <div>
-          <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white">
+          <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
             ← Zpět na žebříček
           </Link>
           <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
@@ -209,10 +209,24 @@ export async function TipperDetail({
     methodStats.set(key, entry);
   }
 
+  const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
+  const badges: { icon: string; label: string }[] = [];
+  if (perfectCardCount > 0) {
+    badges.push({
+      icon: "🏆",
+      label: perfectCardCount > 1 ? `Perfektní karta ×${perfectCardCount}` : "Perfektní karta",
+    });
+  }
+  if (streak >= 3) badges.push({ icon: "🔥", label: `Na vlně (${streak} v řadě)` });
+  if (totalGraded >= 5 && accuracy >= 70) badges.push({ icon: "🎯", label: "Ostrostřelec" });
+  if (eventsInSeason.length >= 3 && rows && rows.length === eventsInSeason.length) {
+    badges.push({ icon: "📅", label: "Věrný fanda" });
+  }
+
   return (
     <>
       <div>
-        <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white">
+        <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
           ← Zpět na žebříček
         </Link>
         <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
@@ -220,6 +234,20 @@ export async function TipperDetail({
           Sezóna {season} · celkem {totalPoints} b.
         </p>
       </div>
+
+      {badges.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {badges.map((badge) => (
+            <span
+              key={badge.label}
+              className="flex items-center gap-1.5 rounded-full border border-[#FFD400]/40 bg-[#FFD400]/10 px-3 py-1 text-xs font-medium"
+            >
+              <span>{badge.icon}</span>
+              {badge.label}
+            </span>
+          ))}
+        </div>
+      )}
 
       {totalGraded > 0 && (
         <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
@@ -234,7 +262,7 @@ export async function TipperDetail({
               </span>
             )}
           </div>
-          <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
             {Array.from(methodStats.entries()).map(([method, s]) => (
               <span key={method}>
                 {METHOD_LABELS[method]}: {s.hits}/{s.total}
@@ -259,7 +287,7 @@ export async function TipperDetail({
                 {event.number ? `OKTAGON ${event.number}` : event.name}
                 {row?.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
               </span>
-              <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+              <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}
                 <span className="text-lg font-bold text-black dark:text-white">{row?.points ?? 0}</span>
               </span>

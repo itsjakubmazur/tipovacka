@@ -64,7 +64,7 @@ export function FotnPicker({
           🥊 Bonus tip: Fight of the Night
         </span>
         {!open && pickedFight && (
-          <span className="truncate text-xs font-normal text-neutral-500 dark:text-neutral-400">
+          <span className="truncate text-xs font-normal text-neutral-500 dark:text-neutral-300">
             {pickedFight.fighterAName} vs {pickedFight.fighterBName}
           </span>
         )}
@@ -89,7 +89,7 @@ export function FotnPicker({
               </button>
             ))}
           </div>
-          <div className="h-4 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="h-4 text-xs text-neutral-500 dark:text-neutral-300">
             {locked && initialPoints != null
               ? initialPoints > 0
                 ? `Trefeno! +${initialPoints} b.`
