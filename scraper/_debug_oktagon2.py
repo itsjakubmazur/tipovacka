@@ -4,7 +4,7 @@ import requests
 from sherdog import USER_AGENT
 
 bundle_url = (
-    "https://oktagonmma.com/_next/static/chunks/pages/fantasy/play-043a9dc121458619.js"
+    "https://oktagonmma.com/_next/static/chunks/pages/_app-eed9e9502031dd8f.js"
     "?dpl=dpl_AvUP19atFpxQytqLpeDUY7JwJs9H"
 )
 resp = requests.get(bundle_url, headers={"User-Agent": USER_AGENT}, timeout=30)
