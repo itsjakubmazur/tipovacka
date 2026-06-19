@@ -64,9 +64,15 @@ def _photo_url(img) -> str | None:
     if not img:
         return None
     src = img.get("src") or img.get("data-original")
-    if src and src.startswith("/"):
+    if not src:
+        return None
+    if src.startswith("/"):
         src = f"https://www.sherdog.com{src}"
-    return src
+    # Event-listing thumbnails are served at a tiny 44x44 crop
+    # (/image_crop/44/44/_images/fighter/<file>); the same source photo is
+    # available at 200x300 (confirmed against an individual fighter's own
+    # profile page), so request that instead of the postage-stamp default.
+    return re.sub(r"/image_crop/\d+/\d+/", "/image_crop/200/300/", src)
 
 
 def _absolute_url(href: str | None) -> str | None:
