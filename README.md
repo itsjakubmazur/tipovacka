@@ -110,6 +110,10 @@ a nastaví takto:
 | `VAPID_PRIVATE_KEY` | GitHub repo secret — **nikdy nevkládat do appky/repa**, jen sem |
 | `VAPID_SUBJECT` | GitHub repo secret, např. `mailto:tvuj@email.cz` (kontakt požadovaný VAPID specifikací) |
 
+Test, jak notifikace vypadá, bez čekání na reálnou uzávěrku: GitHub → Actions
+→ **Test push notification** → Run workflow → vyplň svůj e-mail. Pošle se jen
+tobě (vyžaduje, abys měl push v `/profile` zapnutý).
+
 ## Nasazení
 
 Aplikace se nasazuje na Vercel, napojený na toto (private) GitHub repo —
