@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 type FightOption = { id: string; fighterAName: string; fighterBName: string };
 
@@ -70,21 +71,24 @@ export function FotnPicker({
       </button>
       {open && (
         <div className="mt-3 flex flex-col gap-2">
-          <select
-            value={pickedId ?? ""}
-            disabled={locked}
-            onChange={(e) => pick(e.target.value)}
-            className="h-10 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="" disabled>
-              Vyber zápas…
-            </option>
+          <div className="flex flex-col gap-1.5">
             {fights.map((fight) => (
-              <option key={fight.id} value={fight.id}>
+              <button
+                key={fight.id}
+                type="button"
+                disabled={locked}
+                onClick={() => pick(fight.id)}
+                className={cn(
+                  "rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
+                  pickedId === fight.id
+                    ? "border-[#FFD400] bg-[#FFD400]/10 font-semibold"
+                    : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300"
+                )}
+              >
                 {fight.fighterAName} vs {fight.fighterBName}
-              </option>
+              </button>
             ))}
-          </select>
+          </div>
           <div className="h-4 text-xs text-neutral-500 dark:text-neutral-400">
             {locked && initialPoints != null
               ? initialPoints > 0
