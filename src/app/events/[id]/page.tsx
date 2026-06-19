@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
+import { LockCountdown } from "@/components/lock-countdown";
 import type { Fight, Prediction } from "@/lib/types";
 
 export default async function EventDetailPage({
@@ -68,9 +69,16 @@ export default async function EventDetailPage({
             timeZone: "Europe/Prague",
           })}
         </p>
-        {locked && (
+        {locked ? (
           <p className="mt-2 text-sm font-medium text-neutral-700">
             Tipy jsou uzamčené, jen pro čtení.
+          </p>
+        ) : (
+          event.lock_at && <LockCountdown lockAt={event.lock_at} />
+        )}
+        {!locked && fightIds.length > 0 && (
+          <p className="mt-1 text-sm text-neutral-500">
+            Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
           </p>
         )}
       </div>
