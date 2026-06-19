@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
-import { LockCountdown } from "@/components/lock-countdown";
+import { DigitalCountdown } from "@/components/digital-countdown";
 import type { Fight, Prediction } from "@/lib/types";
 
 export default async function EventDetailPage({
@@ -104,7 +104,11 @@ export default async function EventDetailPage({
             Tipy jsou uzamčené, jen pro čtení.
           </p>
         ) : (
-          event.lock_at && <LockCountdown lockAt={event.lock_at} />
+          event.lock_at && (
+            <div className="mt-3">
+              <DigitalCountdown lockAt={event.lock_at} />
+            </div>
+          )
         )}
         {!locked && fightIds.length > 0 && (
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-300">
