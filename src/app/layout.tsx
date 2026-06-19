@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OKTAGON Tipovačka",
+  title: "OKTAGON GARÁŽ Tipovačka",
   description: "Tipovačka na galavečery OKTAGON MMA",
   appleWebApp: {
-    title: "OG Tipovačka",
+    title: "OG Garáž",
     statusBarStyle: "black-translucent",
   },
 };

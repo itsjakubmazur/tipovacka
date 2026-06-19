@@ -1,4 +1,4 @@
-# OKTAGON Tipovačka
+# OKTAGON GARÁŽ Tipovačka
 
 Kamarádská tipovačka na galavečery MMA organizace OKTAGON. Tipuje se vítěz,
 způsob ukončení a kolo u každého zápasu; výsledky se po galavečeru natáhnou

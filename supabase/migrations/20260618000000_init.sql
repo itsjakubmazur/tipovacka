@@ -1,4 +1,4 @@
--- OKTAGON Tipovačka — initial schema, scoring, views, RLS
+-- OKTAGON GARÁŽ Tipovačka — initial schema, scoring, views, RLS
 
 create extension if not exists pgcrypto;
 
