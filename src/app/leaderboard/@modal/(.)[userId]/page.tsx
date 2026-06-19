@@ -1,6 +1,7 @@
+import { Modal } from "@/components/modal";
 import { TipperDetail } from "@/components/leaderboard/tipper-detail";
 
-export default async function TipperDetailPage({
+export default async function TipperDetailModal({
   params,
   searchParams,
 }: {
@@ -11,8 +12,8 @@ export default async function TipperDetailPage({
   const { eventId, season } = await searchParams;
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <Modal>
       <TipperDetail userId={userId} eventId={eventId} season={season} />
-    </div>
+    </Modal>
   );
 }

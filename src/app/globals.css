@@ -27,3 +27,24 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+
+.animate-modal-backdrop {
+  animation: modal-backdrop-in 0.15s ease-out;
+}
+
+.animate-modal-panel {
+  animation: modal-panel-in 0.18s ease-out;
+}
