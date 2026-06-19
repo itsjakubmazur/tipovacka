@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,10 @@ export default async function LeaderboardPage({
   const supabase = await createClient();
 
   const { data: userData } = await supabase.auth.getUser();
-  const currentUserId = userData.user?.id ?? null;
+  if (!userData.user) {
+    redirect("/login");
+  }
+  const currentUserId = userData.user.id;
 
   const { data: events } = await supabase
     .from("events")
