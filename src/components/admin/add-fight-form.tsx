@@ -154,7 +154,7 @@ export function AddFightForm({
       <div className="flex gap-4 text-sm">
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={isTitleFight} onChange={(e) => setIsTitleFight(e.target.checked)} />
-          Titulní zápas
+          Titulový zápas
         </label>
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={isMainEvent} onChange={(e) => setIsMainEvent(e.target.checked)} />

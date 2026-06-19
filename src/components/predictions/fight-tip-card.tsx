@@ -155,7 +155,7 @@ export function FightTipCard({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
-          {fight.is_title_fight && <Badge variant="accent">Titulní zápas</Badge>}
+          {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
           {fight.is_main_event && <Badge variant="default">Main event</Badge>}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
           {showResult && (
