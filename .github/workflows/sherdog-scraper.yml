@@ -58,4 +58,4 @@ jobs:
       - name: Debug OKTAGON API (manual trigger)
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'debug_oktagon'
         working-directory: scraper
-        run: python _debug_oktagon5.py
+        run: python _debug_oktagon6.py
