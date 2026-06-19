@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ type EventLeaderboardRow = {
   points: number;
   fights_scored: number;
   fights_completed: number;
+  perfect_card: boolean;
 };
 
 export default async function TipperDetailPage({
@@ -150,7 +152,7 @@ export default async function TipperDetailPage({
 
   const { data: rows } = await supabase
     .from("event_leaderboard")
-    .select("event_id, points, fights_scored, fights_completed")
+    .select("event_id, points, fights_scored, fights_completed, perfect_card")
     .eq("user_id", userId)
     .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
 
@@ -254,8 +256,9 @@ export default async function TipperDetailPage({
                 "flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
               )}
             >
-              <span className="font-semibold">
+              <span className="flex items-center gap-1.5 font-semibold">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
+                {row?.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
               </span>
               <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}
