@@ -11,6 +11,12 @@ on:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    env:
+      # Not actually used by preview_results.py - only present because
+      # import_results.py (imported for its formatting helper) imports
+      # push.py, which reads these at module import time.
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
     steps:
       - uses: actions/checkout@v4
 
