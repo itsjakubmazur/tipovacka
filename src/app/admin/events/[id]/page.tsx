@@ -55,6 +55,31 @@ export default async function AdminEventPage({
     .select("id, name")
     .order("name", { ascending: true });
 
+  const fightIds = (fights ?? []).map((f) => f.id);
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, nickname")
+    .order("nickname", { ascending: true });
+
+  const { data: predictions } = await supabase
+    .from("predictions")
+    .select("user_id, fight_id")
+    .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]);
+
+  const tippedCountByUser = new Map<string, number>();
+  for (const p of predictions ?? []) {
+    tippedCountByUser.set(p.user_id, (tippedCountByUser.get(p.user_id) ?? 0) + 1);
+  }
+
+  const tipProgress = (profiles ?? [])
+    .map((p) => ({
+      id: p.id,
+      nickname: p.nickname ?? "Bez přezdívky",
+      tipped: tippedCountByUser.get(p.id) ?? 0,
+    }))
+    .sort((a, b) => a.tipped - b.tipped);
+
   const sortedFights = (fights ?? []) as unknown as {
     id: string;
     card_order: number;
@@ -75,6 +100,34 @@ export default async function AdminEventPage({
       <h1 className="text-xl font-bold">
         {event.number ? `OKTAGON ${event.number}` : event.name}
       </h1>
+
+      {sortedFights.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Kdo má natipováno</h2>
+          <div className="flex flex-col gap-2">
+            {tipProgress.map((p) => {
+              const complete = p.tipped >= sortedFights.length;
+              return (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3"
+                >
+                  <span>{p.nickname}</span>
+                  <span
+                    className={
+                      complete
+                        ? "text-sm font-semibold text-green-700"
+                        : "text-sm font-semibold text-red-600"
+                    }
+                  >
+                    {p.tipped} / {sortedFights.length}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <EventSettingsForm
         eventId={event.id}
