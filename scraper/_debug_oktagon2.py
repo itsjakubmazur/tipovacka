@@ -7,8 +7,13 @@ resp = requests.get("https://oktagonmma.com/cs/turnaje/", headers={"User-Agent":
 html = resp.text
 print(f"turnaje list status={resp.status_code} len={len(html)}")
 
-print("\n--- links containing turnaje/oktagon (sample) ---")
-links = set(re.findall(r'href="(/cs/[^"]*(?:turnaj|oktagon)[^"]*)"', html, re.I))
+print("\n--- all /cs/ hrefs (sample, deduped) ---")
+all_links = sorted(set(re.findall(r'href="(/cs/[^"]*)"', html, re.I)))
+for href in all_links[:60]:
+    print(href)
+
+print("\n--- links containing turnaj/oktagon/galavecer/akce (sample) ---")
+links = set(re.findall(r'href="(/cs/[^"]*(?:turnaj|oktagon|galavecer|akce)[^"]*)"', html, re.I))
 for href in list(links)[:20]:
     print(href)
 
