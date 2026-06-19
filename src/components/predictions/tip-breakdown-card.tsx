@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FighterAvatar } from "@/components/fighter-avatar";
+import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
@@ -38,11 +38,11 @@ export function TipBreakdownCard({
   return (
     <div
       className={cn(
-        "rounded-xl border p-4",
+        "overflow-hidden rounded-xl border",
         voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-neutral-200 dark:border-neutral-800"
       )}
     >
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">
         <div className="flex flex-wrap items-center gap-2">
           {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
           {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
@@ -65,7 +65,7 @@ export function TipBreakdownCard({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
         {[fight.fighter_a, fight.fighter_b].map((fighter) => {
           const isTip = prediction?.predicted_winner_id === fighter.id;
           const isActualWinner = showResult && fight.winner_fighter_id === fighter.id;
@@ -73,12 +73,18 @@ export function TipBreakdownCard({
             <div
               key={fighter.id}
               className={cn(
-                "flex flex-col items-center gap-2 rounded-lg border p-3 text-center",
-                isTip ? "border-[#FFD400] bg-[#FFD400]/10" : "border-neutral-200 dark:border-neutral-800"
+                "flex flex-col items-center gap-1.5 px-2 pb-3 text-center",
+                isTip && "bg-[#FFD400]/10"
               )}
             >
-              <FighterAvatar name={fighter.name} photoUrl={fighter.photo_url} />
-              <FighterLabel fighter={fighter} />
+              <FighterPortrait
+                name={fighter.name}
+                photoUrl={fighter.photo_url}
+                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
+              />
+              <div className="mt-1.5">
+                <FighterLabel fighter={fighter} />
+              </div>
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {isTip && <Badge variant="secondary">Tip</Badge>}
                 {isActualWinner && <Badge variant="accent">Výherce</Badge>}
@@ -88,7 +94,7 @@ export function TipBreakdownCard({
         })}
       </div>
 
-      <div className="mt-3 flex flex-col gap-1 text-sm">
+      <div className="flex flex-col gap-1 p-4 pt-3 text-sm">
         {prediction ? (
           <p className="text-neutral-700 dark:text-neutral-300">
             Tip: {METHOD_LABELS[prediction.predicted_method]}

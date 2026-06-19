@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { FighterAvatar } from "@/components/fighter-avatar";
+import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { weightClassLabel } from "@/lib/weight-classes";
@@ -145,11 +145,11 @@ export function FightTipCard({
   return (
     <div
       className={cn(
-        "rounded-xl border p-4",
+        "overflow-hidden rounded-xl border",
         voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-neutral-200 dark:border-neutral-800"
       )}
     >
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">
         <div className="flex flex-wrap items-center gap-2">
           {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
           {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
@@ -175,7 +175,7 @@ export function FightTipCard({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
         {[fight.fighter_a, fight.fighter_b].map((fighter) => (
           <button
             key={fighter.id}
@@ -183,14 +183,18 @@ export function FightTipCard({
             disabled={effectiveLocked}
             onClick={() => selectWinner(fighter.id)}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-lg border p-3 text-center transition-colors disabled:cursor-not-allowed",
+              "flex flex-col items-center gap-1.5 px-2 pb-3 text-center transition-colors disabled:cursor-not-allowed",
               winnerId === fighter.id
-                ? "border-[#FFD400] bg-[#FFD400]/10"
-                : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300"
+                ? "bg-[#FFD400]/10"
+                : "hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
             )}
           >
-            <FighterAvatar name={fighter.name} photoUrl={fighter.photo_url} />
-            <span className="flex items-center gap-1.5 text-sm font-semibold">
+            <FighterPortrait
+              name={fighter.name}
+              photoUrl={fighter.photo_url}
+              className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
+            />
+            <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">
               {fighter.flag_code && (
                 <Image
                   src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
@@ -226,7 +230,7 @@ export function FightTipCard({
         ))}
       </div>
 
-      <div className="mt-4 flex flex-col gap-3">
+      <div className="flex flex-col gap-3 p-4 pt-4">
         <div>
           <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Způsob</p>
           <div className="flex flex-wrap gap-2">
@@ -254,7 +258,7 @@ export function FightTipCard({
         )}
       </div>
 
-      <div className="mt-3 h-4 text-xs text-neutral-500 dark:text-neutral-300">
+      <div className="px-4 pb-3 h-4 text-xs text-neutral-500 dark:text-neutral-300">
         {voided && winnerId
           ? "Zápas se nekoná, tip se nezapočítá."
           : saving
