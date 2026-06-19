@@ -58,6 +58,24 @@ m3 = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html3, re.S)
 if m3:
     payload3 = m3.group(1)
     print(f"found, length={len(payload3)}")
-    print(payload3[:3000])
+
+    print("\n--- dehydratedState queries summary ---")
+    import json
+
+    data = json.loads(payload3)
+    queries = (
+        data.get("props", {})
+        .get("pageProps", {})
+        .get("dehydratedState", {})
+        .get("queries", [])
+    )
+    print(f"query count: {len(queries)}")
+    for q in queries:
+        key = q.get("queryKey")
+        print(f"\nqueryKey: {key}")
+
+    print("\n--- image-like URLs anywhere in payload ---")
+    for m in re.finditer(r'https?://[^"\\]*\.(?:jpg|jpeg|png|webp)', payload3, re.I):
+        print(m.group())
 else:
     print("not found")
