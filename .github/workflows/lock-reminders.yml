@@ -2,7 +2,7 @@ name: Push lock reminders
 
 on:
   schedule:
-    # Every 15 minutes, looks for events locking within the next 3 hours.
+    # Every 15 minutes, looks for events locking within the next hour.
     - cron: "*/15 * * * *"
   workflow_dispatch: {}
 

@@ -13,7 +13,7 @@ export default function Home() {
       </p>
       <div className="flex gap-3">
         <Button asChild variant="accent" size="lg">
-          <Link href="/events">Zobrazit galavečery</Link>
+          <Link href="/login">Registrovat se</Link>
         </Button>
         <Button asChild variant="outline" size="lg">
           <Link href="/login">Přihlásit se</Link>

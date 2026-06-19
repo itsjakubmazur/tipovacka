@@ -94,10 +94,11 @@ ručně přes GitHub → Actions → Run workflow.
 ## Push notifikace
 
 Uživatel si v `/profile` může zapnout push upozornění na blížící se uzávěrku
-galavečera (pokud ještě nemá dotipováno). Funguje přes Web Push API a
-service worker (`public/sw.js`); odesílání běží jako GitHub Actions cron
-(`lock-reminders.yml`, `scraper/send_lock_reminders.py`), který se spouští
-každých 15 minut a hlídá `events.lock_at`.
+galavečera. Hodinu před `lock_at` přijde notifikace všem přihlášeným k
+push (i těm, co už tipovali — připomíná i případné short-notice změny
+karty). Funguje přes Web Push API a service worker (`public/sw.js`);
+odesílání běží jako GitHub Actions cron (`lock-reminders.yml`,
+`scraper/send_lock_reminders.py`), který se spouští každých 15 minut.
 
 Potřebné VAPID klíče se vygenerují jednou (`npx web-push generate-vapid-keys`)
 a nastaví takto:

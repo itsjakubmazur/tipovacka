@@ -1,8 +1,9 @@
-"""Run by a scheduled GitHub Action: finds events whose lock_at is coming
-up soon, and sends a web push reminder to everyone who has push notifications
-enabled but hasn't tipped every fight on the card yet. Each event is only
-reminded once (events.reminder_sent_at), so this is safe to run every few
-minutes.
+"""Run by a scheduled GitHub Action (every 15 min): finds events whose
+lock_at falls within the next hour and haven't been reminded about yet,
+and sends a web push notification to every subscribed user - regardless
+of whether they've already tipped, since it's also meant to flag any
+short-notice changes to the card. Each event is only reminded once
+(events.reminder_sent_at).
 """
 
 import os
@@ -12,10 +13,9 @@ from pywebpush import WebPushException, webpush
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
-REMINDER_WINDOW = timedelta(hours=3)
+REMINDER_WINDOW = timedelta(hours=1)
 VAPID_PRIVATE_KEY = os.environ["VAPID_PRIVATE_KEY"]
 VAPID_CLAIMS = {"sub": os.environ["VAPID_SUBJECT"]}
-APP_URL = os.environ.get("APP_URL", "https://tipovacka.vercel.app")
 
 
 def send_to_subscription(db: SupabaseClient, subscription: dict, event_label: str, event_id: str) -> None:
@@ -25,8 +25,11 @@ def send_to_subscription(db: SupabaseClient, subscription: dict, event_label: st
                 "endpoint": subscription["endpoint"],
                 "keys": {"p256dh": subscription["p256dh"], "auth": subscription["auth"]},
             },
-            data='{"title": "Blíží se uzávěrka", "body": "%s má uzávěrku už brzy, ještě nemáš dotipováno!", "url": "/events/%s"}'
-            % (event_label, event_id),
+            data=(
+                '{"title": "%s za hodinu začíná", '
+                '"body": "Nezapomeň dotipovat a mrkni na kartu, jestli nedošlo k short-notice změně.", '
+                '"url": "/events/%s"}' % (event_label, event_id)
+            ),
             vapid_private_key=VAPID_PRIVATE_KEY,
             vapid_claims=dict(VAPID_CLAIMS),
         )
@@ -54,7 +57,7 @@ def main() -> None:
     events = [e for e in events if e["lock_at"] and e["lock_at"] >= now.isoformat()]
 
     if not events:
-        print("Žádný galavečer s blížící se uzávěrkou.")
+        print("Žádný galavečer s uzávěrkou v příští hodině.")
         return
 
     subscriptions = db.select("push_subscriptions", {"select": "id,user_id,endpoint,p256dh,auth"})
@@ -65,24 +68,8 @@ def main() -> None:
     for event in events:
         label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
         with log_run("send_lock_reminders", event["id"]):
-            fights = db.select("fights", {"event_id": f"eq.{event['id']}", "select": "id"})
-            fight_ids = [f["id"] for f in fights]
-            if not fight_ids:
-                continue
-
-            predictions = db.select(
-                "predictions",
-                {"fight_id": f"in.({','.join(fight_ids)})", "select": "user_id,fight_id"},
-            )
-            predicted_count: dict[str, int] = {}
-            for pred in predictions:
-                predicted_count[pred["user_id"]] = predicted_count.get(pred["user_id"], 0) + 1
-
-            recipients = [
-                sub for sub in subscriptions if predicted_count.get(sub["user_id"], 0) < len(fight_ids)
-            ]
-            print(f"--- {label}: {len(recipients)} upozornění k odeslání ---")
-            for sub in recipients:
+            print(f"--- {label}: {len(subscriptions)} upozornění k odeslání ---")
+            for sub in subscriptions:
                 send_to_subscription(db, sub, label, event["id"])
 
             db.update(

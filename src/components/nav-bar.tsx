@@ -30,6 +30,28 @@ export async function NavBar() {
     }
   }
 
+  if (!user) {
+    return (
+      <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
+          <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
+            OKTAGON <span className="text-[#FFD400]">GARÁŽ</span>
+            <span className="hidden sm:inline"> Tipovačka</span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="rounded-md bg-[#FFD400] px-3 py-1.5 text-sm font-semibold text-black hover:bg-[#e6bf00]"
+            >
+              Přihlásit se
+            </Link>
+            <ThemeToggle className="text-white/80 hover:text-[#FFD400]" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
@@ -57,17 +79,7 @@ export async function NavBar() {
                   Admin
                 </Link>
               )}
-              {!user && (
-                <Link
-                  href="/login"
-                  className="rounded-md bg-[#FFD400] px-3 py-1.5 text-sm font-semibold text-black hover:bg-[#e6bf00]"
-                >
-                  Přihlásit se
-                </Link>
-              )}
-              {user && (
-                <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
-              )}
+              <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
             </nav>
             <ThemeToggle className="text-white/80 hover:text-[#FFD400]" />
           </div>
@@ -82,7 +94,7 @@ export async function NavBar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+                className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
               >
                 <Icon className="size-5" />
                 {item.label}
@@ -92,7 +104,7 @@ export async function NavBar() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+              className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
             >
               <ShieldCheck className="size-5" />
               Admin
