@@ -11,9 +11,10 @@ on:
           - card
           - results
           - fightmatrix
+          - debug_photo
       event_id:
         description: "UUID galavečera (events.id v Supabase)"
-        required: true
+        required: false
         type: string
 
 jobs:
@@ -47,3 +48,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fightmatrix'
         working-directory: scraper
         run: python import_fightmatrix.py --event-id "${{ inputs.event_id }}"
+
+      - name: Debug fighter photo URLs (temporary)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'debug_photo'
+        working-directory: scraper
+        run: python _debug_photo.py
