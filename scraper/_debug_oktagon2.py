@@ -3,22 +3,32 @@ import re
 import requests
 from sherdog import USER_AGENT
 
-bundle_url = (
-    "https://oktagonmma.com/_next/static/chunks/pages/_app-eed9e9502031dd8f.js"
-    "?dpl=dpl_AvUP19atFpxQytqLpeDUY7JwJs9H"
-)
-resp = requests.get(bundle_url, headers={"User-Agent": USER_AGENT}, timeout=30)
-js = resp.text
-print(f"fetched fantasy/play bundle status={resp.status_code} len={len(js)}")
+resp = requests.get("https://oktagonmma.com/cs/fantasy/play/", headers={"User-Agent": USER_AGENT}, timeout=30)
+html = resp.text
+print(f"fantasy play status={resp.status_code} len={len(html)}")
 
-print("\n--- occurrences of 'api.oktagonmma.com' with surrounding context ---")
-for m in re.finditer(r".{60}api\.oktagonmma\.com.{120}", js):
-    print(m.group())
-    print("---")
+script_srcs = sorted(set(re.findall(r'<script[^>]+src="([^"]+)"', html)))
+chunk_srcs = [s for s in script_srcs if "_next/static/chunks" in s]
+print(f"scanning {len(chunk_srcs)} chunk files for /v1/ endpoint literals...")
 
-print("\n--- relative /v1/... path literals in this bundle ---")
-paths = sorted(set(re.findall(r'["\'](/v1/[a-zA-Z0-9/_-]+)["\']', js)))
-for p in paths[:60]:
-    print(p)
+all_paths: dict[str, set[str]] = {}
+for s in chunk_srcs:
+    url = s if s.startswith("http") else f"https://oktagonmma.com{s}"
+    try:
+        r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
+    except requests.RequestException as exc:
+        print(f"failed to fetch {url}: {exc}")
+        continue
+    paths = set(re.findall(r'["\'`](/v1/[a-zA-Z0-9/_-]+)["\'`]', r.text))
+    # also catch template-literal style endpoints like `event` or `current-event`
+    fantasy_hits = set(
+        re.findall(r'["\'`]([a-zA-Z0-9/_-]*(?:fantasy|event|tournament)[a-zA-Z0-9/_-]*)["\'`]', r.text, re.I)
+    )
+    if paths or fantasy_hits:
+        all_paths[s] = paths | {h for h in fantasy_hits if len(h) < 60}
 
-print(f"\ntotal distinct /v1/ paths: {len(paths)}")
+print(f"\n--- chunks with hits ({len(all_paths)} / {len(chunk_srcs)}) ---")
+for s, paths in all_paths.items():
+    print(f"\n{s}")
+    for p in sorted(paths)[:30]:
+        print(f"  {p}")
