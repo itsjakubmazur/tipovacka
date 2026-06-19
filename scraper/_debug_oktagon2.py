@@ -35,3 +35,29 @@ if candidates:
         print(tag)
 else:
     print("No candidate event links found")
+
+print("\n--- __NEXT_DATA__ on turnaje listing page ---")
+m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.S)
+if m:
+    payload = m.group(1)
+    print(f"found, length={len(payload)}")
+    print(payload[:3000])
+else:
+    print("not found")
+
+print("\n--- buildId / _next/data hints ---")
+for m in re.finditer(r'/_next/(?:static|data)/([A-Za-z0-9_-]+)/', html):
+    print(m.group(0))
+    break
+
+print("\n--- fantasy/play page: __NEXT_DATA__ ---")
+resp3 = requests.get("https://oktagonmma.com/cs/fantasy/play/", headers={"User-Agent": USER_AGENT}, timeout=30)
+html3 = resp3.text
+print(f"fantasy play status={resp3.status_code} len={len(html3)}")
+m3 = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html3, re.S)
+if m3:
+    payload3 = m3.group(1)
+    print(f"found, length={len(payload3)}")
+    print(payload3[:3000])
+else:
+    print("not found")
