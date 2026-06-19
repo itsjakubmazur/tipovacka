@@ -154,7 +154,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
                 db,
                 f"{label}: výsledky jsou hotové",
                 "Galavečer byl vyhodnocen, mrkni na výsledky tipovačky!",
-                "/leaderboard",
+                f"/leaderboard?eventId={event['id']}",
             )
 
 
