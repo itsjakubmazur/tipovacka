@@ -3,7 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
 import { cn } from "@/lib/utils";
-import type { Fight, Prediction } from "@/lib/types";
+import { METHOD_LABELS } from "@/lib/method-labels";
+import type { Fight, Method, Prediction } from "@/lib/types";
 
 type EventLeaderboardRow = {
   event_id: string;
@@ -129,6 +130,55 @@ export default async function TipperDetailPage({
   );
   const totalPoints = (rows ?? []).reduce((sum, r) => sum + r.points, 0);
 
+  const { data: completedFights } = await supabase
+    .from("fights")
+    .select("id, event_id, card_order")
+    .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"])
+    .eq("status", "completed");
+
+  const eventDateById = new Map(eventsInSeason.map((e) => [e.id, e.event_date]));
+  const fightMeta = new Map(
+    (completedFights ?? []).map((f) => [
+      f.id,
+      { eventDate: eventDateById.get(f.event_id) ?? "", cardOrder: f.card_order },
+    ])
+  );
+  const completedFightIds = (completedFights ?? []).map((f) => f.id);
+
+  const { data: gradedPredictions } = await supabase
+    .from("predictions")
+    .select("fight_id, predicted_method, points")
+    .eq("user_id", userId)
+    .in("fight_id", completedFightIds.length ? completedFightIds : ["00000000-0000-0000-0000-000000000000"]);
+
+  const ordered = (gradedPredictions ?? [])
+    .filter((p) => fightMeta.has(p.fight_id))
+    .sort((a, b) => {
+      const metaA = fightMeta.get(a.fight_id)!;
+      const metaB = fightMeta.get(b.fight_id)!;
+      const dateDiff = new Date(metaA.eventDate).getTime() - new Date(metaB.eventDate).getTime();
+      return dateDiff !== 0 ? dateDiff : metaA.cardOrder - metaB.cardOrder;
+    });
+
+  const totalGraded = ordered.length;
+  const hits = ordered.filter((p) => (p.points ?? 0) > 0).length;
+  const accuracy = totalGraded > 0 ? Math.round((hits / totalGraded) * 100) : 0;
+
+  let streak = 0;
+  for (let i = ordered.length - 1; i >= 0; i--) {
+    if ((ordered[i].points ?? 0) > 0) streak++;
+    else break;
+  }
+
+  const methodStats = new Map<Method, { total: number; hits: number }>();
+  for (const p of ordered) {
+    const key = p.predicted_method as Method;
+    const entry = methodStats.get(key) ?? { total: 0, hits: 0 };
+    entry.total += 1;
+    if ((p.points ?? 0) > 0) entry.hits += 1;
+    methodStats.set(key, entry);
+  }
+
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
@@ -140,6 +190,29 @@ export default async function TipperDetailPage({
           Sezóna {season} · celkem {totalPoints} b.
         </p>
       </div>
+
+      {totalGraded > 0 && (
+        <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 p-4">
+          <p className="text-sm font-semibold">Statistiky sezóny</p>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700">
+            <span>
+              Úspěšnost: <strong>{accuracy}%</strong> ({hits}/{totalGraded})
+            </span>
+            {streak >= 2 && (
+              <span>
+                🔥 Aktuální série: <strong>{streak}</strong> trefených v řadě
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
+            {Array.from(methodStats.entries()).map(([method, s]) => (
+              <span key={method}>
+                {METHOD_LABELS[method]}: {s.hits}/{s.total}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         {eventsInSeason.map((event) => {

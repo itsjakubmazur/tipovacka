@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -84,6 +85,7 @@ export default async function LeaderboardPage({
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
+      <RealtimeRefresh table="predictions" />
       <h1 className="text-xl font-bold">Žebříček</h1>
 
       <div className="flex gap-2">
