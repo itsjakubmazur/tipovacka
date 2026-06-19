@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 const MODE_LABELS: Record<string, string> = {
   card: "Karta",
   results: "Výsledky",
-  fightmatrix: "Fight Matrix",
   scheduled_results: "Výsledky (plán)",
 };
 

@@ -19,13 +19,11 @@ export function EventSettingsForm({
   initialLockAt,
   initialAutoLock,
   initialStatus,
-  initialSherdogUrl,
 }: {
   eventId: string;
   initialLockAt: string | null;
   initialAutoLock: boolean;
   initialStatus: string;
-  initialSherdogUrl: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -35,7 +33,6 @@ export function EventSettingsForm({
   );
   const [autoLock, setAutoLock] = useState(initialAutoLock);
   const [status, setStatus] = useState(initialStatus);
-  const [sherdogUrl, setSherdogUrl] = useState(initialSherdogUrl ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +47,6 @@ export function EventSettingsForm({
         lock_at: lockAt ? pragueLocalToUtcIso(lockAt) : null,
         auto_lock: autoLock,
         status,
-        sherdog_event_url: sherdogUrl || null,
       })
       .eq("id", eventId);
 
@@ -89,15 +85,6 @@ export function EventSettingsForm({
               </option>
             ))}
           </select>
-        </div>
-        <div className="col-span-2 flex flex-col gap-1.5">
-          <Label htmlFor="sherdog_url">Odkaz na Sherdog</Label>
-          <Input
-            id="sherdog_url"
-            placeholder="https://www.sherdog.com/events/..."
-            value={sherdogUrl}
-            onChange={(e) => setSherdogUrl(e.target.value)}
-          />
         </div>
       </div>
       <label className="flex items-center gap-2 text-sm">

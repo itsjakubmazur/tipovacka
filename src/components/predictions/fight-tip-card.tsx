@@ -207,11 +207,8 @@ export function FightTipCard({
             {fighter.record && (
               <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
             )}
-            {fighter.fightmatrix_rank && (
-              <span className="text-xs text-neutral-500 dark:text-neutral-300">
-                {fighter.fightmatrix_rank}
-                {fighter.fightmatrix_score != null && ` · ${fighter.fightmatrix_score} b.`}
-              </span>
+            {fighter.oktagon_rank && (
+              <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.oktagon_rank}</span>
             )}
             {consensus && (
               <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">

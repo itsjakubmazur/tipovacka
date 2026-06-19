@@ -10,11 +10,9 @@ on:
         options:
           - card
           - results
-          - fightmatrix
-          - backfill_photos
       event_id:
-        description: "UUID galavečera (events.id v Supabase, není potřeba pro backfill_photos)"
-        required: false
+        description: "UUID galavečera (events.id v Supabase)"
+        required: true
         type: string
 
 jobs:
@@ -43,13 +41,3 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'results'
         working-directory: scraper
         run: python import_results.py --event-id "${{ inputs.event_id }}"
-
-      - name: Import Fight Matrix rank/score (manual trigger)
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fightmatrix'
-        working-directory: scraper
-        run: python import_fightmatrix.py --event-id "${{ inputs.event_id }}"
-
-      - name: Backfill bigger fighter photos (manual trigger)
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'backfill_photos'
-        working-directory: scraper
-        run: python backfill_photo_urls.py

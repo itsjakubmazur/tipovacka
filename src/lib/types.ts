@@ -6,8 +6,7 @@ export type Fighter = {
   nickname: string | null;
   photo_url: string | null;
   record: string | null;
-  fightmatrix_rank: string | null;
-  fightmatrix_score: number | null;
+  oktagon_rank: string | null;
   nationality: string | null;
   flag_code: string | null;
 };

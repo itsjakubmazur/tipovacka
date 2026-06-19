@@ -61,8 +61,8 @@ export async function TipperDetail({
       .select(
         `id, weight_class, is_title_fight, is_main_event, card_order, rounds, status,
          winner_fighter_id, method, result_round,
-         fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, record, fightmatrix_rank, fightmatrix_score, nationality, flag_code),
-         fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, record, fightmatrix_rank, fightmatrix_score, nationality, flag_code)`
+         fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, record, oktagon_rank, nationality, flag_code),
+         fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, record, oktagon_rank, nationality, flag_code)`
       )
       .eq("event_id", eventId)
       .order("card_order", { ascending: false });

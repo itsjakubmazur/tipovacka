@@ -6,10 +6,10 @@ minutes would otherwise disappear fast.
 
 Does four things, in order:
 
-1. import_new_cards - once an event has had its sherdog_event_url set for
-   at least 5 minutes (a grace period, in case an admin is still editing
-   it) and doesn't have any fights yet, imports the card and notifies
-   everyone that it's online.
+1. import_new_cards - once an event has had its number set for at least
+   5 minutes (a grace period, in case an admin is still editing it) and
+   doesn't have any fights yet, imports the card and notifies everyone
+   that it's online.
 2. recheck_cards - every ~3h, re-imports the card for events that aren't
    locked yet, to catch short-notice changes (new/cancelled fight),
    notifying everyone if anything actually changed.
@@ -41,7 +41,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
-            "sherdog_event_url": "not.is.null",
+            "number": "not.is.null",
             "card_notified_at": "is.null",
             "created_at": f"lte.{(now - CARD_GRACE_PERIOD).isoformat()}",
             "select": "id,number,name",
@@ -72,7 +72,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
-            "sherdog_event_url": "not.is.null",
+            "number": "not.is.null",
             "card_notified_at": "not.is.null",
             "status": "neq.completed",
             "card_checked_at": f"lte.{(now - CARD_RECHECK_INTERVAL).isoformat()}",
@@ -135,7 +135,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
         {
             "status": "neq.completed",
             "lock_at": f"lt.{now.isoformat()}",
-            "sherdog_event_url": "not.is.null",
+            "number": "not.is.null",
             "select": "id,number,name",
         },
     )

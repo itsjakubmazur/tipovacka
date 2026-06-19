@@ -32,7 +32,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, status, lock_at, auto_lock, sherdog_event_url, actual_fotn_fight_id")
+    .select("id, number, name, status, lock_at, auto_lock, actual_fotn_fight_id")
     .eq("id", id)
     .single();
 
@@ -81,7 +81,6 @@ export default async function AdminEventPage({
         initialLockAt={event.lock_at}
         initialAutoLock={event.auto_lock}
         initialStatus={event.status}
-        initialSherdogUrl={event.sherdog_event_url}
       />
 
       <section className="flex flex-col gap-3">
@@ -90,19 +89,19 @@ export default async function AdminEventPage({
           <ImportSherdogButton
             eventId={event.id}
             mode="card"
-            label="Stáhnout kartu ze Sherdogu"
-            disabled={!event.sherdog_event_url}
+            label="Stáhnout kartu z OKTAGON API"
+            disabled={!event.number}
           />
           <ImportSherdogButton
             eventId={event.id}
             mode="results"
-            label="Stáhnout výsledky ze Sherdogu"
-            disabled={!event.sherdog_event_url}
+            label="Stáhnout výsledky z OKTAGON API"
+            disabled={!event.number}
           />
         </div>
-        {!event.sherdog_event_url && (
+        {!event.number && (
           <p className="text-sm text-neutral-500 dark:text-neutral-300">
-            Nejdřív vyplň odkaz na Sherdog v nastavení galavečera výše.
+            Nejdřív vyplň číslo OKTAGONu v nastavení galavečera výše.
           </p>
         )}
         <div className="flex flex-col gap-3">
