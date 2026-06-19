@@ -63,7 +63,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
             send_to_all(
                 db,
                 f"{label}: karta je online",
-                "Zápasy jsou nahrané, jdi tipovat.",
+                "Zápasy byly zveřejněny, můžeš tipovat!",
                 f"/events/{event['id']}",
             )
 
@@ -96,7 +96,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
             send_to_all(
                 db,
                 f"{label}: karta se změnila",
-                "Sherdog ukazuje jinou kartu než dřív, mrkni na to.",
+                "Na zápasové kartě nastala změna, zkontroluj a tipuj!",
                 f"/events/{event['id']}",
             )
 
@@ -119,7 +119,7 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
             send_to_all(
                 db,
                 f"{label} za hodinu začíná",
-                "Nezapomeň dotipovat a mrkni na kartu, jestli nedošlo k short-notice změně.",
+                "Nezapomeň dotipovat a mrkni na dnešní kartu!",
                 f"/events/{event['id']}",
             )
             db.update(
@@ -153,7 +153,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             send_to_all(
                 db,
                 f"{label}: výsledky jsou hotové",
-                "Body se právě přepočítaly, mrkni na žebříček.",
+                "Galavečer byl vyhodnocen, mrkni na výsledky tipovačky!",
                 "/leaderboard",
             )
 

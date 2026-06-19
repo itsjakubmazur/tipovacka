@@ -60,14 +60,14 @@ def main() -> None:
     event_url = f"/events/{event['id']}"
 
     notifications = [
-        (f"{label}: karta je online", "Zápasy jsou nahrané, jdi tipovat.", event_url),
-        (f"{label}: karta se změnila", "Sherdog ukazuje jinou kartu než dřív, mrkni na to.", event_url),
+        (f"{label}: karta je online", "Zápasy byly zveřejněny, můžeš tipovat!", event_url),
+        (f"{label}: karta se změnila", "Na zápasové kartě nastala změna, zkontroluj a tipuj!", event_url),
+        (f"{label} za hodinu začíná", "Nezapomeň dotipovat a mrkni na dnešní kartu!", event_url),
         (
-            f"{label} za hodinu začíná",
-            "Nezapomeň dotipovat a mrkni na kartu, jestli nedošlo k short-notice změně.",
-            event_url,
+            f"{label}: výsledky jsou hotové",
+            "Galavečer byl vyhodnocen, mrkni na výsledky tipovačky!",
+            "/leaderboard",
         ),
-        (f"{label}: výsledky jsou hotové", "Body se právě přepočítaly, mrkni na žebříček.", "/leaderboard"),
     ]
 
     for title, body, url in notifications:
