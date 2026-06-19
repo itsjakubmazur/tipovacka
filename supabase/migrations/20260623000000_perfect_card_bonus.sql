@@ -68,7 +68,7 @@ select
   extract(year from e.event_date)::int as season,
   el.user_id,
   el.nickname,
-  sum(el.points) as points
+  sum(el.points)::bigint as points
 from public.event_leaderboard el
 join public.events e on e.id = el.event_id
 group by season, el.user_id, el.nickname;
