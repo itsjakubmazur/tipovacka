@@ -41,6 +41,19 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
         db.update("fighters", patch, {"id": f"eq.{existing[0]['id']}"})
         return existing[0]["id"]
 
+    # Not linked to OKTAGON yet - this is most likely a fighter imported
+    # before the switch from Sherdog, which has no oktagon_fighter_id.
+    # Attach it to that existing row instead of creating a duplicate, so
+    # its id (and any predictions pointing at it) stay intact.
+    existing_by_name = db.select(
+        "fighters",
+        {"name": f"ilike.{fighter['name']}", "oktagon_fighter_id": "is.null", "select": "id"},
+    )
+    if existing_by_name:
+        row_id = existing_by_name[0]["id"]
+        db.update("fighters", {"oktagon_fighter_id": fighter["oktagon_fighter_id"], **patch}, {"id": f"eq.{row_id}"})
+        return row_id
+
     created = db.insert(
         "fighters", [{"oktagon_fighter_id": fighter["oktagon_fighter_id"], **patch}]
     )
@@ -119,6 +132,35 @@ def import_card(event_id: str) -> tuple[int, int]:
             {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id"},
         )
         if existing:
+            continue
+
+        # Not linked to OKTAGON yet - this is most likely a fight imported
+        # before the switch from Sherdog. Attach it to that existing row
+        # instead of creating a duplicate, so its id (and any predictions
+        # pointing at it) stay intact.
+        existing_legacy = db.select(
+            "fights",
+            {
+                "event_id": f"eq.{event_id}",
+                "oktagon_fight_id": "is.null",
+                "fighter_a_id": f"eq.{fighter_a_id}",
+                "fighter_b_id": f"eq.{fighter_b_id}",
+                "select": "id",
+            },
+        )
+        if existing_legacy:
+            db.update(
+                "fights",
+                {
+                    "oktagon_fight_id": fight["oktagon_fight_id"],
+                    "weight_class": fight["weight_class"],
+                    "is_title_fight": fight["is_title_fight"],
+                    "is_main_event": fight["is_main_event"],
+                    "rounds": 5 if fight["is_title_fight"] else 3,
+                    "card_order": fight["card_order"],
+                },
+                {"id": f"eq.{existing_legacy[0]['id']}"},
+            )
             continue
 
         cancelled += cancel_stale_fight(

@@ -10,9 +10,10 @@ on:
         options:
           - card
           - results
+          - merge_duplicates
       event_id:
-        description: "UUID galavečera (events.id v Supabase)"
-        required: true
+        description: "UUID galavečera (events.id v Supabase, není potřeba pro merge_duplicates)"
+        required: false
         type: string
 
 jobs:
@@ -41,3 +42,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'results'
         working-directory: scraper
         run: python import_results.py --event-id "${{ inputs.event_id }}"
+
+      - name: Merge duplicate fighters/fights (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'merge_duplicates'
+        working-directory: scraper
+        run: python merge_duplicate_imports.py --all
