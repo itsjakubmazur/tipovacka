@@ -140,6 +140,10 @@ def merge_event(db: SupabaseClient, event_id: str) -> None:
         if new_fight["status"] != legacy_fight["status"]:
             status_changed = True
 
+        # Delete the duplicate fight first - oktagon_fight_id is unique, so
+        # writing it onto the legacy row while the duplicate still holds it
+        # would violate that constraint.
+        db.delete("fights", {"id": f"eq.{new_fight['id']}"})
         db.update(
             "fights",
             {
@@ -156,7 +160,6 @@ def merge_event(db: SupabaseClient, event_id: str) -> None:
             },
             {"id": f"eq.{legacy_fight['id']}"},
         )
-        db.delete("fights", {"id": f"eq.{new_fight['id']}"})
         merged_fights += 1
 
         # Only now is the duplicate fighter row unreferenced by any fight,
