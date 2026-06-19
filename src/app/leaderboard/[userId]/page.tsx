@@ -92,23 +92,23 @@ export default async function TipperDetailPage({
     return (
       <div className="flex flex-col gap-4 px-4 py-8">
         <div>
-          <Link href="/leaderboard" className="text-sm text-neutral-500 hover:text-black">
+          <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black">
             ← Zpět na žebříček
           </Link>
           <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {event.number ? `OKTAGON ${event.number}` : event.name}
           </p>
         </div>
 
         {!locked ? (
-          <p className="text-neutral-600">Tipy se zobrazí až po uzávěrce galavečera.</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Tipy se zobrazí až po uzávěrce galavečera.</p>
         ) : (
           <>
             {bonusFight && (
-              <div className="rounded-xl border border-neutral-200 p-4 text-sm">
+              <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 text-sm">
                 <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
-                <p className="text-neutral-600">
+                <p className="text-neutral-600 dark:text-neutral-400">
                   {(bonusFight as unknown as Fight).fighter_a.name} vs{" "}
                   {(bonusFight as unknown as Fight).fighter_b.name}
                   {bonusPrediction?.points != null && (
@@ -211,19 +211,19 @@ export default async function TipperDetailPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link href="/leaderboard" className="text-sm text-neutral-500 hover:text-black">
+        <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black">
           ← Zpět na žebříček
         </Link>
         <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Sezóna {season} · celkem {totalPoints} b.
         </p>
       </div>
 
       {totalGraded > 0 && (
-        <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 p-4">
+        <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
           <p className="text-sm font-semibold">Statistiky sezóny</p>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700 dark:text-neutral-300">
             <span>
               Úspěšnost: <strong>{accuracy}%</strong> ({hits}/{totalGraded})
             </span>
@@ -233,7 +233,7 @@ export default async function TipperDetailPage({
               </span>
             )}
           </div>
-          <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
+          <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-400">
             {Array.from(methodStats.entries()).map(([method, s]) => (
               <span key={method}>
                 {METHOD_LABELS[method]}: {s.hits}/{s.total}
@@ -251,15 +251,15 @@ export default async function TipperDetailPage({
               key={event.id}
               href={`/leaderboard/${userId}?eventId=${event.id}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border border-neutral-200 p-3 hover:border-neutral-400"
+                "flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
               )}
             >
               <span className="font-semibold">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className="flex items-center gap-3 text-sm text-neutral-500">
+              <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}
-                <span className="text-lg font-bold text-black">{row?.points ?? 0}</span>
+                <span className="text-lg font-bold text-black dark:text-white">{row?.points ?? 0}</span>
               </span>
             </Link>
           );

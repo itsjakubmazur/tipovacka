@@ -96,7 +96,7 @@ export function AddFightForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <p className="text-sm font-semibold">Přidat zápas</p>
       <datalist id="fighter-names">
         {fighters.map((f) => (
@@ -130,7 +130,7 @@ export function AddFightForm({
             id="weight_class"
             value={weightClass}
             onChange={(e) => setWeightClass(e.target.value)}
-            className="h-10 rounded-md border border-neutral-300 bg-white px-3 text-sm"
+            className="h-10 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-sm"
           >
             {WEIGHT_CLASSES.map((w) => (
               <option key={w} value={w}>

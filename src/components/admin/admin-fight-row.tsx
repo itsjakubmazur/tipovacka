@@ -109,7 +109,7 @@ export function AdminFightRow({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className="flex items-center justify-between">
         <p className="font-semibold">
           {fight.fighter_a.name} vs {fight.fighter_b.name}
@@ -129,11 +129,11 @@ export function AdminFightRow({
 
       <form onSubmit={saveResult} className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium uppercase text-neutral-500">Stav</label>
+          <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Stav</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="h-9 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+            className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -146,11 +146,11 @@ export function AdminFightRow({
         {status === "completed" && (
           <>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium uppercase text-neutral-500">Vítěz</label>
+              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Vítěz</label>
               <select
                 value={winnerId}
                 onChange={(e) => setWinnerId(e.target.value)}
-                className="h-9 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+                className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
               >
                 <option value="">—</option>
                 <option value={fight.fighter_a.id}>{fight.fighter_a.name}</option>
@@ -158,11 +158,11 @@ export function AdminFightRow({
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium uppercase text-neutral-500">Způsob</label>
+              <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Způsob</label>
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value as Method)}
-                className="h-9 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+                className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
               >
                 <option value="">—</option>
                 {METHOD_OPTIONS.map((opt) => (
@@ -174,11 +174,11 @@ export function AdminFightRow({
             </div>
             {method !== "DECISION" && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium uppercase text-neutral-500">Kolo</label>
+                <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Kolo</label>
                 <select
                   value={round}
                   onChange={(e) => setRound(e.target.value)}
-                  className="h-9 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+                  className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
                 >
                   <option value="">—</option>
                   {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (

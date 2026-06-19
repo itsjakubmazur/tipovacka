@@ -37,6 +37,10 @@ export default async function AdminPage() {
     <div className="flex flex-col gap-8 px-4 py-8">
       <h1 className="text-xl font-bold">Admin</h1>
 
+      <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
+        Log scraperu →
+      </Link>
+
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Galavečery</h2>
         <div className="flex flex-col gap-2">
@@ -44,12 +48,12 @@ export default async function AdminPage() {
             <Link
               key={event.id}
               href={`/admin/events/${event.id}`}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 p-3 hover:border-neutral-400"
+              className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
             >
               <span className="font-medium">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className="text-sm text-neutral-500">{event.status}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">{event.status}</span>
             </Link>
           ))}
         </div>
@@ -62,7 +66,7 @@ export default async function AdminPage() {
           {profiles?.map((p) => (
             <div
               key={p.id}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 p-3"
+              className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3"
             >
               <span>
                 {p.nickname ?? "Bez přezdívky"}

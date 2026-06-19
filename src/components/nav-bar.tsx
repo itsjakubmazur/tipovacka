@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "/events", label: "Galavečery", icon: Swords },
@@ -31,45 +32,48 @@ export async function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-black">
+      <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
           <Link href="/" className="font-bold tracking-tight text-white">
             OKTAGON <span className="text-[#FFD400]">Tipovačka</span>
           </Link>
-          <nav className="hidden items-center gap-4 md:flex">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
-              >
-                {item.label}
-              </Link>
-            ))}
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
-              >
-                Admin
-              </Link>
-            )}
-            {!user && (
-              <Link
-                href="/login"
-                className="rounded-md bg-[#FFD400] px-3 py-1.5 text-sm font-semibold text-black hover:bg-[#e6bf00]"
-              >
-                Přihlásit se
-              </Link>
-            )}
-            {user && (
-              <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
-            )}
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="hidden items-center gap-4 md:flex">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
+                >
+                  Admin
+                </Link>
+              )}
+              {!user && (
+                <Link
+                  href="/login"
+                  className="rounded-md bg-[#FFD400] px-3 py-1.5 text-sm font-semibold text-black hover:bg-[#e6bf00]"
+                >
+                  Přihlásit se
+                </Link>
+              )}
+              {user && (
+                <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
+              )}
+            </nav>
+            <ThemeToggle className="text-white/80 hover:text-[#FFD400]" />
+          </div>
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
         <div className="mx-auto flex max-w-3xl">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -77,7 +81,7 @@ export async function NavBar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 hover:text-black"
+                className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
               >
                 <Icon className="size-5" />
                 {item.label}
@@ -87,7 +91,7 @@ export async function NavBar() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 hover:text-black"
+              className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
             >
               <ShieldCheck className="size-5" />
               Admin

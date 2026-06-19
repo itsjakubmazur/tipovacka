@@ -24,19 +24,19 @@ export default async function GroupsPage() {
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Skupiny</h1>
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
         Založ si privátní skupinu s kámoši a poměřte se jen mezi sebou.
       </p>
 
       <div className="flex flex-col gap-2">
         {groups.length === 0 && (
-          <p className="text-neutral-600">Zatím nejsi v žádné skupině.</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Zatím nejsi v žádné skupině.</p>
         )}
         {groups.map((group) => (
           <Link
             key={group.id}
             href={`/groups/${group.id}`}
-            className="flex items-center justify-between rounded-xl border border-neutral-200 p-3 hover:border-neutral-400"
+            className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
           >
             <span className="font-semibold">{group.name}</span>
           </Link>

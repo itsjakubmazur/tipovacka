@@ -49,7 +49,7 @@ export function FotnPicker({
   if (fights.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 p-4">
+    <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <p className="text-sm font-semibold">🥊 Bonus tip: Fight of the Night</p>
       <div className="flex flex-col gap-1.5">
         {fights.map((fight) => (
@@ -62,14 +62,14 @@ export function FotnPicker({
               "rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
               pickedId === fight.id
                 ? "border-[#FFD400] bg-[#FFD400]/10 font-semibold"
-                : "border-neutral-200 hover:border-neutral-300"
+                : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300"
             )}
           >
             {fight.fighterAName} vs {fight.fighterBName}
           </button>
         ))}
       </div>
-      <div className="h-4 text-xs text-neutral-500">
+      <div className="h-4 text-xs text-neutral-500 dark:text-neutral-400">
         {locked && initialPoints != null
           ? initialPoints > 0
             ? `Trefeno! +${initialPoints} b.`

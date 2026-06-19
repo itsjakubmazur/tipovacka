@@ -91,8 +91,8 @@ export default async function EventDetailPage({
         <h1 className="text-xl font-bold">
           {event.number ? `OKTAGON ${event.number}` : event.name}
         </h1>
-        <p className="text-sm text-neutral-600">{event.location}</p>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           {new Date(event.event_date).toLocaleString("cs-CZ", {
             dateStyle: "long",
             timeStyle: "short",
@@ -100,14 +100,14 @@ export default async function EventDetailPage({
           })}
         </p>
         {locked ? (
-          <p className="mt-2 text-sm font-medium text-neutral-700">
+          <p className="mt-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Tipy jsou uzamčené, jen pro čtení.
           </p>
         ) : (
           event.lock_at && <LockCountdown lockAt={event.lock_at} />
         )}
         {!locked && fightIds.length > 0 && (
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
             Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
           </p>
         )}

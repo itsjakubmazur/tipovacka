@@ -46,7 +46,7 @@ export function FighterAvatar({
     <div
       className={cn(
         sizeClasses,
-        "flex items-center justify-center rounded-full bg-neutral-200 font-semibold text-neutral-700",
+        "flex items-center justify-center rounded-full bg-neutral-200 font-semibold text-neutral-700 dark:text-neutral-300",
         className
       )}
     >

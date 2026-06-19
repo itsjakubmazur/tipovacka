@@ -24,7 +24,7 @@ export function LockCountdown({ lockAt }: { lockAt: string }) {
   if (remaining <= 0) return null;
 
   return (
-    <p className="mt-2 text-sm font-medium text-neutral-700">
+    <p className="mt-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
       Uzávěrka tipů za {formatRemaining(remaining)}
     </p>
   );

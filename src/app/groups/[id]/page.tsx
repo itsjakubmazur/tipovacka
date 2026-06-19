@@ -50,19 +50,19 @@ export default async function GroupDetailPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link href="/groups" className="text-sm text-neutral-500 hover:text-black">
+        <Link href="/groups" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-black">
           ← Zpět na skupiny
         </Link>
         <h1 className="mt-1 text-xl font-bold">{group.name}</h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Kód pro pozvání kámošů: <span className="font-mono font-semibold">{group.invite_code}</span>
         </p>
-        <p className="text-sm text-neutral-500">Sezóna {season}</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">Sezóna {season}</p>
       </div>
 
       <div className="flex flex-col gap-2">
         {leaderboardRows.length === 0 && (
-          <p className="text-neutral-600">Žádný člen skupiny zatím nemá body v této sezóně.</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Žádný člen skupiny zatím nemá body v této sezóně.</p>
         )}
         {leaderboardRows.map((row, i) => (
           <Link
@@ -72,11 +72,11 @@ export default async function GroupDetailPage({
               "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
               row.user_id === currentUserId
                 ? "border-[#FFD400] bg-[#FFD400]/10"
-                : "border-neutral-200"
+                : "border-neutral-200 dark:border-neutral-800"
             )}
           >
             <div className="flex items-center gap-3">
-              <span className="w-6 text-center text-sm font-bold text-neutral-500">{i + 1}.</span>
+              <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">{i + 1}.</span>
               <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
             </div>
             <span className="text-lg font-bold">{row.points}</span>

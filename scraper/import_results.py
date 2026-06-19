@@ -10,6 +10,7 @@ Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.
 import argparse
 import sys
 
+from run_logger import log_run
 from sherdog import parse_event
 from supabase_client import SupabaseClient
 
@@ -95,4 +96,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-id", required=True)
     args = parser.parse_args()
-    import_results(args.event_id)
+    with log_run("results", args.event_id):
+        import_results(args.event_id)

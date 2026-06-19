@@ -58,12 +58,12 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-      <div className="flex rounded-md border border-neutral-300 p-1 text-sm">
+      <div className="flex rounded-md border border-neutral-300 dark:border-neutral-700 p-1 text-sm">
         <button
           type="button"
           onClick={() => setMode("login")}
           className={`flex-1 rounded-md py-1.5 font-medium ${
-            mode === "login" ? "bg-black text-white" : "text-neutral-600"
+            mode === "login" ? "bg-black text-white" : "text-neutral-600 dark:text-neutral-400"
           }`}
         >
           Přihlášení
@@ -72,7 +72,7 @@ export function LoginForm() {
           type="button"
           onClick={() => setMode("register")}
           className={`flex-1 rounded-md py-1.5 font-medium ${
-            mode === "register" ? "bg-black text-white" : "text-neutral-600"
+            mode === "register" ? "bg-black text-white" : "text-neutral-600 dark:text-neutral-400"
           }`}
         >
           Registrace
@@ -115,7 +115,7 @@ export function LoginForm() {
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {info && <p className="text-sm text-neutral-700">{info}</p>}
+      {info && <p className="text-sm text-neutral-700 dark:text-neutral-300">{info}</p>}
 
       <Button type="submit" variant="accent" disabled={loading}>
         {loading ? "Pracuji…" : mode === "login" ? "Přihlásit se" : "Vytvořit účet"}

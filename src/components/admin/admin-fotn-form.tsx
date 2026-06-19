@@ -53,15 +53,15 @@ export function AdminFotnForm({
   if (fights.length === 0) return null;
 
   return (
-    <form onSubmit={save} className="flex flex-wrap items-end gap-3 rounded-xl border border-neutral-200 p-4">
+    <form onSubmit={save} className="flex flex-wrap items-end gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium uppercase text-neutral-500">
+        <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
           Fight of the Night
         </label>
         <select
           value={fightId}
           onChange={(e) => setFightId(e.target.value)}
-          className="h-9 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+          className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
         >
           <option value="">—</option>
           {fights.map((fight) => (

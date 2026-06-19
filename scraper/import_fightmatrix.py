@@ -19,6 +19,7 @@ import sys
 import unicodedata
 
 from fightmatrix import find_event_url, parse_event, parse_fighter
+from run_logger import log_run
 from supabase_client import SupabaseClient
 
 
@@ -105,4 +106,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-id", required=True)
     args = parser.parse_args()
-    import_fightmatrix(args.event_id)
+    with log_run("fightmatrix", args.event_id):
+        import_fightmatrix(args.event_id)

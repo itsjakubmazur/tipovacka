@@ -8,6 +8,7 @@ already completed.
 from datetime import datetime, timezone
 
 from import_results import import_results
+from run_logger import log_run
 from supabase_client import SupabaseClient
 
 
@@ -33,7 +34,8 @@ def main() -> None:
         label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
         print(f"--- {label} ({event['id']}) ---")
         try:
-            import_results(event["id"])
+            with log_run("scheduled_results", event["id"]):
+                import_results(event["id"])
         except SystemExit:
             print(f"Import výsledků pro {label} selhal, pokračuji dalším galavečerem.")
 

@@ -57,7 +57,7 @@ export function NicknameForm({
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {saved && <p className="text-sm text-neutral-600">Uloženo.</p>}
+      {saved && <p className="text-sm text-neutral-600 dark:text-neutral-400">Uloženo.</p>}
       <Button type="submit" variant="accent" disabled={saving}>
         {saving ? "Ukládám…" : "Uložit"}
       </Button>

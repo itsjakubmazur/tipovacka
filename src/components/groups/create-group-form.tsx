@@ -30,7 +30,7 @@ export function CreateGroupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <p className="text-sm font-semibold">Vytvořit skupinu</p>
       <Input
         placeholder="Název skupiny"

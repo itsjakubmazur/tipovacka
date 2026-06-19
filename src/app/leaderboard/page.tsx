@@ -43,7 +43,7 @@ export default async function LeaderboardPage({
     return (
       <div className="px-4 py-8">
         <h1 className="text-xl font-bold">Žebříček</h1>
-        <p className="mt-2 text-neutral-600">Žádné galavečery zatím nejsou.</p>
+        <p className="mt-2 text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default async function LeaderboardPage({
             "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
             view === "event"
               ? "border-[#FFD400] bg-[#FFD400] text-black"
-              : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
+              : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
           )}
         >
           Galavečer
@@ -106,7 +106,7 @@ export default async function LeaderboardPage({
             "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
             view === "season"
               ? "border-[#FFD400] bg-[#FFD400] text-black"
-              : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
+              : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
           )}
         >
           Sezóna {season}
@@ -123,7 +123,7 @@ export default async function LeaderboardPage({
                 "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                 event.id === selectedEvent.id
                   ? "border-neutral-700 bg-neutral-900 text-white"
-                  : "border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400"
+                  : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:border-neutral-400"
               )}
             >
               {event.number ? `OKTAGON ${event.number}` : event.name}
@@ -134,10 +134,10 @@ export default async function LeaderboardPage({
 
       <div className="flex flex-col gap-2">
         {view === "event" && eventRows.length === 0 && (
-          <p className="text-neutral-600">Zatím nikdo nemá tipy na tento galavečer.</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Zatím nikdo nemá tipy na tento galavečer.</p>
         )}
         {view === "season" && seasonRows.length === 0 && (
-          <p className="text-neutral-600">Zatím nikdo nemá body v této sezóně.</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Zatím nikdo nemá body v této sezóně.</p>
         )}
 
         {view === "event" &&
@@ -149,17 +149,17 @@ export default async function LeaderboardPage({
                 "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
                 row.user_id === currentUserId
                   ? "border-[#FFD400] bg-[#FFD400]/10"
-                  : "border-neutral-200"
+                  : "border-neutral-200 dark:border-neutral-800"
               )}
             >
               <div className="flex items-center gap-3">
-                <span className="w-6 text-center text-sm font-bold text-neutral-500">
+                <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">
                   {i + 1}.
                 </span>
                 <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-neutral-500">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
                   po {row.fights_scored} z {totalFights} zápasů
                 </span>
                 <span className="text-lg font-bold">{row.points}</span>
@@ -176,11 +176,11 @@ export default async function LeaderboardPage({
                 "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
                 row.user_id === currentUserId
                   ? "border-[#FFD400] bg-[#FFD400]/10"
-                  : "border-neutral-200"
+                  : "border-neutral-200 dark:border-neutral-800"
               )}
             >
               <div className="flex items-center gap-3">
-                <span className="w-6 text-center text-sm font-bold text-neutral-500">
+                <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-400">
                   {i + 1}.
                 </span>
                 <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>

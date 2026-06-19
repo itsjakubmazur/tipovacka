@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className="text-3xl font-bold tracking-tight">
         OKTAGON <span className="text-black bg-[#FFD400] px-1">Tipovačka</span>
       </h1>
-      <p className="max-w-md text-neutral-600">
+      <p className="max-w-md text-neutral-600 dark:text-neutral-400">
         Tipuj vítěze, způsob ukončení a kolo u zápasů galavečerů OKTAGON a
         poměř se s kamarády v žebříčku.
       </p>

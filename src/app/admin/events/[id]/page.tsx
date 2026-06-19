@@ -101,7 +101,7 @@ export default async function AdminEventPage({
           />
         </div>
         {!event.sherdog_event_url && (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nejdřív vyplň odkaz na Sherdog v nastavení galavečera výše.
           </p>
         )}

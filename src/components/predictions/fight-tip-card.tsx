@@ -31,7 +31,7 @@ function Pill({
         "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
         active
           ? "border-[#FFD400] bg-[#FFD400] text-black"
-          : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
+          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
       )}
     >
       {children}
@@ -146,7 +146,7 @@ export function FightTipCard({
     <div
       className={cn(
         "rounded-xl border p-4",
-        voided ? "border-red-200 bg-red-50" : "border-neutral-200"
+        voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-neutral-200 dark:border-neutral-800"
       )}
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -167,7 +167,7 @@ export function FightTipCard({
           <button
             type="button"
             onClick={clearTip}
-            className="flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-red-600"
+            className="flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-red-600"
           >
             <X className="size-3.5" />
             Smazat tip
@@ -186,7 +186,7 @@ export function FightTipCard({
               "flex flex-col items-center gap-2 rounded-lg border p-3 text-center transition-colors disabled:cursor-not-allowed",
               winnerId === fighter.id
                 ? "border-[#FFD400] bg-[#FFD400]/10"
-                : "border-neutral-200 hover:border-neutral-300"
+                : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300"
             )}
           >
             <FighterAvatar name={fighter.name} photoUrl={fighter.photo_url} />
@@ -205,16 +205,16 @@ export function FightTipCard({
               {fighter.name}
             </span>
             {fighter.record && (
-              <span className="text-xs text-neutral-500">{fighter.record}</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{fighter.record}</span>
             )}
             {fighter.fightmatrix_rank && (
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
                 {fighter.fightmatrix_rank}
                 {fighter.fightmatrix_score != null && ` · ${fighter.fightmatrix_score} b.`}
               </span>
             )}
             {consensus && (
-              <span className="text-xs font-medium text-neutral-500">
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
                 {Math.round(
                   ((fighter.id === fight.fighter_a.id
                     ? consensus.fighterACount
@@ -231,7 +231,7 @@ export function FightTipCard({
 
       <div className="mt-4 flex flex-col gap-3">
         <div>
-          <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500">Způsob</p>
+          <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Způsob</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(METHOD_LABELS) as Method[]).map((m) => (
               <Pill key={m} active={method === m} disabled={effectiveLocked} onClick={() => selectMethod(m)}>
@@ -242,10 +242,10 @@ export function FightTipCard({
         </div>
 
         {method === "DECISION" ? (
-          <p className="text-sm text-neutral-600">Tip: zápas dojde do konce, na body.</p>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">Tip: zápas dojde do konce, na body.</p>
         ) : (
           <div>
-            <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500">Kolo</p>
+            <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Kolo</p>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (
                 <Pill key={r} active={round === r} disabled={effectiveLocked} onClick={() => selectRound(r)}>
@@ -257,7 +257,7 @@ export function FightTipCard({
         )}
       </div>
 
-      <div className="mt-3 h-4 text-xs text-neutral-500">
+      <div className="mt-3 h-4 text-xs text-neutral-500 dark:text-neutral-400">
         {voided && winnerId
           ? "Zápas se nekoná, tip se nezapočítá."
           : saving

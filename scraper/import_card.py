@@ -12,6 +12,7 @@ import argparse
 import sys
 
 from import_fightmatrix import import_fightmatrix
+from run_logger import log_run
 from sherdog import fetch_fighter_nationality, parse_event
 from supabase_client import SupabaseClient
 
@@ -183,4 +184,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-id", required=True)
     args = parser.parse_args()
-    import_card(args.event_id)
+    with log_run("card", args.event_id):
+        import_card(args.event_id)

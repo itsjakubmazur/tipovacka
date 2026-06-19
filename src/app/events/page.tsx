@@ -44,7 +44,7 @@ export default async function EventsPage() {
     <div className="flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Galavečery</h1>
 
-      {!events?.length && <p className="text-neutral-600">Žádné galavečery zatím nejsou.</p>}
+      {!events?.length && <p className="text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>}
 
       <div className="flex flex-col gap-3">
         {events?.map((event) => {
@@ -56,14 +56,14 @@ export default async function EventsPage() {
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 p-4 hover:border-neutral-400"
+              className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 hover:border-neutral-400"
             >
               <div>
                 <p className="font-semibold">
                   {event.number ? `OKTAGON ${event.number}` : event.name}
                 </p>
-                <p className="text-sm text-neutral-600">{event.location}</p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   {new Date(event.event_date).toLocaleString("cs-CZ", {
                     dateStyle: "long",
                     timeStyle: "short",
@@ -71,7 +71,7 @@ export default async function EventsPage() {
                   })}
                 </p>
                 {user && !locked && totalFights > 0 && (
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     Tipnuto {tippedCount} z {totalFights} zápasů
                   </p>
                 )}

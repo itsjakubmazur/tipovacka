@@ -49,7 +49,7 @@ export function AddEventForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <p className="text-sm font-semibold">Nový galavečer</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">

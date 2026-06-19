@@ -33,7 +33,7 @@ export function ImportSherdogButton({
       <Button type="button" variant="outline" disabled={disabled || pending} onClick={handleClick}>
         {pending ? "Spouštím…" : label}
       </Button>
-      {message && <p className="text-sm text-neutral-500">{message}</p>}
+      {message && <p className="text-sm text-neutral-500 dark:text-neutral-400">{message}</p>}
     </div>
   );
 }
