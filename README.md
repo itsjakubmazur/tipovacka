@@ -82,8 +82,12 @@ Jeden GitHub Actions workflow (`scraper-cron.yml`) spouští `cron.py` každých
 4. **Zkusí stáhnout výsledky** - u každého galavečeru, co už začal, ale
    ještě nemá `status = completed`, zavolá `import_results.py`. Je to
    bezpečné spustit opakovaně - pokud Sherdog výsledky ještě nemá, skript
-   se jen tiše ukončí a zkusí to znovu příští běh. Jakmile se galavečer
-   vyhodnotí (všechny zápasy odehrané), pošle push "výsledky jsou hotové".
+   se jen tiše ukončí a zkusí to znovu příští běh. Každý nově dohraný
+   zápas se vyhodnotí hned (`recalculate_fight_points`) a každý tipper na
+   ten zápas dostane osobní push s výsledkem a tím, kolik bodů za svůj tip
+   získal - není třeba čekat na konec celé karty. Jakmile se galavečer
+   vyhodnotí (všechny zápasy odehrané), pošle push všem "výsledky jsou
+   hotové".
 
 Je to vědomě jeden workflow s jedním cronem místo několika - GitHub Actions
 účtuje běh joby s minimem 1 minuta bez ohledu na to, jak dlouho skript
@@ -115,11 +119,14 @@ ručně přes GitHub → Actions → Run workflow.
 
 ## Push notifikace
 
-Uživatel si v `/profile` může zapnout push upozornění. Posílají se čtyři typy
-(viz `scraper/cron.py` výše): nová karta je online, karta se změnila,
-uzávěrka tipů za hodinu, a výsledky galavečera jsou hotové. Funguje přes
-Web Push API a service worker (`public/sw.js`); odesílání řeší sdílený
-modul `scraper/push.py`, voláný z `scraper/cron.py`.
+Uživatel si v `/profile` může zapnout push upozornění. Posílají se broadcast
+typy (viz `scraper/cron.py` výše): nová karta je online, karta se změnila,
+uzávěrka tipů za hodinu, a výsledky galavečera jsou hotové - ty jdou všem
+přihlášeným najednou (`send_to_all` v `scraper/push.py`). Navíc po dohrání
+každého jednotlivého zápasu (`scraper/import_results.py`) dostane osobní
+push jen ten, kdo na ten zápas tipoval (`send_to_user`), s výsledkem zápasu
+a počtem bodů, co za svůj tip získal. Funguje přes Web Push API a service
+worker (`public/sw.js`).
 
 Potřebné VAPID klíče se vygenerují jednou (`npx web-push generate-vapid-keys`)
 a nastaví takto:

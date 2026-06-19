@@ -36,3 +36,11 @@ def send_to_all(db: SupabaseClient, title: str, body: str, url: str) -> None:
     subscriptions = db.select("push_subscriptions", {"select": "id,endpoint,p256dh,auth"})
     for sub in subscriptions:
         send_to_subscription(db, sub, title, body, url)
+
+
+def send_to_user(db: SupabaseClient, user_id: str, title: str, body: str, url: str) -> None:
+    subscriptions = db.select(
+        "push_subscriptions", {"user_id": f"eq.{user_id}", "select": "id,endpoint,p256dh,auth"}
+    )
+    for sub in subscriptions:
+        send_to_subscription(db, sub, title, body, url)

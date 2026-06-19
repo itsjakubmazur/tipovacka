@@ -11,8 +11,54 @@ import argparse
 import sys
 
 from oktagon import fetch_fightcard, resolve_event_id
+from push import send_to_user
 from run_logger import log_run
 from supabase_client import SupabaseClient
+
+METHOD_PHRASES = {
+    "KO/TKO": "KO/TKO",
+    "SUBMISSION": "submisí",
+}
+
+
+def _result_description(method: str | None, result_round: int | None, result_time: str | None) -> str:
+    if method is None or method == "DECISION":
+        return "na body"
+    phrase = METHOD_PHRASES.get(method, method)
+    desc = f"{phrase} ve {result_round}. kole" if result_round else phrase
+    if result_time:
+        desc += f" ({result_time})"
+    return desc
+
+
+def _notify_fight_result(
+    db: SupabaseClient,
+    event_id: str,
+    db_fight: dict,
+    fighter_a_name: str,
+    fighter_b_name: str,
+    winner_name: str | None,
+    result_desc: str,
+) -> None:
+    """Sends each tipper on this fight a personal push with the result
+    and how their own tip scored, right after this one fight is graded -
+    rather than waiting for the whole card to finish."""
+    predictions = db.select(
+        "predictions",
+        {"fight_id": f"eq.{db_fight['id']}", "select": "user_id,predicted_winner_id,points"},
+    )
+    title = f"{fighter_a_name} vs {fighter_b_name}"
+    url = f"/events/{event_id}"
+    for pred in predictions:
+        if winner_name is None:
+            body = "Zápas skončil bez výsledku (remíza/no contest), tvůj tip se nezapočítává."
+        else:
+            predicted_name = (
+                fighter_a_name if pred["predicted_winner_id"] == db_fight["fighter_a_id"] else fighter_b_name
+            )
+            points = pred.get("points") or 0
+            body = f"Vyhrál {winner_name} ({result_desc}). Tvůj tip: {predicted_name} → {points} b."
+        send_to_user(db, pred["user_id"], title, body, url)
 
 
 def import_results(event_id: str) -> None:
@@ -52,13 +98,18 @@ def import_results(event_id: str) -> None:
         if db_fight["status"] != "scheduled":
             continue
 
+        fighter_a_name, fighter_b_name = fight["fighter_a"]["name"], fight["fighter_b"]["name"]
+
         if fight["status"] == "no_contest":
             db.update("fights", {"status": "no_contest"}, {"id": f"eq.{db_fight['id']}"})
+            db.rpc("recalculate_fight_points", {"p_fight_id": db_fight["id"]})
             updated += 1
-            print(f"Zápas {fight['fighter_a']['name']} vs {fight['fighter_b']['name']} -> remíza / no contest.")
+            print(f"Zápas {fighter_a_name} vs {fighter_b_name} -> remíza / no contest.")
+            _notify_fight_result(db, event_id, db_fight, fighter_a_name, fighter_b_name, None, "")
             continue
 
         winner_id = db_fight["fighter_a_id"] if fight["winner_side"] == "a" else db_fight["fighter_b_id"]
+        winner_name = fighter_a_name if fight["winner_side"] == "a" else fighter_b_name
         db.update(
             "fights",
             {
@@ -70,11 +121,14 @@ def import_results(event_id: str) -> None:
             },
             {"id": f"eq.{db_fight['id']}"},
         )
+        db.rpc("recalculate_fight_points", {"p_fight_id": db_fight["id"]})
         updated += 1
-        print(f"Uložen výsledek: {fight['fighter_a']['name']} vs {fight['fighter_b']['name']} -> {fight['method']}")
+        print(f"Uložen výsledek: {fighter_a_name} vs {fighter_b_name} -> {fight['method']}")
+
+        result_desc = _result_description(fight["method"], fight["result_round"], fight["result_time"])
+        _notify_fight_result(db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc)
 
     if updated:
-        db.rpc("recalculate_event_points", {"p_event_id": event_id})
         print(f"Přepočítány body pro {updated} zápasů.")
     else:
         print("Žádné nové výsledky k uložení (OKTAGON je možná ještě nemá zveřejněné).")
