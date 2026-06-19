@@ -57,16 +57,38 @@ manuálně:
   způsob/kolo k existujícím zápasům a zavolá `recalculate_event_points`,
   aby se přepočetly body všem hráčům.
 
-Obě se spouští přes GitHub Actions workflow `sherdog-scraper.yml`:
+Lze je spustit ručně přes GitHub Actions workflow `sherdog-scraper.yml`
+(GitHub → Actions → Sherdog scraper → Run workflow, vyber `mode` a
+vyplň `event_id`), ale za normálního provozu to dělá automaticky
+`scraper/cron.py` (viz níže) - manuální spuštění je hlavně pro případ, že
+by automatika z nějakého důvodu zaspala.
 
-- **Ručně**: GitHub → Actions → Sherdog scraper → Run workflow, vyber
-  `mode` (`card` nebo `results`) a vyplň `event_id` (UUID galavečera ze
-  Supabase tabulky `events`).
-- **Automaticky**: workflow běží i podle cronu (víkendy, několikrát po
-  galavečeru) a sám zkusí stáhnout výsledky pro každý galavečer, který už
-  začal, ale ještě nemá vyplněné výsledky. Je to bezpečné spustit
-  opakovaně - pokud Sherdog výsledky ještě nemá, skript se jen tiše
-  ukončí.
+### Automatický cron (`scraper/cron.py`)
+
+Jeden GitHub Actions workflow (`scraper-cron.yml`) spouští `cron.py` každých
+15 minut a ten postupně:
+
+1. **Naimportuje kartu nového galavečera** - jakmile má `events` vyplněnou
+   `sherdog_event_url` alespoň 5 minut (aby se nestáhla karta uprostřed
+   rozeditování v adminu) a ještě nemá žádné zápasy, stáhne kartu ze
+   Sherdogu a pošle push "karta je online" všem.
+2. **Znovu zkontroluje kartu** - u galavečerů, co ještě nejsou uzamčené,
+   jednou za ~3 hodiny znovu stáhne kartu a porovná ji s tím, co je v
+   Supabase. Pokud se něco změnilo (nový zápas, zrušený zápas - typicky
+   short notice náhrada), pošle push "karta se změnila".
+3. **Pošle připomínku uzávěrky** - hodinu před `lock_at` push všem
+   přihlášeným k notifikacím (i těm, co už tipovali - upozorňuje i na
+   možné short-notice změny karty).
+4. **Zkusí stáhnout výsledky** - u každého galavečeru, co už začal, ale
+   ještě nemá `status = completed`, zavolá `import_results.py`. Je to
+   bezpečné spustit opakovaně - pokud Sherdog výsledky ještě nemá, skript
+   se jen tiše ukončí a zkusí to znovu příští běh. Jakmile se galavečer
+   vyhodnotí (všechny zápasy odehrané), pošle push "výsledky jsou hotové".
+
+Je to vědomě jeden workflow s jedním cronem místo několika - GitHub Actions
+účtuje běh joby s minimem 1 minuta bez ohledu na to, jak dlouho skript
+opravdu běžel, takže víc samostatných častých cronů by zbytečně rychle
+vyčerpalo měsíční limit free minut (zvlášť u private repa).
 
 Potřebné GitHub repo secrets (Settings → Secrets and variables → Actions):
 
@@ -93,12 +115,11 @@ ručně přes GitHub → Actions → Run workflow.
 
 ## Push notifikace
 
-Uživatel si v `/profile` může zapnout push upozornění na blížící se uzávěrku
-galavečera. Hodinu před `lock_at` přijde notifikace všem přihlášeným k
-push (i těm, co už tipovali — připomíná i případné short-notice změny
-karty). Funguje přes Web Push API a service worker (`public/sw.js`);
-odesílání běží jako GitHub Actions cron (`lock-reminders.yml`,
-`scraper/send_lock_reminders.py`), který se spouští každých 15 minut.
+Uživatel si v `/profile` může zapnout push upozornění. Posílají se čtyři typy
+(viz `scraper/cron.py` výše): nová karta je online, karta se změnila,
+uzávěrka tipů za hodinu, a výsledky galavečera jsou hotové. Funguje přes
+Web Push API a service worker (`public/sw.js`); odesílání řeší sdílený
+modul `scraper/push.py`, voláný z `scraper/cron.py`.
 
 Potřebné VAPID klíče se vygenerují jednou (`npx web-push generate-vapid-keys`)
 a nastaví takto:

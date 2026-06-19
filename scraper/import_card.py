@@ -82,13 +82,14 @@ def cancel_stale_fight(
     fighter_b_id: str,
     fighter_a_name: str,
     fighter_b_name: str,
-) -> None:
+) -> int:
     """If either fighter already has a different scheduled fight in this
     event, an opponent pulled out and Sherdog paired them with someone else
     - the old matchup no longer happens. Mark it cancelled instead of
     leaving a stale duplicate on the card; existing predictions on it stay
     (voided, never graded) so tippers can see why it disappeared from
-    scoring rather than them silently vanishing."""
+    scoring rather than them silently vanishing. Returns how many fights
+    were cancelled, so callers can tell whether the card actually changed."""
     stale = db.select(
         "fights",
         {
@@ -101,6 +102,7 @@ def cancel_stale_fight(
             "select": "id,fighter_a_id,fighter_b_id",
         },
     )
+    cancelled = 0
     for row in stale:
         if {row["fighter_a_id"], row["fighter_b_id"]} == {fighter_a_id, fighter_b_id}:
             continue
@@ -110,9 +112,11 @@ def cancel_stale_fight(
             f"Soupeř se změnil, starý zápas (id {row['id']}) zrušen - nahrazen "
             f"zápasem {fighter_a_name} vs {fighter_b_name}. Zasaženo tipů: {len(affected)}."
         )
+        cancelled += 1
+    return cancelled
 
 
-def import_card(event_id: str) -> None:
+def import_card(event_id: str) -> tuple[int, int]:
     db = SupabaseClient()
 
     events = db.select("events", {"id": f"eq.{event_id}", "select": "id,sherdog_event_url"})
@@ -131,6 +135,7 @@ def import_card(event_id: str) -> None:
         sys.exit(1)
 
     created = 0
+    cancelled = 0
     for fight in data["fights"]:
         fighter_a_id = upsert_fighter(db, fight["fighter_a"])
         fighter_b_id = upsert_fighter(db, fight["fighter_b"])
@@ -148,7 +153,7 @@ def import_card(event_id: str) -> None:
             print(f"Zápas {fight['fighter_a']['name']} vs {fight['fighter_b']['name']} už existuje, přeskakuji.")
             continue
 
-        cancel_stale_fight(
+        cancelled += cancel_stale_fight(
             db, event_id, fighter_a_id, fighter_b_id, fight["fighter_a"]["name"], fight["fighter_b"]["name"]
         )
 
@@ -178,6 +183,8 @@ def import_card(event_id: str) -> None:
         import_fightmatrix(event_id)
     except SystemExit:
         print("Fight Matrix import se nezdařil, karta ze Sherdogu je ale naimportovaná v pořádku.")
+
+    return created, cancelled
 
 
 if __name__ == "__main__":

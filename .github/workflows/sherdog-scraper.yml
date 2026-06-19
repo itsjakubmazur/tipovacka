@@ -15,11 +15,6 @@ on:
         description: "UUID galavečera (events.id v Supabase)"
         required: true
         type: string
-  schedule:
-    # Po galavečerech (sobota/neděle) zkusí stáhnout výsledky pro
-    # poslední uzamčený galavečer; pokud Sherdog výsledky ještě nemá,
-    # skript se jen tiše ukončí a zkusí to znovu při dalším běhu.
-    - cron: "0 6,12,18 * * 0,1"
 
 jobs:
   scrape:
@@ -52,8 +47,3 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fightmatrix'
         working-directory: scraper
         run: python import_fightmatrix.py --event-id "${{ inputs.event_id }}"
-
-      - name: Import results (scheduled)
-        if: github.event_name == 'schedule'
-        working-directory: scraper
-        run: python scheduled_results.py

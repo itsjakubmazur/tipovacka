@@ -5,14 +5,10 @@ the "Test push notification" GitHub Actions workflow (workflow_dispatch).
 """
 
 import argparse
-import os
 
 import requests
-from pywebpush import WebPushException, webpush
+from push import send_to_subscription
 from supabase_client import SupabaseClient
-
-VAPID_PRIVATE_KEY = os.environ["VAPID_PRIVATE_KEY"]
-VAPID_CLAIMS = {"sub": os.environ["VAPID_SUBJECT"]}
 
 
 def find_user_id_by_email(db: SupabaseClient, email: str) -> str:
@@ -49,19 +45,10 @@ def main() -> None:
         raise SystemExit(f"Uživatel {args.email} nemá zapnutá push upozornění.")
 
     for sub in subscriptions:
-        try:
-            webpush(
-                subscription_info={
-                    "endpoint": sub["endpoint"],
-                    "keys": {"p256dh": sub["p256dh"], "auth": sub["auth"]},
-                },
-                data='{"title": "Testovací upozornění", "body": "Takhle bude vypadat připomínka uzávěrky.", "url": "/events"}',
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims=dict(VAPID_CLAIMS),
-            )
-            print(f"Posláno na {sub['endpoint']}")
-        except WebPushException as exc:
-            print(f"Nepodařilo se poslat na {sub['endpoint']}: {exc}")
+        send_to_subscription(
+            db, sub, "Testovací upozornění", "Takhle bude vypadat připomínka uzávěrky.", "/events"
+        )
+        print(f"Posláno na {sub['endpoint']}")
 
 
 if __name__ == "__main__":
