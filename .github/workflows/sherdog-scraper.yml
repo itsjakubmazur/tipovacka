@@ -12,9 +12,8 @@ on:
           - results
           - fightmatrix
           - backfill_photos
-          - debug_oktagon
       event_id:
-        description: "UUID galavečera (events.id v Supabase, není potřeba pro backfill_photos/debug_oktagon)"
+        description: "UUID galavečera (events.id v Supabase, není potřeba pro backfill_photos)"
         required: false
         type: string
 
