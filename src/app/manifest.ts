@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "OKTAGON GARÁŽ Tipovačka",
-    short_name: "OG Garáž",
+    short_name: "OKTAGON GARÁŽ Tipovačka",
     description: "Tipovačka na galavečery OKTAGON MMA",
     start_url: "/",
     display: "standalone",
