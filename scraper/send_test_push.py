@@ -1,7 +1,9 @@
-"""Manual one-off helper: sends a single test push notification to one
-user, looked up by their auth email, so you can check what a real
-notification looks like without waiting for a real event lock. Run via
-the "Test push notification" GitHub Actions workflow (workflow_dispatch).
+"""Manual one-off helper: sends every push notification type cron.py can
+send - card online, card changed, lock reminder, results done - to one
+user (looked up by their auth email), using the exact same titles/bodies
+the real cron job would send. Lets you review the wording without
+waiting for any of those conditions to actually happen. Run via the
+"Test push notification" GitHub Actions workflow (workflow_dispatch).
 """
 
 import argparse
@@ -30,6 +32,15 @@ def find_user_id_by_email(db: SupabaseClient, email: str) -> str:
     raise SystemExit(f"Uživatel s e-mailem {email} nebyl nalezen.")
 
 
+def sample_event(db: SupabaseClient) -> dict:
+    events = db.select(
+        "events", {"select": "id,number,name", "order": "event_date.desc", "limit": "1"}
+    )
+    if events:
+        return events[0]
+    return {"id": "00000000-0000-0000-0000-000000000000", "number": 99, "name": "OKTAGON 99"}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--email", required=True)
@@ -44,11 +55,25 @@ def main() -> None:
     if not subscriptions:
         raise SystemExit(f"Uživatel {args.email} nemá zapnutá push upozornění.")
 
-    for sub in subscriptions:
-        send_to_subscription(
-            db, sub, "Testovací upozornění", "Takhle bude vypadat připomínka uzávěrky.", "/events"
-        )
-        print(f"Posláno na {sub['endpoint']}")
+    event = sample_event(db)
+    label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+    event_url = f"/events/{event['id']}"
+
+    notifications = [
+        (f"{label}: karta je online", "Zápasy jsou nahrané, jdi tipovat.", event_url),
+        (f"{label}: karta se změnila", "Sherdog ukazuje jinou kartu než dřív, mrkni na to.", event_url),
+        (
+            f"{label} za hodinu začíná",
+            "Nezapomeň dotipovat a mrkni na kartu, jestli nedošlo k short-notice změně.",
+            event_url,
+        ),
+        (f"{label}: výsledky jsou hotové", "Body se právě přepočítaly, mrkni na žebříček.", "/leaderboard"),
+    ]
+
+    for title, body, url in notifications:
+        for sub in subscriptions:
+            send_to_subscription(db, sub, title, body, url)
+        print(f"Posláno: {title}")
 
 
 if __name__ == "__main__":
