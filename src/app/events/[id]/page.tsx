@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
@@ -15,7 +16,7 @@ export default async function EventDetailPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, event_date, location, status, lock_at")
+    .select("id, number, name, event_date, location, status, lock_at, image_url")
     .eq("id", id)
     .single();
 
@@ -87,6 +88,17 @@ export default async function EventDetailPage({
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
+      {event.image_url && (
+        <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl">
+          <Image
+            src={event.image_url}
+            alt={event.number ? `OKTAGON ${event.number}` : event.name}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
       <div>
         <h1 className="text-xl font-bold">
           {event.number ? `OKTAGON ${event.number}` : event.name}

@@ -12,6 +12,7 @@ import argparse
 import sys
 
 from import_fightmatrix import import_fightmatrix
+from oktagon import import_image
 from run_logger import log_run
 from sherdog import fetch_fighter_nationality, parse_event
 from supabase_client import SupabaseClient
@@ -183,6 +184,12 @@ def import_card(event_id: str) -> tuple[int, int]:
         import_fightmatrix(event_id)
     except SystemExit:
         print("Fight Matrix import se nezdařil, karta ze Sherdogu je ale naimportovaná v pořádku.")
+
+    print("Doplňuji titulní obrázek z oktagonmma.com...")
+    try:
+        import_image(event_id)
+    except Exception as exc:
+        print(f"Obrázek se nepodařilo doplnit: {exc}")
 
     return created, cancelled
 
