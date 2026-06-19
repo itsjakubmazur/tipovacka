@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { subscribeToPush } from "@/lib/push";
+import { subscribeToPush, isIos, isStandalone } from "@/lib/push";
 
 export function PushNotificationToggle({ userId }: { userId: string }) {
   const supabase = createClient();
@@ -12,18 +12,19 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
   const [supported] = useState(
     () => typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window
   );
+  const [needsInstall] = useState(() => isIos() && !isStandalone());
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!supported) return;
+    if (!supported || needsInstall) return;
 
     navigator.serviceWorker.register("/sw.js").then(async (registration) => {
       const existing = await registration.pushManager.getSubscription();
       setSubscribed(!!existing);
     });
-  }, [supported]);
+  }, [supported, needsInstall]);
 
   async function subscribe() {
     setLoading(true);
@@ -56,6 +57,17 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
   }
 
   if (!supported) return null;
+
+  if (needsInstall) {
+    return (
+      <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
+        <p className="text-sm font-semibold">Upozornění na blížící se uzávěrku</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          Na iPhonu/iPadu fungují upozornění jen po instalaci na plochu - postupuj podle návodu výš a pak se vrať sem.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
