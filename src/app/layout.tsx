@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
+import { PushPromptBanner } from "@/components/push/push-prompt-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NavBar />
+          <PushPromptBanner />
           <main className="flex-1 pb-20 md:pb-0">{children}</main>
         </ThemeProvider>
       </body>

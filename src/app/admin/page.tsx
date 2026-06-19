@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AddEventForm } from "@/components/admin/add-event-form";
 import { PromoteUserButton } from "@/components/admin/promote-user-button";
+import { BroadcastPushForm } from "@/components/admin/broadcast-push-form";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -58,6 +59,11 @@ export default async function AdminPage() {
           ))}
         </div>
         <AddEventForm />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Poslat upozornění</h2>
+        <BroadcastPushForm />
       </section>
 
       <section className="flex flex-col gap-3">
