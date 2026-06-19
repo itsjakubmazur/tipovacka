@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = atob(base64);
-  return Uint8Array.from(rawData, (c) => c.charCodeAt(0));
-}
+import { subscribeToPush } from "@/lib/push";
 
 export function PushNotificationToggle({ userId }: { userId: string }) {
   const supabase = createClient();
@@ -32,44 +26,14 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
   }, [supported]);
 
   async function subscribe() {
-    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-    if (!vapidKey) {
-      setError("Upozornění nejsou na tomto webu nastavená.");
-      return;
-    }
-
     setLoading(true);
     setError(null);
-    try {
-      const registration = await navigator.serviceWorker.register("/sw.js");
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        setError("Bez povolení v prohlížeči to nepůjde.");
-        return;
-      }
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey),
-      });
-
-      const keys = subscription.toJSON().keys;
-      const { error: dbError } = await supabase.from("push_subscriptions").upsert(
-        {
-          user_id: userId,
-          endpoint: subscription.endpoint,
-          p256dh: keys?.p256dh ?? "",
-          auth: keys?.auth ?? "",
-        },
-        { onConflict: "endpoint" }
-      );
-      if (dbError) throw dbError;
-
+    const result = await subscribeToPush(userId);
+    setLoading(false);
+    if (result.success) {
       setSubscribed(true);
-    } catch {
-      setError("Povolení se nepodařilo nastavit.");
-    } finally {
-      setLoading(false);
+    } else {
+      setError(result.error);
     }
   }
 
