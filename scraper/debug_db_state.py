@@ -27,7 +27,7 @@ def main(number: int) -> None:
         "fights",
         {
             "event_id": f"eq.{event_id}",
-            "select": "id,oktagon_fight_id,fighter_a_id,fighter_b_id,card_order",
+            "select": "id,oktagon_fight_id,fighter_a_id,fighter_b_id,card_order,status",
             "order": "card_order.desc",
         },
     )
@@ -46,7 +46,7 @@ def main(number: int) -> None:
     for f in fights:
         a, b = fighters_by_id[f["fighter_a_id"]], fighters_by_id[f["fighter_b_id"]]
         print(
-            f"[{f['card_order']}] fight oktagon_fight_id={f['oktagon_fight_id']!r} | "
+            f"[{f['card_order']}] id={f['id']} status={f['status']} oktagon_fight_id={f['oktagon_fight_id']!r} | "
             f"{a['name']} (oktagon_id={a['oktagon_fighter_id']!r} height={a['height_cm']!r} "
             f"birth={a['birth_date']!r} weight={a['weight_kg']!r}) vs "
             f"{b['name']} (oktagon_id={b['oktagon_fighter_id']!r} height={b['height_cm']!r} "
