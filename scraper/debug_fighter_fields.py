@@ -12,7 +12,13 @@ import json
 from oktagon import fetch_json, find_event_id
 
 
-def main(number: int) -> None:
+def main(number: int | None) -> None:
+    if number is None:
+        events = fetch_json("/events/")
+        for item in events:
+            print(item.get("id"), item.get("slugs"))
+        return
+
     oktagon_event_id = find_event_id(number)
     if not oktagon_event_id:
         print(f"OKTAGON {number} nenalezen v API.")
@@ -24,12 +30,19 @@ def main(number: int) -> None:
         print("Žádné zápasy.")
         return
 
-    fighter = raw_fights[0]["fighter1"]
-    print(json.dumps(fighter, indent=2, ensure_ascii=False))
+    for fight in raw_fights:
+        for key in ("fighter1", "fighter2"):
+            f = fight[key]
+            name = f"{f.get('firstName')} {f.get('lastName')}"
+            print(
+                f"{name}: heightCm={f.get('heightCm')!r} "
+                f"birth={f.get('yearOfBirth')!r}-{f.get('monthOfBirth')!r}-{f.get('dayOfBirth')!r} "
+                f"weightKg={(f.get('weightClass') or {}).get('weightKg')!r}"
+            )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--number", type=int, required=True)
+    parser.add_argument("--number", type=int, required=False)
     args = parser.parse_args()
     main(args.number)

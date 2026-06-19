@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       number:
-        description: "Číslo OKTAGONu, ze kterého se má vzít první zápasník (např. 89)"
-        required: true
+        description: "Číslo OKTAGONu (prázdné = vypsat seznam eventů z API)"
+        required: false
         type: string
 
 jobs:
@@ -24,4 +24,4 @@ jobs:
 
       - name: Dump raw fighter JSON
         working-directory: scraper
-        run: python debug_fighter_fields.py --number "${{ inputs.number }}"
+        run: python debug_fighter_fields.py ${{ inputs.number != '' && format('--number {0}', inputs.number) || '' }}
