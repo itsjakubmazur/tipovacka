@@ -36,10 +36,9 @@ export default async function AdminPage() {
     .select("id, number, name, event_date, status")
     .order("event_date", { ascending: false });
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, nickname, is_admin")
-    .order("nickname", { ascending: true });
+  const { data: profiles } = (await supabase.rpc("admin_list_profiles")) as {
+    data: { id: string; nickname: string | null; is_admin: boolean; email: string | null }[] | null;
+  };
 
   return (
     <div className="flex flex-col gap-8 px-4 py-8">
@@ -83,9 +82,12 @@ export default async function AdminPage() {
               key={p.id}
               className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3"
             >
-              <span>
-                {p.nickname ?? "Bez přezdívky"}
-                {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+              <span className="flex flex-col">
+                <span>
+                  {p.nickname ?? "Bez přezdívky"}
+                  {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+                </span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
               </span>
               {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
             </div>
