@@ -33,6 +33,7 @@ Does eight things, in order:
 """
 
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from import_card import import_card, update_odds
 from import_results import import_results
@@ -44,8 +45,10 @@ from supabase_client import SupabaseClient
 CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
-PUBLISH_WINDOW = timedelta(days=3)
 MAX_FUTURE_EVENTS = 2
+PRAGUE_TZ = ZoneInfo("Europe/Prague")
+PUBLISH_DAYS_BEFORE = 3
+PUBLISH_HOUR_PRAGUE = 9
 
 
 def event_label(event: dict) -> str:
@@ -109,20 +112,24 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
         print(f"Založen návrh eventu: {tournament['name']} ({tournament['event_date']}).")
 
 
+def _publish_at(event_date: datetime) -> datetime:
+    """9:00 Prague time, PUBLISH_DAYS_BEFORE calendar days before the
+    event - computed in Prague's local time so it stays 9:00 there
+    across the DST switch, not 9:00 UTC."""
+    local_date = event_date.astimezone(PRAGUE_TZ) - timedelta(days=PUBLISH_DAYS_BEFORE)
+    return local_date.replace(hour=PUBLISH_HOUR_PRAGUE, minute=0, second=0, microsecond=0)
+
+
 def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
-    """3 days before a draft event starts, flips it to 'upcoming' - it
-    becomes visible to tippers immediately, and import_new_cards (which
-    only skips status='draft') picks up the card on the same/next tick
-    since `number` was already set when the draft was created."""
-    events = db.select(
-        "events",
-        {
-            "status": "eq.draft",
-            "event_date": f"lte.{(now + PUBLISH_WINDOW).isoformat()}",
-            "select": "id,number,name",
-        },
-    )
+    """At 9:00 Prague time, PUBLISH_DAYS_BEFORE days before a draft event
+    starts, flips it to 'upcoming' - it becomes visible to tippers
+    immediately, and import_new_cards (which only skips status='draft')
+    picks up the card on the same/next tick since `number` was already
+    set when the draft was created."""
+    events = db.select("events", {"status": "eq.draft", "select": "id,number,name,event_date"})
     for event in events:
+        if not event["event_date"] or now < _publish_at(_parse_dt(event["event_date"])):
+            continue
         label = event_label(event)
         db.update("events", {"status": "upcoming"}, {"id": f"eq.{event['id']}"})
         print(f"{label}: zveřejněno tipérům, karta se naimportuje při nejbližším běhu cronu.")
