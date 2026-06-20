@@ -2,26 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, type LucideIcon } from "lucide-react";
+import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NavItem = {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-};
+const navItems = [
+  { href: "/events", label: "Galavečery", icon: Swords },
+  { href: "/leaderboard", label: "Žebříček", icon: Trophy },
+  { href: "/groups", label: "Skupiny", icon: Users },
+  { href: "/profile", label: "Profil", icon: User },
+];
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function DesktopNav({
-  navItems,
-  isAdmin,
-}: {
-  navItems: NavItem[];
-  isAdmin: boolean;
-}) {
+export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -55,13 +50,7 @@ export function DesktopNav({
   );
 }
 
-export function MobileNav({
-  navItems,
-  isAdmin,
-}: {
-  navItems: NavItem[];
-  isAdmin: boolean;
-}) {
+export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
   return (

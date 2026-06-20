@@ -1,16 +1,8 @@
 import Link from "next/link";
-import { Trophy, Swords, User, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DesktopNav, MobileNav } from "@/components/nav-links";
-
-const navItems = [
-  { href: "/events", label: "Galavečery", icon: Swords },
-  { href: "/leaderboard", label: "Žebříček", icon: Trophy },
-  { href: "/groups", label: "Skupiny", icon: Users },
-  { href: "/profile", label: "Profil", icon: User },
-];
 
 export async function NavBar() {
   let user = null;
@@ -62,7 +54,7 @@ export async function NavBar() {
             <span className="hidden sm:inline"> Tipovačka</span>
           </Link>
           <div className="flex items-center gap-4">
-            <DesktopNav navItems={navItems} isAdmin={isAdmin} />
+            <DesktopNav isAdmin={isAdmin} />
             <div className="hidden items-center gap-4 md:flex">
               <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
             </div>
@@ -71,7 +63,7 @@ export async function NavBar() {
         </div>
       </header>
 
-      <MobileNav navItems={navItems} isAdmin={isAdmin} />
+      <MobileNav isAdmin={isAdmin} />
     </>
   );
 }
