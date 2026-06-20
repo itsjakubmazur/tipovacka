@@ -15,7 +15,9 @@ Does four things, in order:
    notifying everyone if anything actually changed.
 3. send_lock_reminders - events locking within the next hour get a "tip
    before it's too late" push to everyone subscribed.
-4. check_results - events that have started but aren't completed yet get
+4. send_lock_notifications - events whose lock_at has just passed get a
+   "gala starts, go check everyone's tips" push to everyone subscribed.
+5. check_results - events that have started but aren't completed yet get
    a results import attempt; once an event flips to completed, everyone
    gets notified that points are in.
 """
@@ -129,6 +131,32 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
+    events = db.select(
+        "events",
+        {
+            "status": "neq.completed",
+            "lock_notified_at": "is.null",
+            "lock_at": f"lte.{now.isoformat()}",
+            "select": "id,number,name",
+        },
+    )
+    for event in events:
+        label = event_label(event)
+        with log_run("cron_lock_notification", event["id"]):
+            send_to_all(
+                db,
+                f"{label} začíná",
+                "Tipy jsou uzavřené, mrkni na žebříček, kdo na koho tipoval!",
+                f"/leaderboard?eventId={event['id']}",
+            )
+            db.update(
+                "events",
+                {"lock_notified_at": now.isoformat()},
+                {"id": f"eq.{event['id']}"},
+            )
+
+
 def check_results(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
@@ -164,6 +192,7 @@ def main() -> None:
     import_new_cards(db, now)
     recheck_cards(db, now)
     send_lock_reminders(db, now)
+    send_lock_notifications(db, now)
     check_results(db, now)
 
 
