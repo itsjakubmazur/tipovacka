@@ -104,11 +104,11 @@ export default async function AdminEventPage({
       {event.status === "draft" && (
         <p className="rounded-xl border border-[#FFD400]/40 bg-[#FFD400]/10 p-3 text-sm text-neutral-700 dark:text-neutral-300">
           Tohle je jen návrh, skrytý tipérům. Zápasová karta se naimportuje a galavečer se
-          automaticky zveřejní cca 3 dny před začátkem (
+          automaticky zveřejní v 9:00 (český čas) 3 dny před začátkem, cca{" "}
           {new Date(
             new Date(event.event_date).getTime() - 3 * 24 * 60 * 60 * 1000
           ).toLocaleDateString("cs-CZ", { dateStyle: "long", timeZone: "Europe/Prague" })}
-          ) – nic není potřeba dělat ručně.
+          – nic není potřeba dělat ručně.
         </p>
       )}
 
