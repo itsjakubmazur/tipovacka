@@ -139,6 +139,17 @@ def import_card(event_id: str) -> tuple[int, int]:
             {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id"},
         )
         if existing:
+            db.update(
+                "fights",
+                {
+                    "weight_class": fight["weight_class"],
+                    "is_title_fight": fight["is_title_fight"],
+                    "is_main_event": fight["is_main_event"],
+                    "card_order": fight["card_order"],
+                    "card_segment": fight["card_segment"],
+                },
+                {"id": f"eq.{existing[0]['id']}"},
+            )
             continue
 
         # Not linked to OKTAGON yet - this is most likely a fight imported
