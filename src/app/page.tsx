@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (data.user) {
+    redirect("/events");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center gap-6 px-6 py-24 text-center">
       <h1 className="text-3xl font-bold tracking-tight">
