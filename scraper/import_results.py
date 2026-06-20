@@ -64,7 +64,9 @@ def _notify_fight_result(
 def import_results(event_id: str) -> None:
     db = SupabaseClient()
 
-    events = db.select("events", {"id": f"eq.{event_id}", "select": "id,number,oktagon_event_id"})
+    events = db.select(
+        "events", {"id": f"eq.{event_id}", "select": "id,number,oktagon_event_id,actual_fotn_fight_id"}
+    )
     if not events:
         print(f"Event {event_id} nenalezen.")
         sys.exit(1)
@@ -137,9 +139,15 @@ def import_results(event_id: str) -> None:
         "fights",
         {"event_id": f"eq.{event_id}", "status": "eq.scheduled", "select": "id"},
     )
-    if not remaining:
-        db.update("events", {"status": "completed"}, {"id": f"eq.{event_id}"})
-        print("Všechny zápasy odehrané, galavečer označen jako vyhodnocený.")
+    if remaining:
+        return
+
+    if not event["actual_fotn_fight_id"]:
+        print("Všechny zápasy odehrané, čekám na zadání Fight of the Night, než galavečer uzavřu.")
+        return
+
+    db.update("events", {"status": "completed"}, {"id": f"eq.{event_id}"})
+    print("Všechny zápasy odehrané a FOTN zadané, galavečer označen jako vyhodnocený.")
 
 
 if __name__ == "__main__":
