@@ -13,12 +13,17 @@ type EventLeaderboardRow = {
   fights_scored: number;
   fights_completed: number;
   perfect_card: boolean;
+  fights_correct_winner: number;
+  earliest_prediction_at: string | null;
 };
 
 type SeasonLeaderboardRow = {
   user_id: string;
   nickname: string | null;
   points: number;
+  fights_correct_winner: number;
+  perfect_cards: number;
+  earliest_prediction_at: string | null;
 };
 
 export default async function LeaderboardPage({
@@ -72,9 +77,14 @@ export default async function LeaderboardPage({
     const [{ data }, { count }, prevResult] = await Promise.all([
       supabase
         .from("event_leaderboard")
-        .select("user_id, nickname, points, fights_scored, fights_completed, perfect_card")
+        .select(
+          "user_id, nickname, points, fights_scored, fights_completed, perfect_card, fights_correct_winner, earliest_prediction_at"
+        )
         .eq("event_id", selectedEvent.id)
-        .order("points", { ascending: false }),
+        .order("points", { ascending: false })
+        .order("fights_correct_winner", { ascending: false })
+        .order("perfect_card", { ascending: false })
+        .order("earliest_prediction_at", { ascending: true, nullsFirst: false }),
       supabase
         .from("fights")
         .select("id", { count: "exact", head: true })
@@ -95,9 +105,12 @@ export default async function LeaderboardPage({
   } else {
     const { data } = await supabase
       .from("season_leaderboard")
-      .select("user_id, nickname, points")
+      .select("user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at")
       .eq("season", season)
-      .order("points", { ascending: false });
+      .order("points", { ascending: false })
+      .order("fights_correct_winner", { ascending: false })
+      .order("perfect_cards", { ascending: false })
+      .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
     seasonRows = data ?? [];
   }
 
@@ -136,6 +149,9 @@ export default async function LeaderboardPage({
         <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body“): +1 — tedy max 3 body za zápas.</p>
         <p>Bonus tip Fight of the Night: +2, pokud uhodneš zápas večera.</p>
         <p>Perfektní karta: +5, pokud uhodneš vítěze úplně všech zápasů na kartě.</p>
+        <p>
+          Při shodě bodů rozhoduje: 1) víc uhodnutých vítězů, 2) perfektní karta, 3) kdo odeslal tipy dřív.
+        </p>
       </div>
 
       {view === "event" && (
