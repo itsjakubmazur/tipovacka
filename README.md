@@ -65,8 +65,8 @@ by automatika z nějakého důvodu zaspala.
 
 ### Automatický cron (`scraper/cron.py`)
 
-Jeden GitHub Actions workflow (`scraper-cron.yml`) spouští `cron.py` každých
-15 minut a ten postupně:
+Jeden GitHub Actions workflow (`scraper-cron.yml`) spouští `cron.py` a ten
+postupně:
 
 1. **Naimportuje kartu nového galavečera** - jakmile má `events` vyplněnou
    `sherdog_event_url` alespoň 5 minut (aby se nestáhla karta uprostřed
@@ -93,6 +93,29 @@ Je to vědomě jeden workflow s jedním cronem místo několika - GitHub Actions
 účtuje běh joby s minimem 1 minuta bez ohledu na to, jak dlouho skript
 opravdu běžel, takže víc samostatných častých cronů by zbytečně rychle
 vyčerpalo měsíční limit free minut (zvlášť u private repa).
+
+**Spouštění:** `scraper-cron.yml` nemá nativní `schedule:` trigger -
+GitHub jeho dodržování nijak negarantuje a v praxi to na tomhle repu
+běžně ujíždělo o hodiny, což u časově citlivých pushů (připomínka
+uzávěrky, výsledky zápasů) znamenalo notifikace pozdě o hodiny. Místo
+toho ho spouští externí scheduler ([cron-job.org](https://cron-job.org),
+zdarma) zavoláním GitHubova `workflow_dispatch` REST endpointu každých
+~5 minut:
+
+1. Vytvoř GitHub fine-grained personal access token, scoped jen na tento
+   repo, s oprávněním "Actions: Read and write" (stejný typ tokenu jako
+   `GITHUB_DISPATCH_TOKEN` zmíněný níže - lze i ten samý znovu použít).
+2. V cron-job.org vytvoř nový cronjob:
+   - URL: `https://api.github.com/repos/itsjakubmazur/tipovacka/actions/workflows/scraper-cron.yml/dispatches`
+   - Method: `POST`
+   - Headers: `Authorization: Bearer <token>`, `Accept: application/vnd.github+json`
+   - Body (JSON): `{"ref": "main"}`
+   - Interval: každých 5 minut
+3. GitHub na úspěšný dispatch vrací `204 No Content` bez těla - cron-job.org
+   to vyhodnotí jako úspěch.
+
+Lze ho i tak kdykoliv spustit ručně přes GitHub → Actions → Scraper cron →
+Run workflow, pro případ, že potřebuješ něco doimportovat hned.
 
 Potřebné GitHub repo secrets (Settings → Secrets and variables → Actions):
 
