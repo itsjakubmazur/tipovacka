@@ -28,8 +28,11 @@ Does eight things, in order:
 7. send_lock_notifications - events whose lock_at has just passed get a
    "gala starts, go check everyone's tips" push to everyone subscribed.
 8. check_results - events that have started but aren't completed yet get
-   a results import attempt; once an event flips to completed, everyone
-   gets notified that points are in.
+   a results import attempt; once every fight has a result AND an admin
+   has entered Fight of the Night (not published anywhere, announced at
+   the post-event press conference - see admin event detail page), the
+   event flips to completed and everyone gets notified that points are
+   in.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -299,7 +302,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             send_to_all(
                 db,
                 f"{label}: výsledky jsou hotové",
-                "Galavečer byl vyhodnocen, mrkni na výsledky tipovačky!",
+                "Turnaj je za námi, podívej se na výsledky tipovačky i s Fight of the Night!",
                 f"/leaderboard?eventId={event['id']}",
             )
 
