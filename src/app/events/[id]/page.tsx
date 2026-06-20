@@ -80,14 +80,24 @@ export default async function EventDetailPage({
     .eq("event_id", id)
     .maybeSingle();
 
-  const fightsWithHeaders = (fights ?? []).reduce<
-    { fight: Fight; showSegmentHeader: boolean }[]
-  >((acc, rawFight) => {
-    const fight = rawFight as unknown as Fight;
-    const previousSegment = acc.at(-1)?.fight.card_segment ?? null;
-    const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== previousSegment);
-    return [...acc, { fight, showSegmentHeader }];
-  }, []);
+  const { rows: fightsWithHeaders } = (fights ?? []).reduce<{
+    rows: { fight: Fight; showSegmentHeader: boolean }[];
+    lastSegment: Fight["card_segment"];
+  }>(
+    (acc, rawFight) => {
+      const fight = rawFight as unknown as Fight;
+      // Cancelled fights replaced by an opponent swap can predate the
+      // card_segment column and carry a null value - skip over them
+      // instead of resetting the segment, so they don't reprint the
+      // header for the segment that's still ongoing.
+      const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== acc.lastSegment);
+      return {
+        rows: [...acc.rows, { fight, showSegmentHeader }],
+        lastSegment: fight.card_segment ?? acc.lastSegment,
+      };
+    },
+    { rows: [], lastSegment: null }
+  );
 
   const consensusByFight = new Map<string, Map<string, number>>();
   if (locked && fightIds.length) {
