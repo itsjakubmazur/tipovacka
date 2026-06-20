@@ -83,7 +83,8 @@ export function TipBreakdownCard({
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]", grayedOut && "grayscale")}
+                grayedOut={grayedOut}
+                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
               />
               <div className="mt-1.5">
                 <FighterLabel fighter={fighter} />

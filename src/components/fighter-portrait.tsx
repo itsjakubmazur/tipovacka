@@ -13,17 +13,19 @@ function initials(name: string) {
 export function FighterPortrait({
   name,
   photoUrl,
+  grayedOut,
   className,
 }: {
   name: string;
   photoUrl?: string | null;
+  grayedOut?: boolean;
   className?: string;
 }) {
-  // Inside the leaderboard's intercepted-route modal (nested overflow-y-auto
-  // containers), iOS Safari/PWA's lazy-load viewport detection for `fill`
-  // images can fail to ever trigger, so the photo never starts downloading
-  // until something forces a relayout (e.g. rotating the device). `eager`
-  // bypasses that detection entirely.
+  // Inside the leaderboard's intercepted-route modal, iOS Safari collapses
+  // this box to zero height whenever it has a `filter` (the old grayscale
+  // class) applied - a known WebKit bug with `filter` breaking intrinsic
+  // sizing in that nested context. A `mix-blend-mode: luminosity` overlay
+  // gives the same black & white look without touching `filter` at all.
   if (photoUrl) {
     return (
       <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
@@ -42,6 +44,7 @@ export function FighterPortrait({
             sizes="(min-width: 640px) 220px, 180px"
             className="object-cover object-top"
           />
+          {grayedOut && <div className="absolute inset-0 bg-white mix-blend-luminosity" />}
         </div>
       </div>
     );
