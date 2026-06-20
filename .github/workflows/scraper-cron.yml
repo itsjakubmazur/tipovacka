@@ -1,14 +1,16 @@
 name: Scraper cron
 
 on:
-  schedule:
-    # Every 15 minutes: imports a new event's card once its 5-minute
-    # grace period passes, rechecks unlocked cards for short-notice
-    # changes every ~3h, sends "locks in an hour" reminders, and tries
-    # to pull results for events that have started. One scheduled job
-    # instead of several, since GitHub Actions bills a 1-minute minimum
-    # per run no matter how short the script actually takes.
-    - cron: "*/15 * * * *"
+  # No native `schedule:` trigger - GitHub doesn't guarantee its cadence
+  # (in practice it drifted by hours on this repo, badly delaying
+  # time-sensitive pushes like lock reminders/results notifications).
+  # Triggered instead by an external scheduler (cron-job.org) calling
+  # the workflow_dispatch REST endpoint every few minutes with a PAT -
+  # see README.md for setup. Does, in one run: imports a new event's
+  # card once its 5-minute grace period passes, rechecks unlocked cards
+  # for short-notice changes every ~3h, sends "locks in an hour"
+  # reminders and "gala starts" pushes, and tries to pull results for
+  # events that have started.
   workflow_dispatch: {}
 
 jobs:
