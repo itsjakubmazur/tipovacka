@@ -21,11 +21,6 @@ export function FighterPortrait({
   grayedOut?: boolean;
   className?: string;
 }) {
-  // Inside the leaderboard's intercepted-route modal, iOS Safari collapses
-  // this box to zero height whenever it has a `filter` (the old grayscale
-  // class) applied - a known WebKit bug with `filter` breaking intrinsic
-  // sizing in that nested context. A `mix-blend-mode: luminosity` overlay
-  // gives the same black & white look without touching `filter` at all.
   if (photoUrl) {
     return (
       <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
@@ -33,6 +28,7 @@ export function FighterPortrait({
         <div
           className={cn(
             "absolute inset-0 overflow-hidden bg-neutral-100 dark:bg-neutral-900",
+            grayedOut && "grayscale",
             className
           )}
         >
@@ -44,7 +40,6 @@ export function FighterPortrait({
             sizes="(min-width: 640px) 220px, 180px"
             className="object-cover object-top"
           />
-          {grayedOut && <div className="absolute inset-0 bg-white mix-blend-luminosity" />}
         </div>
       </div>
     );
