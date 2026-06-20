@@ -19,12 +19,11 @@ export function FighterPortrait({
   photoUrl?: string | null;
   className?: string;
 }) {
-  // Mobile Safari (notably inside the leaderboard's intercepted-route modal,
-  // nested in an overflow-y-auto flex container) can fail to size a pure
-  // `aspect-ratio` box that only contains an absolutely-positioned `fill`
-  // image, collapsing it to zero height - the classic padding-bottom
-  // intrinsic-ratio trick below doesn't depend on that computation and
-  // works everywhere.
+  // Inside the leaderboard's intercepted-route modal (nested overflow-y-auto
+  // containers), iOS Safari/PWA's lazy-load viewport detection for `fill`
+  // images can fail to ever trigger, so the photo never starts downloading
+  // until something forces a relayout (e.g. rotating the device). `eager`
+  // bypasses that detection entirely.
   if (photoUrl) {
     return (
       <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
@@ -39,6 +38,7 @@ export function FighterPortrait({
             src={photoUrl}
             alt={name}
             fill
+            loading="eager"
             sizes="(min-width: 640px) 220px, 180px"
             className="object-cover object-top"
           />
