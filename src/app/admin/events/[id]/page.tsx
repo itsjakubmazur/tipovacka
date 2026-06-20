@@ -32,7 +32,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, location, status, lock_at, auto_lock, actual_fotn_fight_id")
+    .select("id, number, name, location, event_date, status, lock_at, auto_lock, actual_fotn_fight_id")
     .eq("id", id)
     .single();
 
@@ -100,6 +100,17 @@ export default async function AdminEventPage({
       <h1 className="text-xl font-bold">
         {event.number ? `OKTAGON ${event.number}` : event.name}
       </h1>
+
+      {event.status === "draft" && (
+        <p className="rounded-xl border border-[#FFD400]/40 bg-[#FFD400]/10 p-3 text-sm text-neutral-700 dark:text-neutral-300">
+          Tohle je jen návrh, skrytý tipérům. Zápasová karta se naimportuje a galavečer se
+          automaticky zveřejní cca 3 dny před začátkem (
+          {new Date(
+            new Date(event.event_date).getTime() - 3 * 24 * 60 * 60 * 1000
+          ).toLocaleDateString("cs-CZ", { dateStyle: "long", timeZone: "Europe/Prague" })}
+          ) – nic není potřeba dělat ručně.
+        </p>
+      )}
 
       {sortedFights.length > 0 && (
         <section className="flex flex-col gap-3">
