@@ -37,6 +37,17 @@ export default async function EventDetailPage({
     redirect("/login");
   }
 
+  if (event.status === "draft") {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+    if (!profile?.is_admin) {
+      notFound();
+    }
+  }
+
   const { data: fights } = await supabase
     .from("fights")
     .select(

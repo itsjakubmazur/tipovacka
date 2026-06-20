@@ -40,6 +40,7 @@ export default async function LeaderboardPage({
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date")
+    .neq("status", "draft")
     .order("event_date", { ascending: false });
 
   if (!events?.length) {

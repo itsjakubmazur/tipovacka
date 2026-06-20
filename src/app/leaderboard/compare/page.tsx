@@ -29,6 +29,7 @@ export default async function ComparePage({
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date")
+    .neq("status", "draft")
     .order("event_date", { ascending: false });
 
   const eventsInSeason = (events ?? []).filter(
