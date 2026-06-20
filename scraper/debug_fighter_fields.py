@@ -25,6 +25,9 @@ def main(number: int | None) -> None:
         return
 
     cards = fetch_json(f"/events/{oktagon_event_id}/fightcard")
+    for i, card in enumerate(cards):
+        card_keys = {k: v for k, v in card.items() if k != "fights"}
+        print(f"card[{i}] keys/values (excl. fights): {card_keys!r}")
     raw_fights = [fight for card in cards for fight in card.get("fights", [])]
     if not raw_fights:
         print("Žádné zápasy.")
