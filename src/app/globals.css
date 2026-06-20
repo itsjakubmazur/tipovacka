@@ -22,13 +22,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-html {
-  /* Matches the header/nav chrome (always black) so the iPhone notch and
-     home-indicator safe areas - and any overscroll bounce - never flash
-     the page's white background instead. */
-  background: #000000;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
