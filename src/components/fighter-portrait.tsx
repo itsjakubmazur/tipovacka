@@ -21,9 +21,15 @@ export function FighterPortrait({
   grayedOut?: boolean;
   className?: string;
 }) {
+  // iOS Safari sometimes never paints this box on first render inside the
+  // leaderboard modal - the photo is there (rotating the device "shakes it
+  // loose") but doesn't composite until something forces a relayout.
+  // Forcing the box onto its own GPU layer up front (translate3d) makes
+  // Safari paint it immediately instead of lazily/never creating that
+  // layer.
   if (photoUrl) {
     return (
-      <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
+      <div className="relative w-full max-w-[180px] sm:max-w-[220px] [transform:translate3d(0,0,0)]">
         <div className="pb-[133.33%]" />
         <div
           className={cn(
