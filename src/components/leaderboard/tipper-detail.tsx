@@ -48,7 +48,7 @@ export async function TipperDetail({
       .eq("id", eventId)
       .single();
 
-    if (!event) {
+    if (!event || event.status === "draft") {
       notFound();
     }
 
@@ -142,6 +142,7 @@ export async function TipperDetail({
   const { data: seasonEvents } = await supabase
     .from("events")
     .select("id, number, name, event_date")
+    .neq("status", "draft")
     .order("event_date", { ascending: false });
 
   const eventsInSeason = (seasonEvents ?? []).filter(
