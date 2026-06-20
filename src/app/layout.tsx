@@ -26,6 +26,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -43,7 +44,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NavBar />
           <PushPromptBanner />
-          <main className="mx-auto w-full max-w-3xl flex-1 pb-20 md:pb-0">{children}</main>
+          <main className="mx-auto w-full max-w-3xl flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+          {children}
+        </main>
         </ThemeProvider>
       </body>
     </html>

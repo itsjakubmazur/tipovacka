@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-const navItems = [
-  { href: "/events", label: "Galavečery", icon: Swords },
-  { href: "/leaderboard", label: "Žebříček", icon: Trophy },
-  { href: "/groups", label: "Skupiny", icon: Users },
-  { href: "/profile", label: "Profil", icon: User },
-];
+import { DesktopNav, MobileNav } from "@/components/nav-links";
 
 export async function NavBar() {
   let user = null;
@@ -61,57 +54,14 @@ export async function NavBar() {
             <span className="hidden sm:inline"> Tipovačka</span>
           </Link>
           <div className="flex items-center gap-4">
-            <nav className="hidden items-center gap-4 md:flex">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="text-sm font-medium text-white/80 hover:text-[#FFD400]"
-                >
-                  Admin
-                </Link>
-              )}
-              <SignOutButton className="text-sm font-medium text-white/80 hover:text-[#FFD400]" />
-            </nav>
+            <DesktopNav isAdmin={isAdmin} />
+            <SignOutButton className="hidden text-sm font-medium text-white/80 hover:text-[#FFD400] md:inline" />
             <ThemeToggle className="text-white/80 hover:text-[#FFD400]" />
           </div>
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
-        <div className="mx-auto flex max-w-3xl">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
-              >
-                <Icon className="size-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-          {isAdmin && (
-            <Link
-              href="/admin"
-              className="flex flex-1 flex-col items-center gap-1 py-2 text-xs text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
-            >
-              <ShieldCheck className="size-5" />
-              Admin
-            </Link>
-          )}
-        </div>
-      </nav>
+      <MobileNav isAdmin={isAdmin} />
     </>
   );
 }
