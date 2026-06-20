@@ -13,6 +13,7 @@ export default async function EventsPage() {
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date, location, status, lock_at")
+    .neq("status", "draft")
     .order("event_date", { ascending: false });
 
   const { data: userData } = await supabase.auth.getUser();

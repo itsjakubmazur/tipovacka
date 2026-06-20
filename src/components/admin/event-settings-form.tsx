@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { pragueLocalToUtcIso, utcIsoToPragueLocalInput } from "@/lib/time";
 
 const STATUS_OPTIONS = [
+  { value: "draft", label: "Návrh (skryté tipérům)" },
   { value: "upcoming", label: "Chystá se" },
   { value: "locked", label: "Uzamčeno" },
   { value: "completed", label: "Vyhodnoceno" },

@@ -4,23 +4,30 @@ several) since GitHub Actions bills a 1-minute minimum per job run no
 matter how short the script actually takes - a private repo's free
 minutes would otherwise disappear fast.
 
-Does six things, in order:
+Does eight things, in order:
 
-1. import_new_cards - once an event has had its number set for at least
+1. auto_create_events - creates a 'draft' event (admin-only, see
+   src/app/events/page.tsx) for any future numbered OKTAGON fight card
+   that shows up on /events/ and isn't in our table yet, prefilled with
+   date/location/name straight from OKTAGON.
+2. publish_draft_events - 3 days before a draft event starts, flips it
+   to 'upcoming' so it becomes visible/tippable; its card is then picked
+   up by import_new_cards below like any other event.
+3. import_new_cards - once an event has had its number set for at least
    5 minutes (a grace period, in case an admin is still editing it) and
    doesn't have any fights yet, imports the card and notifies everyone
    that it's online.
-2. recheck_cards - every ~3h, re-imports the card for events that aren't
+4. recheck_cards - every ~3h, re-imports the card for events that aren't
    locked yet, to catch short-notice changes (new/cancelled fight),
    notifying everyone if anything actually changed.
-3. refresh_odds - on every tick (odds move too fast for the 3h card
+5. refresh_odds - on every tick (odds move too fast for the 3h card
    recheck interval), refreshes betting odds for events with a card that
    aren't locked yet.
-4. send_lock_reminders - events locking within the next hour get a "tip
+6. send_lock_reminders - events locking within the next hour get a "tip
    before it's too late" push to everyone subscribed.
-5. send_lock_notifications - events whose lock_at has just passed get a
+7. send_lock_notifications - events whose lock_at has just passed get a
    "gala starts, go check everyone's tips" push to everyone subscribed.
-6. check_results - events that have started but aren't completed yet get
+8. check_results - events that have started but aren't completed yet get
    a results import attempt; once an event flips to completed, everyone
    gets notified that points are in.
 """
@@ -29,6 +36,7 @@ from datetime import datetime, timedelta, timezone
 
 from import_card import import_card, update_odds
 from import_results import import_results
+from oktagon import fetch_upcoming_tournaments
 from push import send_to_all
 from run_logger import log_run
 from supabase_client import SupabaseClient
@@ -36,10 +44,70 @@ from supabase_client import SupabaseClient
 CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
+PUBLISH_WINDOW = timedelta(days=3)
 
 
 def event_label(event: dict) -> str:
     return f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+
+
+def auto_create_events(db: SupabaseClient, now: datetime) -> None:
+    """Once OKTAGON's own /events/ listing shows a future numbered fight
+    card we don't have yet, creates a 'draft' row for it with everything
+    OKTAGON already publishes up front (date, location, name) - visible
+    to admins only (see src/app/events/page.tsx) until publish_draft_events
+    turns it into a real, tippable event closer to the date."""
+    try:
+        tournaments = fetch_upcoming_tournaments()
+    except Exception as exc:
+        print(f"Nepodařilo se stáhnout listing eventů z OKTAGON API: {exc}")
+        return
+
+    existing_ids = {
+        e["oktagon_event_id"]
+        for e in db.select("events", {"oktagon_event_id": "not.is.null", "select": "oktagon_event_id"})
+    }
+    for tournament in tournaments:
+        if tournament["oktagon_event_id"] in existing_ids:
+            continue
+        event_date = datetime.fromisoformat(tournament["event_date"].replace("Z", "+00:00"))
+        if event_date <= now:
+            continue
+
+        db.insert(
+            "events",
+            [
+                {
+                    "number": tournament["number"],
+                    "name": tournament["name"],
+                    "event_date": tournament["event_date"],
+                    "lock_at": tournament["event_date"],
+                    "location": tournament["location"],
+                    "oktagon_event_id": tournament["oktagon_event_id"],
+                    "status": "draft",
+                }
+            ],
+        )
+        print(f"Založen návrh eventu: {tournament['name']} ({tournament['event_date']}).")
+
+
+def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
+    """3 days before a draft event starts, flips it to 'upcoming' - it
+    becomes visible to tippers immediately, and import_new_cards (which
+    only skips status='draft') picks up the card on the same/next tick
+    since `number` was already set when the draft was created."""
+    events = db.select(
+        "events",
+        {
+            "status": "eq.draft",
+            "event_date": f"lte.{(now + PUBLISH_WINDOW).isoformat()}",
+            "select": "id,number,name",
+        },
+    )
+    for event in events:
+        label = event_label(event)
+        db.update("events", {"status": "upcoming"}, {"id": f"eq.{event['id']}"})
+        print(f"{label}: zveřejněno tipérům, karta se naimportuje při nejbližším běhu cronu.")
 
 
 def import_new_cards(db: SupabaseClient, now: datetime) -> None:
@@ -47,6 +115,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
         "events",
         {
             "number": "not.is.null",
+            "status": "neq.draft",
             "card_notified_at": "is.null",
             "created_at": f"lte.{(now - CARD_GRACE_PERIOD).isoformat()}",
             "select": "id,number,name",
@@ -79,7 +148,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
         {
             "number": "not.is.null",
             "card_notified_at": "not.is.null",
-            "status": "neq.completed",
+            "status": "not.in.(draft,completed)",
             "card_checked_at": f"lte.{(now - CARD_RECHECK_INTERVAL).isoformat()}",
             "select": "id,number,name,lock_at",
         },
@@ -116,7 +185,7 @@ def refresh_odds(db: SupabaseClient, now: datetime) -> None:
         {
             "oktagon_event_id": "not.is.null",
             "card_notified_at": "not.is.null",
-            "status": "neq.completed",
+            "status": "not.in.(draft,completed)",
             "select": "id,oktagon_event_id,lock_at",
         },
     )
@@ -131,7 +200,7 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
-            "status": "neq.completed",
+            "status": "not.in.(draft,completed)",
             "reminder_sent_at": "is.null",
             "lock_at": f"lte.{(now + LOCK_REMINDER_WINDOW).isoformat()}",
             "select": "id,number,name,lock_at",
@@ -159,7 +228,7 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
-            "status": "neq.completed",
+            "status": "not.in.(draft,completed)",
             "lock_notified_at": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
             "select": "id,number,name",
@@ -185,7 +254,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
-            "status": "neq.completed",
+            "status": "not.in.(draft,completed)",
             "lock_at": f"lt.{now.isoformat()}",
             "number": "not.is.null",
             "select": "id,number,name",
@@ -213,6 +282,8 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
 def main() -> None:
     db = SupabaseClient()
     now = datetime.now(timezone.utc)
+    auto_create_events(db, now)
+    publish_draft_events(db, now)
     import_new_cards(db, now)
     recheck_cards(db, now)
     refresh_odds(db, now)
