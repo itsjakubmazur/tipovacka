@@ -4,7 +4,7 @@ several) since GitHub Actions bills a 1-minute minimum per job run no
 matter how short the script actually takes - a private repo's free
 minutes would otherwise disappear fast.
 
-Does four things, in order:
+Does six things, in order:
 
 1. import_new_cards - once an event has had its number set for at least
    5 minutes (a grace period, in case an admin is still editing it) and
@@ -13,18 +13,21 @@ Does four things, in order:
 2. recheck_cards - every ~3h, re-imports the card for events that aren't
    locked yet, to catch short-notice changes (new/cancelled fight),
    notifying everyone if anything actually changed.
-3. send_lock_reminders - events locking within the next hour get a "tip
+3. refresh_odds - on every tick (odds move too fast for the 3h card
+   recheck interval), refreshes betting odds for events with a card that
+   aren't locked yet.
+4. send_lock_reminders - events locking within the next hour get a "tip
    before it's too late" push to everyone subscribed.
-4. send_lock_notifications - events whose lock_at has just passed get a
+5. send_lock_notifications - events whose lock_at has just passed get a
    "gala starts, go check everyone's tips" push to everyone subscribed.
-5. check_results - events that have started but aren't completed yet get
+6. check_results - events that have started but aren't completed yet get
    a results import attempt; once an event flips to completed, everyone
    gets notified that points are in.
 """
 
 from datetime import datetime, timedelta, timezone
 
-from import_card import import_card
+from import_card import import_card, update_odds
 from import_results import import_results
 from push import send_to_all
 from run_logger import log_run
@@ -101,6 +104,27 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
                 "Na zápasové kartě nastala změna, zkontroluj a tipuj!",
                 f"/events/{event['id']}",
             )
+
+
+def refresh_odds(db: SupabaseClient, now: datetime) -> None:
+    """Betting odds move right up until lock, so unlike the rest of the
+    card they're refreshed on every cron tick (not gated by
+    CARD_RECHECK_INTERVAL) for any event that already has a card and
+    isn't locked yet."""
+    events = db.select(
+        "events",
+        {
+            "oktagon_event_id": "not.is.null",
+            "card_notified_at": "not.is.null",
+            "status": "neq.completed",
+            "select": "id,oktagon_event_id,lock_at",
+        },
+    )
+    for event in events:
+        if event["lock_at"] and event["lock_at"] <= now.isoformat():
+            continue
+        with log_run("cron_odds_refresh", event["id"]):
+            update_odds(db, event["id"], event["oktagon_event_id"])
 
 
 def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
@@ -191,6 +215,7 @@ def main() -> None:
     now = datetime.now(timezone.utc)
     import_new_cards(db, now)
     recheck_cards(db, now)
+    refresh_odds(db, now)
     send_lock_reminders(db, now)
     send_lock_notifications(db, now)
     check_results(db, now)

@@ -41,7 +41,7 @@ export default async function EventDetailPage({
     .from("fights")
     .select(
       `id, weight_class, is_title_fight, is_main_event, card_order, card_segment, rounds, status,
-       winner_fighter_id, method, result_round, result_time,
+       winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
        fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code),
        fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code)`
     )

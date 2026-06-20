@@ -99,6 +99,16 @@ export function TipBreakdownCard({
                   )}
                 </span>
               )}
+              {(() => {
+                const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
+                return (
+                  odds != null && (
+                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
+                      Kurz: {odds.toFixed(2)}
+                    </span>
+                  )
+                );
+              })()}
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {isTip && <Badge variant="secondary">Tip</Badge>}
                 {isActualWinner && <Badge variant="accent">Výherce</Badge>}
