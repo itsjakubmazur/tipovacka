@@ -43,7 +43,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NavBar />
           <PushPromptBanner />
-          <main className="mx-auto w-full max-w-3xl flex-1 pb-20 md:pb-0">{children}</main>
+          <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0">{children}</main>
         </ThemeProvider>
       </body>
     </html>
