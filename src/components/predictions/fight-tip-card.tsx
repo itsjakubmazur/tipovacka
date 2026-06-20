@@ -244,10 +244,8 @@ export function FightTipCard({
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                className={cn(
-                  winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]",
-                  grayedOut && "grayscale"
-                )}
+                grayedOut={grayedOut}
+                className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
               />
               {isActualWinner && (
                 <Badge variant="accent" className="mt-1">
