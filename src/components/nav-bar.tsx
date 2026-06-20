@@ -86,7 +86,7 @@ export async function NavBar() {
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-3 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
+      <nav className="fixed inset-x-0.5 bottom-3 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
         <div className="mx-auto flex max-w-3xl">
           {navItems.map((item) => {
             const Icon = item.icon;
