@@ -7,6 +7,9 @@ type GroupLeaderboardRow = {
   user_id: string;
   nickname: string | null;
   points: number;
+  fights_correct_winner: number;
+  perfect_cards: number;
+  earliest_prediction_at: string | null;
 };
 
 export default async function GroupDetailPage({
@@ -39,10 +42,13 @@ export default async function GroupDetailPage({
 
   const { data: rows } = await supabase
     .from("group_season_leaderboard")
-    .select("user_id, nickname, points")
+    .select("user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at")
     .eq("group_id", id)
     .eq("season", season)
-    .order("points", { ascending: false });
+    .order("points", { ascending: false })
+    .order("fights_correct_winner", { ascending: false })
+    .order("perfect_cards", { ascending: false })
+    .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
 
   const leaderboardRows: GroupLeaderboardRow[] = rows ?? [];
   const currentUserId = userData.user.id;
