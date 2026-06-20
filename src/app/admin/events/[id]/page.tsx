@@ -32,7 +32,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, status, lock_at, auto_lock, actual_fotn_fight_id")
+    .select("id, number, name, location, status, lock_at, auto_lock, actual_fotn_fight_id")
     .eq("id", id)
     .single();
 
@@ -131,6 +131,8 @@ export default async function AdminEventPage({
 
       <EventSettingsForm
         eventId={event.id}
+        initialName={event.name}
+        initialLocation={event.location}
         initialLockAt={event.lock_at}
         initialAutoLock={event.auto_lock}
         initialStatus={event.status}
