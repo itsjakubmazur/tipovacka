@@ -21,12 +21,17 @@ export function FighterPortrait({
 }) {
   if (photoUrl) {
     return (
-      <div className={cn("relative h-36 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900 sm:h-48", className)}>
+      <div
+        className={cn(
+          "relative aspect-[3/4] w-full max-w-[180px] overflow-hidden bg-neutral-100 dark:bg-neutral-900 sm:max-w-[220px]",
+          className
+        )}
+      >
         <Image
           src={photoUrl}
           alt={name}
           fill
-          sizes="(min-width: 640px) 240px, 45vw"
+          sizes="(min-width: 640px) 220px, 180px"
           className="object-cover object-top"
         />
       </div>
@@ -36,7 +41,7 @@ export function FighterPortrait({
   return (
     <div
       className={cn(
-        "flex h-36 w-full items-center justify-center bg-neutral-200 text-2xl font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 sm:h-48",
+        "flex aspect-[3/4] w-full max-w-[180px] items-center justify-center bg-neutral-200 text-2xl font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 sm:max-w-[220px]",
         className
       )}
     >
