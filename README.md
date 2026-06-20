@@ -2,13 +2,13 @@
 
 Kamarádská tipovačka na galavečery MMA organizace OKTAGON. Tipuje se vítěz,
 způsob ukončení a kolo u každého zápasu; výsledky se po galavečeru natáhnou
-ze Sherdogu a body se spočítají automaticky.
+z OKTAGON API a body se spočítají automaticky.
 
 ## Stack
 
 - **Next.js** (App Router, TypeScript) + **Tailwind CSS** + shadcn/ui komponenty
 - **Supabase** (Postgres, Auth, Row Level Security)
-- **Python scraper** (Sherdog výsledky) běžící jako GitHub Actions
+- **Python scraper** (OKTAGON API) běžící jako GitHub Actions
 - **Vercel** hosting
 
 ## Vývoj
@@ -45,21 +45,23 @@ Pokud nemáš Supabase CLI propojené, lze stejný SQL vložit ručně do
 Supabase → SQL Editor → Run (soubory v `supabase/migrations` se aplikují
 v pořadí podle názvu).
 
-## Sherdog scraper
+## OKTAGON API scraper
 
 Python skripty v `scraper/` umí dvě věci, obě bez nutnosti cokoliv zadávat
 manuálně:
 
-- **`import_card.py`** - stáhne kartu zápasů (zápasníky + zápasy) z Sherdog
-  stránky galavečera a vytvoří je v Supabase (zápasníci se párují podle
-  `sherdog_slug`, případně podle jména).
+- **`import_card.py`** - stáhne kartu zápasů (zápasníky + zápasy) z OKTAGON
+  API (`scraper/oktagon.py`, `api.oktagonmma.com/v1`) a vytvoří je v
+  Supabase (zápasníci se párují podle `oktagon_fighter_id`, případně podle
+  jména).
 - **`import_results.py`** - po galavečeru stáhne výsledky, doplní vítěze/
   způsob/kolo k existujícím zápasům a zavolá `recalculate_event_points`,
   aby se přepočetly body všem hráčům.
 
 Lze je spustit ručně přes GitHub Actions workflow `sherdog-scraper.yml`
 (GitHub → Actions → Sherdog scraper → Run workflow, vyber `mode` a
-vyplň `event_id`), ale za normálního provozu to dělá automaticky
+vyplň `event_id` - název workflow zůstal historicky po Sherdogu, i když
+už táhne z OKTAGON API), ale za normálního provozu to dělá automaticky
 `scraper/cron.py` (viz níže) - manuální spuštění je hlavně pro případ, že
 by automatika z nějakého důvodu zaspala.
 
@@ -68,10 +70,10 @@ by automatika z nějakého důvodu zaspala.
 Jeden GitHub Actions workflow (`scraper-cron.yml`) spouští `cron.py` a ten
 postupně:
 
-1. **Naimportuje kartu nového galavečera** - jakmile má `events` vyplněnou
-   `sherdog_event_url` alespoň 5 minut (aby se nestáhla karta uprostřed
-   rozeditování v adminu) a ještě nemá žádné zápasy, stáhne kartu ze
-   Sherdogu a pošle push "karta je online" všem.
+1. **Naimportuje kartu nového galavečera** - jakmile má `events` vyplněné
+   `number` alespoň 5 minut (aby se nestáhla karta uprostřed rozeditování
+   v adminu) a ještě nemá žádné zápasy, stáhne kartu z OKTAGON API a pošle
+   push "karta je online" všem.
 2. **Znovu zkontroluje kartu** - u galavečerů, co ještě nejsou uzamčené,
    jednou za ~3 hodiny znovu stáhne kartu a porovná ji s tím, co je v
    Supabase. Pokud se něco změnilo (nový zápas, zrušený zápas - typicky
@@ -81,7 +83,7 @@ postupně:
    možné short-notice změny karty).
 4. **Zkusí stáhnout výsledky** - u každého galavečeru, co už začal, ale
    ještě nemá `status = completed`, zavolá `import_results.py`. Je to
-   bezpečné spustit opakovaně - pokud Sherdog výsledky ještě nemá, skript
+   bezpečné spustit opakovaně - pokud OKTAGON API výsledky ještě nemá, skript
    se jen tiše ukončí a zkusí to znovu příští běh. Každý nově dohraný
    zápas se vyhodnotí hned (`recalculate_fight_points`) a každý tipper na
    ten zápas dostane osobní push s výsledkem a tím, kolik bodů za svůj tip
@@ -124,15 +126,14 @@ Potřebné GitHub repo secrets (Settings → Secrets and variables → Actions):
 | `SUPABASE_URL` | stejná URL jako `NEXT_PUBLIC_SUPABASE_URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` klíč (nikdy nevkládat do appky/Vercelu) |
 
-Sherdog nemá veřejné API, takže parsování HTML stránky se může při
-změně designu rozbít - pokud `import_card.py` nenajde žádné zápasy,
-vypíše to do logu Action běhu a je potřeba upravit selektory v
-`scraper/sherdog.py`.
+OKTAGON API není veřejně dokumentované, takže se může při změně struktury
+rozbít - pokud `import_card.py` nenajde žádné zápasy, vypíše to do logu
+Action běhu a je potřeba upravit parsování v `scraper/oktagon.py`.
 
 ### Spuštění importu z admin UI
 
-V `/admin/events/[id]` jde po vyplnění odkazu na Sherdog kliknout na
-tlačítko "Stáhnout kartu ze Sherdogu" / "Stáhnout výsledky ze Sherdogu" —
+V `/admin/events/[id]` jde po vyplnění čísla galavečera kliknout na
+tlačítko "Stáhnout kartu z OKTAGON API" / "Stáhnout výsledky z OKTAGON API" —
 admin appka pak za tebe spustí stejný GitHub Actions workflow (není
 potřeba chodit do GitHub → Actions). Aby to fungovalo, appka potřebuje na
 Vercelu env proměnnou `GITHUB_DISPATCH_TOKEN` - GitHub osobní token
