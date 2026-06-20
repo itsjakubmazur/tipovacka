@@ -36,8 +36,9 @@ export default async function AdminPage() {
     .select("id, number, name, event_date, status")
     .order("event_date", { ascending: false });
 
-  const { data: profiles } = (await supabase.rpc("admin_list_profiles")) as {
+  const { data: profiles, error: profilesError } = (await supabase.rpc("admin_list_profiles")) as {
     data: { id: string; nickname: string | null; is_admin: boolean; email: string | null }[] | null;
+    error: { message: string } | null;
   };
 
   return (
@@ -76,6 +77,9 @@ export default async function AdminPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Uživatelé</h2>
+        {profilesError && (
+          <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
+        )}
         <div className="flex flex-col gap-2">
           {profiles?.map((p) => (
             <div
