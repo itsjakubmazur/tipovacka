@@ -5,6 +5,13 @@ import { AddEventForm } from "@/components/admin/add-event-form";
 import { PromoteUserButton } from "@/components/admin/promote-user-button";
 import { BroadcastPushForm } from "@/components/admin/broadcast-push-form";
 
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Návrh (skryté tipérům)",
+  upcoming: "Chystá se",
+  locked: "Uzamčeno",
+  completed: "Vyhodnoceno",
+};
+
 export default async function AdminPage() {
   const supabase = await createClient();
 
@@ -54,7 +61,9 @@ export default async function AdminPage() {
               <span className="font-medium">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className="text-sm text-neutral-500 dark:text-neutral-300">{event.status}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-300">
+                {STATUS_LABELS[event.status] ?? event.status}
+              </span>
             </Link>
           ))}
         </div>

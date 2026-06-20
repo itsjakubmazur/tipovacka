@@ -126,6 +126,51 @@ def find_event_id(number: int) -> int | None:
     return None
 
 
+def _event_number(item: dict) -> int | None:
+    """Extracts the OKTAGON event number from `slugs` (e.g.
+    ["oktagon-90-berlin"] -> 90). Items with no "oktagon-<number>" slug
+    aren't numbered fight cards - e.g. weigh-ins/press conferences tied
+    to a numbered event, or unrelated shows like the Tipsport Cage Game -
+    and are skipped by the caller."""
+    for slug in item.get("slugs") or []:
+        match = re.match(r"oktagon-(\d+)(-.*)?$", slug)
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def _location_label(item: dict) -> str | None:
+    location = item.get("location") or {}
+    venue = _localized(location.get("name"))
+    city = _localized(location.get("city"))
+    return ", ".join(p for p in (venue, city) if p) or None
+
+
+def fetch_upcoming_tournaments() -> list[dict]:
+    """The /events/ listing also includes non-fightcard entries (weigh-ins,
+    press conferences, unrelated shows) - only `type == "TOURNAMENT"`
+    entries with a parseable "oktagon-<number>" slug are actual numbered
+    fight cards worth auto-creating an event for."""
+    items = fetch_json("/events/")
+    tournaments = []
+    for item in items:
+        if item.get("type") != "TOURNAMENT":
+            continue
+        number = _event_number(item)
+        if number is None:
+            continue
+        tournaments.append(
+            {
+                "oktagon_event_id": item["id"],
+                "number": number,
+                "name": _localized(item.get("title")) or _localized(item.get("shortTitle")) or f"OKTAGON {number}",
+                "event_date": item.get("startDate"),
+                "location": _location_label(item),
+            }
+        )
+    return tournaments
+
+
 def resolve_event_id(db: SupabaseClient, event: dict) -> int | None:
     """Returns the event's OKTAGON internal id, looking it up by `number`
     and caching it onto the event row the first time so future imports
