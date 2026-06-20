@@ -288,6 +288,21 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
     }
 
 
+def fetch_betting_odds(oktagon_event_id: int) -> dict[int, dict]:
+    """GET /events/{id}/fightcard/betting returns a dict keyed by OKTAGON's
+    fight id (matching `oktagon_fight_id`), each with `oddsFighter1`/
+    `oddsFighter2` (decimal odds, same fighter1/fighter2 order as
+    /fightcard) plus Tipsport affiliate links we don't currently use."""
+    data = fetch_json(f"/events/{oktagon_event_id}/fightcard/betting")
+    return {
+        int(fight_id): {
+            "odds_fighter_a": entry.get("oddsFighter1"),
+            "odds_fighter_b": entry.get("oddsFighter2"),
+        }
+        for fight_id, entry in data.items()
+    }
+
+
 def fetch_fightcard(oktagon_event_id: int) -> list[dict]:
     """Flattens every card's fights into one list, in the API's own order
     (main event first), and normalizes each into our internal shape."""

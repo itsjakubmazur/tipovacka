@@ -13,7 +13,7 @@ resolved (cached onto oktagon_event_id after the first successful run).
 import argparse
 import sys
 
-from oktagon import fetch_fightcard, import_image, resolve_event_id
+from oktagon import fetch_betting_odds, fetch_fightcard, import_image, resolve_event_id
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
@@ -105,6 +105,26 @@ def cancel_stale_fight(
         )
         cancelled += 1
     return cancelled
+
+
+def update_odds(db: SupabaseClient, event_id: str, oktagon_event_id: int) -> None:
+    """Best-effort - betting odds aren't always posted yet (e.g. very early
+    after a card goes up), so a missing/failed fetch shouldn't fail the
+    whole card import."""
+    try:
+        odds_by_fight = fetch_betting_odds(oktagon_event_id)
+    except Exception as exc:
+        print(f"Kurzy se nepodařilo stáhnout: {exc}")
+        return
+
+    fights = db.select(
+        "fights",
+        {"event_id": f"eq.{event_id}", "oktagon_fight_id": "not.is.null", "select": "id,oktagon_fight_id"},
+    )
+    for fight in fights:
+        odds = odds_by_fight.get(fight["oktagon_fight_id"])
+        if odds:
+            db.update("fights", odds, {"id": f"eq.{fight['id']}"})
 
 
 def import_card(event_id: str) -> tuple[int, int]:
@@ -238,6 +258,9 @@ def import_card(event_id: str) -> tuple[int, int]:
         import_image(event_id)
     except Exception as exc:
         print(f"Obrázek se nepodařilo doplnit: {exc}")
+
+    print("Doplňuji sázkové kurzy...")
+    update_odds(db, event_id, oktagon_event_id)
 
     return created, cancelled
 

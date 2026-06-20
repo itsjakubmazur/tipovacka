@@ -270,6 +270,16 @@ export function FightTipCard({
                 <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
               )}
               <RankBadge fighter={fighter} />
+              {(() => {
+                const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
+                return (
+                  odds != null && (
+                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
+                      Kurz: {odds.toFixed(2)}
+                    </span>
+                  )
+                );
+              })()}
               {consensus && (
                 <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
                   {Math.round(

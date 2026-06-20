@@ -31,6 +31,8 @@ export type Fight = {
   method: Method | null;
   result_round: number | null;
   result_time: string | null;
+  odds_fighter_a: number | null;
+  odds_fighter_b: number | null;
   fighter_a: Fighter;
   fighter_b: Fighter;
 };
