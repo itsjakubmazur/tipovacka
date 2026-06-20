@@ -45,10 +45,15 @@ CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
 PUBLISH_WINDOW = timedelta(days=3)
+MAX_FUTURE_EVENTS = 2
 
 
 def event_label(event: dict) -> str:
     return f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+
+
+def _parse_dt(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
 def auto_create_events(db: SupabaseClient, now: datetime) -> None:
@@ -56,22 +61,34 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
     card we don't have yet, creates a 'draft' row for it with everything
     OKTAGON already publishes up front (date, location, name) - visible
     to admins only (see src/app/events/page.tsx) until publish_draft_events
-    turns it into a real, tippable event closer to the date."""
+    turns it into a real, tippable event closer to the date.
+
+    OKTAGON's API already lists events months ahead, so this only ever
+    keeps MAX_FUTURE_EVENTS not-yet-completed events in our own pipeline
+    (counting any future event, OKTAGON-sourced or manually created) -
+    otherwise the events list would fill up with galas nobody can tip on
+    for a long time yet."""
     try:
         tournaments = fetch_upcoming_tournaments()
     except Exception as exc:
         print(f"Nepodařilo se stáhnout listing eventů z OKTAGON API: {exc}")
         return
 
-    existing_ids = {
-        e["oktagon_event_id"]
-        for e in db.select("events", {"oktagon_event_id": "not.is.null", "select": "oktagon_event_id"})
-    }
+    existing = db.select("events", {"select": "oktagon_event_id,status,event_date"})
+    existing_ids = {e["oktagon_event_id"] for e in existing if e["oktagon_event_id"]}
+    future_count = sum(
+        1
+        for e in existing
+        if e["status"] != "completed" and e["event_date"] and _parse_dt(e["event_date"]) > now
+    )
+
+    tournaments = sorted(tournaments, key=lambda t: t["event_date"])
     for tournament in tournaments:
+        if future_count >= MAX_FUTURE_EVENTS:
+            break
         if tournament["oktagon_event_id"] in existing_ids:
             continue
-        event_date = datetime.fromisoformat(tournament["event_date"].replace("Z", "+00:00"))
-        if event_date <= now:
+        if _parse_dt(tournament["event_date"]) <= now:
             continue
 
         db.insert(
@@ -88,6 +105,7 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
                 }
             ],
         )
+        future_count += 1
         print(f"Založen návrh eventu: {tournament['name']} ({tournament['event_date']}).")
 
 
