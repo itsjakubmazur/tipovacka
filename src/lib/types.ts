@@ -24,6 +24,7 @@ export type Fight = {
   is_title_fight: boolean;
   is_main_event: boolean;
   card_order: number;
+  card_segment: "main_card" | "prelims" | "free_prelims" | null;
   rounds: number;
   status: "scheduled" | "completed" | "cancelled" | "no_contest";
   winner_fighter_id: string | null;

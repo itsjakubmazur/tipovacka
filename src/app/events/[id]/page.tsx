@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -5,6 +6,12 @@ import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { DigitalCountdown } from "@/components/digital-countdown";
 import type { Fight, Prediction } from "@/lib/types";
+
+const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
+  main_card: "Hlavní karta",
+  prelims: "Prelims",
+  free_prelims: "Free Prelims",
+};
 
 export default async function EventDetailPage({
   params,
@@ -33,7 +40,7 @@ export default async function EventDetailPage({
   const { data: fights } = await supabase
     .from("fights")
     .select(
-      `id, weight_class, is_title_fight, is_main_event, card_order, rounds, status,
+      `id, weight_class, is_title_fight, is_main_event, card_order, card_segment, rounds, status,
        winner_fighter_id, method, result_round, result_time,
        fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code),
        fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code)`
@@ -72,6 +79,15 @@ export default async function EventDetailPage({
     .eq("user_id", user.id)
     .eq("event_id", id)
     .maybeSingle();
+
+  const fightsWithHeaders = (fights ?? []).reduce<
+    { fight: Fight; showSegmentHeader: boolean }[]
+  >((acc, rawFight) => {
+    const fight = rawFight as unknown as Fight;
+    const previousSegment = acc.at(-1)?.fight.card_segment ?? null;
+    const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== previousSegment);
+    return [...acc, { fight, showSegmentHeader }];
+  }, []);
 
   const consensusByFight = new Map<string, Map<string, number>>();
   if (locked && fightIds.length) {
@@ -139,27 +155,32 @@ export default async function EventDetailPage({
       />
 
       <div className="flex flex-col gap-5">
-        {(fights ?? []).map((rawFight) => {
-          const fight = rawFight as unknown as Fight;
+        {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
           const counts = consensusByFight.get(fight.id);
           const total = counts ? Array.from(counts.values()).reduce((a, b) => a + b, 0) : 0;
           return (
-            <FightTipCard
-              key={fight.id}
-              fight={fight}
-              userId={user.id}
-              initialPrediction={predictionByFight.get(fight.id) ?? null}
-              locked={locked}
-              consensus={
-                total > 0
-                  ? {
-                      fighterACount: counts?.get(fight.fighter_a.id) ?? 0,
-                      fighterBCount: counts?.get(fight.fighter_b.id) ?? 0,
-                      total,
-                    }
-                  : undefined
-              }
-            />
+            <Fragment key={fight.id}>
+              {showSegmentHeader && (
+                <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                  {CARD_SEGMENT_LABELS[fight.card_segment!]}
+                </h2>
+              )}
+              <FightTipCard
+                fight={fight}
+                userId={user.id}
+                initialPrediction={predictionByFight.get(fight.id) ?? null}
+                locked={locked}
+                consensus={
+                  total > 0
+                    ? {
+                        fighterACount: counts?.get(fight.fighter_a.id) ?? 0,
+                        fighterBCount: counts?.get(fight.fighter_b.id) ?? 0,
+                        total,
+                      }
+                    : undefined
+                }
+              />
+            </Fragment>
           );
         })}
       </div>

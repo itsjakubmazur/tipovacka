@@ -70,6 +70,8 @@ export function TipBreakdownCard({
         {[fight.fighter_a, fight.fighter_b].map((fighter) => {
           const isTip = prediction?.predicted_winner_id === fighter.id;
           const isActualWinner = showResult && fight.winner_fighter_id === fighter.id;
+          const isActualLoser = showResult && fight.winner_fighter_id !== fighter.id;
+          const grayedOut = isActualLoser || fight.status === "no_contest";
           return (
             <div
               key={fighter.id}
@@ -81,7 +83,7 @@ export function TipBreakdownCard({
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
+                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]", grayedOut && "grayscale")}
               />
               <div className="mt-1.5">
                 <FighterLabel fighter={fighter} />

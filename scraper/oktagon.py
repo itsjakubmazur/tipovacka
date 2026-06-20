@@ -237,7 +237,20 @@ def normalize_fighter(fighter: dict) -> dict:
     }
 
 
-def normalize_fight(fight: dict, index: int, total: int) -> dict:
+def _card_segment(card_title: str | None) -> str:
+    """Maps a card's title (e.g. "MAIN CARD", "PRELIMS", "FREE PRELIMS",
+    "HEAVYWEIGHT TITLE FIGHT") to our three broadcast segments. Title-fight
+    cards have no "PRELIM" in their title, so they fall into main_card -
+    they're headliners, not a separate segment."""
+    title = (card_title or "").upper()
+    if "FREE" in title and "PRELIM" in title:
+        return "free_prelims"
+    if "PRELIM" in title:
+        return "prelims"
+    return "main_card"
+
+
+def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> dict:
     result = fight.get("result")
     status = "scheduled"
     winner_side = None
@@ -266,6 +279,7 @@ def normalize_fight(fight: dict, index: int, total: int) -> dict:
         "is_title_fight": bool(fight.get("titleFight")),
         "is_main_event": index == 0,
         "card_order": total - index,
+        "card_segment": card_segment,
         "status": status,
         "winner_side": winner_side,
         "method": method,
@@ -278,9 +292,15 @@ def fetch_fightcard(oktagon_event_id: int) -> list[dict]:
     """Flattens every card's fights into one list, in the API's own order
     (main event first), and normalizes each into our internal shape."""
     cards = fetch_json(f"/events/{oktagon_event_id}/fightcard")
-    raw_fights = [fight for card in cards for fight in card.get("fights", [])]
+    raw_fights = [
+        (fight, _card_segment((card.get("title") or {}).get("cs")))
+        for card in cards
+        for fight in card.get("fights", [])
+    ]
     total = len(raw_fights)
-    return [normalize_fight(fight, i, total) for i, fight in enumerate(raw_fights)]
+    return [
+        normalize_fight(fight, i, total, segment) for i, (fight, segment) in enumerate(raw_fights)
+    ]
 
 
 def _fetch_build_id() -> str:

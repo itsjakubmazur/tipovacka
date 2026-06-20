@@ -224,7 +224,11 @@ export function FightTipCard({
       </div>
 
       <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
-        {[fight.fighter_a, fight.fighter_b].map((fighter) => (
+        {[fight.fighter_a, fight.fighter_b].map((fighter) => {
+          const isActualWinner = showResult && fight.winner_fighter_id === fighter.id;
+          const isActualLoser = showResult && fight.winner_fighter_id !== fighter.id;
+          const grayedOut = isActualLoser || fight.status === "no_contest";
+          return (
           <div key={fighter.id} className="flex flex-col items-center gap-1.5 px-2 pb-3 text-center">
             <button
               type="button"
@@ -240,8 +244,16 @@ export function FightTipCard({
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
+                className={cn(
+                  winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]",
+                  grayedOut && "grayscale"
+                )}
               />
+              {isActualWinner && (
+                <Badge variant="accent" className="mt-1">
+                  Výhra
+                </Badge>
+              )}
               <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">
                 {fighter.flag_code && (
                   <Image
@@ -275,7 +287,8 @@ export function FightTipCard({
             </button>
             <FighterDetails fighter={fighter} />
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex flex-col gap-3 p-4 pt-4">

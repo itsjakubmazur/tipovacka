@@ -165,6 +165,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                     "is_main_event": fight["is_main_event"],
                     "rounds": 5 if fight["is_title_fight"] else 3,
                     "card_order": fight["card_order"],
+                    "card_segment": fight["card_segment"],
                 },
                 {"id": f"eq.{existing_legacy[0]['id']}"},
             )
@@ -187,6 +188,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                     "is_main_event": fight["is_main_event"],
                     "rounds": 5 if fight["is_title_fight"] else 3,
                     "card_order": fight["card_order"],
+                    "card_segment": fight["card_segment"],
                     "status": "scheduled",
                 }
             ],
