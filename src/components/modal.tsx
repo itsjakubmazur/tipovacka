@@ -25,11 +25,11 @@ export function Modal({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="animate-modal-backdrop fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-10 backdrop-blur-sm sm:items-center"
+      className="animate-modal-backdrop fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-10 backdrop-blur-sm sm:items-center [-webkit-overflow-scrolling:touch]"
       onClick={onDismiss}
     >
       <div
-        className="animate-modal-panel relative flex max-h-[85vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-2xl"
+        className="animate-modal-panel relative flex max-h-[85vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-2xl [-webkit-overflow-scrolling:touch]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
