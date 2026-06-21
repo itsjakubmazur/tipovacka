@@ -17,10 +17,21 @@ export default async function ComparePage({
 
   const season = rawSeason ? Number(rawSeason) : new Date().getFullYear();
 
-  const { data: profiles } = await supabase
+  const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
     .select("id, nickname")
     .in("id", [a, b]);
+
+  if (profilesError) {
+    return (
+      <div className="flex flex-col gap-4 px-4 py-8">
+        <Link href="/leaderboard?view=season" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
+          ← Zpět na žebříček
+        </Link>
+        <p className="text-sm text-red-600">Chyba při načítání porovnání: {profilesError.message}</p>
+      </div>
+    );
+  }
 
   const profileA = profiles?.find((p) => p.id === a);
   const profileB = profiles?.find((p) => p.id === b);
