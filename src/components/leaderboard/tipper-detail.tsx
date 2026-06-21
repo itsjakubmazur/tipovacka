@@ -89,6 +89,7 @@ export async function TipperDetail({
     const bonusFight = bonusPrediction
       ? (fights ?? []).find((f) => f.id === bonusPrediction.predicted_fotn_fight_id)
       : null;
+    const actualFotnFight = (fights ?? []).find((f) => f.id === event.actual_fotn_fight_id);
 
     return (
       <>
@@ -106,20 +107,31 @@ export async function TipperDetail({
           <p className="text-neutral-600 dark:text-neutral-400">Tipy se zobrazí až po uzávěrce galavečera.</p>
         ) : (
           <>
-            {bonusFight && (
+            {(bonusFight || actualFotnFight) && (
               <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 text-sm">
                 <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  {(bonusFight as unknown as Fight).fighter_a.name} vs{" "}
-                  {(bonusFight as unknown as Fight).fighter_b.name}
-                  {bonusPrediction?.points != null && (
-                    <span className="ml-2 font-semibold">
-                      {bonusPrediction.points > 0
-                        ? `Trefeno! +${bonusPrediction.points} b.`
-                        : "Netrefeno."}
+                {bonusFight && (
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    {(bonusFight as unknown as Fight).fighter_a.name} vs{" "}
+                    {(bonusFight as unknown as Fight).fighter_b.name}
+                    {bonusPrediction?.points != null && (
+                      <span className="ml-2 font-semibold">
+                        {bonusPrediction.points > 0
+                          ? `Trefeno! +${bonusPrediction.points} b.`
+                          : "Netrefeno."}
+                      </span>
+                    )}
+                  </p>
+                )}
+                {actualFotnFight && (
+                  <p className="mt-1 text-xs font-medium">
+                    🏆 Skutečný Fight of the Night:{" "}
+                    <span className="text-[#FFD400]">
+                      {(actualFotnFight as unknown as Fight).fighter_a.name} vs{" "}
+                      {(actualFotnFight as unknown as Fight).fighter_b.name}
                     </span>
-                  )}
-                </p>
+                  </p>
+                )}
               </div>
             )}
             <div className="flex flex-col gap-3">
