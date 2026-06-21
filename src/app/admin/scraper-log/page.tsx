@@ -53,10 +53,10 @@ export default async function ScraperLogPage() {
             <div
               key={run.id}
               className={cn(
-                "flex flex-col gap-1 rounded-xl border p-3 text-sm",
+                "flex flex-col gap-1 rounded-xl border p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
                 run.status === "error"
                   ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
-                  : "border-neutral-200 dark:border-neutral-800"
+                  : "border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
               )}
             >
               <div className="flex items-center justify-between">

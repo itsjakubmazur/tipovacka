@@ -52,10 +52,10 @@ export function EventCompareList({
           <div
             key={row.user_id}
             className={cn(
-              "flex items-center justify-between rounded-xl border p-3",
+              "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
               row.user_id === currentUserId
                 ? "border-[#FFD400] bg-[#FFD400]/10"
-                : "border-neutral-200 dark:border-neutral-800"
+                : "border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
             )}
           >
             <div className="flex items-center gap-3">

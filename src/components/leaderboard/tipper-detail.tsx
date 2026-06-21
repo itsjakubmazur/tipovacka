@@ -108,7 +108,7 @@ export async function TipperDetail({
         ) : (
           <>
             {(bonusFight || actualFotnFight) && (
-              <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 text-sm">
+              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60">
                 <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
                 {bonusFight && (
                   <p className="text-neutral-600 dark:text-neutral-400">
@@ -263,7 +263,7 @@ export async function TipperDetail({
       )}
 
       {totalGraded > 0 && (
-        <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
+        <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-4 shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60">
           <p className="text-sm font-semibold">Statistiky sezóny</p>
           <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700 dark:text-neutral-300">
             <span>
@@ -293,7 +293,7 @@ export async function TipperDetail({
               key={event.id}
               href={`/leaderboard/u/${userId}?eventId=${event.id}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
+                "flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60"
               )}
             >
               <span className="flex items-center gap-1.5 font-semibold">

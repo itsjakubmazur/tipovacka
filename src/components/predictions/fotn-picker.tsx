@@ -84,7 +84,7 @@ export function FotnPicker({
                   "rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
                   pickedId === fight.id
                     ? "border-[#FFD400] bg-[#FFD400]/10 font-semibold"
-                    : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300"
+                    : "border-neutral-200 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 hover:border-neutral-300"
                 )}
               >
                 {fight.fighterAName} vs {fight.fighterBName}

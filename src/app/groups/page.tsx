@@ -36,7 +36,7 @@ export default async function GroupsPage() {
           <Link
             key={group.id}
             href={`/groups/${group.id}`}
-            className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
+            className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60"
           >
             <span className="font-semibold">{group.name}</span>
           </Link>

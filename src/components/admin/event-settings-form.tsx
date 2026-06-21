@@ -74,7 +74,7 @@ export function EventSettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60">
       <p className="text-sm font-semibold">Nastavení galavečera</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
