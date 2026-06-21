@@ -35,7 +35,18 @@ export default async function ComparePage({
 
   const profileA = profiles?.find((p) => p.id === a);
   const profileB = profiles?.find((p) => p.id === b);
-  if (!profileA || !profileB) notFound();
+  if (!profileA || !profileB) {
+    return (
+      <div className="flex flex-col gap-4 px-4 py-8">
+        <Link href="/leaderboard?view=season" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
+          ← Zpět na žebříček
+        </Link>
+        <p className="text-sm text-red-600">
+          Profil nenalezen. a={a} ({profileA ? "ok" : "chybí"}), b={b} ({profileB ? "ok" : "chybí"}). Načteno profilů: {profiles?.length ?? 0}.
+        </p>
+      </div>
+    );
+  }
 
   const { data: events } = await supabase
     .from("events")
