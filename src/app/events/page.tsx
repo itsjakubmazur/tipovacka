@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, string> = {
   upcoming: "Chystá se",
@@ -12,7 +14,7 @@ export default async function EventsPage() {
   const supabase = await createClient();
   const { data: events } = await supabase
     .from("events")
-    .select("id, number, name, event_date, location, status, lock_at")
+    .select("id, number, name, event_date, location, status, lock_at, image_url")
     .neq("status", "draft")
     .order("event_date", { ascending: false });
 
@@ -57,14 +59,32 @@ export default async function EventsPage() {
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 hover:border-neutral-400"
+              className={cn(
+                "relative flex min-h-[104px] items-center justify-between overflow-hidden rounded-xl border p-4",
+                event.image_url
+                  ? "border-neutral-800 hover:border-neutral-600"
+                  : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-400"
+              )}
             >
-              <div>
+              {event.image_url && (
+                <>
+                  <Image
+                    src={event.image_url}
+                    alt=""
+                    fill
+                    className="object-cover blur-[1px]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/25" />
+                </>
+              )}
+              <div className={cn("relative z-10", event.image_url && "text-white")}>
                 <p className="font-semibold">
                   {event.number ? `OKTAGON ${event.number}` : event.name}
                 </p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
-                <p className="text-sm text-neutral-500 dark:text-neutral-300">
+                <p className={cn("text-sm", event.image_url ? "text-white/80" : "text-neutral-600 dark:text-neutral-400")}>
+                  {event.location}
+                </p>
+                <p className={cn("text-sm", event.image_url ? "text-white/70" : "text-neutral-500 dark:text-neutral-300")}>
                   {new Date(event.event_date).toLocaleString("cs-CZ", {
                     dateStyle: "long",
                     timeStyle: "short",
@@ -72,12 +92,15 @@ export default async function EventsPage() {
                   })}
                 </p>
                 {user && !locked && totalFights > 0 && (
-                  <p className="text-sm text-neutral-500 dark:text-neutral-300">
+                  <p className={cn("text-sm", event.image_url ? "text-white/70" : "text-neutral-500 dark:text-neutral-300")}>
                     Tipnuto {tippedCount} z {totalFights} zápasů
                   </p>
                 )}
               </div>
-              <Badge variant={effectiveStatus === "upcoming" ? "accent" : "secondary"}>
+              <Badge
+                className="relative z-10"
+                variant={effectiveStatus === "upcoming" ? "accent" : "secondary"}
+              >
                 {STATUS_LABELS[effectiveStatus]}
               </Badge>
             </Link>
