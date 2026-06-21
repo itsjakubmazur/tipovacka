@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { AddEventForm } from "@/components/admin/add-event-form";
 import { PromoteUserButton } from "@/components/admin/promote-user-button";
 import { BroadcastPushForm } from "@/components/admin/broadcast-push-form";
+import { ViewModeToggle } from "@/components/admin/view-mode-toggle";
+import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Návrh (skryté tipérům)",
@@ -32,6 +35,9 @@ export default async function AdminPage() {
   }
   const isSuperadmin = profile?.is_superadmin ?? false;
 
+  const cookieStore = await cookies();
+  const viewMode = cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin" ? "admin" : "user";
+
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date, status")
@@ -47,6 +53,8 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-8 px-4 py-8">
       <h1 className="text-xl font-bold">Admin</h1>
+
+      {isSuperadmin && <ViewModeToggle initialMode={viewMode} />}
 
       {isSuperadmin && (
         <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">

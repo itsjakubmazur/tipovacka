@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
 const STATUS_LABELS: Record<string, string> = {
+  draft: "Návrh",
   upcoming: "Chystá se",
   locked: "Uzamčeno",
   completed: "Vyhodnoceno",
@@ -12,14 +15,31 @@ const STATUS_LABELS: Record<string, string> = {
 
 export default async function EventsPage() {
   const supabase = await createClient();
-  const { data: events } = await supabase
-    .from("events")
-    .select("id, number, name, event_date, location, status, lock_at, image_url")
-    .neq("status", "draft")
-    .order("event_date", { ascending: false });
 
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
+
+  let showDrafts = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_superadmin")
+      .eq("id", user.id)
+      .single();
+    if (profile?.is_superadmin) {
+      const cookieStore = await cookies();
+      showDrafts = cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin";
+    }
+  }
+
+  let eventsQuery = supabase
+    .from("events")
+    .select("id, number, name, event_date, location, status, lock_at, image_url")
+    .order("event_date", { ascending: false });
+  if (!showDrafts) {
+    eventsQuery = eventsQuery.neq("status", "draft");
+  }
+  const { data: events } = await eventsQuery;
 
   const { data: fights } = await supabase.from("fights").select("id, event_id");
 
@@ -52,7 +72,14 @@ export default async function EventsPage() {
       <div className="flex flex-col gap-3">
         {events?.map((event) => {
           const locked = event.lock_at ? new Date(event.lock_at) <= new Date() : false;
-          const effectiveStatus = event.status === "completed" ? "completed" : locked ? "locked" : "upcoming";
+          const effectiveStatus =
+            event.status === "draft"
+              ? "draft"
+              : event.status === "completed"
+                ? "completed"
+                : locked
+                  ? "locked"
+                  : "upcoming";
           const totalFights = fightCountByEvent.get(event.id) ?? 0;
           const tippedCount = predictionCountByEvent.get(event.id) ?? 0;
           return (

@@ -1,8 +1,31 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
 const REPO = "itsjakubmazur/tipovacka";
+
+export async function setViewMode(mode: "user" | "admin") {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_superadmin")
+    .eq("id", userData.user.id)
+    .single();
+  if (!profile?.is_superadmin) return;
+
+  const cookieStore = await cookies();
+  cookieStore.set(VIEW_MODE_COOKIE, mode, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+}
 
 export async function triggerBroadcastPush(title: string, body: string, url: string) {
   const supabase = await createClient();
