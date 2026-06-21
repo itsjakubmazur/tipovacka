@@ -43,7 +43,7 @@ export default async function ComparePage({
   if (eventId) {
     const { data: event } = await supabase
       .from("events")
-      .select("id, number, name")
+      .select("id, number, name, actual_fotn_fight_id")
       .eq("id", eventId)
       .neq("status", "draft")
       .single();
@@ -63,11 +63,23 @@ export default async function ComparePage({
 
     const fightIds = (fights ?? []).map((f) => f.id);
 
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("fight_id, user_id, predicted_winner_id, predicted_method, predicted_round, points")
-      .in("user_id", [a, b])
-      .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]);
+    const [{ data: predictions }, { data: bonusPredictions }, { data: leaderboardRows }] = await Promise.all([
+      supabase
+        .from("predictions")
+        .select("fight_id, user_id, predicted_winner_id, predicted_method, predicted_round, points")
+        .in("user_id", [a, b])
+        .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]),
+      supabase
+        .from("bonus_predictions")
+        .select("user_id, predicted_fotn_fight_id, points")
+        .eq("event_id", eventId)
+        .in("user_id", [a, b]),
+      supabase
+        .from("event_leaderboard")
+        .select("user_id, points")
+        .eq("event_id", eventId)
+        .in("user_id", [a, b]),
+    ]);
 
     const predictionByFight = new Map<string, { a: Prediction | null; b: Prediction | null }>();
     for (const fightId of fightIds) {
@@ -80,8 +92,15 @@ export default async function ComparePage({
       else entry.b = p;
     }
 
-    const totalA = (predictions ?? []).filter((p) => p.user_id === a).reduce((sum, p) => sum + (p.points ?? 0), 0);
-    const totalB = (predictions ?? []).filter((p) => p.user_id === b).reduce((sum, p) => sum + (p.points ?? 0), 0);
+    const bonusA = (bonusPredictions ?? []).find((bp) => bp.user_id === a) ?? null;
+    const bonusB = (bonusPredictions ?? []).find((bp) => bp.user_id === b) ?? null;
+    const fightById = new Map((fights ?? []).map((f) => [f.id, f]));
+    const bonusFightA = bonusA ? fightById.get(bonusA.predicted_fotn_fight_id) : null;
+    const bonusFightB = bonusB ? fightById.get(bonusB.predicted_fotn_fight_id) : null;
+    const actualFotnFight = event.actual_fotn_fight_id ? fightById.get(event.actual_fotn_fight_id) : null;
+
+    const totalA = (leaderboardRows ?? []).find((r) => r.user_id === a)?.points ?? 0;
+    const totalB = (leaderboardRows ?? []).find((r) => r.user_id === b)?.points ?? 0;
 
     return (
       <div className="flex flex-col gap-4 px-4 py-8">
@@ -106,6 +125,50 @@ export default async function ComparePage({
             <span className="text-2xl font-bold">{totalB}</span>
           </div>
         </div>
+
+        {(bonusFightA || bonusFightB || actualFotnFight) && (
+          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 text-sm">
+            <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
+            <p className="text-[#FFD400]">
+              {nicknameA}:{" "}
+              {bonusFightA ? (
+                <span className="text-neutral-700 dark:text-neutral-300">
+                  {(bonusFightA as unknown as Fight).fighter_a.name} vs {(bonusFightA as unknown as Fight).fighter_b.name}
+                  {bonusA?.points != null && (
+                    <span className="ml-2 font-semibold">
+                      {bonusA.points > 0 ? `Trefeno! +${bonusA.points} b.` : "Netrefeno."}
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-neutral-400">bez tipu</span>
+              )}
+            </p>
+            <p className="text-blue-500">
+              {nicknameB}:{" "}
+              {bonusFightB ? (
+                <span className="text-neutral-700 dark:text-neutral-300">
+                  {(bonusFightB as unknown as Fight).fighter_a.name} vs {(bonusFightB as unknown as Fight).fighter_b.name}
+                  {bonusB?.points != null && (
+                    <span className="ml-2 font-semibold">
+                      {bonusB.points > 0 ? `Trefeno! +${bonusB.points} b.` : "Netrefeno."}
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-neutral-400">bez tipu</span>
+              )}
+            </p>
+            {actualFotnFight && (
+              <p className="mt-1 text-xs font-medium">
+                🏆 Skutečný Fight of the Night:{" "}
+                <span className="text-[#FFD400]">
+                  {(actualFotnFight as unknown as Fight).fighter_a.name} vs {(actualFotnFight as unknown as Fight).fighter_b.name}
+                </span>
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-3">
           {(fights ?? []).map((fight) => {
