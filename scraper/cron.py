@@ -353,7 +353,7 @@ def _next_event_text(db: SupabaseClient, now: datetime) -> str:
     next_event = min(future, key=lambda e: e["event_date"])
     label = event_label(next_event)
     date_str = _format_date_cs(_parse_dt(next_event["event_date"]))
-    return f"Další galavečer je {label} ({date_str}), karta se otevře pro tipování {PUBLISH_DAYS_BEFORE} dny předtím."
+    return f"Další galavečer je {label} ({date_str}), tipovačka se otevře {PUBLISH_DAYS_BEFORE} dny předtím."
 
 
 def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
