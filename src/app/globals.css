@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
+  --background: #f2f2f3;
   --foreground: #0a0a0a;
   --accent: #ffd400;
 }

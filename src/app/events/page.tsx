@@ -60,7 +60,7 @@ export default async function EventsPage() {
               key={event.id}
               href={`/events/${event.id}`}
               className={cn(
-                "relative flex min-h-[160px] justify-between overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/10 transition-shadow hover:shadow-xl dark:shadow-black/60",
+                "relative flex min-h-[160px] justify-between overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/15 transition-shadow hover:shadow-xl dark:shadow-black/60",
                 event.image_url
                   ? "items-end border-neutral-800 hover:border-neutral-600"
                   : "items-center border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 hover:border-neutral-400"

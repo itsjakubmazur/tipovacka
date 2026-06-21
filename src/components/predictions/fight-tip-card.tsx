@@ -192,7 +192,7 @@ export function FightTipCard({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border shadow-lg shadow-black/10 transition-shadow hover:shadow-xl dark:shadow-black/60",
+        "overflow-hidden rounded-xl border shadow-lg shadow-black/15 transition-shadow hover:shadow-xl dark:shadow-black/60",
         voided
           ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
           : "border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
