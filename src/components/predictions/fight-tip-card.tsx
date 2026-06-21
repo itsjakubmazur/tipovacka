@@ -31,7 +31,7 @@ function Pill({
         "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
         active
           ? "border-[#FFD400] bg-[#FFD400] text-black"
-          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
+          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
       )}
     >
       {children}
@@ -192,8 +192,10 @@ export function FightTipCard({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border",
-        voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-neutral-200 dark:border-neutral-800"
+        "overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow-md",
+        voided
+          ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
+          : "border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">
@@ -238,7 +240,7 @@ export function FightTipCard({
                 "flex w-full flex-col items-center gap-1.5 pt-0 transition-colors disabled:cursor-not-allowed",
                 winnerId === fighter.id
                   ? "bg-[#FFD400]/10"
-                  : "hover:bg-neutral-50 dark:hover:bg-neutral-900/40"
+                  : "hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
               )}
             >
               <FighterPortrait
