@@ -25,11 +25,11 @@ export default async function ScraperLogPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_superadmin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) {
+  if (!profile?.is_superadmin) {
     redirect("/");
   }
 

@@ -23,31 +23,36 @@ export default async function AdminPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, is_superadmin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) {
+  if (!profile?.is_admin && !profile?.is_superadmin) {
     redirect("/");
   }
+  const isSuperadmin = profile?.is_superadmin ?? false;
 
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date, status")
     .order("event_date", { ascending: false });
 
-  const { data: profiles, error: profilesError } = (await supabase.rpc("admin_list_profiles")) as {
-    data: { id: string; nickname: string | null; is_admin: boolean; email: string | null }[] | null;
-    error: { message: string } | null;
-  };
+  const { data: profiles, error: profilesError } = isSuperadmin
+    ? ((await supabase.rpc("admin_list_profiles")) as {
+        data: { id: string; nickname: string | null; is_admin: boolean; email: string | null }[] | null;
+        error: { message: string } | null;
+      })
+    : { data: null, error: null };
 
   return (
     <div className="flex flex-col gap-8 px-4 py-8">
       <h1 className="text-xl font-bold">Admin</h1>
 
-      <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
-        Log scraperu →
-      </Link>
+      {isSuperadmin && (
+        <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
+          Log scraperu →
+        </Link>
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Galavečery</h2>
@@ -70,34 +75,38 @@ export default async function AdminPage() {
         <AddEventForm />
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Poslat upozornění</h2>
-        <BroadcastPushForm />
-      </section>
+      {isSuperadmin && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Poslat upozornění</h2>
+          <BroadcastPushForm />
+        </section>
+      )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Uživatelé</h2>
-        {profilesError && (
-          <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
-        )}
-        <div className="flex flex-col gap-2">
-          {profiles?.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
-            >
-              <span className="flex flex-col">
-                <span>
-                  {p.nickname ?? "Bez přezdívky"}
-                  {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+      {isSuperadmin && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Uživatelé</h2>
+          {profilesError && (
+            <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
+          )}
+          <div className="flex flex-col gap-2">
+            {profiles?.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+              >
+                <span className="flex flex-col">
+                  <span>
+                    {p.nickname ?? "Bez přezdívky"}
+                    {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+                  </span>
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
                 </span>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
-              </span>
-              {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
-            </div>
-          ))}
-        </div>
-      </section>
+                {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

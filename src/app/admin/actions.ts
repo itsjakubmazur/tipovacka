@@ -1,8 +1,24 @@
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
+
 const REPO = "itsjakubmazur/tipovacka";
 
 export async function triggerBroadcastPush(title: string, body: string, url: string) {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return { error: "Nejsi přihlášený." };
+  }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_superadmin")
+    .eq("id", userData.user.id)
+    .single();
+  if (!profile?.is_superadmin) {
+    return { error: "Nemáš oprávnění." };
+  }
+
   const token = process.env.GITHUB_DISPATCH_TOKEN;
   if (!token) {
     return { error: "GITHUB_DISPATCH_TOKEN není nastavený ve Vercel env proměnných." };

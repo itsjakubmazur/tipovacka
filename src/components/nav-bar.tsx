@@ -16,10 +16,10 @@ export async function NavBar() {
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin")
+        .select("is_admin, is_superadmin")
         .eq("id", user.id)
         .single();
-      isAdmin = profile?.is_admin ?? false;
+      isAdmin = (profile?.is_admin || profile?.is_superadmin) ?? false;
     }
   }
 
