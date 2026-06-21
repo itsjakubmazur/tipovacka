@@ -343,9 +343,9 @@ def _followup_at(event_date: datetime) -> datetime:
 
 
 def _next_event_text(db: SupabaseClient, now: datetime) -> str:
-    events = db.select(
-        "events", {"status": "neq.draft", "select": "id,number,name,event_date"}
-    )
+    # Drafts are only hidden from the public site - we already know the date,
+    # so include them here instead of saying "we don't know yet".
+    events = db.select("events", {"select": "id,number,name,event_date"})
     future = [e for e in events if e["event_date"] and _parse_dt(e["event_date"]) > now]
     if not future:
         return "Termín dalšího galavečeru ještě nevíme, sledujte upozornění."
