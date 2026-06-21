@@ -144,7 +144,8 @@ export function FightTipCard({
   }
 
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
-  const effectiveLocked = locked || voided;
+  const hasTba = fight.fighter_a.is_tba || fight.fighter_b.is_tba;
+  const effectiveLocked = locked || voided || hasTba;
 
   function selectWinner(id: string) {
     if (effectiveLocked) return;
@@ -204,6 +205,7 @@ export function FightTipCard({
           {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
           {fight.is_main_event && <Badge variant="default">Main event</Badge>}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
+          {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
           {showResult && (
             <Badge variant="outline">
               Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
@@ -246,6 +248,7 @@ export function FightTipCard({
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
+                isTba={fighter.is_tba}
                 grayedOut={grayedOut}
                 className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
               />
@@ -271,31 +274,35 @@ export function FightTipCard({
               {fighter.record && (
                 <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
               )}
-              <RankBadge fighter={fighter} />
-              {(() => {
-                const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
-                return (
-                  odds != null && (
+              {!fighter.is_tba && (
+                <>
+                  <RankBadge fighter={fighter} />
+                  {(() => {
+                    const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
+                    return (
+                      odds != null && (
+                        <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
+                          Kurz: {odds.toFixed(2)}
+                        </span>
+                      )
+                    );
+                  })()}
+                  {consensus && (
                     <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                      Kurz: {odds.toFixed(2)}
+                      {Math.round(
+                        ((fighter.id === fight.fighter_a.id
+                          ? consensus.fighterACount
+                          : consensus.fighterBCount) /
+                          consensus.total) *
+                          100
+                      )}
+                      % tipů
                     </span>
-                  )
-                );
-              })()}
-              {consensus && (
-                <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                  {Math.round(
-                    ((fighter.id === fight.fighter_a.id
-                      ? consensus.fighterACount
-                      : consensus.fighterBCount) /
-                      consensus.total) *
-                      100
                   )}
-                  % tipů
-                </span>
+                </>
               )}
             </button>
-            <FighterDetails fighter={fighter} />
+            {!fighter.is_tba && <FighterDetails fighter={fighter} />}
           </div>
           );
         })}

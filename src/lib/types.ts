@@ -16,6 +16,7 @@ export type Fighter = {
   birth_date: string | null;
   nationality: string | null;
   flag_code: string | null;
+  is_tba: boolean;
 };
 
 export type Fight = {

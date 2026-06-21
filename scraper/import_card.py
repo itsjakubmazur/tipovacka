@@ -65,6 +65,25 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
     return created[0]["id"]
 
 
+def resolve_fighter(db: SupabaseClient, fighter: dict, existing_id: str | None) -> str:
+    """Real fighters go through upsert_fighter as usual. An unannounced
+    ("TBA") opponent has no oktagon_fighter_id to dedupe on, so re-running
+    the import while the opponent is still unknown would otherwise create
+    a fresh placeholder fighter row every time - reuse the existing fight's
+    placeholder instead, as long as it's still a placeholder itself (i.e.
+    the slot hasn't been filled by a real fighter that then dropped out)."""
+    if not fighter["is_tba"]:
+        return upsert_fighter(db, fighter)
+
+    if existing_id:
+        existing = db.select("fighters", {"id": f"eq.{existing_id}", "select": "is_tba"})
+        if existing and existing[0]["is_tba"]:
+            return existing_id
+
+    created = db.insert("fighters", [{"name": "TBA", "is_tba": True}])
+    return created[0]["id"]
+
+
 def cancel_stale_fight(
     db: SupabaseClient,
     event_id: str,
@@ -150,25 +169,29 @@ def import_card(event_id: str) -> tuple[int, int]:
     cancelled = 0
     touched_fighter_ids = set()
     for fight in fights_data:
-        fighter_a_id = upsert_fighter(db, fight["fighter_a"])
-        fighter_b_id = upsert_fighter(db, fight["fighter_b"])
-        touched_fighter_ids.update((fighter_a_id, fighter_b_id))
-
         existing = db.select(
             "fights",
-            {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id"},
+            {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id,fighter_a_id,fighter_b_id"},
         )
-        if existing:
+        existing_row = existing[0] if existing else None
+
+        fighter_a_id = resolve_fighter(db, fight["fighter_a"], existing_row and existing_row["fighter_a_id"])
+        fighter_b_id = resolve_fighter(db, fight["fighter_b"], existing_row and existing_row["fighter_b_id"])
+        touched_fighter_ids.update((fighter_a_id, fighter_b_id))
+
+        if existing_row:
             db.update(
                 "fights",
                 {
+                    "fighter_a_id": fighter_a_id,
+                    "fighter_b_id": fighter_b_id,
                     "weight_class": fight["weight_class"],
                     "is_title_fight": fight["is_title_fight"],
                     "is_main_event": fight["is_main_event"],
                     "card_order": fight["card_order"],
                     "card_segment": fight["card_segment"],
                 },
-                {"id": f"eq.{existing[0]['id']}"},
+                {"id": f"eq.{existing_row['id']}"},
             )
             continue
 

@@ -257,7 +257,30 @@ def _rank_label(fighter: dict) -> str | None:
     return None
 
 
-def normalize_fighter(fighter: dict) -> dict:
+def normalize_fighter(fighter: dict | None) -> dict:
+    # Fights are sometimes posted before both opponents are confirmed -
+    # OKTAGON's API just omits the fighter1/fighter2 key entirely for the
+    # unannounced side, instead of a placeholder object.
+    if fighter is None:
+        return {
+            "oktagon_fighter_id": None,
+            "name": "TBA",
+            "nickname": None,
+            "photo_url": None,
+            "fight_card_photo_url": None,
+            "bio": None,
+            "record": None,
+            "nationality": None,
+            "flag_code": None,
+            "height_cm": None,
+            "weight_kg": None,
+            "birth_date": None,
+            "oktagon_rank": None,
+            "oktagon_rank_change": None,
+            "oktagon_slug": None,
+            "is_tba": True,
+        }
+
     name = f"{(fighter.get('firstName') or '').strip()} {(fighter.get('lastName') or '').strip()}".strip()
     code = fighter.get("nationality")
     weight_class = fighter.get("weightClass") or {}
@@ -279,6 +302,7 @@ def normalize_fighter(fighter: dict) -> dict:
         "oktagon_rank": _rank_label(fighter),
         "oktagon_rank_change": _rank_change(fighter),
         "oktagon_slug": slugs[0] if slugs else None,
+        "is_tba": False,
     }
 
 
@@ -318,8 +342,8 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
 
     return {
         "oktagon_fight_id": fight["id"],
-        "fighter_a": normalize_fighter(fight["fighter1"]),
-        "fighter_b": normalize_fighter(fight["fighter2"]),
+        "fighter_a": normalize_fighter(fight.get("fighter1")),
+        "fighter_b": normalize_fighter(fight.get("fighter2")),
         "weight_class": (fight.get("weightClass") or {}).get("title"),
         "is_title_fight": bool(fight.get("titleFight")),
         "is_main_event": index == 0,

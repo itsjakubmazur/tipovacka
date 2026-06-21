@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function initials(name: string) {
@@ -13,14 +14,32 @@ function initials(name: string) {
 export function FighterPortrait({
   name,
   photoUrl,
+  isTba,
   grayedOut,
   className,
 }: {
   name: string;
   photoUrl?: string | null;
+  isTba?: boolean;
   grayedOut?: boolean;
   className?: string;
 }) {
+  if (isTba) {
+    return (
+      <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
+        <div className="pb-[133.33%]" />
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center bg-neutral-200 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500",
+            className
+          )}
+        >
+          <User className="size-12" />
+        </div>
+      </div>
+    );
+  }
+
   // iOS Safari sometimes never paints this box on first render inside the
   // leaderboard modal - the photo is there (rotating the device "shakes it
   // loose") but doesn't composite until something forces a relayout.
