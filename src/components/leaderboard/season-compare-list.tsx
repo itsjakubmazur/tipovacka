@@ -66,7 +66,7 @@ export function SeasonCompareList({
             <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">
               {i + 1}.
             </span>
-            <Link href={`/leaderboard/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
+            <Link href={`/leaderboard/u/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
               {row.nickname ?? "Bez přezdívky"}
             </Link>
           </div>

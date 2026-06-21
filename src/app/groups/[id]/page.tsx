@@ -73,7 +73,7 @@ export default async function GroupDetailPage({
         {leaderboardRows.map((row, i) => (
           <Link
             key={row.user_id}
-            href={`/leaderboard/${row.user_id}?season=${season}`}
+            href={`/leaderboard/u/${row.user_id}?season=${season}`}
             className={cn(
               "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
               row.user_id === currentUserId

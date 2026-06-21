@@ -189,7 +189,7 @@ export default async function LeaderboardPage({
             return (
               <Link
                 key={row.user_id}
-                href={`/leaderboard/${row.user_id}?eventId=${selectedEvent.id}`}
+                href={`/leaderboard/u/${row.user_id}?eventId=${selectedEvent.id}`}
                 className={cn(
                   "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
                   row.user_id === currentUserId

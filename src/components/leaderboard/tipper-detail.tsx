@@ -291,7 +291,7 @@ export async function TipperDetail({
           return (
             <Link
               key={event.id}
-              href={`/leaderboard/${userId}?eventId=${event.id}`}
+              href={`/leaderboard/u/${userId}?eventId=${event.id}`}
               className={cn(
                 "flex items-center justify-between rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 hover:border-neutral-400"
               )}
