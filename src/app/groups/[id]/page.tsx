@@ -77,7 +77,7 @@ export default async function GroupDetailPage({
             className={cn(
               "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl transition-colors hover:border-neutral-400 dark:shadow-black/60",
               row.user_id === currentUserId
-                ? "border-[#FFD400] bg-[#FFD400]/10"
+                ? "border-[#FFD400] bg-[#FFFBE6] dark:bg-[#3C3722]"
                 : "border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
             )}
           >
