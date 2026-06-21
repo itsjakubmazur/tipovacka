@@ -33,6 +33,11 @@ Does eight things, in order:
    the post-event press conference - see admin event detail page), the
    event flips to completed and everyone gets notified that points are
    in.
+9. send_followup_notifications - at 14:00 Prague time the day after an
+   event, everyone who tipped gets a "thanks, go see how you did" push
+   and everyone who didn't gets a "here's how everyone else did" push,
+   both mentioning when the next gala is and that its card opens
+   PUBLISH_DAYS_BEFORE days before it starts.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -41,17 +46,34 @@ from zoneinfo import ZoneInfo
 from import_card import import_card, update_odds
 from import_results import import_results
 from oktagon import fetch_upcoming_tournaments
-from push import send_to_all
+from push import send_to_all, send_to_user
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
 CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
+FOLLOWUP_DAYS_AFTER = 1
+FOLLOWUP_HOUR_PRAGUE = 14
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
 MAX_FUTURE_EVENTS = 2
 PRAGUE_TZ = ZoneInfo("Europe/Prague")
 PUBLISH_DAYS_BEFORE = 3
 PUBLISH_HOUR_PRAGUE = 9
+
+CZECH_MONTHS_GENITIVE = {
+    1: "ledna",
+    2: "února",
+    3: "března",
+    4: "dubna",
+    5: "května",
+    6: "června",
+    7: "července",
+    8: "srpna",
+    9: "září",
+    10: "října",
+    11: "listopadu",
+    12: "prosince",
+}
 
 
 def event_label(event: dict) -> str:
@@ -60,6 +82,11 @@ def event_label(event: dict) -> str:
 
 def _parse_dt(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def _format_date_cs(dt: datetime) -> str:
+    local = dt.astimezone(PRAGUE_TZ)
+    return f"{local.day}. {CZECH_MONTHS_GENITIVE[local.month]} {local.year}"
 
 
 def auto_create_events(db: SupabaseClient, now: datetime) -> None:
@@ -307,6 +334,76 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def _followup_at(event_date: datetime) -> datetime:
+    """14:00 Prague time, FOLLOWUP_DAYS_AFTER calendar days after the
+    event - computed in Prague's local time for the same DST-safety
+    reason as _publish_at."""
+    local_date = event_date.astimezone(PRAGUE_TZ) + timedelta(days=FOLLOWUP_DAYS_AFTER)
+    return local_date.replace(hour=FOLLOWUP_HOUR_PRAGUE, minute=0, second=0, microsecond=0)
+
+
+def _next_event_text(db: SupabaseClient, now: datetime) -> str:
+    events = db.select(
+        "events", {"status": "neq.draft", "select": "id,number,name,event_date"}
+    )
+    future = [e for e in events if e["event_date"] and _parse_dt(e["event_date"]) > now]
+    if not future:
+        return "Termín dalšího galavečeru ještě nevíme, sledujte upozornění."
+
+    next_event = min(future, key=lambda e: e["event_date"])
+    label = event_label(next_event)
+    date_str = _format_date_cs(_parse_dt(next_event["event_date"]))
+    return f"Další galavečer je {label} ({date_str}), karta se otevře pro tipování {PUBLISH_DAYS_BEFORE} dny předtím."
+
+
+def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
+    events = db.select(
+        "events",
+        {
+            "status": "neq.draft",
+            "followup_notified_at": "is.null",
+            "select": "id,number,name,event_date",
+        },
+    )
+    for event in events:
+        if not event["event_date"] or now < _followup_at(_parse_dt(event["event_date"])):
+            continue
+
+        label = event_label(event)
+        fights = db.select("fights", {"event_id": f"eq.{event['id']}", "select": "id"})
+        participant_ids: set[str] = set()
+        if fights:
+            fight_ids = ",".join(f["id"] for f in fights)
+            predictions = db.select("predictions", {"fight_id": f"in.({fight_ids})", "select": "user_id"})
+            participant_ids = {p["user_id"] for p in predictions}
+
+        with log_run("cron_followup_notification", event["id"]):
+            next_event_text = _next_event_text(db, now)
+            profiles = db.select("profiles", {"select": "id"})
+            for profile in profiles:
+                if profile["id"] in participant_ids:
+                    send_to_user(
+                        db,
+                        profile["id"],
+                        f"{label}: díky za tipy!",
+                        f"Mrkni na žebříčky, jak se dařilo ostatním. {next_event_text}",
+                        f"/leaderboard?eventId={event['id']}",
+                    )
+                else:
+                    send_to_user(
+                        db,
+                        profile["id"],
+                        f"{label} je za námi",
+                        f"Mrkni, jak se dařilo ostatním v žebříčku. {next_event_text}",
+                        f"/leaderboard?eventId={event['id']}",
+                    )
+            db.update(
+                "events",
+                {"followup_notified_at": now.isoformat()},
+                {"id": f"eq.{event['id']}"},
+            )
+
+
 def main() -> None:
     db = SupabaseClient()
     now = datetime.now(timezone.utc)
@@ -318,6 +415,7 @@ def main() -> None:
     send_lock_reminders(db, now)
     send_lock_notifications(db, now)
     check_results(db, now)
+    send_followup_notifications(db, now)
 
 
 if __name__ == "__main__":
