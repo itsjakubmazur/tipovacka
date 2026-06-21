@@ -43,7 +43,10 @@ body::before {
 }
 
 .dark body::before {
-  content: none;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(255, 212, 0, 0.22), transparent 40%),
+    radial-gradient(circle at 88% 18%, rgba(99, 102, 241, 0.35), transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.28), transparent 45%);
 }
 
 @keyframes modal-backdrop-in {
