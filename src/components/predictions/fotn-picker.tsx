@@ -14,6 +14,7 @@ export function FotnPicker({
   initialFightId,
   initialPoints,
   locked,
+  actualFight,
 }: {
   eventId: string;
   userId: string;
@@ -21,6 +22,7 @@ export function FotnPicker({
   initialFightId: string | null;
   initialPoints: number | null;
   locked: boolean;
+  actualFight?: { fighterAName: string; fighterBName: string } | null;
 }) {
   const supabase = createClient();
 
@@ -89,6 +91,14 @@ export function FotnPicker({
               </button>
             ))}
           </div>
+          {locked && actualFight && (
+            <p className="text-xs font-medium">
+              🏆 Skutečný Fight of the Night:{" "}
+              <span className="text-[#FFD400]">
+                {actualFight.fighterAName} vs {actualFight.fighterBName}
+              </span>
+            </p>
+          )}
           <div className="h-4 text-xs text-neutral-500 dark:text-neutral-300">
             {locked && initialPoints != null
               ? initialPoints > 0

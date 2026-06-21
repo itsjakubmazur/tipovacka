@@ -23,7 +23,7 @@ export default async function EventDetailPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, event_date, location, status, lock_at, image_url")
+    .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id")
     .eq("id", id)
     .single();
 
@@ -83,6 +83,10 @@ export default async function EventDetailPage({
       fighterBName: fight.fighter_b.name,
     };
   });
+
+  const actualFotnFight = (fights ?? [])
+    .map((f) => f as unknown as Fight)
+    .find((f) => f.id === event.actual_fotn_fight_id);
 
   const { data: bonusPrediction } = await supabase
     .from("bonus_predictions")
@@ -173,6 +177,11 @@ export default async function EventDetailPage({
         initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
         initialPoints={bonusPrediction?.points ?? null}
         locked={locked}
+        actualFight={
+          actualFotnFight
+            ? { fighterAName: actualFotnFight.fighter_a.name, fighterBName: actualFotnFight.fighter_b.name }
+            : null
+        }
       />
 
       <div className="flex flex-col gap-5">
