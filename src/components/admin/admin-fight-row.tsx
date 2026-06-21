@@ -109,7 +109,7 @@ export function AdminFightRow({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60">
+    <div className="flex flex-col gap-3 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
       <div className="flex items-center justify-between">
         <p className="font-semibold">
           {fight.fighter_a.name} vs {fight.fighter_b.name}

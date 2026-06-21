@@ -53,7 +53,7 @@ export function AdminFotnForm({
   if (fights.length === 0) return null;
 
   return (
-    <form onSubmit={save} className="flex flex-wrap items-end gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60">
+    <form onSubmit={save} className="flex flex-wrap items-end gap-3 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">
           Fight of the Night

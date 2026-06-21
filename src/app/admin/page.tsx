@@ -56,7 +56,7 @@ export default async function AdminPage() {
             <Link
               key={event.id}
               href={`/admin/events/${event.id}`}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60"
+              className="flex items-center justify-between rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60 dark:hover:border-neutral-500/80"
             >
               <span className="font-medium">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
@@ -84,7 +84,7 @@ export default async function AdminPage() {
           {profiles?.map((p) => (
             <div
               key={p.id}
-              className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 shadow-lg shadow-black/20 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/60"
+              className="flex items-center justify-between rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-3 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60"
             >
               <span className="flex flex-col">
                 <span>
