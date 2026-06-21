@@ -30,7 +30,7 @@ export function FighterPortrait({
         <div className="pb-[133.33%]" />
         <div
           className={cn(
-            "absolute inset-0 flex items-center justify-center bg-neutral-200 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500",
+            "absolute inset-0 flex items-center justify-center bg-white/35 backdrop-blur-lg text-neutral-400 dark:bg-neutral-800/35 dark:text-neutral-500",
             className
           )}
         >
@@ -52,7 +52,7 @@ export function FighterPortrait({
         <div className="pb-[133.33%]" />
         <div
           className={cn(
-            "absolute inset-0 overflow-hidden bg-neutral-100 dark:bg-neutral-900",
+            "absolute inset-0 overflow-hidden bg-white/35 backdrop-blur-lg dark:bg-neutral-800/35",
             grayedOut && "grayscale",
             className
           )}
@@ -75,7 +75,7 @@ export function FighterPortrait({
       <div className="pb-[133.33%]" />
       <div
         className={cn(
-          "absolute inset-0 flex items-center justify-center bg-neutral-200 text-2xl font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
+          "absolute inset-0 flex items-center justify-center bg-white/35 backdrop-blur-lg text-2xl font-semibold text-neutral-700 dark:bg-neutral-800/35 dark:text-neutral-300",
           className
         )}
       >
