@@ -28,7 +28,7 @@ export function DigitalCountdown({ lockAt }: { lockAt: string }) {
   const { hours, minutes, seconds } = splitRemaining(remaining);
 
   return (
-    <div className="rounded-lg bg-neutral-900 px-4 py-3 text-white">
+    <div className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white shadow-lg shadow-black/20 backdrop-blur-lg">
       <p className="text-center text-xs font-semibold uppercase tracking-widest text-neutral-400">
         Zbývající čas
       </p>
