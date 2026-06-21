@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { TrendingUp, TrendingDown, Minus, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
+import { EventCompareList } from "@/components/leaderboard/event-compare-list";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -181,59 +181,17 @@ export default async function LeaderboardPage({
           <p className="text-neutral-600 dark:text-neutral-400">Zatím nikdo nemá body v této sezóně.</p>
         )}
 
-        {view === "event" &&
-          eventRows.map((row, i) => {
-            const rank = i + 1;
-            const prevRank = prevRankByUser.get(row.user_id);
-            const delta = prevRank != null ? prevRank - rank : null;
-            return (
-              <Link
-                key={row.user_id}
-                href={`/leaderboard/u/${row.user_id}?eventId=${selectedEvent.id}`}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border p-3 transition-colors hover:border-neutral-400",
-                  row.user_id === currentUserId
-                    ? "border-[#FFD400] bg-[#FFD400]/10"
-                    : "border-neutral-200 dark:border-neutral-800"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">
-                    {rank}.
-                  </span>
-                  {delta != null && (
-                    <span
-                      className={cn(
-                        "flex items-center gap-0.5 text-xs font-medium",
-                        delta > 0
-                          ? "text-green-600"
-                          : delta < 0
-                            ? "text-red-600"
-                            : "text-neutral-400"
-                      )}
-                    >
-                      {delta > 0 ? (
-                        <TrendingUp className="size-3.5" />
-                      ) : delta < 0 ? (
-                        <TrendingDown className="size-3.5" />
-                      ) : (
-                        <Minus className="size-3.5" />
-                      )}
-                      {delta !== 0 && Math.abs(delta)}
-                    </span>
-                  )}
-                  <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
-                  {row.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-neutral-500 dark:text-neutral-300">
-                    po {row.fights_scored} z {totalFights} zápasů
-                  </span>
-                  <span className="text-lg font-bold">{row.points}</span>
-                </div>
-              </Link>
-            );
-          })}
+        {view === "event" && eventRows.length > 0 && (
+          <EventCompareList
+            rows={eventRows.map((row, i) => {
+              const prevRank = prevRankByUser.get(row.user_id);
+              return { ...row, delta: prevRank != null ? prevRank - (i + 1) : null };
+            })}
+            eventId={selectedEvent.id}
+            totalFights={totalFights}
+            currentUserId={currentUserId}
+          />
+        )}
 
         {view === "season" && seasonRows.length > 0 && (
           <SeasonCompareList rows={seasonRows} season={season} currentUserId={currentUserId} />
