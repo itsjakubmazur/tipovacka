@@ -55,7 +55,7 @@ export function FotnPicker({
   const pickedFight = fights.find((f) => f.id === pickedId);
 
   return (
-    <div className="rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+    <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

@@ -116,18 +116,18 @@ export default async function ComparePage({
         </p>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
             <span className="font-semibold text-[#FFD400]">{nicknameA}</span>
             <span className="text-2xl font-bold">{totalA}</span>
           </div>
-          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
             <span className="font-semibold text-blue-500">{nicknameB}</span>
             <span className="text-2xl font-bold">{totalB}</span>
           </div>
         </div>
 
         {(bonusFightA || bonusFightB || actualFotnFight) && (
-          <div className="rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+          <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
             <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
             <p className="text-[#FFD400]">
               {nicknameA}:{" "}
@@ -255,7 +255,7 @@ export default async function ComparePage({
       <p className="text-sm text-neutral-600 dark:text-neutral-400">Sezóna {season}</p>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
           <span className="font-semibold">{nicknameA}</span>
           <span className="text-2xl font-bold">{totalA}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsA}× lepší večer</span>
@@ -263,7 +263,7 @@ export default async function ComparePage({
             <span className="text-xs text-neutral-500 dark:text-neutral-300">🏆 {perfectCardsA}× perfektní karta</span>
           )}
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
           <span className="font-semibold">{nicknameB}</span>
           <span className="text-2xl font-bold">{totalB}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsB}× lepší večer</span>
@@ -286,7 +286,7 @@ export default async function ComparePage({
           return (
             <div
               key={event.id}
-              className="flex items-center justify-between rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-3 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60"
+              className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
             >
               <span className={cn("w-12 text-right font-bold", pa > pb && "text-[#FFD400]")}>{pa}</span>
               <span className="flex-1 px-3 text-center text-neutral-600 dark:text-neutral-400">

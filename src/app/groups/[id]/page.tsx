@@ -78,7 +78,7 @@ export default async function GroupDetailPage({
               "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl transition-colors hover:border-white/80 dark:shadow-black/60",
               row.user_id === currentUserId
                 ? "border-[#FFD400] bg-[#FFFBE6] dark:bg-[#3C3722]"
-                : "border-white/60 bg-white/55 backdrop-blur-md dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:hover:border-neutral-500/80"
+                : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500/80"
             )}
           >
             <div className="flex items-center gap-3">

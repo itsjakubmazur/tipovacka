@@ -40,7 +40,7 @@ export function TipBreakdownCard({
     <div
       className={cn(
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 dark:shadow-black/60",
-        voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-white/60 bg-white/55 backdrop-blur-md dark:border-neutral-700/60 dark:bg-neutral-800/55"
+        voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">

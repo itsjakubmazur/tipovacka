@@ -108,7 +108,7 @@ export async function TipperDetail({
         ) : (
           <>
             {(bonusFight || actualFotnFight) && (
-              <div className="rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+              <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
                 <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
                 {bonusFight && (
                   <p className="text-neutral-600 dark:text-neutral-400">
@@ -263,7 +263,7 @@ export async function TipperDetail({
       )}
 
       {totalGraded > 0 && (
-        <div className="flex flex-col gap-2 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-4 shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60">
+        <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
           <p className="text-sm font-semibold">Statistiky sezóny</p>
           <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700 dark:text-neutral-300">
             <span>
@@ -293,7 +293,7 @@ export async function TipperDetail({
               key={event.id}
               href={`/leaderboard/u/${userId}?eventId=${event.id}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+                "flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
               )}
             >
               <span className="flex items-center gap-1.5 font-semibold">

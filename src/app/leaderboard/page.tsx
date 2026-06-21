@@ -144,7 +144,7 @@ export default async function LeaderboardPage({
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1 rounded-xl border border-white/60 bg-white/55 backdrop-blur-md p-3 text-xs shadow-lg shadow-black/20 dark:border-neutral-700/60 dark:bg-neutral-800/55 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">
+      <div className="flex flex-col gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-xs shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">
         <p className="font-semibold text-neutral-700 dark:text-neutral-300">Za co se dávají body</p>
         <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body“): +1 — tedy max 3 body za zápas.</p>
         <p>Bonus tip Fight of the Night: +2, pokud uhodneš zápas večera.</p>
