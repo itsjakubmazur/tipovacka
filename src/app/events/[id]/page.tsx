@@ -138,6 +138,7 @@ export default async function EventDetailPage({
             className="object-cover"
             priority
           />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-background" />
         </div>
       )}
       <div>
@@ -164,9 +165,9 @@ export default async function EventDetailPage({
           )
         )}
         {!locked && fightIds.length > 0 && (
-          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-300">
+          <span className="mt-2 inline-flex items-center rounded-full border border-white/45 bg-white/35 backdrop-blur-lg px-3 py-1 text-xs font-medium text-black dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white">
             Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
-          </p>
+          </span>
         )}
       </div>
 
