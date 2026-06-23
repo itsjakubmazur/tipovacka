@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Tipovačka na galavečery OKTAGON MMA",
   appleWebApp: {
     title: "OKTAGON GARÁŽ Tipovačka",
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "black",
   },
 };
 
