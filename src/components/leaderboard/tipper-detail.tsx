@@ -175,7 +175,7 @@ export async function TipperDetail({
 
   const { data: completedFights } = await supabase
     .from("fights")
-    .select("id, event_id, card_order")
+    .select("id, event_id, card_order, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b")
     .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"])
     .eq("status", "completed");
 
@@ -186,11 +186,22 @@ export async function TipperDetail({
       { eventDate: eventDateById.get(f.event_id) ?? "", cardOrder: f.card_order },
     ])
   );
+  const oddsMetaByFight = new Map(
+    (completedFights ?? []).map((f) => [
+      f.id,
+      {
+        fighterAId: f.fighter_a_id,
+        fighterBId: f.fighter_b_id,
+        oddsA: f.odds_fighter_a,
+        oddsB: f.odds_fighter_b,
+      },
+    ])
+  );
   const completedFightIds = (completedFights ?? []).map((f) => f.id);
 
   const { data: gradedPredictions } = await supabase
     .from("predictions")
-    .select("fight_id, predicted_method, points")
+    .select("fight_id, predicted_winner_id, predicted_method, points")
     .eq("user_id", userId)
     .in("fight_id", completedFightIds.length ? completedFightIds : ["00000000-0000-0000-0000-000000000000"]);
 
@@ -222,6 +233,25 @@ export async function TipperDetail({
     methodStats.set(key, entry);
   }
 
+  // Favorite vs. underdog tendency - based on which side had the lower
+  // (more likely) decimal odds at the time the fight was graded. Only
+  // counts picks where both odds were captured; a tie in odds isn't
+  // classified either way.
+  const favoriteStats = { total: 0, hits: 0 };
+  const underdogStats = { total: 0, hits: 0 };
+  for (const p of ordered) {
+    const meta = oddsMetaByFight.get(p.fight_id);
+    if (!meta || meta.oddsA == null || meta.oddsB == null || meta.oddsA === meta.oddsB) continue;
+    const pickedFighterAId = p.predicted_winner_id === meta.fighterAId;
+    const pickedOdds = pickedFighterAId ? meta.oddsA : meta.oddsB;
+    const otherOdds = pickedFighterAId ? meta.oddsB : meta.oddsA;
+    const bucket = pickedOdds < otherOdds ? favoriteStats : underdogStats;
+    bucket.total += 1;
+    if ((p.points ?? 0) > 0) bucket.hits += 1;
+  }
+  const oddsClassified = favoriteStats.total + underdogStats.total;
+  const underdogShare = oddsClassified > 0 ? underdogStats.total / oddsClassified : 0;
+
   const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
   const badges: { icon: string; label: string }[] = [];
   if (perfectCardCount > 0) {
@@ -234,6 +264,9 @@ export async function TipperDetail({
   if (totalGraded >= 5 && accuracy >= 70) badges.push({ icon: "🎯", label: "Ostrostřelec" });
   if (eventsInSeason.length >= 3 && rows && rows.length === eventsInSeason.length) {
     badges.push({ icon: "📅", label: "Věrný fanda" });
+  }
+  if (oddsClassified >= 5 && underdogShare >= 0.3) {
+    badges.push({ icon: "🎲", label: "Odvážlivec" });
   }
 
   return (
@@ -282,6 +315,20 @@ export async function TipperDetail({
               </span>
             ))}
           </div>
+          {oddsClassified > 0 && (
+            <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
+              <span>
+                Favorité: {favoriteStats.hits}/{favoriteStats.total}
+                {favoriteStats.total > 0 &&
+                  ` (${Math.round((favoriteStats.hits / favoriteStats.total) * 100)}%)`}
+              </span>
+              <span>
+                Outsideři: {underdogStats.hits}/{underdogStats.total}
+                {underdogStats.total > 0 &&
+                  ` (${Math.round((underdogStats.hits / underdogStats.total) * 100)}%)`}
+              </span>
+            </div>
+          )}
         </div>
       )}
 

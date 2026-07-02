@@ -97,7 +97,7 @@ export function FightTipCard({
   userId: string;
   initialPrediction: Prediction | null;
   locked: boolean;
-  consensus?: { fighterACount: number; fighterBCount: number; total: number };
+  consensus?: { fighterANames: string[]; fighterBNames: string[] };
 }) {
   const supabase = createClient();
 
@@ -287,18 +287,23 @@ export function FightTipCard({
                       )
                     );
                   })()}
-                  {consensus && (
-                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                      {Math.round(
-                        ((fighter.id === fight.fighter_a.id
-                          ? consensus.fighterACount
-                          : consensus.fighterBCount) /
-                          consensus.total) *
-                          100
-                      )}
-                      % tipů
-                    </span>
-                  )}
+                  {consensus &&
+                    (() => {
+                      const names =
+                        fighter.id === fight.fighter_a.id ? consensus.fighterANames : consensus.fighterBNames;
+                      const total = consensus.fighterANames.length + consensus.fighterBNames.length;
+                      if (names.length === 0) return null;
+                      return (
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
+                            {Math.round((names.length / total) * 100)}% tipů
+                          </span>
+                          <span className="max-w-[10rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
+                            {names.join(", ")}
+                          </span>
+                        </div>
+                      );
+                    })()}
                 </>
               )}
             </button>

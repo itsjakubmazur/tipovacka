@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { DigitalCountdown } from "@/components/digital-countdown";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 import type { Fight, Prediction } from "@/lib/types";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
@@ -114,21 +115,32 @@ export default async function EventDetailPage({
     { rows: [], lastSegment: null }
   );
 
-  const consensusByFight = new Map<string, Map<string, number>>();
+  const picksByFight = new Map<string, Map<string, string[]>>();
   if (locked && fightIds.length) {
     const { data: allPredictions } = await supabase
       .from("predictions")
-      .select("fight_id, predicted_winner_id")
+      .select("fight_id, predicted_winner_id, profiles(nickname)")
       .in("fight_id", fightIds);
-    for (const p of allPredictions ?? []) {
-      const counts = consensusByFight.get(p.fight_id) ?? new Map<string, number>();
-      counts.set(p.predicted_winner_id, (counts.get(p.predicted_winner_id) ?? 0) + 1);
-      consensusByFight.set(p.fight_id, counts);
+    for (const p of (allPredictions ?? []) as unknown as {
+      fight_id: string;
+      predicted_winner_id: string;
+      profiles: { nickname: string } | null;
+    }[]) {
+      const names = picksByFight.get(p.fight_id) ?? new Map<string, string[]>();
+      const list = names.get(p.predicted_winner_id) ?? [];
+      list.push(p.profiles?.nickname ?? "Bez přezdívky");
+      names.set(p.predicted_winner_id, list);
+      picksByFight.set(p.fight_id, names);
     }
   }
 
+  const gradedFights = (fights ?? []).filter((f) => f.status === "completed" || f.status === "no_contest");
+  const scoredSoFar = (predictions ?? []).reduce((sum, p) => sum + (p.points ?? 0), 0);
+
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
+      <RealtimeRefresh table="fights" />
+      <RealtimeRefresh table="predictions" />
       {event.image_url && (
         <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl">
           <Image
@@ -169,6 +181,12 @@ export default async function EventDetailPage({
             Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
           </span>
         )}
+        {locked && gradedFights.length > 0 && (
+          <span className="mt-2 inline-flex items-center rounded-full border border-white/45 bg-white/35 backdrop-blur-lg px-3 py-1 text-xs font-medium text-black dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white">
+            {event.status === "completed" ? "Tvé body" : "Tvé body zatím"}: {scoredSoFar} b. (
+            {gradedFights.length} z {fightIds.length} zápasů odbodováno)
+          </span>
+        )}
       </div>
 
       <FotnPicker
@@ -187,8 +205,10 @@ export default async function EventDetailPage({
 
       <div className="flex flex-col gap-5">
         {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
-          const counts = consensusByFight.get(fight.id);
-          const total = counts ? Array.from(counts.values()).reduce((a, b) => a + b, 0) : 0;
+          const names = picksByFight.get(fight.id);
+          const fighterANames = names?.get(fight.fighter_a.id) ?? [];
+          const fighterBNames = names?.get(fight.fighter_b.id) ?? [];
+          const total = fighterANames.length + fighterBNames.length;
           return (
             <Fragment key={fight.id}>
               {showSegmentHeader && (
@@ -201,15 +221,7 @@ export default async function EventDetailPage({
                 userId={user.id}
                 initialPrediction={predictionByFight.get(fight.id) ?? null}
                 locked={locked}
-                consensus={
-                  total > 0
-                    ? {
-                        fighterACount: counts?.get(fight.fighter_a.id) ?? 0,
-                        fighterBCount: counts?.get(fight.fighter_b.id) ?? 0,
-                        total,
-                      }
-                    : undefined
-                }
+                consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
               />
             </Fragment>
           );

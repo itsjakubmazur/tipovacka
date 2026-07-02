@@ -23,8 +23,9 @@ Does eight things, in order:
 5. refresh_odds - on every tick (odds move too fast for the 3h card
    recheck interval), refreshes betting odds for events with a card that
    aren't locked yet.
-6. send_lock_reminders - events locking within the next hour get a "tip
-   before it's too late" push to everyone subscribed.
+6. send_lock_reminders - events locking within the next hour get a
+   personalized "tip before it's too late" push, naming the event and
+   how many of its fights that specific user still hasn't tipped.
 7. send_lock_notifications - events whose lock_at has just passed get a
    "gala starts, go check everyone's tips" push to everyone subscribed.
 8. check_results - events that have started but aren't completed yet get
@@ -252,6 +253,11 @@ def refresh_odds(db: SupabaseClient, now: datetime) -> None:
 
 
 def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
+    """Personalized per-user, unlike the other cron pushes - each
+    subscriber gets their own "X z Y zápasů" tally, computed from their
+    predictions against the event's tippable (non-cancelled) fights, so
+    someone who's already fully tipped sees that instead of a generic
+    nudge."""
     events = db.select(
         "events",
         {
@@ -266,12 +272,36 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
     for event in events:
         label = event_label(event)
         with log_run("cron_lock_reminder", event["id"]):
-            send_to_all(
-                db,
-                f"{label} za hodinu začíná",
-                "Nezapomeň dotipovat a mrkni na dnešní kartu!",
-                f"/events/{event['id']}",
+            fights = db.select(
+                "fights",
+                {"event_id": f"eq.{event['id']}", "status": "neq.cancelled", "select": "id"},
             )
+            fight_ids = [f["id"] for f in fights]
+            total = len(fight_ids)
+
+            if total == 0:
+                print(f"{label}: karta ještě nemá žádné zápasy, reminder přeskočen.")
+            else:
+                user_ids = {row["user_id"] for row in db.select("push_subscriptions", {"select": "user_id"})}
+                fight_ids_csv = ",".join(fight_ids)
+                for user_id in user_ids:
+                    predictions = db.select(
+                        "predictions",
+                        {
+                            "user_id": f"eq.{user_id}",
+                            "fight_id": f"in.({fight_ids_csv})",
+                            "select": "id",
+                        },
+                    )
+                    have = len(predictions)
+                    send_to_user(
+                        db,
+                        user_id,
+                        f"{label} začíná za hodinu",
+                        f"Máš tipnuto {have} z {total} zápasů, nezapomeň dotipovat!",
+                        f"/events/{event['id']}",
+                    )
+
             db.update(
                 "events",
                 {"reminder_sent_at": now.isoformat()},
