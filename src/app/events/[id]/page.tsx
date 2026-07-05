@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
+import { SegmentJump } from "@/components/predictions/segment-jump";
 import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
@@ -136,6 +137,13 @@ export default async function EventDetailPage({
     }
   }
 
+  const segmentsOnCard = fightsWithHeaders
+    .filter(({ showSegmentHeader }) => showSegmentHeader)
+    .map(({ fight }) => ({
+      key: fight.card_segment!,
+      label: CARD_SEGMENT_LABELS[fight.card_segment!],
+    }));
+
   const gradedFights = (fights ?? []).filter((f) => f.status === "completed" || f.status === "no_contest");
   const scoredSoFar = (predictions ?? []).reduce((sum, p) => sum + (p.points ?? 0), 0);
 
@@ -247,6 +255,8 @@ export default async function EventDetailPage({
         }
       />
 
+      <SegmentJump segments={segmentsOnCard} />
+
       <div className="flex flex-col gap-5">
         {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
           const names = picksByFight.get(fight.id);
@@ -256,7 +266,10 @@ export default async function EventDetailPage({
           return (
             <Fragment key={fight.id}>
               {showSegmentHeader && (
-                <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                <h2
+                  id={`segment-${fight.card_segment!}`}
+                  className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400"
+                >
                   {CARD_SEGMENT_LABELS[fight.card_segment!]}
                 </h2>
               )}

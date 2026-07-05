@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Scale, TrendingUp, TrendingDown, Minus, Trophy } from "lucide-react";
+import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
 type EventCompareRow = {
@@ -72,9 +73,7 @@ export function EventCompareList({
               >
                 ✓
               </button>
-              <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">
-                {rank}.
-              </span>
+              <RankMedal rank={rank} />
               {delta != null && (
                 <span
                   className={cn(

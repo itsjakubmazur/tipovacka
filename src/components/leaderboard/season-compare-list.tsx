@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Scale } from "lucide-react";
+import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
 type SeasonLeaderboardRow = {
@@ -63,9 +64,7 @@ export function SeasonCompareList({
             >
               ✓
             </button>
-            <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">
-              {i + 1}.
-            </span>
+            <RankMedal rank={i + 1} />
             <Link href={`/leaderboard/u/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
               {row.nickname ?? "Bez přezdívky"}
             </Link>

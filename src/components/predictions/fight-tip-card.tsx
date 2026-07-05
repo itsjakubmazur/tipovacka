@@ -53,6 +53,38 @@ function RankBadge({ fighter }: { fighter: Fighter }) {
   );
 }
 
+function tipsWord(n: number): string {
+  if (n === 1) return "tip";
+  if (n >= 2 && n <= 4) return "tipy";
+  return "tipů";
+}
+
+/** Collapsed consensus - "73 % · 4 tipy" - expanding to the actual
+ * nicknames on tap, so the names list doesn't eat two lines under every
+ * fighter on a 14-fight card. */
+function ConsensusChip({ names, total }: { names: string[]; total: number }) {
+  const [open, setOpen] = useState(false);
+  if (names.length === 0 || total === 0) return null;
+
+  return (
+    <div className="flex w-full flex-col items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-0.5 text-[11px] font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
+      >
+        {Math.round((names.length / total) * 100)} % · {names.length} {tipsWord(names.length)}
+        <ChevronDown className={cn("size-3 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <span className="max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
+          {names.join(", ")}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function FighterDetails({ fighter }: { fighter: Fighter }) {
   const [bioOpen, setBioOpen] = useState(false);
 
@@ -212,14 +244,30 @@ export function FightTipCard({
           {fight.is_main_event && <Badge variant="default">Main event</Badge>}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
           {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
-          {showResult && (
-            <Badge variant="outline">
-              Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
-              {fight.method ? METHOD_LABELS[fight.method] : ""}
-              {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
-              {fight.result_time ? ` · ${fight.result_time}` : ""}
-            </Badge>
-          )}
+          {showResult &&
+            (() => {
+              // color the result by how the user's own tip did - scanning
+              // the card after the gala, green/red tells the story alone
+              const graded = initialPrediction?.points != null;
+              const hit = graded && initialPrediction!.points! > 0;
+              return (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    graded &&
+                      (hit
+                        ? "border-green-600/50 bg-green-600/15 text-green-800 dark:text-green-400"
+                        : "border-red-600/50 bg-red-600/15 text-red-800 dark:text-red-400")
+                  )}
+                >
+                  Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
+                  {fight.method ? METHOD_LABELS[fight.method] : ""}
+                  {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+                  {fight.result_time ? ` · ${fight.result_time}` : ""}
+                  {graded ? ` · ${hit ? `+${initialPrediction!.points} b.` : "0 b."}` : ""}
+                </Badge>
+              );
+            })()}
         </div>
         {!effectiveLocked && winnerId && (
           <button
@@ -297,21 +345,6 @@ export function FightTipCard({
                       );
                     })()}
                   </span>
-                  {consensus &&
-                    (() => {
-                      const names =
-                        fighter.id === fight.fighter_a.id ? consensus.fighterANames : consensus.fighterBNames;
-                      const total = consensus.fighterANames.length + consensus.fighterBNames.length;
-                      if (names.length === 0) return null;
-                      return (
-                        <span className="max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
-                          <span className="font-medium text-neutral-500 dark:text-neutral-300">
-                            {Math.round((names.length / total) * 100)} % tipů
-                          </span>{" "}
-                          · {names.join(", ")}
-                        </span>
-                      );
-                    })()}
                 </>
               ) : (
                 fighter.record && (
@@ -319,6 +352,12 @@ export function FightTipCard({
                 )
               )}
             </button>
+            {!fighter.is_tba && consensus && (
+              <ConsensusChip
+                names={fighter.id === fight.fighter_a.id ? consensus.fighterANames : consensus.fighterBNames}
+                total={consensus.fighterANames.length + consensus.fighterBNames.length}
+              />
+            )}
             {!fighter.is_tba && <FighterDetails fighter={fighter} />}
           </div>
           );

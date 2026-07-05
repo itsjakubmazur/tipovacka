@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
 type SeasonRow = {
@@ -12,8 +13,6 @@ type SeasonRow = {
   perfect_cards: number;
   earliest_prediction_at: string | null;
 };
-
-const MEDALS = ["🥇", "🥈", "🥉"];
 
 export default async function HallOfFamePage() {
   const supabase = await createClient();
@@ -86,7 +85,7 @@ export default async function HallOfFamePage() {
                   )}
                 >
                   <span className="flex items-center gap-2 font-semibold">
-                    <span className="text-lg">{MEDALS[i]}</span>
+                    <RankMedal rank={i + 1} />
                     {row.nickname ?? "Bez přezdívky"}
                     {i === 0 && !running && (
                       <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">

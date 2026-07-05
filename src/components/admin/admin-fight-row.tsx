@@ -8,7 +8,7 @@ import type { Method } from "@/lib/types";
 
 const METHOD_OPTIONS: { value: Method; label: string }[] = [
   { value: "KO/TKO", label: "KO/TKO" },
-  { value: "SUBMISSION", label: "Submission" },
+  { value: "SUBMISSION", label: "Submise" },
   { value: "DECISION", label: "Rozhodnutí" },
 ];
 
