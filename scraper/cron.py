@@ -18,8 +18,9 @@ Does eight things, in order:
    doesn't have any fights yet, imports the card and notifies everyone
    that it's online.
 4. recheck_cards - every ~3h, re-imports the card for events that aren't
-   locked yet, to catch short-notice changes (new/cancelled fight),
-   notifying everyone if anything actually changed.
+   locked yet (drafts with an imported card included), to catch
+   short-notice changes (new/cancelled fight), notifying everyone if
+   anything actually changed on a published event.
 5. refresh_odds - on every tick (odds move too fast for the 3h card
    recheck interval), refreshes betting odds for events with a card that
    aren't locked yet.
@@ -200,18 +201,26 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
 
 
 def recheck_cards(db: SupabaseClient, now: datetime) -> None:
+    """Also covers draft events whose card was already imported (e.g. by
+    an admin ahead of publishing) - their cards used to silently rot
+    with stale fights until publish. Drafts are invisible to tippers, so
+    changes there don't push a notification."""
+    cutoff = (now - CARD_RECHECK_INTERVAL).isoformat()
     events = db.select(
         "events",
         {
             "number": "not.is.null",
-            "card_notified_at": "not.is.null",
-            "status": "not.in.(draft,completed)",
-            "card_checked_at": f"lte.{(now - CARD_RECHECK_INTERVAL).isoformat()}",
-            "select": "id,number,name,lock_at",
+            "status": "neq.completed",
+            "or": f"(card_checked_at.is.null,card_checked_at.lte.{cutoff})",
+            "select": "id,number,name,lock_at,status",
         },
     )
     for event in events:
         if event["lock_at"] and event["lock_at"] <= now.isoformat():
+            continue
+        # no card yet - that's import_new_cards' job (with its own notify flow)
+        fights = db.select("fights", {"event_id": f"eq.{event['id']}", "select": "id", "limit": "1"})
+        if not fights:
             continue
 
         label = event_label(event)
@@ -223,7 +232,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
             {"card_checked_at": datetime.now(timezone.utc).isoformat()},
             {"id": f"eq.{event['id']}"},
         )
-        if created > 0 or cancelled > 0:
+        if (created > 0 or cancelled > 0) and event["status"] != "draft":
             send_to_all(
                 db,
                 f"{label}: karta se změnila",

@@ -171,7 +171,7 @@ def import_card(event_id: str) -> tuple[int, int]:
     for fight in fights_data:
         existing = db.select(
             "fights",
-            {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id,fighter_a_id,fighter_b_id"},
+            {"oktagon_fight_id": f"eq.{fight['oktagon_fight_id']}", "select": "id,fighter_a_id,fighter_b_id,status"},
         )
         existing_row = existing[0] if existing else None
 
@@ -180,19 +180,21 @@ def import_card(event_id: str) -> tuple[int, int]:
         touched_fighter_ids.update((fighter_a_id, fighter_b_id))
 
         if existing_row:
-            db.update(
-                "fights",
-                {
-                    "fighter_a_id": fighter_a_id,
-                    "fighter_b_id": fighter_b_id,
-                    "weight_class": fight["weight_class"],
-                    "is_title_fight": fight["is_title_fight"],
-                    "is_main_event": fight["is_main_event"],
-                    "card_order": fight["card_order"],
-                    "card_segment": fight["card_segment"],
-                },
-                {"id": f"eq.{existing_row['id']}"},
-            )
+            patch = {
+                "fighter_a_id": fighter_a_id,
+                "fighter_b_id": fighter_b_id,
+                "weight_class": fight["weight_class"],
+                "is_title_fight": fight["is_title_fight"],
+                "is_main_event": fight["is_main_event"],
+                "card_order": fight["card_order"],
+                "card_segment": fight["card_segment"],
+            }
+            # a fight we cancelled earlier is back on OKTAGON's card
+            # (temporary API hiccup or a reversed cancellation) - revive it
+            if existing_row["status"] == "cancelled":
+                patch["status"] = "scheduled"
+                print(f"Zápas {fight['fighter_a']['name']} vs {fight['fighter_b']['name']} je zpět na kartě - obnoven.")
+            db.update("fights", patch, {"id": f"eq.{existing_row['id']}"})
             continue
 
         # Not linked to OKTAGON yet - this is most likely a fight imported
@@ -249,6 +251,32 @@ def import_card(event_id: str) -> tuple[int, int]:
         )
         created += 1
         print(f"Vytvořen zápas: {fight['fighter_a']['name']} vs {fight['fighter_b']['name']}")
+
+    # A fight that disappears from OKTAGON's card entirely - its id is no
+    # longer in the fresh pull - never goes through cancel_stale_fight
+    # (that only fires when a NEW fight reuses one of its fighters).
+    # Cancel it here; if it ever reappears, the revive branch above flips
+    # it back to scheduled.
+    fresh_ids = {f["oktagon_fight_id"] for f in fights_data}
+    linked_scheduled = db.select(
+        "fights",
+        {
+            "event_id": f"eq.{event_id}",
+            "status": "eq.scheduled",
+            "oktagon_fight_id": "not.is.null",
+            "select": "id,oktagon_fight_id",
+        },
+    )
+    for row in linked_scheduled:
+        if row["oktagon_fight_id"] in fresh_ids:
+            continue
+        db.update("fights", {"status": "cancelled"}, {"id": f"eq.{row['id']}"})
+        affected = db.select("predictions", {"fight_id": f"eq.{row['id']}", "select": "id"})
+        print(
+            f"Zápas (id {row['id']}) už není na kartě OKTAGON API - zrušen. "
+            f"Zasaženo tipů: {len(affected)}."
+        )
+        cancelled += 1
 
     # cancel_stale_fight only catches a fighter getting a new opponent - if
     # a whole matchup drops off the card with no replacement (neither

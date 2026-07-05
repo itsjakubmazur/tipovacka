@@ -81,14 +81,14 @@ export default async function EventDetailPage({
     event.status === "completed" ||
     (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
 
-  const fotnOptions = (fights ?? []).map((rawFight) => {
-    const fight = rawFight as unknown as Fight;
-    return {
+  const fotnOptions = (fights ?? [])
+    .map((rawFight) => rawFight as unknown as Fight)
+    .filter((fight) => fight.status !== "cancelled")
+    .map((fight) => ({
       id: fight.id,
       fighterAName: fight.fighter_a.name,
       fighterBName: fight.fighter_b.name,
-    };
-  });
+    }));
 
   const actualFotnFight = (fights ?? [])
     .map((f) => f as unknown as Fight)
@@ -101,16 +101,18 @@ export default async function EventDetailPage({
     .eq("event_id", id)
     .maybeSingle();
 
-  const { rows: fightsWithHeaders } = (fights ?? []).reduce<{
+  const cancelledFights = (fights ?? [])
+    .map((f) => f as unknown as Fight)
+    .filter((f) => f.status === "cancelled");
+
+  const { rows: fightsWithHeaders } = (fights ?? [])
+    .filter((f) => (f as unknown as Fight).status !== "cancelled")
+    .reduce<{
     rows: { fight: Fight; showSegmentHeader: boolean }[];
     lastSegment: Fight["card_segment"];
   }>(
     (acc, rawFight) => {
       const fight = rawFight as unknown as Fight;
-      // Cancelled fights replaced by an opponent swap can predate the
-      // card_segment column and carry a null value - skip over them
-      // instead of resetting the segment, so they don't reprint the
-      // header for the segment that's still ongoing.
       const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== acc.lastSegment);
       return {
         rows: [...acc.rows, { fight, showSegmentHeader }],
@@ -288,6 +290,23 @@ export default async function EventDetailPage({
           );
         })}
       </div>
+
+      {cancelledFights.length > 0 && (
+        <div className="flex flex-col gap-5">
+          <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Zrušené zápasy
+          </h2>
+          {cancelledFights.map((fight) => (
+            <FightTipCard
+              key={fight.id}
+              fight={fight}
+              userId={user.id}
+              initialPrediction={predictionByFight.get(fight.id) ?? null}
+              locked={locked}
+            />
+          ))}
+        </div>
+      )}
 
       <EventComments eventId={id} userId={user.id} isAdmin={isAdmin} initialComments={comments} />
 

@@ -169,14 +169,32 @@ export async function TipperDetail({
               </div>
             )}
             <div className="flex flex-col gap-3">
-              {(fights ?? []).map((fight) => (
-                <TipBreakdownCard
-                  key={fight.id}
-                  fight={fight as unknown as Fight}
-                  prediction={predictionByFight.get(fight.id) ?? null}
-                />
-              ))}
+              {(fights ?? [])
+                .filter((f) => (f as unknown as Fight).status !== "cancelled")
+                .map((fight) => (
+                  <TipBreakdownCard
+                    key={fight.id}
+                    fight={fight as unknown as Fight}
+                    prediction={predictionByFight.get(fight.id) ?? null}
+                  />
+                ))}
             </div>
+            {(fights ?? []).some((f) => (f as unknown as Fight).status === "cancelled") && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                  Zrušené zápasy
+                </h2>
+                {(fights ?? [])
+                  .filter((f) => (f as unknown as Fight).status === "cancelled")
+                  .map((fight) => (
+                    <TipBreakdownCard
+                      key={fight.id}
+                      fight={fight as unknown as Fight}
+                      prediction={predictionByFight.get(fight.id) ?? null}
+                    />
+                  ))}
+              </div>
+            )}
           </>
         )}
       </>
