@@ -13,7 +13,10 @@ export function GeneratedCardImage({ src, alt }: { src: string; alt: string }) {
   return (
     <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60">
       {!loaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-neutral-950">
+        // The placeholder backdrop is always near-black (matching the card
+        // being generated), so pin the shimmer's base color to light - the
+        // theme variable would make it black-on-black in light mode.
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-neutral-950 [--foreground:#ededed]">
           <span className="brand-loader whitespace-nowrap text-xl font-bold tracking-tight">
             OKTAGON GARÁŽ
           </span>
