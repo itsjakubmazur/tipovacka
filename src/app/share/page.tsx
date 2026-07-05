@@ -7,6 +7,7 @@ type ShareParams = {
   points?: string;
   rank?: string;
   total?: string;
+  img?: string;
 };
 
 // Public landing page for shared results - the OG image carries the
@@ -16,9 +17,9 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<ShareParams>;
 }): Promise<Metadata> {
-  const { event, nick, points, rank, total } = await searchParams;
+  const { event, nick, points, rank, total, img } = await searchParams;
   const query = new URLSearchParams(
-    Object.entries({ event, nick, points, rank, total }).filter(([, v]) => v != null) as [string, string][]
+    Object.entries({ event, nick, points, rank, total, img }).filter(([, v]) => v != null) as [string, string][]
   );
   const title = `${nick ?? "Tipér"}: ${points ?? 0} b. na ${event ?? "OKTAGONU"}`;
   return {

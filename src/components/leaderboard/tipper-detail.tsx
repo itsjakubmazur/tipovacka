@@ -45,7 +45,7 @@ export async function TipperDetail({
   if (eventId) {
     const { data: event } = await supabase
       .from("events")
-      .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id")
+      .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id, image_url")
       .eq("id", eventId)
       .single();
 
@@ -138,6 +138,7 @@ export async function TipperDetail({
                 points={shareData.points}
                 rank={shareData.rank}
                 total={shareData.total}
+                imageUrl={event.image_url}
               />
             )}
             {(bonusFight || actualFotnFight) && (

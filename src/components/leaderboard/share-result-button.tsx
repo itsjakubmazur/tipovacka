@@ -10,12 +10,14 @@ export function ShareResultButton({
   points,
   rank,
   total,
+  imageUrl,
 }: {
   eventLabel: string;
   nickname: string;
   points: number;
   rank: number | null;
   total: number | null;
+  imageUrl?: string | null;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -27,6 +29,7 @@ export function ShareResultButton({
     });
     if (rank != null) query.set("rank", String(rank));
     if (total != null) query.set("total", String(total));
+    if (imageUrl) query.set("img", imageUrl);
     const url = `${window.location.origin}/share?${query.toString()}`;
     const text = `${nickname}: ${points} b. na ${eventLabel}${rank ? ` (${rank}. místo)` : ""} 🥊`;
 
