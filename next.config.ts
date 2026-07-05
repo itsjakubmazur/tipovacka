@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Version-skew protection: a tab opened on an older deployment would
+  // otherwise fail client-side navigations against a newer one with
+  // Next's "This page couldn't load" screen. With a deploymentId set,
+  // the client detects the mismatch and does a full reload by itself.
+  // On Vercel the commit SHA uniquely identifies the deployment.
+  deploymentId: process.env.VERCEL_GIT_COMMIT_SHA,
   images: {
     remotePatterns: [
       {
