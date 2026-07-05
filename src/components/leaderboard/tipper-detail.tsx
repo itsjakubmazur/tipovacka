@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
-import { ShareResultButton } from "@/components/leaderboard/share-result-button";
+import { ShareResultCard } from "@/components/leaderboard/share-result-button";
 import { cn } from "@/lib/utils";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import type { Fight, Method, Prediction } from "@/lib/types";
@@ -132,7 +132,7 @@ export async function TipperDetail({
         ) : (
           <>
             {shareData && (
-              <ShareResultButton
+              <ShareResultCard
                 eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
                 nickname={profile.nickname ?? "Bez přezdívky"}
                 points={shareData.points}

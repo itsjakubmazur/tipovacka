@@ -4,7 +4,12 @@ import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ShareResultButton({
+/** The rendered result card (PNG straight from /share/card) with a
+ * share button under it. Showing the image itself means it can be
+ * long-pressed/right-clicked to save or copy; the button shares the
+ * actual PNG file where supported (mobile share sheet), falling back
+ * to sharing/copying the /share link with the card as OG preview. */
+export function ShareResultCard({
   eventLabel,
   nickname,
   points,
@@ -19,38 +24,62 @@ export function ShareResultButton({
   total: number | null;
   imageUrl?: string | null;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  const query = new URLSearchParams({
+    event: eventLabel,
+    nick: nickname,
+    points: String(points),
+  });
+  if (rank != null) query.set("rank", String(rank));
+  if (total != null) query.set("total", String(total));
+  if (imageUrl) query.set("img", imageUrl);
+  const cardUrl = `/share/card?${query.toString()}`;
 
   async function share() {
-    const query = new URLSearchParams({
-      event: eventLabel,
-      nick: nickname,
-      points: String(points),
-    });
-    if (rank != null) query.set("rank", String(rank));
-    if (total != null) query.set("total", String(total));
-    if (imageUrl) query.set("img", imageUrl);
-    const url = `${window.location.origin}/share?${query.toString()}`;
+    const pageUrl = `${window.location.origin}/share?${query.toString()}`;
     const text = `${nickname}: ${points} b. na ${eventLabel}${rank ? ` (${rank}. místo)` : ""} 🥊`;
 
+    // Prefer sharing the PNG itself - recipients get the picture, not a link.
     if (navigator.share) {
       try {
-        await navigator.share({ title: "OKTAGON GARÁŽ Tipovačka", text, url });
+        const blob = await fetch(cardUrl).then((r) => (r.ok ? r.blob() : Promise.reject()));
+        const file = new File([blob], "tipovacka-vysledek.png", { type: "image/png" });
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], text });
+          return;
+        }
+      } catch {
+        // image fetch failed or file sharing unsupported - fall through
+      }
+      try {
+        await navigator.share({ title: "OKTAGON GARÁŽ Tipovačka", text, url: pageUrl });
         return;
       } catch {
-        // user cancelled the sheet - nothing to do
+        // user closed the share sheet
         return;
       }
     }
-    await navigator.clipboard.writeText(`${text} ${url}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+
+    await navigator.clipboard.writeText(`${text} ${pageUrl}`);
+    setFeedback("Odkaz zkopírován!");
+    setTimeout(() => setFeedback(null), 2000);
   }
 
   return (
-    <Button type="button" variant="outline" size="sm" onClick={share} className="self-start">
-      <Share2 className="size-4" />
-      {copied ? "Odkaz zkopírován!" : "Sdílet výsledek"}
-    </Button>
+    <div className="flex flex-col gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={cardUrl}
+        alt={`Výsledek: ${nickname}, ${points} b. na ${eventLabel}`}
+        width={1200}
+        height={630}
+        className="w-full rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60"
+      />
+      <Button type="button" variant="accent" size="sm" onClick={share} className="self-start">
+        <Share2 className="size-4" />
+        {feedback ?? "Sdílet"}
+      </Button>
+    </div>
   );
 }
