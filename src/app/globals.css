@@ -68,3 +68,30 @@ body::before {
 .animate-modal-panel {
   animation: modal-panel-in 0.18s ease-out;
 }
+
+/* Branded loading state: a yellow highlight sweeping across the
+   OKTAGON GARÁŽ wordmark while a page loads. */
+@keyframes brand-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.brand-loader {
+  background-image: linear-gradient(
+    100deg,
+    var(--foreground) 0%,
+    var(--foreground) 38%,
+    var(--accent) 50%,
+    var(--foreground) 62%,
+    var(--foreground) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: brand-shimmer 1.6s linear infinite;
+}
