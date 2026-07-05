@@ -9,6 +9,8 @@ import { SegmentJump } from "@/components/predictions/segment-jump";
 import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { cn } from "@/lib/utils";
+import { GLASS_PILL } from "@/lib/pills";
 import type { Fight, Prediction } from "@/lib/types";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
@@ -224,7 +226,7 @@ export default async function EventDetailPage({
           )
         )}
         {!locked && fightIds.length > 0 && (
-          <span className="mt-2 inline-flex items-center rounded-full border border-white/45 bg-white/35 backdrop-blur-lg px-3 py-1 text-xs font-medium text-black dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white">
+          <span className={cn(GLASS_PILL, "mt-2 inline-flex items-center px-3 py-1 text-xs font-medium")}>
             Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
           </span>
         )}

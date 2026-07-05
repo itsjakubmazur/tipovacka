@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
 import { ageFromBirthDate, cn } from "@/lib/utils";
+import { GLASS_PILL } from "@/lib/pills";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { X, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
@@ -28,10 +29,8 @@ function Pill({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-        active
-          ? "border-[#FFD400] bg-[#FFD400] text-black"
-          : "border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
+        "rounded-full px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60",
+        active ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
       )}
     >
       {children}

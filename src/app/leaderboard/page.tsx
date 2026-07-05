@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Landmark } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { GLASS_PILL } from "@/lib/pills";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
@@ -125,10 +126,8 @@ export default async function LeaderboardPage({
         <Link
           href={`/leaderboard?view=event&eventId=${selectedEvent.id}`}
           className={cn(
-            "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
-            view === "event"
-              ? "border-[#FFD400] bg-[#FFD400] text-black"
-              : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
+            "rounded-full px-3 py-1.5 text-sm font-medium",
+            view === "event" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
           )}
         >
           Galavečer
@@ -136,17 +135,15 @@ export default async function LeaderboardPage({
         <Link
           href={`/leaderboard?view=season&eventId=${selectedEvent.id}`}
           className={cn(
-            "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
-            view === "season"
-              ? "border-[#FFD400] bg-[#FFD400] text-black"
-              : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400"
+            "rounded-full px-3 py-1.5 text-sm font-medium",
+            view === "season" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
           )}
         >
           Sezóna {season}
         </Link>
         <Link
           href="/leaderboard/history"
-          className="flex items-center gap-1.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 transition-colors hover:border-neutral-400"
+          className={cn(GLASS_PILL, "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium")}
         >
           <Landmark className="size-4" />
           Síň slávy
@@ -174,10 +171,10 @@ export default async function LeaderboardPage({
               key={event.id}
               href={`/leaderboard?view=event&eventId=${event.id}`}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                "rounded-full px-3 py-1 text-xs font-medium",
                 event.id === selectedEvent.id
-                  ? "border-neutral-700 bg-neutral-900 text-white"
-                  : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:border-neutral-400"
+                  ? "border border-neutral-700 bg-neutral-900 text-white transition-colors"
+                  : GLASS_PILL
               )}
             >
               {event.number ? `OKTAGON ${event.number}` : event.name}

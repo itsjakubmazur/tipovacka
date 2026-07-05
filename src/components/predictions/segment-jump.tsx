@@ -1,5 +1,8 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+import { GLASS_PILL } from "@/lib/pills";
+
 /** Sticky chip row under the app header: one tap scrolls to the start
  * of a card segment (Hlavní karta / Prelims / Free Prelims). Only
  * rendered when the card actually has more than one segment. */
@@ -23,7 +26,7 @@ export function SegmentJump({
               .getElementById(`segment-${segment.key}`)
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
-          className="shrink-0 rounded-full border border-white/60 bg-white/85 px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-lg shadow-black/15 backdrop-blur-lg transition-colors hover:border-neutral-400 dark:border-neutral-600/60 dark:bg-neutral-800/90 dark:text-neutral-200 dark:shadow-black/40 dark:hover:border-neutral-400"
+          className={cn(GLASS_PILL, "shrink-0 px-3.5 py-1.5 text-xs font-semibold")}
         >
           {segment.label}
         </button>
