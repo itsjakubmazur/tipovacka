@@ -1,6 +1,8 @@
-const CACHE_NAME = "tipovacka-v1";
-const OFFLINE_FALLBACK = "/";
-
+// v2: navigation caching removed. The network-first fetch handler that
+// briefly lived here broke page loads in Safari ("This page couldn't
+// load" on first navigation, fine after a refresh) - a SW intercepting
+// navigations is riskier than the offline nicety was worth. This worker
+// only handles push notifications; activate cleans up the old cache.
 self.addEventListener("install", () => {
   self.skipWaiting();
 });
@@ -9,32 +11,8 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
-  );
-});
-
-// Network-first for page navigations, falling back to the last cached
-// copy of that page (arena wifi/data tends to die mid-gala). Only GET
-// navigations are handled - API calls, Supabase, and assets keep their
-// default behavior.
-self.addEventListener("fetch", (event) => {
-  const request = event.request;
-  if (request.method !== "GET" || request.mode !== "navigate") return;
-
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-        }
-        return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(request);
-        return cached ?? caches.match(OFFLINE_FALLBACK);
-      })
   );
 });
 
