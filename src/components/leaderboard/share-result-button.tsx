@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GeneratedCardImage } from "@/components/leaderboard/generated-card-image";
 
 /** The rendered result card (PNG straight from /share/card) with a
  * share button under it. Showing the image itself means it can be
@@ -68,14 +69,7 @@ export function ShareResultCard({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={cardUrl}
-        alt={`Výsledek: ${nickname}, ${points} b. na ${eventLabel}`}
-        width={1200}
-        height={630}
-        className="w-full rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60"
-      />
+      <GeneratedCardImage src={cardUrl} alt={`Výsledek: ${nickname}, ${points} b. na ${eventLabel}`} />
       <Button type="button" variant="accent" size="sm" onClick={share} className="self-start">
         <Share2 className="size-4" />
         {feedback ?? "Sdílet"}

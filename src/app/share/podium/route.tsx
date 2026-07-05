@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     .filter((p): p is { rank: number; nick: string; points: string } => !!p.nick && p.points != null);
 
   const footer = `TIPNI SI TAKY · ${request.nextUrl.host.toUpperCase()}`;
-  const allText = `OKTAGON GARÁŽ TIPOVAČKA NEJLEPŠÍ TIPEŘI ${event} ${places
+  const allText = `OKTAGON GARÁŽ TIPOVAČKA NEJLEPŠÍ TIPÉŘI ${event} ${places
     .map((p) => `${p.nick} ${p.points}`)
     .join(" ")} ${footer}`;
   const fontData = await loadCzechFont(allText);
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
               backgroundColor: "rgba(0,0,0,0.35)",
             }}
           >
-            {event} · NEJLEPŠÍ TIPEŘI
+            {event} · NEJLEPŠÍ TIPÉŘI
           </div>
         </div>
 

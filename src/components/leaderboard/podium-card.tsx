@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GeneratedCardImage } from "@/components/leaderboard/generated-card-image";
 
 /** Rendered top-3 podium PNG shown above the event leaderboard once the
  * gala is done, with a share button - same pattern as ShareResultCard. */
@@ -56,14 +57,7 @@ export function PodiumCard({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={cardUrl}
-        alt={`Pódium ${eventLabel}`}
-        width={1200}
-        height={630}
-        className="w-full rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60"
-      />
+      <GeneratedCardImage src={cardUrl} alt={`Pódium ${eventLabel}`} />
       <Button type="button" variant="outline" size="sm" onClick={share} className="self-start">
         <Share2 className="size-4" />
         {feedback ?? "Sdílet pódium"}
