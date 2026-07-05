@@ -4,6 +4,7 @@ import { Landmark } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
 import { EventCompareList } from "@/components/leaderboard/event-compare-list";
 
@@ -45,7 +46,7 @@ export default async function LeaderboardPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, number, name, event_date")
+    .select("id, number, name, event_date, status, image_url")
     .neq("status", "draft")
     .order("event_date", { ascending: false });
 
@@ -183,6 +184,18 @@ export default async function LeaderboardPage({
             </Link>
           ))}
         </div>
+      )}
+
+      {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
+        <PodiumCard
+          eventLabel={selectedEvent.number ? `OKTAGON ${selectedEvent.number}` : selectedEvent.name}
+          places={eventRows.slice(0, 3).map((row, i) => ({
+            rank: i + 1,
+            nick: row.nickname ?? "Bez přezdívky",
+            points: row.points,
+          }))}
+          imageUrl={selectedEvent.image_url}
+        />
       )}
 
       <div className="flex flex-col gap-2">
