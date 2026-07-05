@@ -84,7 +84,9 @@ export async function GET(request: NextRequest) {
           <div
             style={{
               display: "flex",
-              alignItems: "baseline",
+              // Satori has no real baseline alignment - align bottoms and
+              // lift the small word by the difference in descent space
+              alignItems: "flex-end",
               marginTop: 6,
               color: "#FFD400",
               fontWeight: 800,
@@ -92,7 +94,9 @@ export async function GET(request: NextRequest) {
             }}
           >
             <span style={{ fontSize: 145, lineHeight: 1 }}>{points}</span>
-            <span style={{ fontSize: 48, marginLeft: 14 }}>{pointsWord(Number(points))}</span>
+            <span style={{ fontSize: 48, lineHeight: 1, marginLeft: 14, paddingBottom: 19 }}>
+              {pointsWord(Number(points))}
+            </span>
           </div>
 
           {rankLabel && (
