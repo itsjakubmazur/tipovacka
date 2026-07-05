@@ -95,3 +95,17 @@ body::before {
   color: transparent;
   animation: brand-shimmer 1.6s linear infinite;
 }
+
+/* Failsafe for the splash overlay: even if the JS bundle never loads
+   (or hydration stalls), the splash fades itself out after 6s so it can
+   never permanently cover the app. React normally unmounts it sooner. */
+@keyframes splash-failsafe-hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.splash-failsafe {
+  animation: splash-failsafe-hide 0.3s ease-out 6s forwards;
+}
