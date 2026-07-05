@@ -47,6 +47,10 @@ def _notify_fight_result(
         "predictions",
         {"fight_id": f"eq.{db_fight['id']}", "select": "user_id,predicted_winner_id,points"},
     )
+    opted_out = {
+        p["id"] for p in db.select("profiles", {"notify_fight_results": "eq.false", "select": "id"})
+    }
+    predictions = [p for p in predictions if p["user_id"] not in opted_out]
     title = f"{fighter_a_name} vs {fighter_b_name}"
     url = f"/events/{event_id}"
     for pred in predictions:

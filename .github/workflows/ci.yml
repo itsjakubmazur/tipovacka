@@ -30,3 +30,22 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  scraper-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        working-directory: scraper
+        # pywebpush is stubbed in tests/conftest.py, so prod requirements
+        # aren't needed here - just requests for the imported modules.
+        run: pip install pytest requests
+
+      - name: Run tests
+        working-directory: scraper
+        run: python -m pytest tests/ -v

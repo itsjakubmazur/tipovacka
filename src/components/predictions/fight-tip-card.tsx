@@ -141,6 +141,9 @@ export function FightTipCard({
     }
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+    window.dispatchEvent(
+      new CustomEvent("tip-state-changed", { detail: { fightId: fight.id, tipped: true } })
+    );
   }
 
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
@@ -186,6 +189,9 @@ export function FightTipCard({
     setRound(null);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+    window.dispatchEvent(
+      new CustomEvent("tip-state-changed", { detail: { fightId: fight.id, tipped: false } })
+    );
   }
 
   const showResult = fight.status === "completed";

@@ -1,0 +1,32 @@
+name: DB backup
+
+on:
+  # Weekly is enough - tips only change around galas. Native schedule
+  # cadence is unreliable but for backups the exact hour doesn't matter.
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+      - name: Export tables
+        working-directory: scraper
+        run: python export_backup.py
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: scraper/backup/
+          retention-days: 90

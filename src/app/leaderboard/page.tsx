@@ -142,6 +142,12 @@ export default async function LeaderboardPage({
         >
           Sezóna {season}
         </Link>
+        <Link
+          href="/leaderboard/history"
+          className="rounded-full border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 transition-colors hover:border-neutral-400"
+        >
+          🏛️ Síň slávy
+        </Link>
       </div>
 
       <div className="flex flex-col gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-xs shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">

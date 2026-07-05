@@ -1,5 +1,5 @@
-"""Single consolidated cron entrypoint, run every 15 minutes by
-.github/workflows/scraper-cron.yml. Kept as one scheduled job (instead of
+"""Single consolidated cron entrypoint, run every ~5 minutes via
+cron-job.org dispatching .github/workflows/scraper-cron.yml. Kept as one scheduled job (instead of
 several) since GitHub Actions bills a 1-minute minimum per job run no
 matter how short the script actually takes - a private repo's free
 minutes would otherwise disappear fast.
@@ -195,6 +195,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
                 f"{label}: karta je online",
                 "Zápasy byly zveřejněny, můžeš tipovat!",
                 f"/events/{event['id']}",
+                pref="notify_card_updates",
             )
 
 
@@ -228,6 +229,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
                 f"{label}: karta se změnila",
                 "Na zápasové kartě nastala změna, zkontroluj a tipuj!",
                 f"/events/{event['id']}",
+                pref="notify_card_updates",
             )
 
 
@@ -283,17 +285,19 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
                 print(f"{label}: karta ještě nemá žádné zápasy, reminder přeskočen.")
             else:
                 user_ids = {row["user_id"] for row in db.select("push_subscriptions", {"select": "user_id"})}
-                fight_ids_csv = ",".join(fight_ids)
-                for user_id in user_ids:
-                    predictions = db.select(
-                        "predictions",
-                        {
-                            "user_id": f"eq.{user_id}",
-                            "fight_id": f"in.({fight_ids_csv})",
-                            "select": "id",
-                        },
-                    )
-                    have = len(predictions)
+                opted_out = {
+                    p["id"] for p in db.select("profiles", {"notify_reminders": "eq.false", "select": "id"})
+                }
+                predictions = db.select(
+                    "predictions",
+                    {"fight_id": f"in.({','.join(fight_ids)})", "select": "user_id"},
+                )
+                tipped_counts: dict[str, int] = {}
+                for prediction in predictions:
+                    tipped_counts[prediction["user_id"]] = tipped_counts.get(prediction["user_id"], 0) + 1
+
+                for user_id in user_ids - opted_out:
+                    have = tipped_counts.get(user_id, 0)
                     send_to_user(
                         db,
                         user_id,

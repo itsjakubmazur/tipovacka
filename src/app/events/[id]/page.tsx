@@ -4,7 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
+import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
 import { DigitalCountdown } from "@/components/digital-countdown";
+import { EventComments } from "@/components/events/event-comments";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import type { Fight, Prediction } from "@/lib/types";
 
@@ -38,15 +40,15 @@ export default async function EventDetailPage({
     redirect("/login");
   }
 
-  if (event.status === "draft") {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-    if (!profile?.is_admin) {
-      notFound();
-    }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+  const isAdmin = profile?.is_admin ?? false;
+
+  if (event.status === "draft" && !isAdmin) {
+    notFound();
   }
 
   const { data: fights } = await supabase
@@ -137,6 +139,30 @@ export default async function EventDetailPage({
   const gradedFights = (fights ?? []).filter((f) => f.status === "completed" || f.status === "no_contest");
   const scoredSoFar = (predictions ?? []).reduce((sum, p) => sum + (p.points ?? 0), 0);
 
+  const tippableFightIds = (fights ?? [])
+    .filter((f) => {
+      const fight = f as unknown as Fight;
+      return (
+        fight.status === "scheduled" && !fight.fighter_a.is_tba && !fight.fighter_b.is_tba
+      );
+    })
+    .map((f) => f.id);
+  const untippedFightIds = tippableFightIds.filter((fid) => !predictionByFight.has(fid));
+
+  const { data: rawComments } = await supabase
+    .from("event_comments")
+    .select("id, user_id, body, created_at, profiles(nickname)")
+    .eq("event_id", id)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  const comments = ((rawComments ?? []) as unknown as {
+    id: string;
+    user_id: string;
+    body: string;
+    created_at: string;
+    profiles: { nickname: string } | null;
+  }[]).map((c) => ({ ...c, nickname: c.profiles?.nickname ?? "Bez přezdívky" }));
+
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <RealtimeRefresh table="fights" />
@@ -166,9 +192,22 @@ export default async function EventDetailPage({
           })}
         </p>
         {locked ? (
-          <p className="mt-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Tipy jsou uzamčené, jen pro čtení.
-          </p>
+          <div className="mt-2">
+            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Tipy jsou uzamčené, jen pro čtení.
+            </p>
+            {event.status !== "completed" && (
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Galavečer začíná v{" "}
+                {new Date(event.event_date).toLocaleTimeString("cs-CZ", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/Prague",
+                })}
+                , výsledky naskakují průběžně.
+              </p>
+            )}
+          </div>
         ) : (
           event.lock_at && (
             <div className="mt-3">
@@ -216,17 +255,23 @@ export default async function EventDetailPage({
                   {CARD_SEGMENT_LABELS[fight.card_segment!]}
                 </h2>
               )}
-              <FightTipCard
-                fight={fight}
-                userId={user.id}
-                initialPrediction={predictionByFight.get(fight.id) ?? null}
-                locked={locked}
-                consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
-              />
+              <div id={`fight-${fight.id}`} className="scroll-mt-16">
+                <FightTipCard
+                  fight={fight}
+                  userId={user.id}
+                  initialPrediction={predictionByFight.get(fight.id) ?? null}
+                  locked={locked}
+                  consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
+                />
+              </div>
             </Fragment>
           );
         })}
       </div>
+
+      <EventComments eventId={id} userId={user.id} isAdmin={isAdmin} initialComments={comments} />
+
+      {!locked && <JumpToUntipped fightIds={tippableFightIds} initialUntipped={untippedFightIds} />}
     </div>
   );
 }

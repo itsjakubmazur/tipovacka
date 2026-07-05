@@ -32,8 +32,14 @@ def send_to_subscription(db: SupabaseClient, subscription: dict, title: str, bod
             print(f"Push se nepodařilo poslat na {subscription['endpoint']}: {exc}")
 
 
-def send_to_all(db: SupabaseClient, title: str, body: str, url: str) -> None:
-    subscriptions = db.select("push_subscriptions", {"select": "id,endpoint,p256dh,auth"})
+def send_to_all(db: SupabaseClient, title: str, body: str, url: str, pref: str | None = None) -> None:
+    """Broadcast to every subscription. Pass a profiles boolean column
+    name (e.g. "notify_card_updates") as `pref` to skip users who turned
+    that notification category off in their profile."""
+    subscriptions = db.select("push_subscriptions", {"select": "id,endpoint,p256dh,auth,user_id"})
+    if pref is not None:
+        allowed = {p["id"] for p in db.select("profiles", {pref: "eq.true", "select": "id"})}
+        subscriptions = [s for s in subscriptions if s["user_id"] in allowed]
     for sub in subscriptions:
         send_to_subscription(db, sub, title, body, url)
 

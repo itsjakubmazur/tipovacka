@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
+import { ShareResultButton } from "@/components/leaderboard/share-result-button";
 import { cn } from "@/lib/utils";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import type { Fight, Method, Prediction } from "@/lib/types";
@@ -91,6 +92,29 @@ export async function TipperDetail({
       : null;
     const actualFotnFight = (fights ?? []).find((f) => f.id === event.actual_fotn_fight_id);
 
+    // Rank + share button, only when the viewer is looking at their own
+    // finished result.
+    const isOwnResult = userData.user.id === userId;
+    let shareData: { points: number; rank: number | null; total: number | null } | null = null;
+    if (isOwnResult && locked) {
+      const { data: leaderboardRows } = await supabase
+        .from("event_leaderboard")
+        .select("user_id, points")
+        .eq("event_id", eventId)
+        .order("points", { ascending: false })
+        .order("fights_correct_winner", { ascending: false })
+        .order("perfect_card", { ascending: false })
+        .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
+      const index = (leaderboardRows ?? []).findIndex((r) => r.user_id === userId);
+      if (index >= 0) {
+        shareData = {
+          points: leaderboardRows![index].points,
+          rank: index + 1,
+          total: leaderboardRows!.length,
+        };
+      }
+    }
+
     return (
       <>
         <div>
@@ -107,6 +131,15 @@ export async function TipperDetail({
           <p className="text-neutral-600 dark:text-neutral-400">Tipy se zobrazí až po uzávěrce galavečera.</p>
         ) : (
           <>
+            {shareData && (
+              <ShareResultButton
+                eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
+                nickname={profile.nickname ?? "Bez přezdívky"}
+                points={shareData.points}
+                rank={shareData.rank}
+                total={shareData.total}
+              />
+            )}
             {(bonusFight || actualFotnFight) && (
               <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
                 <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
