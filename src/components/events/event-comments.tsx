@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MessageCircle, Trash2, X } from "lucide-react";
 
 type Comment = {
   id: string;
@@ -25,6 +26,11 @@ function formatTime(iso: string): string {
   });
 }
 
+/** Kecárna as a floating chat bubble (bottom-left, opposite the
+ * jump-to-untipped button) opening a slide-up panel - a live per-event
+ * chat for gala night instead of a block buried under 14 fight cards.
+ * The bubble shows an unread count based on a per-event last-seen
+ * timestamp in localStorage; realtime keeps the list fresh. */
 export function EventComments({
   eventId,
   userId,
@@ -40,9 +46,26 @@ export function EventComments({
   // is stable - same pattern as the other client components here.
   const supabase = createClient();
   const [comments, setComments] = useState(initialComments);
+  const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastSeen, setLastSeen] = useState<string | null>(null);
+  const seenKey = `kecarna-seen-${eventId}`;
+
+  useEffect(() => {
+    // deferred so the initial read doesn't trigger a cascading render
+    const timer = setTimeout(() => {
+      setLastSeen(localStorage.getItem(seenKey) ?? new Date(0).toISOString());
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [seenKey]);
+
+  const markSeen = useCallback(() => {
+    const now = new Date().toISOString();
+    localStorage.setItem(seenKey, now);
+    setLastSeen(now);
+  }, [seenKey]);
 
   useEffect(() => {
     const channel = supabase
@@ -72,6 +95,22 @@ export function EventComments({
     };
   }, [supabase, eventId]);
 
+  // while the panel is open, everything that arrives counts as read
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(markSeen, 0);
+    return () => clearTimeout(timer);
+  }, [comments, open, markSeen]);
+
+  const unread = lastSeen
+    ? comments.filter((c) => c.created_at > lastSeen && c.user_id !== userId).length
+    : 0;
+
+  function openPanel() {
+    setOpen(true);
+    markSeen();
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = body.trim();
@@ -94,51 +133,98 @@ export function EventComments({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="text-sm font-semibold">💬 Kecárna</p>
+    <>
+      {/* floating bubble */}
+      {!open && (
+        <button
+          type="button"
+          onClick={openPanel}
+          aria-label="Otevřít kecárnu"
+          className="fixed bottom-24 left-4 z-30 flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-2.5 text-sm font-semibold text-neutral-800 shadow-lg shadow-black/25 backdrop-blur-lg transition-colors hover:border-neutral-400 dark:border-neutral-600/60 dark:bg-neutral-800/95 dark:text-neutral-100 md:bottom-6"
+        >
+          <MessageCircle className="size-4" />
+          Kecárna
+          {unread > 0 && (
+            <span className="flex size-5 items-center justify-center rounded-full bg-[#FFD400] text-[11px] font-bold text-black">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+        </button>
+      )}
 
-      <form onSubmit={submit} className="flex gap-2">
-        <input
-          value={body}
-          onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
-          placeholder="Napiš něco ostatním…"
-          className="min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-900"
-        />
-        <Button type="submit" variant="accent" size="sm" disabled={sending || !body.trim()}>
-          {sending ? "…" : "Odeslat"}
-        </Button>
-      </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      <div className="flex flex-col gap-2">
-        {comments.length === 0 && (
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Zatím ticho. Hoď první hlášku!
-          </p>
-        )}
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
-            <p className="min-w-0">
-              <span className="font-semibold">{comment.nickname}</span>{" "}
-              <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                {formatTime(comment.created_at)}
-              </span>
-              <br />
-              <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
-            </p>
-            {(comment.user_id === userId || isAdmin) && (
+      {/* slide-up panel */}
+      {open && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setOpen(false)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative flex max-h-[75vh] flex-col rounded-t-2xl border-t border-white/45 bg-white shadow-2xl dark:border-neutral-700/45 dark:bg-neutral-900"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
+              <p className="flex items-center gap-2 text-sm font-semibold">
+                <MessageCircle className="size-4" />
+                Kecárna
+              </p>
               <button
                 type="button"
-                onClick={() => remove(comment.id)}
-                className="shrink-0 text-neutral-400 hover:text-red-600"
-                aria-label="Smazat komentář"
+                onClick={() => setOpen(false)}
+                aria-label="Zavřít"
+                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
               >
-                <Trash2 className="size-3.5" />
+                <X className="size-4" />
               </button>
-            )}
+            </div>
+
+            <div className="flex flex-1 flex-col-reverse gap-3 overflow-y-auto px-4 py-3 [-webkit-overflow-scrolling:touch]">
+              {comments.length === 0 && (
+                <p className="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                  Zatím ticho. Hoď první hlášku!
+                </p>
+              )}
+              {comments.map((comment) => (
+                <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
+                  <p className="min-w-0">
+                    <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
+                      {comment.nickname}
+                    </span>{" "}
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                      {formatTime(comment.created_at)}
+                    </span>
+                    <br />
+                    <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
+                  </p>
+                  {(comment.user_id === userId || isAdmin) && (
+                    <button
+                      type="button"
+                      onClick={() => remove(comment.id)}
+                      className="shrink-0 text-neutral-400 hover:text-red-600"
+                      aria-label="Smazat komentář"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <form
+              onSubmit={submit}
+              className="flex gap-2 border-t border-neutral-200 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
+            >
+              <input
+                value={body}
+                onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
+                placeholder="Napiš něco ostatním…"
+                className="min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-950"
+              />
+              <Button type="submit" variant="accent" size="sm" disabled={sending || !body.trim()}>
+                {sending ? "…" : "Odeslat"}
+              </Button>
+            </form>
+            {error && <p className="px-4 pb-2 text-sm text-red-600">{error}</p>}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { HallOfFame } from "@/components/leaderboard/hall-of-fame";
 import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
 import { EventCompareList } from "@/components/leaderboard/event-compare-list";
@@ -35,7 +36,7 @@ export default async function LeaderboardPage({
   searchParams: Promise<{ view?: string; eventId?: string }>;
 }) {
   const { view: rawView, eventId: rawEventId } = await searchParams;
-  const view = rawView === "season" ? "season" : "event";
+  const view = rawView === "season" ? "season" : rawView === "history" ? "history" : "event";
 
   const supabase = await createClient();
 
@@ -142,14 +143,18 @@ export default async function LeaderboardPage({
           Sezóna {season}
         </Link>
         <Link
-          href="/leaderboard/history"
-          className={cn(GLASS_PILL, "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium")}
+          href="/leaderboard?view=history"
+          className={cn(
+            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
+            view === "history" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
+          )}
         >
           <Landmark className="size-4" />
           Síň slávy
         </Link>
       </div>
 
+      {view !== "history" && (
       <details className="group rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg text-xs shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">
         <summary className="cursor-pointer select-none p-3 font-semibold text-neutral-700 dark:text-neutral-300 marker:text-neutral-400">
           Za co se dávají body
@@ -163,6 +168,7 @@ export default async function LeaderboardPage({
           </p>
         </div>
       </details>
+      )}
 
       {view === "event" && (
         <div className="flex flex-wrap gap-2">
@@ -182,6 +188,8 @@ export default async function LeaderboardPage({
           ))}
         </div>
       )}
+
+      {view === "history" && <HallOfFame />}
 
       {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
         <PodiumCard
