@@ -3,7 +3,32 @@ import type { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-const MEDALS: Record<string, string> = { "1": "🥇", "2": "🥈", "3": "🥉" };
+// podium colors for the lucide Medal icon (gold / silver / bronze)
+const MEDAL_COLORS: Record<string, string> = { "1": "#eab308", "2": "#a3a3a3", "3": "#b45309" };
+
+/** Inline lucide "medal" icon - Satori renders raw SVG, and using the
+ * same icon family as the app's nav keeps the card on-style (no emoji). */
+function MedalIcon({ color, size }: { color: string; size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={2.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
+      <path d="M11 12 5.12 2.2" />
+      <path d="m13 12 5.88-9.8" />
+      <path d="M8 7h8" />
+      <circle cx="12" cy="17" r="5" />
+      <path d="M12 18v-2h-.5" />
+    </svg>
+  );
+}
 
 /** The event poster may only come from OKTAGON's own asset host - the
  * param is caller-controlled and this route fetches it server-side. */
@@ -72,12 +97,14 @@ export async function GET(request: NextRequest) {
   const rawImageUrl = safeImageUrl(params.get("img"));
   const imageUrl = rawImageUrl ? await fetchImageDataUri(rawImageUrl) : null;
 
-  const rankLabel = rank ? `${MEDALS[rank] ?? "🏅"} ${rank}. místo${total ? ` z ${total}` : ""}` : null;
+  const rankLabel = rank ? `${rank}. místo${total ? ` z ${total}` : ""}` : null;
   const pointsNum = Number(points);
   const pointsWord = pointsNum === 1 ? "bod" : pointsNum >= 2 && pointsNum <= 4 ? "body" : "bodů";
 
   const footer = `TIPNI SI TAKY · ${request.nextUrl.host.toUpperCase()}`;
-  const allText = `OKTAGON GARÁŽ TIPOVAČKA ${event} ${nick} ${points} ${pointsWord} ${rankLabel ?? ""} ${footer} 0123456789`;
+  const czechAlphabet =
+    "aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž AÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ0123456789.·:%";
+  const allText = `${event} ${nick} ${points} ${rankLabel ?? ""} ${footer} ${czechAlphabet}`;
   const fontData = await loadCzechFont(allText);
 
   return new ImageResponse(
@@ -139,24 +166,26 @@ export async function GET(request: NextRequest) {
             alignItems: "center",
             justifyContent: "center",
             flex: 1,
-            gap: 6,
+            gap: 4,
+            paddingTop: 34,
+            paddingBottom: 6,
           }}
         >
-          <div style={{ display: "flex", fontSize: 46, fontWeight: 800, letterSpacing: -1 }}>
-            OKTAGON<span style={{ color: "#FFD400", marginLeft: 14 }}>GARÁŽ</span>
+          <div style={{ display: "flex", fontSize: 40, fontWeight: 800, letterSpacing: -1 }}>
+            OKTAGON<span style={{ color: "#FFD400", marginLeft: 12 }}>GARÁŽ</span>
           </div>
-          <div style={{ display: "flex", fontSize: 21, letterSpacing: 10, color: "#d4d4d4" }}>
+          <div style={{ display: "flex", fontSize: 19, letterSpacing: 9, color: "#d4d4d4" }}>
             TIPOVAČKA
           </div>
 
           <div
             style={{
               display: "flex",
-              marginTop: 30,
-              padding: "10px 32px",
+              marginTop: 22,
+              padding: "8px 28px",
               border: "3px solid #FFD400",
               borderRadius: 999,
-              fontSize: 30,
+              fontSize: 27,
               fontWeight: 700,
               color: "#FFD400",
               backgroundColor: "rgba(0,0,0,0.35)",
@@ -165,7 +194,7 @@ export async function GET(request: NextRequest) {
             {event}
           </div>
 
-          <div style={{ display: "flex", fontSize: 64, fontWeight: 800, marginTop: 34 }}>{nick}</div>
+          <div style={{ display: "flex", fontSize: 56, fontWeight: 800, marginTop: 24 }}>{nick}</div>
 
           <div
             style={{
@@ -177,22 +206,25 @@ export async function GET(request: NextRequest) {
               textShadow: "0 6px 40px rgba(255,212,0,0.45)",
             }}
           >
-            <span style={{ fontSize: 170, lineHeight: 1 }}>{points}</span>
-            <span style={{ fontSize: 54, marginLeft: 16 }}>{pointsWord}</span>
+            <span style={{ fontSize: 145, lineHeight: 1 }}>{points}</span>
+            <span style={{ fontSize: 48, marginLeft: 14 }}>{pointsWord}</span>
           </div>
 
           {rankLabel && (
             <div
               style={{
                 display: "flex",
-                marginTop: 22,
-                padding: "12px 36px",
+                alignItems: "center",
+                gap: 12,
+                marginTop: 16,
+                padding: "10px 32px",
                 borderRadius: 999,
                 backgroundColor: "rgba(255,255,255,0.14)",
-                fontSize: 40,
+                fontSize: 34,
                 fontWeight: 700,
               }}
             >
+              {rank && MEDAL_COLORS[rank] && <MedalIcon color={MEDAL_COLORS[rank]} size={38} />}
               {rankLabel}
             </div>
           )}
@@ -202,8 +234,8 @@ export async function GET(request: NextRequest) {
           style={{
             display: "flex",
             justifyContent: "center",
-            paddingBottom: 26,
-            fontSize: 22,
+            paddingBottom: 22,
+            fontSize: 20,
             letterSpacing: 3,
             color: "#a3a3a3",
           }}
@@ -215,8 +247,6 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
-      // twemoji so the medal actually renders (no emoji in the default font)
-      emoji: "twemoji",
       fonts: fontData
         ? [{ name: "Inter", data: fontData, weight: 800 as const, style: "normal" as const }]
         : undefined,

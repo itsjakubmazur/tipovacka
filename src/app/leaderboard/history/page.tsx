@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Landmark, Trophy } from "lucide-react";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +51,10 @@ export default async function HallOfFamePage() {
         >
           ← Zpět na žebříček
         </Link>
-        <h1 className="mt-1 text-xl font-bold">🏛️ Síň slávy</h1>
+        <h1 className="mt-1 flex items-center gap-2 text-xl font-bold">
+          <Landmark className="size-5 text-yellow-600 dark:text-[#FFD400]" />
+          Síň slávy
+        </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Nejlepší tipéři každé sezóny. Mistr běžící sezóny je zatím jen průběžný.
         </p>
@@ -94,7 +98,11 @@ export default async function HallOfFamePage() {
                     )}
                   </span>
                   <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
-                    {row.perfect_cards > 0 && <span>🏆 ×{row.perfect_cards}</span>}
+                    {row.perfect_cards > 0 && (
+                      <span className="flex items-center gap-1">
+                        <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />×{row.perfect_cards}
+                      </span>
+                    )}
                     <span className="text-lg font-bold text-black dark:text-white">{row.points}</span>
                   </span>
                 </Link>

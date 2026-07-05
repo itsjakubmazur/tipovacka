@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Landmark } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
@@ -144,9 +145,10 @@ export default async function LeaderboardPage({
         </Link>
         <Link
           href="/leaderboard/history"
-          className="rounded-full border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 transition-colors hover:border-neutral-400"
+          className="flex items-center gap-1.5 rounded-full border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 transition-colors hover:border-neutral-400"
         >
-          🏛️ Síň slávy
+          <Landmark className="size-4" />
+          Síň slávy
         </Link>
       </div>
 
