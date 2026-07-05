@@ -94,7 +94,7 @@ export function FotnPicker({
           {locked && actualFight && (
             <p className="text-xs font-medium">
               🏆 Skutečný Fight of the Night:{" "}
-              <span className="text-[#FFD400]">
+              <span className="text-yellow-600 dark:text-[#FFD400]">
                 {actualFight.fighterAName} vs {actualFight.fighterBName}
               </span>
             </p>

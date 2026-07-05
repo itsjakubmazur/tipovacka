@@ -61,7 +61,7 @@ export function CompareFightCard({
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
-          <span className="text-[#FFD400]">
+          <span className="text-yellow-600 dark:text-[#FFD400]">
             {nicknameA}: {pointsLabel(predictionA?.points)}
           </span>
           <span className="text-blue-500">
@@ -103,7 +103,7 @@ export function CompareFightCard({
               )}
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {tipA && (
-                  <span className="rounded-full border border-[#FFD400] bg-[#FFD400]/10 px-2 py-0.5 text-[10px] font-bold text-[#FFD400]">
+                  <span className="rounded-full border border-[#FFD400] bg-[#FFD400]/10 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:text-[#FFD400]">
                     {nicknameA}
                   </span>
                 )}

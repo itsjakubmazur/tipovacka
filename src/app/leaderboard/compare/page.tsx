@@ -117,7 +117,7 @@ export default async function ComparePage({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-            <span className="font-semibold text-[#FFD400]">{nicknameA}</span>
+            <span className="font-semibold text-yellow-600 dark:text-[#FFD400]">{nicknameA}</span>
             <span className="text-2xl font-bold">{totalA}</span>
           </div>
           <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
@@ -129,7 +129,7 @@ export default async function ComparePage({
         {(bonusFightA || bonusFightB || actualFotnFight) && (
           <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
             <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
-            <p className="text-[#FFD400]">
+            <p className="text-yellow-600 dark:text-[#FFD400]">
               {nicknameA}:{" "}
               {bonusFightA ? (
                 <span className="text-neutral-700 dark:text-neutral-300">
@@ -162,7 +162,7 @@ export default async function ComparePage({
             {actualFotnFight && (
               <p className="mt-1 text-xs font-medium">
                 🏆 Skutečný Fight of the Night:{" "}
-                <span className="text-[#FFD400]">
+                <span className="text-yellow-600 dark:text-[#FFD400]">
                   {(actualFotnFight as unknown as Fight).fighter_a.name} vs {(actualFotnFight as unknown as Fight).fighter_b.name}
                 </span>
               </p>
@@ -288,11 +288,11 @@ export default async function ComparePage({
               key={event.id}
               className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
             >
-              <span className={cn("w-12 text-right font-bold", pa > pb && "text-[#FFD400]")}>{pa}</span>
+              <span className={cn("w-12 text-right font-bold", pa > pb && "text-yellow-600 dark:text-[#FFD400]")}>{pa}</span>
               <span className="flex-1 px-3 text-center text-neutral-600 dark:text-neutral-400">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className={cn("w-12 font-bold", pb > pa && "text-[#FFD400]")}>{pb}</span>
+              <span className={cn("w-12 font-bold", pb > pa && "text-yellow-600 dark:text-[#FFD400]")}>{pb}</span>
             </div>
           );
         })}

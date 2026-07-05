@@ -159,7 +159,7 @@ export async function TipperDetail({
                 {actualFotnFight && (
                   <p className="mt-1 text-xs font-medium">
                     🏆 Skutečný Fight of the Night:{" "}
-                    <span className="text-[#FFD400]">
+                    <span className="text-yellow-600 dark:text-[#FFD400]">
                       {(actualFotnFight as unknown as Fight).fighter_a.name} vs{" "}
                       {(actualFotnFight as unknown as Fight).fighter_b.name}
                     </span>
@@ -378,7 +378,7 @@ export async function TipperDetail({
             >
               <span className="flex items-center gap-1.5 font-semibold">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
-                {row?.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
+                {row?.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />}
               </span>
               <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}

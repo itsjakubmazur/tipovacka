@@ -221,9 +221,14 @@ export default async function EventDetailPage({
           </span>
         )}
         {locked && gradedFights.length > 0 && (
-          <span className="mt-2 inline-flex items-center rounded-full border border-white/45 bg-white/35 backdrop-blur-lg px-3 py-1 text-xs font-medium text-black dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white">
-            {event.status === "completed" ? "Tvé body" : "Tvé body zatím"}: {scoredSoFar} b. (
-            {gradedFights.length} z {fightIds.length} zápasů odbodováno)
+          <span className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-[#FFD400]/60 bg-[#FFD400]/15 backdrop-blur-lg px-4 py-1.5 text-black dark:text-white">
+            <span className="text-xs font-medium">
+              {event.status === "completed" ? "Tvé body" : "Tvé body zatím"}
+            </span>
+            <span className="text-xl font-bold tabular-nums">{scoredSoFar}</span>
+            <span className="text-xs text-neutral-600 dark:text-neutral-400">
+              {gradedFights.length} z {fightIds.length} zápasů odbodováno
+            </span>
           </span>
         )}
       </div>

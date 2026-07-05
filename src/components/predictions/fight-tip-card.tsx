@@ -277,22 +277,26 @@ export function FightTipCard({
                 )}
                 {fighter.name}
               </span>
-              {fighter.record && (
-                <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
-              )}
-              {!fighter.is_tba && (
+              {/* record · rank · odds on one row - vertical space is scarce
+                  with 14 fights on the card */}
+              {!fighter.is_tba ? (
                 <>
-                  <RankBadge fighter={fighter} />
-                  {(() => {
-                    const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
-                    return (
-                      odds != null && (
-                        <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                          Kurz: {odds.toFixed(2)}
-                        </span>
-                      )
-                    );
-                  })()}
+                  <span className="flex flex-wrap items-center justify-center gap-x-1.5 text-xs text-neutral-500 dark:text-neutral-300">
+                    {fighter.record && <span>{fighter.record}</span>}
+                    {fighter.record && fighter.oktagon_rank && <span aria-hidden>·</span>}
+                    <RankBadge fighter={fighter} />
+                    {(() => {
+                      const odds =
+                        fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
+                      if (odds == null) return null;
+                      return (
+                        <>
+                          {(fighter.record || fighter.oktagon_rank) && <span aria-hidden>·</span>}
+                          <span className="font-medium">kurz {odds.toFixed(2)}</span>
+                        </>
+                      );
+                    })()}
+                  </span>
                   {consensus &&
                     (() => {
                       const names =
@@ -300,17 +304,19 @@ export function FightTipCard({
                       const total = consensus.fighterANames.length + consensus.fighterBNames.length;
                       if (names.length === 0) return null;
                       return (
-                        <div className="flex flex-col items-center gap-0.5">
-                          <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                            {Math.round((names.length / total) * 100)}% tipů
-                          </span>
-                          <span className="max-w-[10rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
-                            {names.join(", ")}
-                          </span>
-                        </div>
+                        <span className="max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
+                          <span className="font-medium text-neutral-500 dark:text-neutral-300">
+                            {Math.round((names.length / total) * 100)} % tipů
+                          </span>{" "}
+                          · {names.join(", ")}
+                        </span>
                       );
                     })()}
                 </>
+              ) : (
+                fighter.record && (
+                  <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.record}</span>
+                )
               )}
             </button>
             {!fighter.is_tba && <FighterDetails fighter={fighter} />}

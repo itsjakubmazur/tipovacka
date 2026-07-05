@@ -150,15 +150,19 @@ export default async function LeaderboardPage({
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-xs shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">
-        <p className="font-semibold text-neutral-700 dark:text-neutral-300">Za co se dávají body</p>
-        <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body“): +1 — tedy max 3 body za zápas.</p>
-        <p>Bonus tip Fight of the Night: +2, pokud uhodneš zápas večera.</p>
-        <p>Perfektní karta: +5, pokud uhodneš vítěze úplně všech zápasů na kartě.</p>
-        <p>
-          Při shodě bodů rozhoduje: 1) víc uhodnutých vítězů, 2) perfektní karta, 3) kdo odeslal tipy dřív.
-        </p>
-      </div>
+      <details className="group rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg text-xs shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 text-neutral-600 dark:text-neutral-400">
+        <summary className="cursor-pointer select-none p-3 font-semibold text-neutral-700 dark:text-neutral-300 marker:text-neutral-400">
+          Za co se dávají body
+        </summary>
+        <div className="flex flex-col gap-1 px-3 pb-3">
+          <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body”): +1 — tedy max 3 body za zápas.</p>
+          <p>Bonus tip Fight of the Night: +2, pokud uhodneš zápas večera.</p>
+          <p>Perfektní karta: +5, pokud uhodneš vítěze úplně všech zápasů na kartě.</p>
+          <p>
+            Při shodě bodů rozhoduje: 1) víc uhodnutých vítězů, 2) perfektní karta, 3) kdo odeslal tipy dřív.
+          </p>
+        </div>
+      </details>
 
       {view === "event" && (
         <div className="flex flex-wrap gap-2">

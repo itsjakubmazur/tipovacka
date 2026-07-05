@@ -99,7 +99,7 @@ export function EventCompareList({
               <Link href={`/leaderboard/u/${row.user_id}?eventId=${eventId}`} className="font-semibold hover:underline">
                 {row.nickname ?? "Bez přezdívky"}
               </Link>
-              {row.perfect_card && <Trophy className="size-4 text-[#FFD400]" />}
+              {row.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />}
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-neutral-500 dark:text-neutral-300">

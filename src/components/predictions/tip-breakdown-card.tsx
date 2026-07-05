@@ -89,26 +89,28 @@ export function TipBreakdownCard({
               <div className="mt-1.5">
                 <FighterLabel fighter={fighter} />
               </div>
-              {fighter.oktagon_rank && (
-                <span className="flex items-center gap-0.5 text-xs text-neutral-500 dark:text-neutral-300">
-                  {fighter.oktagon_rank}
-                  {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
-                    <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
-                      {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
-                    </span>
-                  )}
-                </span>
-              )}
-              {(() => {
-                const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
-                return (
-                  odds != null && (
-                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-300">
-                      Kurz: {odds.toFixed(2)}
-                    </span>
-                  )
-                );
-              })()}
+              <span className="flex flex-wrap items-center justify-center gap-x-1.5 text-xs text-neutral-500 dark:text-neutral-300">
+                {fighter.oktagon_rank && (
+                  <span className="flex items-center gap-0.5">
+                    {fighter.oktagon_rank}
+                    {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
+                      <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
+                        {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
+                      </span>
+                    )}
+                  </span>
+                )}
+                {(() => {
+                  const odds = fighter.id === fight.fighter_a.id ? fight.odds_fighter_a : fight.odds_fighter_b;
+                  if (odds == null) return null;
+                  return (
+                    <>
+                      {fighter.oktagon_rank && <span aria-hidden>·</span>}
+                      <span className="font-medium">kurz {odds.toFixed(2)}</span>
+                    </>
+                  );
+                })()}
+              </span>
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {isTip && <Badge variant="secondary">Tip</Badge>}
                 {isActualWinner && <Badge variant="accent">Výherce</Badge>}

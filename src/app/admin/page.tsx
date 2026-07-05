@@ -143,7 +143,7 @@ export default async function AdminPage() {
                   <span className="flex min-w-0 flex-col">
                     <span>
                       {p.nickname ?? "Bez přezdívky"}
-                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-yellow-600 dark:text-[#FFD400]">ADMIN</span>}
                     </span>
                     <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
                     <span className="mt-1 flex flex-wrap gap-1.5">
