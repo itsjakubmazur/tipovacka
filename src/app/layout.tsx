@@ -1,9 +1,28 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
 import { PushPromptBanner } from "@/components/push/push-prompt-banner";
+import { SplashScreen } from "@/components/splash-screen";
+
+/** Static stand-in rendered while the real NavBar (which awaits the
+ * auth/profile lookup) streams in - keeps the very first HTML flush
+ * instant so the splash/loader shows as early as possible. */
+function NavBarFallback() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
+      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
+        <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
+          OKTAGON <span className="text-[#FFD400]">GARÁŽ</span>
+          <span className="hidden sm:inline"> Tipovačka</span>
+        </Link>
+      </div>
+    </header>
+  );
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,8 +59,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <SplashScreen />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <NavBar />
+          <Suspense fallback={<NavBarFallback />}>
+            <NavBar />
+          </Suspense>
           <PushPromptBanner />
           <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0">{children}</main>
         </ThemeProvider>
