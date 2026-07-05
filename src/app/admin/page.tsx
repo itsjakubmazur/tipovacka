@@ -15,6 +15,30 @@ const STATUS_LABELS: Record<string, string> = {
   completed: "Vyhodnoceno",
 };
 
+// Push endpoint host -> platform label. iOS/iPadOS can only subscribe
+// from an installed PWA, so an Apple endpoint doubles as an install signal.
+function pushPlatform(endpoint: string): string {
+  try {
+    const host = new URL(endpoint).hostname;
+    if (host.endsWith("push.apple.com")) return "iPhone/iPad";
+    if (host.endsWith("googleapis.com")) return "Android/Chrome";
+    if (host.endsWith("mozilla.com")) return "Firefox";
+    if (host.endsWith("notify.windows.com")) return "Windows";
+    return host;
+  } catch {
+    return "?";
+  }
+}
+
+function formatSeen(iso: string): string {
+  return new Date(iso).toLocaleDateString("cs-CZ", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    timeZone: "Europe/Prague",
+  });
+}
+
 export default async function AdminPage() {
   const supabase = await createClient();
 
@@ -45,7 +69,16 @@ export default async function AdminPage() {
 
   const { data: profiles, error: profilesError } = isSuperadmin
     ? ((await supabase.rpc("admin_list_profiles")) as {
-        data: { id: string; nickname: string | null; is_admin: boolean; email: string | null }[] | null;
+        data:
+          | {
+              id: string;
+              nickname: string | null;
+              is_admin: boolean;
+              email: string | null;
+              standalone_seen_at: string | null;
+              push_endpoints: string[] | null;
+            }[]
+          | null;
         error: { message: string } | null;
       })
     : { data: null, error: null };
@@ -96,22 +129,53 @@ export default async function AdminPage() {
           {profilesError && (
             <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
           )}
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            📱 = spustil nainstalovanou appku (PWA) · 🔔 = má zapnutá push upozornění na daném zařízení
+          </p>
           <div className="flex flex-col gap-2">
-            {profiles?.map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
-              >
-                <span className="flex flex-col">
-                  <span>
-                    {p.nickname ?? "Bez přezdívky"}
-                    {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+            {profiles?.map((p) => {
+              const platforms = (p.push_endpoints ?? []).map(pushPlatform);
+              return (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                >
+                  <span className="flex min-w-0 flex-col">
+                    <span>
+                      {p.nickname ?? "Bez přezdívky"}
+                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-[#FFD400]">ADMIN</span>}
+                    </span>
+                    <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
+                    <span className="mt-1 flex flex-wrap gap-1.5">
+                      {p.standalone_seen_at ? (
+                        <span className="rounded-full bg-green-600/15 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-400">
+                          📱 PWA · {formatSeen(p.standalone_seen_at)}
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                          bez instalace
+                        </span>
+                      )}
+                      {platforms.length > 0 ? (
+                        platforms.map((platform, i) => (
+                          <span
+                            key={`${platform}-${i}`}
+                            className="rounded-full bg-[#FFD400]/15 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:text-[#FFD400]"
+                          >
+                            🔔 {platform}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                          bez notifikací
+                        </span>
+                      )}
+                    </span>
                   </span>
-                  <span className="text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
-                </span>
-                {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
-              </div>
-            ))}
+                  {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

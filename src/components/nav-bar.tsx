@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { StandalonePing } from "@/components/standalone-ping";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DesktopNav, MobileNav } from "@/components/nav-links";
 
@@ -64,6 +65,7 @@ export async function NavBar() {
       </header>
 
       <MobileNav isAdmin={isAdmin} />
+      <StandalonePing userId={user.id} />
     </>
   );
 }
