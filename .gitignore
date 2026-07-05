@@ -41,7 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # python scraper
-scraper/__pycache__/
+__pycache__/
 scraper/.venv/
 scraper/*.pyc
 
