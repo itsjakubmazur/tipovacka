@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
 import { PushPromptBanner } from "@/components/push/push-prompt-banner";
+import { BankAccountPromptBanner } from "@/components/profile/bank-account-prompt-banner";
 import { SplashScreen } from "@/components/splash-screen";
 
 /** Static stand-in rendered while the real NavBar (which awaits the
@@ -65,6 +66,7 @@ export default function RootLayout({
             <NavBar />
           </Suspense>
           <PushPromptBanner />
+          <BankAccountPromptBanner />
           <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0">{children}</main>
         </ThemeProvider>
       </body>
