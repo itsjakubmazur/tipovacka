@@ -28,6 +28,7 @@ export function EventSettingsForm({
   initialLockAt,
   initialAutoLock,
   initialStatus,
+  initialPayoutsEnabled,
 }: {
   eventId: string;
   initialName: string;
@@ -35,6 +36,7 @@ export function EventSettingsForm({
   initialLockAt: string | null;
   initialAutoLock: boolean;
   initialStatus: string;
+  initialPayoutsEnabled: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -46,6 +48,7 @@ export function EventSettingsForm({
   );
   const [autoLock, setAutoLock] = useState(initialAutoLock);
   const [status, setStatus] = useState(initialStatus);
+  const [payoutsEnabled, setPayoutsEnabled] = useState(initialPayoutsEnabled);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +65,7 @@ export function EventSettingsForm({
         lock_at: lockAt ? pragueLocalToUtcIso(lockAt) : null,
         auto_lock: autoLock,
         status,
+        payouts_enabled: payoutsEnabled,
       })
       .eq("id", eventId);
 
@@ -121,6 +125,14 @@ export function EventSettingsForm({
           onChange={(e) => setAutoLock(e.target.checked)}
         />
         Automaticky uzamknout v čase výše
+      </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={payoutsEnabled}
+          onChange={(e) => setPayoutsEnabled(e.target.checked)}
+        />
+        Startovné (50 Kč, vítěz bere vše) - vypni pro testovací/nepeněžní večer
       </label>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" variant="accent" disabled={saving} className="self-start">

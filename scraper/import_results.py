@@ -73,6 +73,9 @@ def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> Non
     startovné pool winner - winner-takes-all at STARTOVNE_CZK per
     tipping participant, settled peer-to-peer (bank transfer) outside
     the app. Same ranking as event_leaderboard's own tiebreak chain."""
+    if not event.get("payouts_enabled", True):
+        return
+
     label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
     rows = db.select(
         "event_leaderboard",
@@ -122,7 +125,7 @@ def import_results(event_id: str) -> None:
     db = SupabaseClient()
 
     events = db.select(
-        "events", {"id": f"eq.{event_id}", "select": "id,number,name,oktagon_event_id,actual_fotn_fight_id"}
+        "events", {"id": f"eq.{event_id}", "select": "id,number,name,oktagon_event_id,actual_fotn_fight_id,payouts_enabled"}
     )
     if not events:
         print(f"Event {event_id} nenalezen.")

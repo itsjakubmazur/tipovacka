@@ -30,7 +30,7 @@ export default async function EventDetailPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id")
+    .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
     .eq("id", id)
     .single();
 
@@ -254,7 +254,7 @@ export default async function EventDetailPage({
         )}
       </div>
 
-      {event.status === "completed" && (
+      {event.status === "completed" && event.payouts_enabled && (
         <EventPayoutPool
           eventId={id}
           eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}

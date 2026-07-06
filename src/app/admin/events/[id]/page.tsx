@@ -32,7 +32,7 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, location, event_date, status, lock_at, auto_lock, actual_fotn_fight_id")
+    .select("id, number, name, location, event_date, status, lock_at, auto_lock, actual_fotn_fight_id, payouts_enabled")
     .eq("id", id)
     .single();
 
@@ -147,6 +147,7 @@ export default async function AdminEventPage({
         initialLockAt={event.lock_at}
         initialAutoLock={event.auto_lock}
         initialStatus={event.status}
+        initialPayoutsEnabled={event.payouts_enabled}
       />
 
       <section className="flex flex-col gap-3">
