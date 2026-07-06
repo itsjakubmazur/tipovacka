@@ -65,11 +65,51 @@ def _notify_fight_result(
         send_to_user(db, pred["user_id"], title, body, url)
 
 
+STARTOVNE_CZK = 50
+
+
+def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> None:
+    """Posts a system message to the event's kecárna naming the
+    startovné pool winner - winner-takes-all at STARTOVNE_CZK per
+    tipping participant, settled peer-to-peer (bank transfer) outside
+    the app. Same ranking as event_leaderboard's own tiebreak chain."""
+    label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+    rows = db.select(
+        "event_leaderboard",
+        {
+            "event_id": f"eq.{event_id}",
+            "select": "user_id,nickname",
+            "order": "points.desc,fights_correct_winner.desc,perfect_card.desc,earliest_prediction_at.asc",
+        },
+    )
+    if len(rows) < 2:
+        return
+
+    winner = rows[0]
+    pot = (len(rows) - 1) * STARTOVNE_CZK
+    winner_name = winner.get("nickname") or "Bez přezdívky"
+    db.insert(
+        "event_comments",
+        [
+            {
+                "event_id": event_id,
+                "user_id": None,
+                "is_system": True,
+                "body": (
+                    f"💰 {label}: startovné vyhrál/a {winner_name} a bere {pot} Kč "
+                    f"({len(rows) - 1}× {STARTOVNE_CZK} Kč). Podrobnosti a QR platba na stránce galavečera."
+                ),
+            }
+        ],
+    )
+    print(f"Startovné: vyhrál/a {winner_name}, pool {pot} Kč. Oznámeno v kecárně.")
+
+
 def import_results(event_id: str) -> None:
     db = SupabaseClient()
 
     events = db.select(
-        "events", {"id": f"eq.{event_id}", "select": "id,number,oktagon_event_id,actual_fotn_fight_id"}
+        "events", {"id": f"eq.{event_id}", "select": "id,number,name,oktagon_event_id,actual_fotn_fight_id"}
     )
     if not events:
         print(f"Event {event_id} nenalezen.")
@@ -152,6 +192,7 @@ def import_results(event_id: str) -> None:
 
     db.update("events", {"status": "completed"}, {"id": f"eq.{event_id}"})
     print("Všechny zápasy odehrané a FOTN zadané, galavečer označen jako vyhodnocený.")
+    _announce_payout_pool(db, event_id, event)
 
 
 if __name__ == "__main__":

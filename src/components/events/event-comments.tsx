@@ -8,10 +8,11 @@ import { MessageCircle, Trash2, X } from "lucide-react";
 
 type Comment = {
   id: string;
-  user_id: string;
+  user_id: string | null;
   body: string;
   created_at: string;
   nickname: string;
+  isSystem: boolean;
 };
 
 const MAX_LENGTH = 500;
@@ -76,15 +77,29 @@ export function EventComments({
         async () => {
           const { data } = await supabase
             .from("event_comments")
-            .select("id, user_id, body, created_at, profiles(nickname)")
+            .select("id, user_id, body, created_at, is_system, profiles(nickname)")
             .eq("event_id", eventId)
             .order("created_at", { ascending: false })
             .limit(100);
           if (data) {
             setComments(
-              (data as unknown as (Omit<Comment, "nickname"> & { profiles: { nickname: string } | null })[]).map(
-                (c) => ({ ...c, nickname: c.profiles?.nickname ?? "Bez přezdívky" })
-              )
+              (
+                data as unknown as {
+                  id: string;
+                  user_id: string | null;
+                  body: string;
+                  created_at: string;
+                  is_system: boolean;
+                  profiles: { nickname: string } | null;
+                }[]
+              ).map((c) => ({
+                id: c.id,
+                user_id: c.user_id,
+                body: c.body,
+                created_at: c.created_at,
+                isSystem: c.is_system,
+                nickname: c.profiles?.nickname ?? "Bez přezdívky",
+              }))
             );
           }
         }
@@ -105,6 +120,7 @@ export function EventComments({
   const unread = lastSeen
     ? comments.filter((c) => c.created_at > lastSeen && c.user_id !== userId).length
     : 0;
+  // system rows have no author to compare against - they're never "yours"
 
   function openPanel() {
     setOpen(true);
@@ -181,30 +197,39 @@ export function EventComments({
                   Zatím ticho. Hoď první hlášku!
                 </p>
               )}
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
-                  <p className="min-w-0">
-                    <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
-                      {comment.nickname}
-                    </span>{" "}
-                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                      {formatTime(comment.created_at)}
-                    </span>
-                    <br />
-                    <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
-                  </p>
-                  {(comment.user_id === userId || isAdmin) && (
-                    <button
-                      type="button"
-                      onClick={() => remove(comment.id)}
-                      className="shrink-0 text-neutral-400 hover:text-red-600"
-                      aria-label="Smazat komentář"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  )}
-                </div>
-              ))}
+              {comments.map((comment) =>
+                comment.isSystem ? (
+                  <div
+                    key={comment.id}
+                    className="mx-auto max-w-[85%] rounded-full bg-[#FFD400]/15 px-3 py-1.5 text-center text-xs font-medium text-yellow-800 dark:text-[#FFD400]"
+                  >
+                    {comment.body}
+                  </div>
+                ) : (
+                  <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
+                    <p className="min-w-0">
+                      <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
+                        {comment.nickname}
+                      </span>{" "}
+                      <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                        {formatTime(comment.created_at)}
+                      </span>
+                      <br />
+                      <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
+                    </p>
+                    {(comment.user_id === userId || isAdmin) && (
+                      <button
+                        type="button"
+                        onClick={() => remove(comment.id)}
+                        className="shrink-0 text-neutral-400 hover:text-red-600"
+                        aria-label="Smazat komentář"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    )}
+                  </div>
+                )
+              )}
             </div>
 
             <form

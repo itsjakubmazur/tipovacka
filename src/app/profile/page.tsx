@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
+import { BankAccountForm } from "@/components/profile/bank-account-form";
 import { InstallAppGuide } from "@/components/profile/install-app-guide";
 import { NotificationPreferences } from "@/components/profile/notification-preferences";
 import { PushNotificationToggle } from "@/components/push/push-notification-toggle";
@@ -17,7 +18,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates")
+    .select("nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates, bank_account")
     .eq("id", user.id)
     .single();
 
@@ -29,6 +30,7 @@ export default async function ProfilePage() {
         {profile?.is_admin && <Badge variant="accent" className="mt-2">Admin</Badge>}
       </div>
       <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
+      <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
       <InstallAppGuide />
       <PushNotificationToggle userId={user.id} />
       <NotificationPreferences

@@ -8,6 +8,7 @@ import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
 import { SegmentJump } from "@/components/predictions/segment-jump";
 import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
+import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
@@ -163,17 +164,25 @@ export default async function EventDetailPage({
 
   const { data: rawComments } = await supabase
     .from("event_comments")
-    .select("id, user_id, body, created_at, profiles(nickname)")
+    .select("id, user_id, body, created_at, is_system, profiles(nickname)")
     .eq("event_id", id)
     .order("created_at", { ascending: false })
     .limit(100);
   const comments = ((rawComments ?? []) as unknown as {
     id: string;
-    user_id: string;
+    user_id: string | null;
     body: string;
     created_at: string;
+    is_system: boolean;
     profiles: { nickname: string } | null;
-  }[]).map((c) => ({ ...c, nickname: c.profiles?.nickname ?? "Bez přezdívky" }));
+  }[]).map((c) => ({
+    id: c.id,
+    user_id: c.user_id,
+    body: c.body,
+    created_at: c.created_at,
+    isSystem: c.is_system,
+    nickname: c.profiles?.nickname ?? "Bez přezdívky",
+  }));
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
@@ -244,6 +253,15 @@ export default async function EventDetailPage({
           </span>
         )}
       </div>
+
+      {event.status === "completed" && (
+        <EventPayoutPool
+          eventId={id}
+          eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
+          currentUserId={user.id}
+          isAdmin={isAdmin}
+        />
+      )}
 
       <FotnPicker
         eventId={id}
