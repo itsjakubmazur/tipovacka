@@ -172,7 +172,11 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
         "events",
         {
             "number": "not.is.null",
-            "status": "neq.draft",
+            # not just "neq.draft" - a stale card_notified_at on an
+            # already-locked/completed event (e.g. hit by this same bug
+            # weeks ago) must never trigger a "you can tip now" push for
+            # a gala that's long over.
+            "status": "eq.upcoming",
             "card_notified_at": "is.null",
             "created_at": f"lte.{(now - CARD_GRACE_PERIOD).isoformat()}",
             "select": "id,number,name",
