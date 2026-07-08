@@ -179,13 +179,18 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
         },
     )
     for event in events:
+        label = event_label(event)
         fights = db.select("fights", {"event_id": f"eq.{event['id']}", "select": "id", "limit": "1"})
         if fights:
-            continue
-
-        label = event_label(event)
-        with log_run("cron_card_import", event["id"]):
-            created, _ = import_card(event["id"])
+            # card was already imported by an admin while this event was
+            # still a draft (see triggerSherdogImport in the admin event
+            # detail page) - nothing new to import, but tippers are only
+            # seeing the event for the first time now that it's
+            # published, so they still need the "card is online" push.
+            created = 1
+        else:
+            with log_run("cron_card_import", event["id"]):
+                created, _ = import_card(event["id"])
 
         now_iso = datetime.now(timezone.utc).isoformat()
         db.update("events", {"card_checked_at": now_iso}, {"id": f"eq.{event['id']}"})
