@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import Image from "next/image";
+import { Wallet } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
@@ -212,6 +213,12 @@ export default async function EventDetailPage({
             timeZone: "Europe/Prague",
           })}
         </p>
+        {event.payouts_enabled && (
+          <p className={cn(GLASS_PILL, "mt-2 inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium")}>
+            <Wallet className="size-3.5 text-yellow-600 dark:text-[#FFD400]" />
+            Startovné 50 Kč · vítěz bere vše · QR platba po vyhodnocení
+          </p>
+        )}
         {locked ? (
           <div className="mt-2">
             <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
