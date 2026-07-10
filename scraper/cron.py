@@ -29,13 +29,17 @@ Does eight things, in order:
    how many of its fights that specific user still hasn't tipped.
 7. send_lock_notifications - events whose lock_at has just passed get a
    "gala starts, go check everyone's tips" push to everyone subscribed.
-8. check_results - events that have started but aren't completed yet get
+8. send_comment_notifications - kecárna messages posted since the last
+   tick get batched into one "new messages" push per event, skipping the
+   authors of those very messages so nobody gets pinged about their own
+   chat line.
+9. check_results - events that have started but aren't completed yet get
    a results import attempt; once every fight has a result AND an admin
    has entered Fight of the Night (not published anywhere, announced at
    the post-event press conference - see admin event detail page), the
    event flips to completed and everyone gets notified that points are
    in.
-9. send_followup_notifications - at 14:00 Prague time the day after an
+10. send_followup_notifications - at 14:00 Prague time the day after an
    event, everyone who tipped gets a "thanks, go see how you did" push
    and everyone who didn't gets a "here's how everyone else did" push,
    both mentioning when the next gala is and that its card opens
@@ -357,6 +361,60 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
+    """Kecárna messages are posted straight from the browser (no server
+    action to hook a push into), so this batches whatever landed since
+    the last tick into one push per event instead of one per message -
+    a lively chat during a gala would otherwise fire a push a second."""
+    comments = db.select(
+        "event_comments",
+        {
+            "notified_at": "is.null",
+            "is_system": "eq.false",
+            "select": "id,event_id,user_id,body,created_at",
+        },
+    )
+    if not comments:
+        return
+
+    by_event: dict[str, list[dict]] = {}
+    for comment in comments:
+        by_event.setdefault(comment["event_id"], []).append(comment)
+
+    events = {
+        e["id"]: e
+        for e in db.select(
+            "events", {"id": f"in.({','.join(by_event.keys())})", "select": "id,number,name"}
+        )
+    }
+
+    for event_id, group in by_event.items():
+        event = events.get(event_id)
+        label = event_label(event) if event else "Kecárna"
+        if len(group) == 1:
+            body = group[0]["body"]
+            preview = body if len(body) <= 100 else f"{body[:99]}…"
+        else:
+            preview = f"{len(group)} nových zpráv, zajdi se podívat."
+
+        with log_run("cron_comment_notification", event_id):
+            send_to_all(
+                db,
+                f"{label}: nová zpráva v kecárně",
+                preview,
+                f"/events/{event_id}",
+                pref="notify_comments",
+                exclude_user_ids={c["user_id"] for c in group},
+            )
+
+        comment_ids = ",".join(c["id"] for c in group)
+        db.update(
+            "event_comments",
+            {"notified_at": now.isoformat()},
+            {"id": f"in.({comment_ids})"},
+        )
+
+
 def check_results(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
@@ -466,6 +524,7 @@ def main() -> None:
     refresh_odds(db, now)
     send_lock_reminders(db, now)
     send_lock_notifications(db, now)
+    send_comment_notifications(db, now)
     check_results(db, now)
     send_followup_notifications(db, now)
 

@@ -20,6 +20,11 @@ const PREFS = [
     label: "Nová a změněná karta",
     description: "Když je zveřejněna karta nového galavečera nebo se na kartě něco změní.",
   },
+  {
+    key: "notify_comments" as const,
+    label: "Zprávy v kecárně",
+    description: "Když ti někdo napíše do kecárny u galavečera (kromě tvých vlastních zpráv).",
+  },
 ];
 
 type PrefKey = (typeof PREFS)[number]["key"];

@@ -18,7 +18,9 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates, bank_account")
+    .select(
+      "nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates, notify_comments, bank_account"
+    )
     .eq("id", user.id)
     .single();
 
@@ -39,6 +41,7 @@ export default async function ProfilePage() {
           notify_fight_results: profile?.notify_fight_results ?? true,
           notify_reminders: profile?.notify_reminders ?? true,
           notify_card_updates: profile?.notify_card_updates ?? true,
+          notify_comments: profile?.notify_comments ?? true,
         }}
       />
     </div>
