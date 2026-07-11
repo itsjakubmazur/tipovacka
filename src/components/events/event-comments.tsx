@@ -4,7 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Check, MessageCircle, Plus, SmilePlus, Trash2, X } from "lucide-react";
+import { MessageCircle, SmilePlus, Trash2, X } from "lucide-react";
+import { EmojiGlyph } from "@/components/events/emoji-glyph";
+import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
 
 type Reaction = { id: string; user_id: string; emoji: string };
 
@@ -57,8 +59,7 @@ export function EventComments({
   const [error, setError] = useState<string | null>(null);
   const [lastSeen, setLastSeen] = useState<string | null>(null);
   const [reactingTo, setReactingTo] = useState<string | null>(null);
-  const [customPickerFor, setCustomPickerFor] = useState<string | null>(null);
-  const [customEmoji, setCustomEmoji] = useState("");
+  const [pickerFor, setPickerFor] = useState<string | null>(null);
   const seenKey = `kecarna-seen-${eventId}`;
 
   useEffect(() => {
@@ -178,14 +179,6 @@ export function EventComments({
     }
   }
 
-  function submitCustomEmoji(e: React.FormEvent, comment: Comment) {
-    e.preventDefault();
-    const trimmed = customEmoji.trim();
-    setCustomEmoji("");
-    setCustomPickerFor(null);
-    if (trimmed) toggleReaction(comment, trimmed);
-  }
-
   return (
     <>
       {/* floating bubble */}
@@ -277,7 +270,7 @@ export function EventComments({
                                   : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
                               )}
                             >
-                              <span>{emoji}</span>
+                              <EmojiGlyph native={emoji} size={14} />
                               <span>{reactions.length}</span>
                             </button>
                           );
@@ -297,48 +290,23 @@ export function EventComments({
                                 key={emoji}
                                 type="button"
                                 onClick={() => toggleReaction(comment, emoji)}
-                                className="text-base leading-none transition-transform hover:scale-125"
+                                className="transition-transform hover:scale-125"
                               >
-                                {emoji}
+                                <EmojiGlyph native={emoji} size={20} />
                               </button>
                             ))}
                             <button
                               type="button"
                               onClick={() => {
                                 setReactingTo(null);
-                                setCustomPickerFor(comment.id);
+                                setPickerFor(comment.id);
                               }}
-                              aria-label="Vlastní emoji"
+                              aria-label="Víc emoji"
                               className="rounded-full p-0.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                             >
-                              <Plus className="size-3.5" />
+                              <SmilePlus className="size-4" />
                             </button>
                           </div>
-                        )}
-                        {customPickerFor === comment.id && (
-                          <form
-                            onSubmit={(e) => submitCustomEmoji(e, comment)}
-                            className="absolute bottom-full left-0 z-10 mb-1 flex items-center gap-1 rounded-full border border-neutral-200 bg-white py-1 pl-3 pr-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-                          >
-                            {/* Plain text input, no custom picker UI - tapping it
-                                brings up the phone's own keyboard, whose emoji/globe
-                                key opens the OS emoji picker. We just capture
-                                whatever grapheme lands here. */}
-                            <input
-                              autoFocus
-                              value={customEmoji}
-                              onChange={(e) => setCustomEmoji(e.target.value)}
-                              placeholder="🙂"
-                              className="w-14 border-none bg-transparent text-base outline-none"
-                            />
-                            <button
-                              type="submit"
-                              aria-label="Potvrdit reakci"
-                              className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-                            >
-                              <Check className="size-3.5" />
-                            </button>
-                          </form>
                         )}
                       </div>
                     </div>
@@ -374,6 +342,17 @@ export function EventComments({
             {error && <p className="px-4 pb-2 text-sm text-red-600">{error}</p>}
           </div>
         </div>
+      )}
+
+      {pickerFor && (
+        <EmojiPickerSheet
+          onSelect={(native) => {
+            const comment = comments.find((c) => c.id === pickerFor);
+            if (comment) toggleReaction(comment, native);
+            setPickerFor(null);
+          }}
+          onClose={() => setPickerFor(null)}
+        />
       )}
     </>
   );
