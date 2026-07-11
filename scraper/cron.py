@@ -438,7 +438,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             "status": "not.in.(draft,completed)",
             "lock_at": f"lt.{now.isoformat()}",
             "number": "not.is.null",
-            "select": "id,number,name",
+            "select": "id,number,name,payouts_enabled",
         },
     )
     for event in events:
@@ -452,10 +452,13 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
 
         refreshed = db.select("events", {"id": f"eq.{event['id']}", "select": "status"})[0]
         if refreshed["status"] == "completed":
+            body = "Turnaj je za námi, podívej se na výsledky tipovačky i s Fight of the Night!"
+            if event.get("payouts_enabled", True):
+                body += " QR platbu pro vítěze startovného najdeš na stránce galavečera."
             send_to_all(
                 db,
                 f"{label}: výsledky jsou hotové",
-                "Turnaj je za námi, podívej se na výsledky tipovačky i s Fight of the Night!",
+                body,
                 f"/leaderboard?eventId={event['id']}",
             )
 
