@@ -39,24 +39,25 @@ def _base_db(comments, extra_subs=None):
         {"id": "sub-1", "endpoint": "https://push/1", "p256dh": "a", "auth": "b", "user_id": "alice"},
         {"id": "sub-2", "endpoint": "https://push/2", "p256dh": "a", "auth": "b", "user_id": "bob"},
     ] + (extra_subs or [])
-    profiles = [{"id": "alice"}, {"id": "bob"}]
+    profiles = [{"id": "alice", "nickname": "Alice"}, {"id": "bob", "nickname": "Bob"}]
     return FakeDB(comments, events, subs, profiles)
 
 
-def test_batches_single_message_and_excludes_author(monkeypatch):
+def test_single_message_names_its_author(monkeypatch):
     comments = [
         {"id": "c1", "event_id": "evt-1", "user_id": "alice", "body": "gg", "created_at": "2026-07-10T10:00:00Z"}
     ]
     db = _base_db(comments)
     monkeypatch.setattr(cron, "log_run", _fake_log_run)
-    sent = []
-    monkeypatch.setattr(
-        cron, "send_to_all", lambda *a, exclude_user_ids=None, **kw: sent.append(exclude_user_ids)
-    )
+    calls = []
+    monkeypatch.setattr(cron, "send_to_all", lambda *a, **kw: calls.append((a, kw)))
 
     cron.send_comment_notifications(db, datetime(2026, 7, 10, 10, 5, tzinfo=timezone.utc))
 
-    assert sent == [{"alice"}]
+    assert len(calls) == 1
+    args, kwargs = calls[0]
+    assert args[2] == "Alice: gg"
+    assert kwargs["exclude_user_ids"] == {"alice"}
     notified = [u for u in db.updates if u[0] == "event_comments"]
     assert len(notified) == 1
     assert notified[0][2] == {"id": "in.(c1)"}

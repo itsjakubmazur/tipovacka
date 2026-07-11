@@ -388,12 +388,28 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
         )
     }
 
+    # only needed for single-message batches, where the push names the
+    # author - a multi-message batch stays a generic "X new messages" so
+    # it doesn't have to pick one name to show.
+    single_author_ids = {group[0]["user_id"] for group in by_event.values() if len(group) == 1}
+    nicknames = {}
+    if single_author_ids:
+        nicknames = {
+            p["id"]: p["nickname"]
+            for p in db.select(
+                "profiles", {"id": f"in.({','.join(single_author_ids)})", "select": "id,nickname"}
+            )
+        }
+
     for event_id, group in by_event.items():
         event = events.get(event_id)
         label = event_label(event) if event else "Kecárna"
         if len(group) == 1:
-            body = group[0]["body"]
-            preview = body if len(body) <= 100 else f"{body[:99]}…"
+            comment = group[0]
+            nickname = nicknames.get(comment["user_id"], "Někdo")
+            body = comment["body"]
+            body_preview = body if len(body) <= 100 else f"{body[:99]}…"
+            preview = f"{nickname}: {body_preview}"
         else:
             preview = f"{len(group)} nových zpráv, zajdi se podívat."
 
