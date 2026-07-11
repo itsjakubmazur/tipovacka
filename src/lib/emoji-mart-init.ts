@@ -5,7 +5,13 @@
  * enough, ES module caching keeps this running exactly once no matter
  * how many places import it. */
 import { init } from "emoji-mart";
-import data from "@emoji-mart/data";
+// @emoji-mart/data's package.json "main" resolves to sets/15/native.json,
+// whose skins have no sheet x/y coordinates at all (only per-set files
+// like apple.json do) - loading it was why the picker grid rendered
+// every tile as "#": background-position needs those coordinates,
+// which were all `undefined` regardless of the self-hosted sheet image
+// being perfectly fine. Import the apple set explicitly instead.
+import data from "@emoji-mart/data/sets/15/apple.json";
 
 init({ data, set: "apple" });
 

@@ -3,7 +3,9 @@
 import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { Picker } from "emoji-mart";
-import data from "@emoji-mart/data";
+// see emoji-mart-init.ts for why this is the "apple" set specifically,
+// not the package's default "native" one
+import data from "@emoji-mart/data/sets/15/apple.json";
 import { emojiImageUrl, emojiSpritesheetUrl } from "@/lib/emoji-mart-init";
 import { X } from "lucide-react";
 
