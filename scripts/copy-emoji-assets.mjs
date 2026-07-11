@@ -1,10 +1,12 @@
-// Runs on every `npm install` (see package.json postinstall). The
-// emoji reaction picker used to load Apple-style emoji images straight
-// from jsDelivr at runtime - that CDN turned out to be unreliable in
-// practice (every tile fell back to emoji-mart's "#" placeholder), so
-// these get self-hosted from the emoji-datasource-apple package
-// instead. Not committed to git (see .gitignore) - regenerated fresh
-// from node_modules on every install.
+// The emoji reaction picker used to load Apple-style emoji images
+// straight from jsDelivr at runtime - that CDN turned out to be
+// unreliable in practice (every tile fell back to emoji-mart's "#"
+// placeholder), so these are self-hosted from the emoji-datasource-apple
+// package instead. public/emoji/apple is committed to git (so
+// production never depends on this script actually running at deploy
+// time) - this is just how to regenerate it after bumping the
+// emoji-datasource-apple version: `node scripts/copy-emoji-assets.mjs`,
+// then commit whatever changed under public/emoji.
 import { cpSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
