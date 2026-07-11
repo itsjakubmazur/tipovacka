@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { Picker } from "emoji-mart";
 import data from "@emoji-mart/data";
-import "@/lib/emoji-mart-init";
+import { emojiImageUrl, emojiSpritesheetUrl } from "@/lib/emoji-mart-init";
 import { X } from "lucide-react";
 
 /** Full emoji-mart picker (categories + search + skin tones), rendered
@@ -30,6 +30,8 @@ export function EmojiPickerSheet({
       theme: resolvedTheme === "dark" ? "dark" : "light",
       previewPosition: "none",
       skinTonePosition: "search",
+      getImageURL: emojiImageUrl,
+      getSpritesheetURL: emojiSpritesheetUrl,
       onEmojiSelect: (emoji: { native: string }) => onSelect(emoji.native),
     });
     container?.replaceChildren(picker as unknown as Node);

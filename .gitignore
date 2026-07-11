@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# generated at install time from emoji-datasource-apple, see scripts/copy-emoji-assets.mjs
+/public/emoji
+
 # dependencies
 /node_modules
 /.pnp
