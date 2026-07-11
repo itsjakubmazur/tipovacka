@@ -320,11 +320,16 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
 
                 for user_id in user_ids - opted_out:
                     have = tipped_counts.get(user_id, 0)
+                    body = (
+                        f"Máš tipnuto všech {total} zápasů, nic dalšího tě nečeká!"
+                        if have >= total
+                        else f"Máš tipnuto {have} z {total} zápasů, nezapomeň dotipovat!"
+                    )
                     send_to_user(
                         db,
                         user_id,
                         f"{label} začíná za hodinu",
-                        f"Máš tipnuto {have} z {total} zápasů, nezapomeň dotipovat!",
+                        body,
                         f"/events/{event['id']}",
                     )
 
