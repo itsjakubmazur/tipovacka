@@ -165,7 +165,9 @@ export default async function EventDetailPage({
 
   const { data: rawComments } = await supabase
     .from("event_comments")
-    .select("id, user_id, body, created_at, is_system, profiles(nickname)")
+    .select(
+      "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
+    )
     .eq("event_id", id)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -176,6 +178,7 @@ export default async function EventDetailPage({
     created_at: string;
     is_system: boolean;
     profiles: { nickname: string } | null;
+    event_comment_reactions: { id: string; user_id: string; emoji: string }[];
   }[]).map((c) => ({
     id: c.id,
     user_id: c.user_id,
@@ -183,6 +186,7 @@ export default async function EventDetailPage({
     created_at: c.created_at,
     isSystem: c.is_system,
     nickname: c.profiles?.nickname ?? "Bez přezdívky",
+    reactions: c.event_comment_reactions,
   }));
 
   return (

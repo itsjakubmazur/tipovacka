@@ -4,7 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MessageCircle, Trash2, X } from "lucide-react";
+import { MessageCircle, SmilePlus, Trash2, X } from "lucide-react";
+
+type Reaction = { id: string; user_id: string; emoji: string };
 
 type Comment = {
   id: string;
@@ -13,9 +15,11 @@ type Comment = {
   created_at: string;
   nickname: string;
   isSystem: boolean;
+  reactions: Reaction[];
 };
 
 const MAX_LENGTH = 500;
+const REACTION_EMOJI = ["👍", "❤️", "😂", "😮", "😢", "🔥"] as const;
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleString("cs-CZ", {
@@ -52,6 +56,7 @@ export function EventComments({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSeen, setLastSeen] = useState<string | null>(null);
+  const [reactingTo, setReactingTo] = useState<string | null>(null);
   const seenKey = `kecarna-seen-${eventId}`;
 
   useEffect(() => {
@@ -69,40 +74,51 @@ export function EventComments({
   }, [seenKey]);
 
   useEffect(() => {
+    async function refetch() {
+      const { data } = await supabase
+        .from("event_comments")
+        .select(
+          "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
+        )
+        .eq("event_id", eventId)
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (data) {
+        setComments(
+          (
+            data as unknown as {
+              id: string;
+              user_id: string | null;
+              body: string;
+              created_at: string;
+              is_system: boolean;
+              profiles: { nickname: string } | null;
+              event_comment_reactions: Reaction[];
+            }[]
+          ).map((c) => ({
+            id: c.id,
+            user_id: c.user_id,
+            body: c.body,
+            created_at: c.created_at,
+            isSystem: c.is_system,
+            nickname: c.profiles?.nickname ?? "Bez přezdívky",
+            reactions: c.event_comment_reactions,
+          }))
+        );
+      }
+    }
+
     const channel = supabase
       .channel(`event-comments-${eventId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "event_comments", filter: `event_id=eq.${eventId}` },
-        async () => {
-          const { data } = await supabase
-            .from("event_comments")
-            .select("id, user_id, body, created_at, is_system, profiles(nickname)")
-            .eq("event_id", eventId)
-            .order("created_at", { ascending: false })
-            .limit(100);
-          if (data) {
-            setComments(
-              (
-                data as unknown as {
-                  id: string;
-                  user_id: string | null;
-                  body: string;
-                  created_at: string;
-                  is_system: boolean;
-                  profiles: { nickname: string } | null;
-                }[]
-              ).map((c) => ({
-                id: c.id,
-                user_id: c.user_id,
-                body: c.body,
-                created_at: c.created_at,
-                isSystem: c.is_system,
-                nickname: c.profiles?.nickname ?? "Bez přezdívky",
-              }))
-            );
-          }
-        }
+        refetch
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "event_comment_reactions", filter: `event_id=eq.${eventId}` },
+        refetch
       )
       .subscribe();
     return () => {
@@ -146,6 +162,18 @@ export function EventComments({
 
   async function remove(id: string) {
     await supabase.from("event_comments").delete().eq("id", id);
+  }
+
+  async function toggleReaction(comment: Comment, emoji: string) {
+    setReactingTo(null);
+    const existing = comment.reactions.find((r) => r.user_id === userId && r.emoji === emoji);
+    if (existing) {
+      await supabase.from("event_comment_reactions").delete().eq("id", existing.id);
+    } else {
+      await supabase
+        .from("event_comment_reactions")
+        .insert({ comment_id: comment.id, event_id: eventId, user_id: userId, emoji });
+    }
   }
 
   return (
@@ -207,16 +235,67 @@ export function EventComments({
                   </div>
                 ) : (
                   <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
-                    <p className="min-w-0">
-                      <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
-                        {comment.nickname}
-                      </span>{" "}
-                      <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                        {formatTime(comment.created_at)}
-                      </span>
-                      <br />
-                      <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
-                    </p>
+                    <div className="min-w-0">
+                      <p>
+                        <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
+                          {comment.nickname}
+                        </span>{" "}
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                          {formatTime(comment.created_at)}
+                        </span>
+                        <br />
+                        <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
+                      </p>
+
+                      <div className="relative mt-1 flex flex-wrap items-center gap-1">
+                        {Object.entries(
+                          comment.reactions.reduce<Record<string, Reaction[]>>((groups, r) => {
+                            (groups[r.emoji] ??= []).push(r);
+                            return groups;
+                          }, {})
+                        ).map(([emoji, reactions]) => {
+                          const mine = reactions.some((r) => r.user_id === userId);
+                          return (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onClick={() => toggleReaction(comment, emoji)}
+                              className={cn(
+                                "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none",
+                                mine
+                                  ? "border-[#FFD400] bg-[#FFD400]/15 text-yellow-800 dark:text-[#FFD400]"
+                                  : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
+                              )}
+                            >
+                              <span>{emoji}</span>
+                              <span>{reactions.length}</span>
+                            </button>
+                          );
+                        })}
+                        <button
+                          type="button"
+                          onClick={() => setReactingTo(reactingTo === comment.id ? null : comment.id)}
+                          aria-label="Přidat reakci"
+                          className="rounded-full p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                        >
+                          <SmilePlus className="size-3.5" />
+                        </button>
+                        {reactingTo === comment.id && (
+                          <div className="absolute bottom-full left-0 z-10 mb-1 flex gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                            {REACTION_EMOJI.map((emoji) => (
+                              <button
+                                key={emoji}
+                                type="button"
+                                onClick={() => toggleReaction(comment, emoji)}
+                                className="text-base leading-none transition-transform hover:scale-125"
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     {(comment.user_id === userId || isAdmin) && (
                       <button
                         type="button"
