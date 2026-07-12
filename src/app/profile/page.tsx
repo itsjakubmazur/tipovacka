@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
 import { BankAccountForm } from "@/components/profile/bank-account-form";
+import { StartovneStats } from "@/components/profile/startovne-stats";
 import { InstallAppGuide } from "@/components/profile/install-app-guide";
 import { NotificationPreferences } from "@/components/profile/notification-preferences";
 import { PushNotificationToggle } from "@/components/push/push-notification-toggle";
@@ -33,6 +34,7 @@ export default async function ProfilePage() {
       </div>
       <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
       <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
+      <StartovneStats userId={user.id} />
       <InstallAppGuide />
       <PushNotificationToggle userId={user.id} />
       <NotificationPreferences

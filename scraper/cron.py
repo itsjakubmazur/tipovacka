@@ -39,7 +39,13 @@ Does eight things, in order:
    the post-event press conference - see admin event detail page), the
    event flips to completed and everyone gets notified that points are
    in.
-10. send_followup_notifications - at 14:00 Prague time the day after an
+10. send_fotn_reminders - once every fight on a started event is graded
+   but nobody's entered Fight of the Night yet, nudges admins that this
+   one manual step is all that's blocking the event from completing.
+11. send_payout_settled_notifications - once every tipper besides the
+   startovné winner has checked themselves off as paid, tells the
+   winner instead of leaving them to notice on their own.
+12. send_followup_notifications - at 14:00 Prague time the day after an
    event, everyone who tipped gets a "thanks, go see how you did" push
    and everyone who didn't gets a "here's how everyone else did" push,
    both mentioning when the next gala is and that its card opens
@@ -468,6 +474,100 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
+    """Fight of the Night is the one manual step blocking an event from
+    ever completing (no leaderboard bonus, no payout, no "results done"
+    push) - nudge admins once every real (non-cancelled/no_contest)
+    fight is graded but nobody's entered it yet."""
+    events = db.select(
+        "events",
+        {
+            "status": "not.in.(draft,completed)",
+            "actual_fotn_fight_id": "is.null",
+            "fotn_reminder_sent_at": "is.null",
+            "lock_at": f"lte.{now.isoformat()}",
+            "select": "id,number,name",
+        },
+    )
+    for event in events:
+        fights = db.select(
+            "fights",
+            {
+                "event_id": f"eq.{event['id']}",
+                "status": "not.in.(cancelled,no_contest)",
+                "select": "status",
+            },
+        )
+        if not fights or any(f["status"] != "completed" for f in fights):
+            continue
+
+        label = event_label(event)
+        admins = db.select("profiles", {"is_admin": "eq.true", "select": "id"})
+        for admin in admins:
+            send_to_user(
+                db,
+                admin["id"],
+                f"{label}: chybí Fight of the Night",
+                "Všechny zápasy jsou odbodované, ale eventu chybí Fight of the Night - bez něj se nedokončí.",
+                f"/admin/events/{event['id']}",
+            )
+        db.update(
+            "events",
+            {"fotn_reminder_sent_at": now.isoformat()},
+            {"id": f"eq.{event['id']}"},
+        )
+        print(f"{label}: chybí Fight of the Night, admini upozorněni.")
+
+
+def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None:
+    """Once every other tipper has checked themselves off as paid in
+    the startovné checklist, tells the winner instead of leaving them
+    to notice it on their own."""
+    events = db.select(
+        "events",
+        {
+            "status": "eq.completed",
+            "payouts_enabled": "eq.true",
+            "payout_all_paid_notified_at": "is.null",
+            "select": "id,number,name",
+        },
+    )
+    for event in events:
+        rows = db.select(
+            "event_leaderboard",
+            {
+                "event_id": f"eq.{event['id']}",
+                "select": "user_id,points,fights_correct_winner,perfect_card,earliest_prediction_at",
+                "order": "points.desc,fights_correct_winner.desc,perfect_card.desc,earliest_prediction_at.asc",
+            },
+        )
+        if len(rows) < 2:
+            continue
+
+        winner, others = rows[0], rows[1:]
+        payouts = db.select(
+            "event_payouts", {"event_id": f"eq.{event['id']}", "select": "user_id,paid"}
+        )
+        paid_by_user = {p["user_id"]: p["paid"] for p in payouts}
+        if not all(paid_by_user.get(o["user_id"], False) for o in others):
+            continue
+
+        label = event_label(event)
+        send_to_user(
+            db,
+            winner["user_id"],
+            f"{label}: startovné vyplaceno",
+            "Všichni ti poslali startovné, máš vybráno!",
+            f"/events/{event['id']}",
+        )
+        db.update(
+            "events",
+            {"payout_all_paid_notified_at": now.isoformat()},
+            {"id": f"eq.{event['id']}"},
+        )
+        print(f"{label}: startovné kompletně vybráno, vítěz upozorněn.")
+
+
 def _followup_at(event_date: datetime) -> datetime:
     """14:00 Prague time, FOLLOWUP_DAYS_AFTER calendar days after the
     event - computed in Prague's local time for the same DST-safety
@@ -550,6 +650,8 @@ def main() -> None:
     send_lock_notifications(db, now)
     send_comment_notifications(db, now)
     check_results(db, now)
+    send_fotn_reminders(db, now)
+    send_payout_settled_notifications(db, now)
     send_followup_notifications(db, now)
 
 
