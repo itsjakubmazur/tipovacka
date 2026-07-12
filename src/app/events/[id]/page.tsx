@@ -47,10 +47,11 @@ export default async function EventDetailPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, is_superadmin")
     .eq("id", user.id)
     .single();
   const isAdmin = profile?.is_admin ?? false;
+  const isSuperadmin = profile?.is_superadmin ?? false;
 
   if (event.status === "draft" && !isAdmin) {
     notFound();
@@ -150,8 +151,27 @@ export default async function EventDetailPage({
       label: CARD_SEGMENT_LABELS[fight.card_segment!],
     }));
 
-  const gradedFights = (fights ?? []).filter((f) => f.status === "completed" || f.status === "no_contest");
-  const scoredSoFar = (predictions ?? []).reduce((sum, p) => sum + (p.points ?? 0), 0);
+  // cancelled/no_contest fights don't count toward either side of "X z Y"
+  // - matches event_leaderboard's own treatment of them as if they were
+  // never on the card at all.
+  const countableFights = (fights ?? []).filter(
+    (f) => f.status !== "cancelled" && f.status !== "no_contest"
+  );
+  const countableFightIds = new Set(countableFights.map((f) => f.id));
+  const gradedFights = countableFights.filter((f) => f.status === "completed");
+  const countablePredictions = (predictions ?? []).filter((p) => countableFightIds.has(p.fight_id));
+
+  // Sourced from event_leaderboard rather than summed from `predictions`
+  // here, so it always matches the leaderboard exactly - that view
+  // already folds in the Fight of the Night bonus and the perfect-card
+  // bonus, neither of which live on individual prediction rows.
+  const { data: myLeaderboardRow } = await supabase
+    .from("event_leaderboard")
+    .select("points")
+    .eq("event_id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  const scoredSoFar = myLeaderboardRow?.points ?? 0;
 
   const tippableFightIds = (fights ?? [])
     .filter((f) => {
@@ -247,9 +267,9 @@ export default async function EventDetailPage({
             </div>
           )
         )}
-        {!locked && fightIds.length > 0 && (
+        {!locked && countableFights.length > 0 && (
           <span className={cn(GLASS_PILL, "mt-2 inline-flex items-center px-3 py-1 text-xs font-medium")}>
-            Tipnuto {predictions?.length ?? 0} z {fightIds.length} zápasů
+            Tipnuto {countablePredictions.length} z {countableFights.length} zápasů
           </span>
         )}
         {locked && gradedFights.length > 0 && (
@@ -259,7 +279,7 @@ export default async function EventDetailPage({
             </span>
             <span className="text-xl font-bold tabular-nums">{scoredSoFar}</span>
             <span className="text-xs text-neutral-600 dark:text-neutral-400">
-              {gradedFights.length} z {fightIds.length} zápasů odbodováno
+              {gradedFights.length} z {countableFights.length} zápasů odbodováno
             </span>
           </span>
         )}
@@ -270,7 +290,7 @@ export default async function EventDetailPage({
           eventId={id}
           eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
           currentUserId={user.id}
-          isAdmin={isAdmin}
+          isSuperadmin={isSuperadmin}
         />
       )}
 

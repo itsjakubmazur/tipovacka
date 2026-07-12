@@ -92,7 +92,8 @@ export default async function LeaderboardPage({
       supabase
         .from("fights")
         .select("id", { count: "exact", head: true })
-        .eq("event_id", selectedEvent.id),
+        .eq("event_id", selectedEvent.id)
+        .not("status", "in", "(cancelled,no_contest)"),
       previousEvent
         ? supabase
             .from("event_leaderboard")

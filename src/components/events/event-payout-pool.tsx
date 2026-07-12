@@ -15,12 +15,12 @@ export async function EventPayoutPool({
   eventId,
   eventLabel,
   currentUserId,
-  isAdmin,
+  isSuperadmin,
 }: {
   eventId: string;
   eventLabel: string;
   currentUserId: string;
-  isAdmin: boolean;
+  isSuperadmin: boolean;
 }) {
   const supabase = await createClient();
 
@@ -106,7 +106,7 @@ export async function EventPayoutPool({
         <PayoutChecklist
           eventId={eventId}
           currentUserId={currentUserId}
-          isAdmin={isAdmin}
+          isSuperadmin={isSuperadmin}
           rows={checklistRows}
         />
       </div>

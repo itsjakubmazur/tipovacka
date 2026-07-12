@@ -7,19 +7,20 @@ import { cn } from "@/lib/utils";
 
 type Row = { userId: string; nickname: string; paid: boolean };
 
-/** Self-report "zaplaceno" checklist for the startovné pool - each
- * person toggles their own row, admins can toggle anyone's (e.g. cash
- * handed over in person). No payment actually happens here, it's just
- * a shared, visible tally. */
+/** Self-report "zaplaceno" checklist for the startovné pool - everyone
+ * sees the full list (so it's clear who still owes), but each person
+ * can only toggle their own row; only a superadmin can toggle on
+ * someone else's behalf (e.g. cash handed over in person). No payment
+ * actually happens here, it's just a shared, visible tally. */
 export function PayoutChecklist({
   eventId,
   currentUserId,
-  isAdmin,
+  isSuperadmin,
   rows: initialRows,
 }: {
   eventId: string;
   currentUserId: string;
-  isAdmin: boolean;
+  isSuperadmin: boolean;
   rows: Row[];
 }) {
   const supabase = createClient();
@@ -38,7 +39,7 @@ export function PayoutChecklist({
   return (
     <div className="flex flex-col gap-1.5">
       {rows.map((row) => {
-        const canToggle = row.userId === currentUserId || isAdmin;
+        const canToggle = row.userId === currentUserId || isSuperadmin;
         return (
           <button
             key={row.userId}
