@@ -1,8 +1,10 @@
 import { Fragment } from "react";
 import Image from "next/image";
 import { Wallet } from "lucide-react";
+import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
@@ -51,7 +53,12 @@ export default async function EventDetailPage({
     .eq("id", user.id)
     .single();
   const isAdmin = profile?.is_admin ?? false;
-  const isSuperadmin = profile?.is_superadmin ?? false;
+  // Same "browse as a regular tipper" preference the events listing
+  // uses for draft visibility - a superadmin testing what everyone
+  // else sees shouldn't still get the payout checklist's admin powers.
+  const isSuperadmin =
+    (profile?.is_superadmin ?? false) &&
+    (await cookies()).get(VIEW_MODE_COOKIE)?.value === "admin";
 
   if (event.status === "draft" && !isAdmin) {
     notFound();
@@ -213,6 +220,7 @@ export default async function EventDetailPage({
     <div className="flex flex-col gap-4 px-4 py-8">
       <RealtimeRefresh table="fights" />
       <RealtimeRefresh table="predictions" />
+      <RealtimeRefresh table="event_payouts" />
       {event.image_url && (
         <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl">
           <Image

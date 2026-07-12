@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Wallet } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { PayoutChecklist } from "@/components/events/payout-checklist";
+import { PayoutStatus } from "@/components/events/payout-status";
 import { QrPayment } from "@/components/events/qr-payment";
 import { czAccountToIban } from "@/lib/cz-payment";
 
@@ -51,7 +51,7 @@ export async function EventPayoutPool({
     .eq("event_id", eventId);
 
   const paidByUser = new Map((payoutRows ?? []).map((r) => [r.user_id, r.paid]));
-  const checklistRows = others.map((o) => ({
+  const payoutStatusRows = others.map((o) => ({
     userId: o.user_id,
     nickname: o.nickname ?? "Bez přezdívky",
     paid: paidByUser.get(o.user_id) ?? false,
@@ -101,13 +101,12 @@ export async function EventPayoutPool({
         </p>
       )}
 
-      <div className="flex flex-col gap-1.5 border-t border-black/10 pt-3 dark:border-white/10">
-        <p className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">Kdo zaplatil</p>
-        <PayoutChecklist
+      <div className="flex flex-col gap-2 border-t border-black/10 pt-3 dark:border-white/10">
+        <PayoutStatus
           eventId={eventId}
           currentUserId={currentUserId}
           isSuperadmin={isSuperadmin}
-          rows={checklistRows}
+          rows={payoutStatusRows}
         />
       </div>
     </div>
