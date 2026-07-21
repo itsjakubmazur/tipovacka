@@ -9,7 +9,7 @@ import { ageFromBirthDate, cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X, ArrowUp, ArrowDown, ChevronDown, Star } from "lucide-react";
+import { X, ArrowUp, ArrowDown, ChevronDown, Star, HelpCircle } from "lucide-react";
 import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 function Pill({
@@ -146,6 +146,7 @@ export function FightTipCard({
     initialPrediction?.predicted_round ?? null
   );
   const [isBold, setIsBold] = useState(initialIsBold ?? false);
+  const [boldHelpOpen, setBoldHelpOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -338,20 +339,45 @@ export function FightTipCard({
         </div>
         <div className="flex items-center gap-3">
           {!effectiveLocked && eventId && winnerId && (
-            <button
-              type="button"
-              onClick={toggleBold}
-              title="Jistotka: body z tohoto zápasu se ti počítají dvakrát. Jen jedna na galavečer."
-              className={cn(
-                "flex items-center gap-1 text-xs font-medium transition-colors",
-                isBold
-                  ? "text-yellow-600 dark:text-[#FFD400]"
-                  : "text-neutral-500 hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-[#FFD400]"
+            <div className="relative flex items-center gap-1">
+              <button
+                type="button"
+                onClick={toggleBold}
+                className={cn(
+                  "flex items-center gap-1 text-xs font-medium transition-colors",
+                  isBold
+                    ? "text-yellow-600 dark:text-[#FFD400]"
+                    : "text-neutral-500 hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-[#FFD400]"
+                )}
+              >
+                <Star className="size-3.5" fill={isBold ? "currentColor" : "none"} />
+                {isBold ? "Jistotka ×2" : "Dát jistotku"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setBoldHelpOpen((v) => !v)}
+                aria-label="Co je jistotka?"
+                className="text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
+              >
+                <HelpCircle className="size-3.5" />
+              </button>
+              {boldHelpOpen && (
+                <>
+                  <button
+                    type="button"
+                    aria-hidden
+                    tabIndex={-1}
+                    onClick={() => setBoldHelpOpen(false)}
+                    className="fixed inset-0 z-10 cursor-default"
+                  />
+                  <div className="absolute right-0 top-full z-20 mt-1.5 w-60 rounded-xl border border-neutral-200 bg-white p-3 text-xs leading-relaxed text-neutral-600 shadow-xl dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
+                    <span className="font-semibold text-neutral-800 dark:text-neutral-100">Jistotka:</span>{" "}
+                    jeden zápas na galavečer si můžeš označit hvězdičkou a body z něj se ti počítají
+                    dvakrát. Vyber si ten, kterým sis nejjistější.
+                  </div>
+                </>
               )}
-            >
-              <Star className="size-3.5" fill={isBold ? "currentColor" : "none"} />
-              {isBold ? "Jistotka ×2" : "Dát jistotku"}
-            </button>
+            </div>
           )}
           {!effectiveLocked && winnerId && (
             <button

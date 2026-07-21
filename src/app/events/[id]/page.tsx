@@ -14,6 +14,7 @@ import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
 import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
+import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
@@ -313,6 +314,7 @@ export default async function EventDetailPage({
             )}
           </div>
         )}
+        {!locked && countableFights.length > 0 && <BoldPickIntro />}
         {locked && gradedFights.length > 0 && (
           <span className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-[#FFD400]/60 bg-[#FFD400]/15 backdrop-blur-lg px-4 py-1.5 text-black dark:text-white">
             <span className="text-xs font-medium">
