@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Wallet, Zap } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -14,6 +13,7 @@ import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
+import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
@@ -200,6 +200,18 @@ export default async function EventDetailPage({
     .map((f) => f.id);
   const untippedFightIds = tippableFightIds.filter((fid) => !predictionByFight.has(fid));
 
+  // Fast-tip carousel works over the tippable fights in running order
+  // (main event as the finale), with the viewer's current picks.
+  const tippableFightsAsc = (fights ?? [])
+    .map((f) => f as unknown as Fight)
+    .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
+    .sort((a, b) => a.card_order - b.card_order);
+  const fastTipPredictions: Record<string, Prediction> = Object.fromEntries(
+    tippableFightsAsc
+      .filter((f) => predictionByFight.has(f.id))
+      .map((f) => [f.id, predictionByFight.get(f.id)!])
+  );
+
   const { data: rawComments } = await supabase
     .from("event_comments")
     .select(
@@ -290,14 +302,14 @@ export default async function EventDetailPage({
             <span className={cn(GLASS_PILL, "inline-flex items-center px-3 py-1 text-xs font-medium")}>
               Tipnuto {countablePredictions.length} z {countableFights.length} zápasů
             </span>
-            {untippedFightIds.length > 0 && (
-              <Link
-                href={`/events/${id}/tip`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD400] bg-[#FFD400] px-3 py-1 text-xs font-semibold text-black shadow-lg shadow-black/15 transition-transform hover:scale-105"
-              >
-                <Zap className="size-3.5" />
-                Rychlé tipování
-              </Link>
+            {tippableFightsAsc.length > 0 && (
+              <FastTipOverlay
+                userId={user.id}
+                fights={tippableFightsAsc}
+                initialPredictions={fastTipPredictions}
+                tippedCountable={countablePredictions.length}
+                totalCountable={countableFights.length}
+              />
             )}
           </div>
         )}
