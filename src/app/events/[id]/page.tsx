@@ -384,7 +384,27 @@ export default async function EventDetailPage({
         </div>
       )}
 
-      <EventComments eventId={id} userId={user.id} isAdmin={isAdmin} initialComments={comments} />
+      <EventComments
+        eventId={id}
+        userId={user.id}
+        isAdmin={isAdmin}
+        initialComments={comments}
+        livePoll={(() => {
+          if (!locked || event.status === "completed") return null;
+          const next = (fights ?? [])
+            .map((f) => f as unknown as Fight)
+            .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
+            .sort((a, b) => a.card_order - b.card_order)[0];
+          if (!next) return null;
+          return {
+            fightId: next.id,
+            fighterAId: next.fighter_a.id,
+            fighterAName: next.fighter_a.name,
+            fighterBId: next.fighter_b.id,
+            fighterBName: next.fighter_b.name,
+          };
+        })()}
+      />
 
       {!locked && <JumpToUntipped fightIds={tippableFightIds} initialUntipped={untippedFightIds} />}
     </div>

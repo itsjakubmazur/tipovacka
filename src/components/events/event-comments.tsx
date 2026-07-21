@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { MessageCircle, SmilePlus, Trash2, X } from "lucide-react";
 import { EmojiGlyph } from "@/components/events/emoji-glyph";
 import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
+import { LiveFightPoll } from "@/components/events/live-fight-poll";
 
 type Reaction = { id: string; user_id: string; emoji: string };
 
@@ -43,11 +44,19 @@ export function EventComments({
   userId,
   isAdmin,
   initialComments,
+  livePoll,
 }: {
   eventId: string;
   userId: string;
   isAdmin: boolean;
   initialComments: Comment[];
+  livePoll?: {
+    fightId: string;
+    fighterAId: string;
+    fighterAName: string;
+    fighterBId: string;
+    fighterBName: string;
+  } | null;
 }) {
   // createClient returns a memoized singleton, so calling it in render
   // is stable - same pattern as the other client components here.
@@ -221,6 +230,8 @@ export function EventComments({
                 <X className="size-4" />
               </button>
             </div>
+
+            {livePoll && <LiveFightPoll eventId={eventId} userId={userId} fight={livePoll} />}
 
             <div className="flex flex-1 flex-col-reverse gap-3 overflow-y-auto px-4 py-3 [-webkit-overflow-scrolling:touch]">
               {comments.length === 0 && (
