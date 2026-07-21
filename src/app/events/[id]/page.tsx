@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import Image from "next/image";
-import { Wallet } from "lucide-react";
+import Link from "next/link";
+import { Wallet, Zap } from "lucide-react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -285,9 +286,20 @@ export default async function EventDetailPage({
           )
         )}
         {!locked && countableFights.length > 0 && (
-          <span className={cn(GLASS_PILL, "mt-2 inline-flex items-center px-3 py-1 text-xs font-medium")}>
-            Tipnuto {countablePredictions.length} z {countableFights.length} zápasů
-          </span>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span className={cn(GLASS_PILL, "inline-flex items-center px-3 py-1 text-xs font-medium")}>
+              Tipnuto {countablePredictions.length} z {countableFights.length} zápasů
+            </span>
+            {untippedFightIds.length > 0 && (
+              <Link
+                href={`/events/${id}/tip`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD400] bg-[#FFD400] px-3 py-1 text-xs font-semibold text-black shadow-lg shadow-black/15 transition-transform hover:scale-105"
+              >
+                <Zap className="size-3.5" />
+                Rychlé tipování
+              </Link>
+            )}
+          </div>
         )}
         {locked && gradedFights.length > 0 && (
           <span className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-[#FFD400]/60 bg-[#FFD400]/15 backdrop-blur-lg px-4 py-1.5 text-black dark:text-white">
