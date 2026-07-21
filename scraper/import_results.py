@@ -51,6 +51,12 @@ def _notify_fight_result(
         p["id"] for p in db.select("profiles", {"notify_fight_results": "eq.false", "select": "id"})
     }
     predictions = [p for p in predictions if p["user_id"] not in opted_out]
+    bold_user_ids = {
+        b["user_id"]
+        for b in db.select(
+            "bold_picks", {"fight_id": f"eq.{db_fight['id']}", "select": "user_id"}
+        )
+    }
     title = f"{fighter_a_name} vs {fighter_b_name}"
     url = f"/events/{event_id}"
     for pred in predictions:
@@ -61,7 +67,10 @@ def _notify_fight_result(
                 fighter_a_name if pred["predicted_winner_id"] == db_fight["fighter_a_id"] else fighter_b_name
             )
             points = pred.get("points") or 0
-            body = f"Vyhrál {winner_name} ({result_desc}). Tvůj tip: {predicted_name} → {points} b."
+            bold_suffix = ""
+            if pred["user_id"] in bold_user_ids and points > 0:
+                bold_suffix = f" (jistotka ×2 = {points * 2} b.)"
+            body = f"Vyhrál {winner_name} ({result_desc}). Tvůj tip: {predicted_name} → {points} b.{bold_suffix}"
         send_to_user(db, pred["user_id"], title, body, url)
 
 

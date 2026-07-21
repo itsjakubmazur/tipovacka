@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { FighterPortrait } from "@/components/fighter-portrait";
@@ -9,7 +9,7 @@ import { ageFromBirthDate, cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
+import { X, ArrowUp, ArrowDown, ChevronDown, Star } from "lucide-react";
 import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 function Pill({
@@ -120,13 +120,17 @@ function FighterDetails({ fighter }: { fighter: Fighter }) {
 export function FightTipCard({
   fight,
   userId,
+  eventId,
   initialPrediction,
+  initialIsBold,
   locked,
   consensus,
 }: {
   fight: Fight;
   userId: string;
+  eventId?: string;
   initialPrediction: Prediction | null;
+  initialIsBold?: boolean;
   locked: boolean;
   consensus?: { fighterANames: string[]; fighterBNames: string[] };
 }) {
@@ -141,9 +145,54 @@ export function FightTipCard({
   const [round, setRound] = useState<number | null>(
     initialPrediction?.predicted_round ?? null
   );
+  const [isBold, setIsBold] = useState(initialIsBold ?? false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // only one bold pick per event - when another card takes it, this
+  // one has to visually let go without a server roundtrip
+  useEffect(() => {
+    function onBoldChanged(e: Event) {
+      const detail = (e as CustomEvent<{ fightId: string | null }>).detail;
+      setIsBold(detail.fightId === fight.id);
+    }
+    window.addEventListener("bold-state-changed", onBoldChanged);
+    return () => window.removeEventListener("bold-state-changed", onBoldChanged);
+  }, [fight.id]);
+
+  async function toggleBold() {
+    if (effectiveLocked || !eventId) return;
+    setError(null);
+    if (isBold) {
+      const { error } = await supabase
+        .from("bold_picks")
+        .delete()
+        .eq("event_id", eventId)
+        .eq("user_id", userId);
+      if (error) {
+        setError("Uložení jistotky se nepodařilo.");
+        return;
+      }
+      window.dispatchEvent(
+        new CustomEvent("bold-state-changed", { detail: { fightId: null } })
+      );
+    } else {
+      const { error } = await supabase
+        .from("bold_picks")
+        .upsert(
+          { event_id: eventId, user_id: userId, fight_id: fight.id },
+          { onConflict: "event_id,user_id" }
+        );
+      if (error) {
+        setError("Uložení jistotky se nepodařilo.");
+        return;
+      }
+      window.dispatchEvent(
+        new CustomEvent("bold-state-changed", { detail: { fightId: fight.id } })
+      );
+    }
+  }
 
   async function persist(next: {
     winnerId: string | null;
@@ -218,6 +267,13 @@ export function FightTipCard({
     setWinnerId(null);
     setMethod(null);
     setRound(null);
+    // a bold pick on an untipped fight would double nothing - drop it
+    if (isBold && eventId) {
+      await supabase.from("bold_picks").delete().eq("event_id", eventId).eq("user_id", userId);
+      window.dispatchEvent(
+        new CustomEvent("bold-state-changed", { detail: { fightId: null } })
+      );
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
     window.dispatchEvent(
@@ -263,21 +319,51 @@ export function FightTipCard({
                   {fight.method ? METHOD_LABELS[fight.method] : ""}
                   {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
                   {fight.result_time ? ` · ${fight.result_time}` : ""}
-                  {graded ? ` · ${hit ? `+${initialPrediction!.points} b.` : "0 b."}` : ""}
+                  {graded
+                    ? ` · ${
+                        hit
+                          ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.`
+                          : "0 b."
+                      }`
+                    : ""}
                 </Badge>
               );
             })()}
+          {effectiveLocked && isBold && (
+            <Badge variant="accent" className="gap-1">
+              <Star className="size-3" fill="currentColor" />
+              Jistotka ×2
+            </Badge>
+          )}
         </div>
-        {!effectiveLocked && winnerId && (
-          <button
-            type="button"
-            onClick={clearTip}
-            className="flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-300 hover:text-red-600"
-          >
-            <X className="size-3.5" />
-            Smazat tip
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {!effectiveLocked && eventId && winnerId && (
+            <button
+              type="button"
+              onClick={toggleBold}
+              title="Jistotka: body z tohoto zápasu se ti počítají dvakrát. Jen jedna na galavečer."
+              className={cn(
+                "flex items-center gap-1 text-xs font-medium transition-colors",
+                isBold
+                  ? "text-yellow-600 dark:text-[#FFD400]"
+                  : "text-neutral-500 hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-[#FFD400]"
+              )}
+            >
+              <Star className="size-3.5" fill={isBold ? "currentColor" : "none"} />
+              {isBold ? "Jistotka ×2" : "Dát jistotku"}
+            </button>
+          )}
+          {!effectiveLocked && winnerId && (
+            <button
+              type="button"
+              onClick={clearTip}
+              className="flex items-center gap-1 text-xs font-medium text-neutral-500 dark:text-neutral-300 hover:text-red-600"
+            >
+              <X className="size-3.5" />
+              Smazat tip
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">

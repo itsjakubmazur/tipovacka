@@ -111,6 +111,14 @@ export default async function EventDetailPage({
     .eq("event_id", id)
     .maybeSingle();
 
+  const { data: boldPick } = await supabase
+    .from("bold_picks")
+    .select("fight_id")
+    .eq("user_id", user.id)
+    .eq("event_id", id)
+    .maybeSingle();
+  const boldFightId = boldPick?.fight_id ?? null;
+
   const cancelledFights = (fights ?? [])
     .map((f) => f as unknown as Fight)
     .filter((f) => f.status === "cancelled");
@@ -338,7 +346,9 @@ export default async function EventDetailPage({
                 <FightTipCard
                   fight={fight}
                   userId={user.id}
+                  eventId={id}
                   initialPrediction={predictionByFight.get(fight.id) ?? null}
+                  initialIsBold={boldFightId === fight.id}
                   locked={locked}
                   consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
                 />

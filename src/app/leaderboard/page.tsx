@@ -162,6 +162,7 @@ export default async function LeaderboardPage({
         </summary>
         <div className="flex flex-col gap-1 px-3 pb-3">
           <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body”): +1 — tedy max 3 body za zápas.</p>
+          <p>Jistotka: jeden zápas na galavečer si můžeš označit hvězdičkou — body z něj se ti počítají dvakrát.</p>
           <p>Bonus tip Fight of the Night: +2, pokud uhodneš zápas večera.</p>
           <p>Perfektní karta: +5, pokud uhodneš vítěze úplně všech zápasů na kartě.</p>
           <p>
