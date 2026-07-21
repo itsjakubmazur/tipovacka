@@ -93,9 +93,14 @@ export default async function AdminPage() {
       {isSuperadmin && <InviteCodeCard />}
 
       {isSuperadmin && (
-        <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
-          Log scraperu →
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/admin/scraper-log" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
+            Log scraperu →
+          </Link>
+          <Link href="/admin/client-errors" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
+            Chyby v prohlížečích →
+          </Link>
+        </div>
       )}
 
       <section className="flex flex-col gap-3">

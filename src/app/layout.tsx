@@ -8,6 +8,7 @@ import { NavBar } from "@/components/nav-bar";
 import { PushPromptBanner } from "@/components/push/push-prompt-banner";
 import { BankAccountPromptBanner } from "@/components/profile/bank-account-prompt-banner";
 import { SplashScreen } from "@/components/splash-screen";
+import { ErrorReporter } from "@/components/error-reporter";
 
 /** Static stand-in rendered while the real NavBar (which awaits the
  * auth/profile lookup) streams in - keeps the very first HTML flush
@@ -61,6 +62,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <SplashScreen />
+        <ErrorReporter />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Suspense fallback={<NavBarFallback />}>
             <NavBar />
