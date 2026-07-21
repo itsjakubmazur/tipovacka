@@ -12,6 +12,7 @@ import { SegmentJump } from "@/components/predictions/segment-jump";
 import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
+import { FightNightLive } from "@/components/events/fight-night-live";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
@@ -300,6 +301,14 @@ export default async function EventDetailPage({
           </span>
         )}
       </div>
+
+      {locked && event.status !== "completed" && (
+        <FightNightLive
+          eventId={id}
+          fights={(fights ?? []).map((f) => f as unknown as Fight)}
+          currentUserId={user.id}
+        />
+      )}
 
       {event.status === "completed" && event.payouts_enabled && (
         <EventPayoutPool
