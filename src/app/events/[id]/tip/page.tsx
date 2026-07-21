@@ -20,7 +20,7 @@ export default async function SwipeTipPage({
     .eq("id", id)
     .single();
 
-  if (!event || event.status === "draft") {
+  if (!event) {
     notFound();
   }
 
@@ -28,6 +28,20 @@ export default async function SwipeTipPage({
   const user = userData.user;
   if (!user) {
     redirect("/login");
+  }
+
+  // Drafts are admin-only, same as the event detail page - a
+  // non-admin who somehow lands here gets a 404, an admin previewing
+  // the not-yet-published card can tip it.
+  if (event.status === "draft") {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+    if (!profile?.is_admin) {
+      notFound();
+    }
   }
 
   const locked =
