@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ChartNoAxesColumn } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
 import { BankAccountForm } from "@/components/profile/bank-account-form";
@@ -35,6 +37,14 @@ export default async function ProfilePage() {
       <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
       <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
       <StartovneStats userId={user.id} />
+      <Link
+        href={`/leaderboard/u/${user.id}`}
+        className="flex items-center gap-2 rounded-xl border border-white/45 bg-white/35 p-4 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-lg transition-shadow hover:shadow-xl dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+      >
+        <ChartNoAxesColumn className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+        Moje statistiky a odznaky
+        <span className="ml-auto text-neutral-400">→</span>
+      </Link>
       <InstallAppGuide />
       <PushNotificationToggle userId={user.id} />
       <NotificationPreferences

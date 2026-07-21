@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Trophy } from "lucide-react";
+import {
+  CalendarCheck,
+  Crosshair,
+  Crown,
+  Dices,
+  Flame,
+  Target,
+  Trophy,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
 import { ShareResultCard } from "@/components/leaderboard/share-result-button";
@@ -143,7 +151,10 @@ export async function TipperDetail({
             )}
             {(bonusFight || actualFotnFight) && (
               <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-                <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
+                <p className="flex items-center gap-1.5 font-semibold">
+                  <Target className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+                  Bonus tip: Fight of the Night
+                </p>
                 {bonusFight && (
                   <p className="text-neutral-600 dark:text-neutral-400">
                     {(bonusFight as unknown as Fight).fighter_a.name} vs{" "}
@@ -158,8 +169,9 @@ export async function TipperDetail({
                   </p>
                 )}
                 {actualFotnFight && (
-                  <p className="mt-1 text-xs font-medium">
-                    🏆 Skutečný Fight of the Night:{" "}
+                  <p className="mt-1 flex items-center gap-1.5 text-xs font-medium">
+                    <Trophy className="size-3.5 text-yellow-600 dark:text-[#FFD400]" />
+                    Skutečný Fight of the Night:{" "}
                     <span className="text-yellow-600 dark:text-[#FFD400]">
                       {(actualFotnFight as unknown as Fight).fighter_a.name} vs{" "}
                       {(actualFotnFight as unknown as Fight).fighter_b.name}
@@ -227,15 +239,46 @@ export async function TipperDetail({
 
   const { data: completedFights } = await supabase
     .from("fights")
-    .select("id, event_id, card_order, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b")
+    .select(
+      "id, event_id, card_order, card_segment, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
+    )
     .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"])
     .eq("status", "completed");
+
+  // Who actually won each event - one query over every user's rows,
+  // ranked per event with the same tiebreak chain the leaderboard uses.
+  const { data: allEventRows } = await supabase
+    .from("event_leaderboard")
+    .select("event_id, user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
+    .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
+  const rowsByEventAll = new Map<string, NonNullable<typeof allEventRows>>();
+  for (const r of allEventRows ?? []) {
+    const list = rowsByEventAll.get(r.event_id) ?? [];
+    list.push(r);
+    rowsByEventAll.set(r.event_id, list);
+  }
+  let eventWins = 0;
+  for (const list of rowsByEventAll.values()) {
+    if (list.length < 2) continue;
+    list.sort(
+      (a, b) =>
+        b.points - a.points ||
+        b.fights_correct_winner - a.fights_correct_winner ||
+        Number(b.perfect_card) - Number(a.perfect_card) ||
+        (a.earliest_prediction_at ?? "").localeCompare(b.earliest_prediction_at ?? "")
+    );
+    if (list[0].user_id === userId) eventWins += 1;
+  }
 
   const eventDateById = new Map(eventsInSeason.map((e) => [e.id, e.event_date]));
   const fightMeta = new Map(
     (completedFights ?? []).map((f) => [
       f.id,
-      { eventDate: eventDateById.get(f.event_id) ?? "", cardOrder: f.card_order },
+      {
+        eventDate: eventDateById.get(f.event_id) ?? "",
+        cardOrder: f.card_order,
+        cardSegment: f.card_segment as string | null,
+      },
     ])
   );
   const oddsMetaByFight = new Map(
@@ -304,21 +347,51 @@ export async function TipperDetail({
   const oddsClassified = favoriteStats.total + underdogStats.total;
   const underdogShare = oddsClassified > 0 ? underdogStats.total / oddsClassified : 0;
 
+  // Main card vs prelims accuracy - some people nail the headliners
+  // and whiff the undercard, worth surfacing.
+  const segmentStats = new Map<string, { total: number; hits: number }>();
+  for (const p of ordered) {
+    const segment = fightMeta.get(p.fight_id)?.cardSegment;
+    if (!segment) continue;
+    const key = segment === "main_card" ? "Hlavní karta" : "Prelims";
+    const entry = segmentStats.get(key) ?? { total: 0, hits: 0 };
+    entry.total += 1;
+    if ((p.points ?? 0) > 0) entry.hits += 1;
+    segmentStats.set(key, entry);
+  }
+
+  // Exact hits: winner + method + round/decision all right (3 points).
+  const exactHits = ordered.filter((p) => (p.points ?? 0) >= 3).length;
+
   const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
-  const badges: { icon: string; label: string }[] = [];
+  const badgeIconClass = "size-3.5 text-yellow-600 dark:text-[#FFD400]";
+  const badges: { icon: React.ReactNode; label: string }[] = [];
+  if (eventWins > 0) {
+    badges.push({
+      icon: <Crown className={badgeIconClass} />,
+      label: eventWins > 1 ? `Král večera ×${eventWins}` : "Král večera",
+    });
+  }
   if (perfectCardCount > 0) {
     badges.push({
-      icon: "🏆",
+      icon: <Trophy className={badgeIconClass} />,
       label: perfectCardCount > 1 ? `Perfektní karta ×${perfectCardCount}` : "Perfektní karta",
     });
   }
-  if (streak >= 3) badges.push({ icon: "🔥", label: `Na vlně (${streak} v řadě)` });
-  if (totalGraded >= 5 && accuracy >= 70) badges.push({ icon: "🎯", label: "Ostrostřelec" });
+  if (streak >= 3)
+    badges.push({ icon: <Flame className={badgeIconClass} />, label: `Na vlně (${streak} v řadě)` });
+  if (totalGraded >= 5 && accuracy >= 70)
+    badges.push({ icon: <Target className={badgeIconClass} />, label: "Ostrostřelec" });
+  if (exactHits >= 3)
+    badges.push({
+      icon: <Crosshair className={badgeIconClass} />,
+      label: `Sniper (přesný tip ×${exactHits})`,
+    });
   if (eventsInSeason.length >= 3 && rows && rows.length === eventsInSeason.length) {
-    badges.push({ icon: "📅", label: "Věrný fanda" });
+    badges.push({ icon: <CalendarCheck className={badgeIconClass} />, label: "Věrný fanda" });
   }
   if (oddsClassified >= 5 && underdogShare >= 0.3) {
-    badges.push({ icon: "🎲", label: "Odvážlivec" });
+    badges.push({ icon: <Dices className={badgeIconClass} />, label: "Odvážlivec" });
   }
 
   return (
@@ -340,7 +413,7 @@ export async function TipperDetail({
               key={badge.label}
               className="flex items-center gap-1.5 rounded-full border border-[#FFD400]/40 bg-[#FFD400]/10 px-3 py-1 text-xs font-medium"
             >
-              <span>{badge.icon}</span>
+              {badge.icon}
               {badge.label}
             </span>
           ))}
@@ -355,8 +428,9 @@ export async function TipperDetail({
               Úspěšnost: <strong>{accuracy}%</strong> ({hits}/{totalGraded})
             </span>
             {streak >= 2 && (
-              <span>
-                🔥 Aktuální série: <strong>{streak}</strong> trefených v řadě
+              <span className="flex items-center gap-1">
+                <Flame className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+                Aktuální série: <strong>{streak}</strong> trefených v řadě
               </span>
             )}
           </div>
@@ -367,6 +441,16 @@ export async function TipperDetail({
               </span>
             ))}
           </div>
+          {segmentStats.size > 0 && (
+            <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
+              {Array.from(segmentStats.entries()).map(([label, s]) => (
+                <span key={label}>
+                  {label}: {s.hits}/{s.total}
+                  {s.total > 0 && ` (${Math.round((s.hits / s.total) * 100)}%)`}
+                </span>
+              ))}
+            </div>
+          )}
           {oddsClassified > 0 && (
             <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
               <span>
