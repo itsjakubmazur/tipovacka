@@ -191,7 +191,21 @@ export default async function LeaderboardPage({
         </div>
       )}
 
-      {view === "history" && <HallOfFame />}
+      {view === "history" && (
+        <>
+          <Link
+            href="/wrapped"
+            className={cn(
+              GLASS_PILL,
+              "flex items-center justify-between px-4 py-3 text-sm font-semibold"
+            )}
+          >
+            Tvoje sezóna v číslech (Wrapped)
+            <span className="text-neutral-400">→</span>
+          </Link>
+          <HallOfFame />
+        </>
+      )}
 
       {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
         <PodiumCard
