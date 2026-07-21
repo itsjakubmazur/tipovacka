@@ -370,7 +370,7 @@ export function FightTipCard({
                     onClick={() => setBoldHelpOpen(false)}
                     className="fixed inset-0 z-10 cursor-default"
                   />
-                  <div className="absolute right-0 top-full z-20 mt-1.5 w-60 rounded-xl border border-neutral-200 bg-white p-3 text-xs leading-relaxed text-neutral-600 shadow-xl dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
+                  <div className="absolute left-0 top-full z-20 mt-1.5 w-60 max-w-[calc(100vw-2rem)] rounded-xl border border-neutral-200 bg-white p-3 text-xs leading-relaxed text-neutral-600 shadow-xl dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
                     <span className="font-semibold text-neutral-800 dark:text-neutral-100">Jistotka:</span>{" "}
                     jeden zápas na galavečer si můžeš označit hvězdičkou a body z něj se ti počítají
                     dvakrát. Dej ji tam, kde si nejvíc věříš.
