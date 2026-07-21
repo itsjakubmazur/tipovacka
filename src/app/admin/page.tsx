@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AddEventForm } from "@/components/admin/add-event-form";
 import { PromoteUserButton } from "@/components/admin/promote-user-button";
 import { BroadcastPushForm } from "@/components/admin/broadcast-push-form";
+import { InviteCodeCard } from "@/components/admin/invite-code-card";
 import { ViewModeToggle } from "@/components/admin/view-mode-toggle";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
@@ -88,6 +89,8 @@ export default async function AdminPage() {
       <h1 className="text-xl font-bold">Admin</h1>
 
       {isSuperadmin && <ViewModeToggle initialMode={viewMode} />}
+
+      {isSuperadmin && <InviteCodeCard />}
 
       {isSuperadmin && (
         <Link href="/admin/scraper-log" className="self-start text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
