@@ -37,8 +37,8 @@ export function BoldPickIntro() {
       <Star className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-[#FFD400]" fill="currentColor" />
       <p className="flex-1 text-neutral-700 dark:text-neutral-200">
         <span className="font-semibold">Novinka – Jistotka.</span> U jednoho zápasu na kartě klepni na
-        hvězdičku „Dát jistotku“. Body z něj se ti pak počítají <strong>dvakrát</strong>. Vyber si zápas,
-        kterým sis nejjistější.
+        hvězdičku „Dát jistotku“. Body z něj se ti pak počítají <strong>dvakrát</strong>. Dej ji tam,
+        kde si nejvíc věříš.
       </p>
       <button
         type="button"
