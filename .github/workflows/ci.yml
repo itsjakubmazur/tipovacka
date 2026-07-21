@@ -31,6 +31,33 @@ jobs:
       - name: Build
         run: npm run build
 
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      # webServer in playwright.config.ts boots `npm run start` with the
+      # placeholder Supabase env and waits for /login before the suite.
+      - name: Run smoke tests
+        run: npm run e2e
+
   scraper-tests:
     runs-on: ubuntu-latest
     steps:
