@@ -78,6 +78,7 @@ export default async function EventDetailPage({
     { data: rawComments },
     { data: predictions },
     { data: allPredictions },
+    { data: finalStandings },
   ] = await Promise.all([
     supabase.from("profiles").select("is_admin, is_superadmin").eq("id", user.id).single(),
     supabase
@@ -136,6 +137,18 @@ export default async function EventDetailPage({
             | { fight_id: string; predicted_winner_id: string; profiles: { nickname: string } | null }[]
             | null,
         }),
+    // final standings (rank out of N) - only once the gala is graded,
+    // ordered exactly like the leaderboard so the place matches it
+    event.status === "completed"
+      ? supabase
+          .from("event_leaderboard")
+          .select("user_id")
+          .eq("event_id", id)
+          .order("points", { ascending: false })
+          .order("fights_correct_winner", { ascending: false })
+          .order("perfect_card", { ascending: false })
+          .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
+      : Promise.resolve({ data: null as { user_id: string }[] | null }),
   ]);
   const perfW2 = perfStart();
 
@@ -153,6 +166,11 @@ export default async function EventDetailPage({
 
   const boldFightId = boldPick?.fight_id ?? null;
   const scoredSoFar = myLeaderboardRow?.points ?? 0;
+
+  const standings = finalStandings ?? [];
+  const myRankIndex = standings.findIndex((r) => r.user_id === user.id);
+  const finalRank = myRankIndex >= 0 ? myRankIndex + 1 : null;
+  const participants = standings.length || null;
 
   const predictionByFight = new Map<string, Prediction>(
     (predictions ?? []).map((p) => [p.fight_id, p as unknown as Prediction])
@@ -316,6 +334,8 @@ export default async function EventDetailPage({
             totalCount={countableFights.length}
             gradedCount={gradedFights.length}
             points={scoredSoFar}
+            rank={finalRank}
+            participants={participants}
           />
         )}
         {!locked && countableFights.length > 0 && tippableFightsAsc.length > 0 && (

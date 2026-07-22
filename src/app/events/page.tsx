@@ -5,13 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { TeaserEventCard } from "@/components/events/teaser-event-card";
 import { cn } from "@/lib/utils";
-import { cardOpensAtIso, pragueDaysBeforeIso } from "@/lib/time";
+import { cardOpensAtIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
-
-// How long before a gala starts its dimmed "coming soon" teaser card
-// appears to tippers - a few days ahead of the card actually opening
-// (3 days before, 9:00 Prague), to build anticipation.
-const TEASER_WINDOW_DAYS = 10;
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Návrh",
@@ -92,19 +87,24 @@ export default async function EventsPage() {
   const lastCompletedId = published.find((e) => e.status === "completed")?.id ?? null;
   const prefetchIds = new Set([primaryEventId, lastCompletedId].filter(Boolean));
 
-  // Whether a draft should show to a regular tipper as a dimmed teaser:
-  // inside the [start - TEASER_WINDOW_DAYS, card-opens) window. At/after
-  // card-open the scraper flips it to "upcoming" (a normal card).
-  function teaserOpenAt(eventDate: string | null): string | null {
-    if (!eventDate) return null;
-    const openAt = cardOpensAtIso(eventDate);
-    // window opens at 00:00 Prague on the day TEASER_WINDOW_DAYS before,
-    // so the teaser is visible for that whole calendar day (not gated to
-    // the exact event time of day)
-    const windowStart = new Date(pragueDaysBeforeIso(eventDate, TEASER_WINDOW_DAYS, 0)).getTime();
-    const t = now.getTime();
-    return t >= windowStart && t < new Date(openAt).getTime() ? openAt : null;
-  }
+  // The teaser for the next gala appears the moment the previous one is
+  // evaluated - i.e. as soon as there's no gala currently being tipped or
+  // running (every non-draft event is completed). We tease only the
+  // soonest such draft, until its card opens (3 days before, when the
+  // scraper flips it to "upcoming" and it becomes a normal card).
+  const activeGalaExists = (events ?? []).some(
+    (e) => e.status !== "draft" && e.status !== "completed"
+  );
+  const teaserDraft = activeGalaExists
+    ? null
+    : (events ?? [])
+        .filter(
+          (e) =>
+            e.status === "draft" &&
+            e.event_date &&
+            now.getTime() < new Date(cardOpensAtIso(e.event_date)).getTime()
+        )
+        .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())[0] ?? null;
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
@@ -118,8 +118,7 @@ export default async function EventsPage() {
           // other viewer sees a teaser card inside the window, nothing
           // otherwise.
           if (event.status === "draft" && !showDrafts) {
-            const openAt = teaserOpenAt(event.event_date);
-            if (!openAt) return null;
+            if (event.id !== teaserDraft?.id) return null;
             return (
               <TeaserEventCard
                 key={event.id}
@@ -127,7 +126,7 @@ export default async function EventsPage() {
                 subtitle={event.subtitle}
                 location={event.location}
                 eventDateIso={event.event_date}
-                openAtIso={openAt}
+                openAtIso={cardOpensAtIso(event.event_date)}
                 imageUrl={event.image_url}
               />
             );

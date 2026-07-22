@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Clock } from "lucide-react";
+import { ChevronDown, Clock, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** The gala lifecycle as a vertical rail: Tipování → Galavečer živě →
@@ -111,11 +111,20 @@ function LiveBadge() {
   );
 }
 
-function PointsPill({ points }: { points: number }) {
+function ResultPills({ points, rank, participants }: { points: number; rank?: number; participants?: number }) {
   return (
-    <div className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
-      <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
-      <span className="text-lg font-bold tabular-nums">{points}</span>
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      {rank && participants && (
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent px-3 py-1 text-black">
+          <Trophy className="size-3.5" />
+          <span className="text-sm font-bold tabular-nums">{rank}. místo</span>
+          <span className="text-[11px] font-medium opacity-70">z {participants}</span>
+        </div>
+      )}
+      <div className="inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
+        <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
+        <span className="text-lg font-bold tabular-nums">{points}</span>
+      </div>
     </div>
   );
 }
@@ -128,6 +137,8 @@ type Step = {
   live?: boolean;
   countdownTo?: string;
   points?: number;
+  rank?: number;
+  participants?: number;
 };
 
 export function EventStatusTimeline({
@@ -139,6 +150,8 @@ export function EventStatusTimeline({
   totalCount,
   gradedCount,
   points,
+  rank,
+  participants,
 }: {
   locked: boolean;
   completed: boolean;
@@ -148,6 +161,8 @@ export function EventStatusTimeline({
   totalCount: number;
   gradedCount: number;
   points: number;
+  rank?: number | null;
+  participants?: number | null;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -196,6 +211,8 @@ export function EventStatusTimeline({
           ? `Odbodováno ${gradedCount} z ${totalCount} zápasů.`
           : "Body se sečtou a rozdělí se startovné.",
       points: doneState === "current" ? points : undefined,
+      rank: doneState === "current" ? rank ?? undefined : undefined,
+      participants: doneState === "current" ? participants ?? undefined : undefined,
     },
   ];
 
@@ -252,7 +269,9 @@ export function EventStatusTimeline({
                       <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{step.desc}</div>
                     )}
                     {step.countdownTo && <Countdown targetIso={step.countdownTo} />}
-                    {step.points != null && <PointsPill points={step.points} />}
+                    {step.points != null && (
+                      <ResultPills points={step.points} rank={step.rank} participants={step.participants} />
+                    )}
                   </div>
                 </div>
               );
@@ -272,7 +291,9 @@ export function EventStatusTimeline({
               <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{current.desc}</div>
             )}
             {current.countdownTo && <Countdown targetIso={current.countdownTo} />}
-            {current.points != null && <PointsPill points={current.points} />}
+            {current.points != null && (
+              <ResultPills points={current.points} rank={current.rank} participants={current.participants} />
+            )}
           </div>
         </div>
       )}

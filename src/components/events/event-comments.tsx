@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MessageCircle, SmilePlus, Trash2, X } from "lucide-react";
+import { MessageCircle, SmilePlus, Trash2, X, Send } from "lucide-react";
 import { EmojiGlyph } from "@/components/events/emoji-glyph";
 import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
@@ -24,14 +23,39 @@ type Comment = {
 const MAX_LENGTH = 500;
 const REACTION_EMOJI = ["👍", "❤️", "😂", "😮", "😢", "🔥"] as const;
 
+// muted, per-person avatar tints - distinct enough to tell people apart,
+// desaturated enough not to fight the yellow accent
+const AVATAR_COLORS = [
+  "bg-rose-500/20 text-rose-700 dark:text-rose-300",
+  "bg-amber-500/20 text-amber-700 dark:text-amber-300",
+  "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
+  "bg-sky-500/20 text-sky-700 dark:text-sky-300",
+  "bg-violet-500/20 text-violet-700 dark:text-violet-300",
+  "bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300",
+] as const;
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + last).toUpperCase() || "?";
+}
+
+function avatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString("cs-CZ", {
-    day: "numeric",
-    month: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Prague",
-  });
+  const d = new Date(iso);
+  const sameDay = d.toDateString() === new Date().toDateString();
+  return d.toLocaleString(
+    "cs-CZ",
+    sameDay
+      ? { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Prague" }
+      : { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Prague" }
+  );
 }
 
 /** Kecárna as a floating chat bubble (bottom-left, opposite the
@@ -208,94 +232,155 @@ export function EventComments({
         </button>
       )}
 
-      {/* slide-up panel */}
+      {/* slide-up chat panel */}
       {open && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative flex max-h-[75vh] flex-col rounded-t-2xl border-t border-white/45 bg-white shadow-2xl dark:border-neutral-700/45 dark:bg-neutral-900"
+            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900"
           >
-            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
-              <p className="flex items-center gap-2 text-sm font-semibold">
-                <MessageCircle className="size-4" />
-                Kecárna
-              </p>
+            {/* grab handle */}
+            <div className="flex shrink-0 justify-center pt-2">
+              <span className="h-1 w-10 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+            </div>
+
+            {/* header */}
+            <div className="flex shrink-0 items-center justify-between px-4 py-2.5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-9 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
+                  <MessageCircle className="size-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-bold leading-tight">Kecárna</p>
+                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400">Chat galavečera</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Zavřít"
                 className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
               >
-                <X className="size-4" />
+                <X className="size-5" />
               </button>
             </div>
 
-            {livePoll && <LiveFightPoll eventId={eventId} userId={userId} fight={livePoll} />}
+            {livePoll && (
+              <div className="shrink-0">
+                <LiveFightPoll eventId={eventId} userId={userId} fight={livePoll} />
+              </div>
+            )}
 
-            <div className="flex flex-1 flex-col-reverse gap-3 overflow-y-auto px-4 py-3 [-webkit-overflow-scrolling:touch]">
+            {/* messages */}
+            <div className="flex min-h-0 flex-1 flex-col-reverse gap-1 overflow-y-auto px-3 py-3 [-webkit-overflow-scrolling:touch]">
               {comments.length === 0 && (
-                <p className="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                  Zatím ticho. Hoď první hlášku!
-                </p>
+                <div className="flex flex-col items-center gap-2 py-10 text-center">
+                  <span className="flex size-12 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
+                    <MessageCircle className="size-6" />
+                  </span>
+                  <p className="text-sm font-medium">Zatím ticho.</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">Hoď první hlášku!</p>
+                </div>
               )}
-              {comments.map((comment) =>
-                comment.isSystem ? (
+              {comments.map((comment, i) => {
+                if (comment.isSystem) {
+                  return (
+                    <div key={comment.id} className="my-1.5 flex justify-center">
+                      <span className="max-w-[85%] rounded-full bg-accent/15 px-3 py-1 text-center text-[11px] font-medium text-yellow-800 dark:text-accent">
+                        {comment.body}
+                      </span>
+                    </div>
+                  );
+                }
+
+                const older = comments[i + 1];
+                const newer = comments[i - 1];
+                const isOwn = comment.user_id === userId;
+                const firstOfGroup = !older || older.isSystem || older.user_id !== comment.user_id;
+                const lastOfGroup = !newer || newer.isSystem || newer.user_id !== comment.user_id;
+                const canDelete = isOwn || isAdmin;
+
+                const reactionChips = Object.entries(
+                  comment.reactions.reduce<Record<string, Reaction[]>>((groups, r) => {
+                    (groups[r.emoji] ??= []).push(r);
+                    return groups;
+                  }, {})
+                );
+
+                return (
                   <div
                     key={comment.id}
-                    className="mx-auto max-w-[85%] rounded-full bg-accent/15 px-3 py-1.5 text-center text-xs font-medium text-yellow-800 dark:text-accent"
+                    className={cn(
+                      "flex items-end gap-2",
+                      firstOfGroup && "mt-2",
+                      isOwn ? "flex-row-reverse" : "flex-row"
+                    )}
                   >
-                    {comment.body}
-                  </div>
-                ) : (
-                  <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
-                    <div className="min-w-0">
-                      <p>
-                        <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-accent")}>
-                          {comment.nickname}
-                        </span>{" "}
-                        <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                          {formatTime(comment.created_at)}
-                        </span>
-                        <br />
-                        <span className="break-words text-neutral-700 dark:text-neutral-300">{comment.body}</span>
-                      </p>
-
-                      <div className="relative mt-1 flex flex-wrap items-center gap-1">
-                        {Object.entries(
-                          comment.reactions.reduce<Record<string, Reaction[]>>((groups, r) => {
-                            (groups[r.emoji] ??= []).push(r);
-                            return groups;
-                          }, {})
-                        ).map(([emoji, reactions]) => {
-                          const mine = reactions.some((r) => r.user_id === userId);
-                          return (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => toggleReaction(comment, emoji)}
-                              className={cn(
-                                "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none",
-                                mine
-                                  ? "border-accent bg-accent/15 text-yellow-800 dark:text-accent"
-                                  : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
-                              )}
-                            >
-                              <EmojiGlyph native={emoji} size={14} />
-                              <span>{reactions.length}</span>
-                            </button>
-                          );
-                        })}
-                        <button
-                          type="button"
-                          onClick={() => setReactingTo(reactingTo === comment.id ? null : comment.id)}
-                          aria-label="Přidat reakci"
-                          className="rounded-full p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                    {/* avatar (incoming only, once per group at the bottom) */}
+                    {!isOwn &&
+                      (lastOfGroup ? (
+                        <span
+                          className={cn(
+                            "flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                            avatarColor(comment.nickname)
+                          )}
                         >
-                          <SmilePlus className="size-3.5" />
-                        </button>
+                          {initials(comment.nickname)}
+                        </span>
+                      ) : (
+                        <span className="w-7 shrink-0" />
+                      ))}
+
+                    <div className={cn("flex min-w-0 max-w-[80%] flex-col", isOwn ? "items-end" : "items-start")}>
+                      {firstOfGroup && !isOwn && (
+                        <span className="mb-0.5 px-1 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400">
+                          {comment.nickname}
+                        </span>
+                      )}
+
+                      <div className={cn("group/msg relative flex items-end gap-1", isOwn && "flex-row-reverse")}>
+                        <div
+                          className={cn(
+                            "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
+                            isOwn
+                              ? "rounded-2xl rounded-br-md bg-accent text-black"
+                              : "rounded-2xl rounded-bl-md bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100"
+                          )}
+                        >
+                          {comment.body}
+                        </div>
+
+                        {/* hover actions: react + delete */}
+                        <div className="flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/msg:opacity-100 max-md:opacity-60">
+                          <button
+                            type="button"
+                            onClick={() => setReactingTo(reactingTo === comment.id ? null : comment.id)}
+                            aria-label="Přidat reakci"
+                            className="rounded-full p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                          >
+                            <SmilePlus className="size-4" />
+                          </button>
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => remove(comment.id)}
+                              aria-label="Smazat zprávu"
+                              className="rounded-full p-1 text-neutral-400 transition-colors hover:bg-red-500/10 hover:text-red-600"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* quick-reaction popover */}
                         {reactingTo === comment.id && (
-                          <div className="absolute bottom-full left-0 z-10 mb-1 flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                          <div
+                            className={cn(
+                              "absolute bottom-full z-10 mb-1 flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900",
+                              isOwn ? "right-0" : "left-0"
+                            )}
+                          >
                             {REACTION_EMOJI.map((emoji) => (
                               <button
                                 key={emoji}
@@ -303,7 +388,7 @@ export function EventComments({
                                 onClick={() => toggleReaction(comment, emoji)}
                                 className="transition-transform hover:scale-125"
                               >
-                                <EmojiGlyph native={emoji} size={20} />
+                                <EmojiGlyph native={emoji} size={22} />
                               </button>
                             ))}
                             <button
@@ -315,42 +400,70 @@ export function EventComments({
                               aria-label="Víc emoji"
                               className="rounded-full p-0.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                             >
-                              <SmilePlus className="size-4" />
+                              <SmilePlus className="size-5" />
                             </button>
                           </div>
                         )}
                       </div>
+
+                      {/* reaction chips */}
+                      {reactionChips.length > 0 && (
+                        <div className={cn("mt-1 flex flex-wrap gap-1", isOwn && "justify-end")}>
+                          {reactionChips.map(([emoji, reactions]) => {
+                            const mine = reactions.some((r) => r.user_id === userId);
+                            return (
+                              <button
+                                key={emoji}
+                                type="button"
+                                onClick={() => toggleReaction(comment, emoji)}
+                                className={cn(
+                                  "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none transition-colors",
+                                  mine
+                                    ? "border-accent bg-accent/15 text-yellow-800 dark:text-accent"
+                                    : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
+                                )}
+                              >
+                                <EmojiGlyph native={emoji} size={13} />
+                                <span>{reactions.length}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* timestamp, once per group */}
+                      {lastOfGroup && (
+                        <span className="mt-0.5 px-1 text-[10px] text-neutral-400 dark:text-neutral-500">
+                          {formatTime(comment.created_at)}
+                        </span>
+                      )}
                     </div>
-                    {(comment.user_id === userId || isAdmin) && (
-                      <button
-                        type="button"
-                        onClick={() => remove(comment.id)}
-                        className="shrink-0 text-neutral-400 hover:text-red-600"
-                        aria-label="Smazat komentář"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    )}
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
 
+            {/* composer */}
             <form
               onSubmit={submit}
-              className="flex gap-2 border-t border-neutral-200 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
+              className="flex shrink-0 items-center gap-2 border-t border-neutral-200 px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
             >
               <input
                 value={body}
                 onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
                 placeholder="Napiš něco ostatním…"
-                className="min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-950"
+                className="min-w-0 flex-1 rounded-full border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm outline-none transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:focus-visible:bg-neutral-950"
               />
-              <Button type="submit" variant="accent" size="sm" disabled={sending || !body.trim()}>
-                {sending ? "…" : "Odeslat"}
-              </Button>
+              <button
+                type="submit"
+                disabled={sending || !body.trim()}
+                aria-label="Odeslat"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-black transition-transform hover:bg-[#e6bf00] active:scale-90 disabled:opacity-40"
+              >
+                <Send className="size-4" />
+              </button>
             </form>
-            {error && <p className="px-4 pb-2 text-sm text-red-600">{error}</p>}
+            {error && <p className="shrink-0 px-4 pb-2 text-sm text-red-600">{error}</p>}
           </div>
         </div>
       )}
