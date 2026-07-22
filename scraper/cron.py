@@ -146,13 +146,31 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
         print(f"Nepodařilo se stáhnout listing eventů z OKTAGON API: {exc}")
         return
 
-    existing = db.select("events", {"select": "oktagon_event_id,status,event_date"})
+    existing = db.select(
+        "events", {"select": "id,oktagon_event_id,status,event_date,subtitle,subtitle_locked"}
+    )
     existing_ids = {e["oktagon_event_id"] for e in existing if e["oktagon_event_id"]}
     future_count = sum(
         1
         for e in existing
         if e["status"] != "completed" and e["event_date"] and _parse_dt(e["event_date"]) > now
     )
+
+    # keep the official subtitle fresh on events we already have (OKTAGON
+    # often lists just the city first, then swaps in the main-event billing
+    # once it's announced) - but never over a hand-edited one
+    subtitle_by_oktagon_id = {t["oktagon_event_id"]: t.get("subtitle") for t in tournaments}
+    for event in existing:
+        oid = event.get("oktagon_event_id")
+        new_subtitle = subtitle_by_oktagon_id.get(oid)
+        if (
+            oid
+            and new_subtitle
+            and not event.get("subtitle_locked")
+            and (event.get("subtitle") or "") != new_subtitle
+        ):
+            db.update("events", {"subtitle": new_subtitle}, {"id": f"eq.{event['id']}"})
+            print(f"Podtitul aktualizován (event {event['id']}): {new_subtitle}")
 
     tournaments = sorted(tournaments, key=lambda t: t["event_date"])
     for tournament in tournaments:
@@ -169,6 +187,7 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
                 {
                     "number": tournament["number"],
                     "name": tournament["name"],
+                    "subtitle": tournament.get("subtitle"),
                     "event_date": tournament["event_date"],
                     "lock_at": tournament["event_date"],
                     "location": tournament["location"],

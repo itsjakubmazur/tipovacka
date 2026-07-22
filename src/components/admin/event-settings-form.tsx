@@ -25,6 +25,7 @@ export function EventSettingsForm({
   eventId,
   initialName,
   initialSubtitle,
+  initialSubtitleLocked,
   initialLocation,
   initialLockAt,
   initialAutoLock,
@@ -34,6 +35,7 @@ export function EventSettingsForm({
   eventId: string;
   initialName: string;
   initialSubtitle: string | null;
+  initialSubtitleLocked: boolean;
   initialLocation: string | null;
   initialLockAt: string | null;
   initialAutoLock: boolean;
@@ -45,6 +47,7 @@ export function EventSettingsForm({
 
   const [name, setName] = useState(initialName);
   const [subtitle, setSubtitle] = useState(initialSubtitle ?? "");
+  const [autoSubtitle, setAutoSubtitle] = useState(!initialSubtitleLocked);
   const [location, setLocation] = useState(initialLocation ?? "");
   const [lockAt, setLockAt] = useState(
     initialLockAt ? utcIsoToPragueLocalInput(initialLockAt) : ""
@@ -65,6 +68,7 @@ export function EventSettingsForm({
       .update({
         name,
         subtitle: subtitle.trim() || null,
+        subtitle_locked: !autoSubtitle,
         location: location || null,
         lock_at: lockAt ? pragueLocalToUtcIso(lockAt) : null,
         auto_lock: autoLock,
@@ -95,8 +99,18 @@ export function EventSettingsForm({
             id="subtitle"
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
-            placeholder="např. Engizek vs. Jötko 2"
+            placeholder="např. Engizek vs. Jotko 2"
+            disabled={autoSubtitle}
           />
+          <label className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+            <input
+              type="checkbox"
+              className="size-3.5 accent-accent"
+              checked={autoSubtitle}
+              onChange={(e) => setAutoSubtitle(e.target.checked)}
+            />
+            Brát automaticky z OKTAGONu (odškrtni pro ruční přepis)
+          </label>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="location">Místo</Label>

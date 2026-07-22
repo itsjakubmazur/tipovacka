@@ -18,31 +18,6 @@ from run_logger import log_run
 from supabase_client import SupabaseClient
 
 
-def _surname(full_name: str | None) -> str:
-    parts = (full_name or "").split()
-    return parts[-1] if parts else ""
-
-
-def derive_subtitle(fights_data: list[dict]) -> str | None:
-    """Best-effort main-event billing (e.g. "Engizek vs. Jötko") from the
-    card's headliner - the flagged main event, else the top of the card.
-    Skipped while either corner is still TBA so we don't store a
-    half-known "Někdo vs. TBA"."""
-    main = next((f for f in fights_data if f.get("is_main_event")), None)
-    if main is None:
-        main = max(fights_data, key=lambda f: f.get("card_order") or 0, default=None)
-    if main is None:
-        return None
-    a_name = main["fighter_a"]["name"]
-    b_name = main["fighter_b"]["name"]
-    if not a_name or not b_name or "TBA" in (a_name, b_name):
-        return None
-    a, b = _surname(a_name), _surname(b_name)
-    if not a or not b:
-        return None
-    return f"{a} vs. {b}"
-
-
 def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
     """OKTAGON's own data is authoritative, so every field is overwritten
     on every import/recheck - unlike the old Sherdog code, there's no
@@ -174,7 +149,7 @@ def update_odds(db: SupabaseClient, event_id: str, oktagon_event_id: int) -> Non
 def import_card(event_id: str) -> tuple[int, int]:
     db = SupabaseClient()
 
-    events = db.select("events", {"id": f"eq.{event_id}", "select": "id,number,oktagon_event_id,subtitle"})
+    events = db.select("events", {"id": f"eq.{event_id}", "select": "id,number,oktagon_event_id"})
     if not events:
         print(f"Event {event_id} nenalezen.")
         sys.exit(1)
@@ -328,14 +303,6 @@ def import_card(event_id: str) -> tuple[int, int]:
         cancelled += 1
 
     print(f"Hotovo, vytvořeno {created} nových zápasů.")
-
-    # fill in the main-event subtitle only if nobody set one by hand -
-    # a superadmin override in the event settings always wins
-    if not (event.get("subtitle") or "").strip():
-        subtitle = derive_subtitle(fights_data)
-        if subtitle:
-            db.update("events", {"subtitle": subtitle}, {"id": f"eq.{event_id}"})
-            print(f"Podtitul odvozen z hlavního zápasu: {subtitle}")
 
     print("Doplňuji titulní obrázek z oktagonmma.com...")
     try:

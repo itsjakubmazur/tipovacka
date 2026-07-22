@@ -146,6 +146,34 @@ def _location_label(item: dict) -> str | None:
     return ", ".join(p for p in (venue, city) if p) or None
 
 
+def _normalize_billing(text: str) -> str:
+    """OKTAGON writes fight billings in all caps ("ENGIZEK VS. JOTKO 2").
+    Title-case those for display; leave an already mixed-case title
+    (usually a host city like "Brno") untouched."""
+    letters = [c for c in text if c.isalpha()]
+    if letters and all(c.isupper() for c in letters):
+        words = []
+        for word in text.split():
+            if word.lower() in ("vs", "vs."):
+                words.append("vs.")
+            else:
+                words.append(word[:1].upper() + word[1:].lower())
+        return " ".join(words)
+    return text
+
+
+def _extract_subtitle(title: str | None, number: int) -> str | None:
+    """The official subtitle OKTAGON puts after the number in the event
+    title - the main-event billing ("Engizek vs. Jotko 2") when one is
+    announced, otherwise the host city ("Brno"). None when the title is
+    just the number."""
+    if not title:
+        return None
+    match = re.match(rf"^\s*OKTAGON\s+{number}\s*[:\-–—]?\s*(.*)$", title, re.IGNORECASE)
+    remainder = (match.group(1) if match else "").strip()
+    return _normalize_billing(remainder) if remainder else None
+
+
 def fetch_upcoming_tournaments() -> list[dict]:
     """The /events/ listing also includes non-fightcard entries (weigh-ins,
     press conferences, unrelated shows) - only `type == "TOURNAMENT"`
@@ -164,6 +192,7 @@ def fetch_upcoming_tournaments() -> list[dict]:
                 "oktagon_event_id": item["id"],
                 "number": number,
                 "name": _localized(item.get("title")) or _localized(item.get("shortTitle")) or f"OKTAGON {number}",
+                "subtitle": _extract_subtitle(_localized(item.get("title")), number),
                 "event_date": item.get("startDate"),
                 "location": _location_label(item),
             }
