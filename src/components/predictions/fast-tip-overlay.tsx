@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Check, Hand, Pointer, Star, X, Zap } from "lucide-react";
@@ -63,16 +64,18 @@ export function FastTipOverlay({
           bez detailů
         </span>
       </button>
-      {open && (
-        <FastTipCarousel
-          eventId={eventId}
-          userId={userId}
-          fights={fights}
-          initialPredictions={initialPredictions}
-          initialBoldFightId={initialBoldFightId}
-          onClose={() => setOpen(false)}
-        />
-      )}
+      {open &&
+        createPortal(
+          <FastTipCarousel
+            eventId={eventId}
+            userId={userId}
+            fights={fights}
+            initialPredictions={initialPredictions}
+            initialBoldFightId={initialBoldFightId}
+            onClose={() => setOpen(false)}
+          />,
+          document.body
+        )}
       {/* keeps the server-rendered counter honest before opening */}
       <span className="sr-only">
         {tippedCountable}/{totalCountable}
