@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Copy, KeyRound } from "lucide-react";
+import { Check, Copy, KeyRound, Share2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,23 @@ export function InviteCodeCard() {
     setTimeout(() => setCopied(false), 1500);
   }
 
+  async function shareInvite() {
+    if (!code) return;
+    const url = window.location.origin;
+    const text = `Přidej se do naší tipovačky na OKTAGON! Zaregistruj se na ${url} a použij zvací kód: ${code}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "OKTAGON GARÁŽ Tipovačka", text });
+        return;
+      } catch {
+        return; // user closed the share sheet
+      }
+    }
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
   async function save() {
     const trimmed = draft.trim();
     if (trimmed.length < 6) {
@@ -69,10 +86,14 @@ export function InviteCodeCard() {
       </p>
 
       {!editing ? (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-md border border-neutral-300 bg-white px-3 py-1.5 font-mono text-sm dark:border-neutral-600 dark:bg-neutral-950">
             {code ?? "…"}
           </span>
+          <Button type="button" variant="accent" size="sm" onClick={shareInvite} disabled={!code}>
+            <Share2 className="size-4" />
+            Pozvat kámoše
+          </Button>
           <Button type="button" variant="outline" size="sm" onClick={copy} disabled={!code}>
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             {copied ? "Zkopírováno" : "Kopírovat"}

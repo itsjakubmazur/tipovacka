@@ -13,6 +13,7 @@ import { DigitalCountdown } from "@/components/digital-countdown";
 import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
+import { WhoHasntTipped } from "@/components/events/who-hasnt-tipped";
 import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
@@ -345,6 +346,8 @@ export default async function EventDetailPage({
           </span>
         )}
       </div>
+
+      {!locked && countableFights.length > 0 && <WhoHasntTipped eventId={id} />}
 
       {locked && event.status !== "completed" && (
         <FightNightLive
