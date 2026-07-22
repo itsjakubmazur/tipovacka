@@ -19,7 +19,7 @@ import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
-import { perfStart, perfLog } from "@/lib/perf";
+import { perfStart, perfLogParts } from "@/lib/perf";
 import type { Fight, Prediction } from "@/lib/types";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
@@ -49,6 +49,7 @@ export default async function EventDetailPage({
     supabase.auth.getUser(),
     cookies(),
   ]);
+  const perfW1 = perfStart();
 
   if (!event) {
     notFound();
@@ -112,6 +113,7 @@ export default async function EventDetailPage({
       .order("created_at", { ascending: false })
       .limit(100),
   ]);
+  const perfW2 = perfStart();
 
   const isAdmin = profile?.is_admin ?? false;
   // Same "browse as a regular tipper" preference the events listing
@@ -147,6 +149,7 @@ export default async function EventDetailPage({
             | null,
         }),
   ]);
+  const perfW3 = perfStart();
 
   const predictionByFight = new Map<string, Prediction>(
     (predictions ?? []).map((p) => [p.fight_id, p])
@@ -256,7 +259,12 @@ export default async function EventDetailPage({
     reactions: c.event_comment_reactions,
   }));
 
-  perfLog(`event/${id}`, perf);
+  perfLogParts(`event/${id}`, {
+    w1_auth: perfW1 - perf,
+    w2_batch: perfW2 - perfW1,
+    w3_preds: perfW3 - perfW2,
+    total: perfW3 - perf,
+  });
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
