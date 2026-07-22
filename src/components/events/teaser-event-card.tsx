@@ -11,12 +11,14 @@ import { CalendarClock, Lock } from "lucide-react";
  * is the same instant the card flips to a normal, tappable event. */
 export function TeaserEventCard({
   title,
+  subtitle,
   location,
   eventDateIso,
   openAtIso,
   imageUrl,
 }: {
   title: string;
+  subtitle?: string | null;
   location: string | null;
   eventDateIso: string;
   openAtIso: string;
@@ -61,6 +63,7 @@ export function TeaserEventCard({
       <div className="relative z-10 flex items-start justify-between">
         <div>
           <p className="font-semibold text-black dark:text-white">{title}</p>
+          {subtitle && <p className="text-sm font-medium text-yellow-600 dark:text-accent">{subtitle}</p>}
           {location && <p className="text-sm text-neutral-500 dark:text-neutral-400">{location}</p>}
           <p className="text-sm text-neutral-400 dark:text-neutral-500">
             {new Date(eventDateIso).toLocaleString("cs-CZ", {

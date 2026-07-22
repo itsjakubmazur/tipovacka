@@ -24,6 +24,7 @@ function effectiveStatusLabel(status: string, lockAt: string): string {
 export function EventSettingsForm({
   eventId,
   initialName,
+  initialSubtitle,
   initialLocation,
   initialLockAt,
   initialAutoLock,
@@ -32,6 +33,7 @@ export function EventSettingsForm({
 }: {
   eventId: string;
   initialName: string;
+  initialSubtitle: string | null;
   initialLocation: string | null;
   initialLockAt: string | null;
   initialAutoLock: boolean;
@@ -42,6 +44,7 @@ export function EventSettingsForm({
   const supabase = createClient();
 
   const [name, setName] = useState(initialName);
+  const [subtitle, setSubtitle] = useState(initialSubtitle ?? "");
   const [location, setLocation] = useState(initialLocation ?? "");
   const [lockAt, setLockAt] = useState(
     initialLockAt ? utcIsoToPragueLocalInput(initialLockAt) : ""
@@ -61,6 +64,7 @@ export function EventSettingsForm({
       .from("events")
       .update({
         name,
+        subtitle: subtitle.trim() || null,
         location: location || null,
         lock_at: lockAt ? pragueLocalToUtcIso(lockAt) : null,
         auto_lock: autoLock,
@@ -84,6 +88,15 @@ export function EventSettingsForm({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name">Název</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="subtitle">Podtitul</Label>
+          <Input
+            id="subtitle"
+            value={subtitle}
+            onChange={(e) => setSubtitle(e.target.value)}
+            placeholder="např. Engizek vs. Jötko 2"
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="location">Místo</Label>

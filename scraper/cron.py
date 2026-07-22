@@ -114,7 +114,9 @@ CZECH_MONTHS_GENITIVE = {
 
 
 def event_label(event: dict) -> str:
-    return f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+    base = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+    subtitle = (event.get("subtitle") or "").strip()
+    return f"{base}: {subtitle}" if subtitle else base
 
 
 def _parse_dt(value: str) -> datetime:
@@ -217,7 +219,7 @@ def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
     immediately, and import_new_cards (which only skips status='draft')
     picks up the card on the same/next tick since `number` was already
     set when the draft was created."""
-    events = db.select("events", {"status": "eq.draft", "select": "id,number,name,event_date"})
+    events = db.select("events", {"status": "eq.draft", "select": "id,number,name,subtitle,event_date"})
     for event in events:
         if not event["event_date"] or now < _publish_at(_parse_dt(event["event_date"])):
             continue
@@ -238,7 +240,7 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
         {
             "status": "neq.completed",
             "hype_notified_at": "is.null",
-            "select": "id,number,name,event_date",
+            "select": "id,number,name,subtitle,event_date",
         },
     )
     for event in events:
@@ -277,7 +279,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
             "status": "eq.upcoming",
             "card_notified_at": "is.null",
             "created_at": f"lte.{(now - CARD_GRACE_PERIOD).isoformat()}",
-            "select": "id,number,name",
+            "select": "id,number,name,subtitle",
         },
     )
     for event in events:
@@ -319,7 +321,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
             "number": "not.is.null",
             "status": "neq.completed",
             "or": f"(card_checked_at.is.null,card_checked_at.lte.{cutoff})",
-            "select": "id,number,name,lock_at,status",
+            "select": "id,number,name,subtitle,lock_at,status",
         },
     )
     for event in events:
@@ -382,7 +384,7 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
             "status": "not.in.(draft,completed)",
             "reminder_sent_at": "is.null",
             "lock_at": f"lte.{(now + LOCK_REMINDER_WINDOW).isoformat()}",
-            "select": "id,number,name,lock_at",
+            "select": "id,number,name,subtitle,lock_at",
         },
     )
     events = [e for e in events if e["lock_at"] and e["lock_at"] >= now.isoformat()]
@@ -441,7 +443,7 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
             "status": "not.in.(draft,completed)",
             "lock_notified_at": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
-            "select": "id,number,name",
+            "select": "id,number,name,subtitle",
         },
     )
     for event in events:
@@ -483,7 +485,7 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
     events = {
         e["id"]: e
         for e in db.select(
-            "events", {"id": f"in.({','.join(by_event.keys())})", "select": "id,number,name"}
+            "events", {"id": f"in.({','.join(by_event.keys())})", "select": "id,number,name,subtitle"}
         )
     }
 
@@ -537,7 +539,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             "status": "not.in.(draft,completed)",
             "lock_at": f"lt.{now.isoformat()}",
             "number": "not.is.null",
-            "select": "id,number,name,payouts_enabled",
+            "select": "id,number,name,subtitle,payouts_enabled",
         },
     )
     for event in events:
@@ -574,7 +576,7 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
             "actual_fotn_fight_id": "is.null",
             "fotn_reminder_sent_at": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
-            "select": "id,number,name",
+            "select": "id,number,name,subtitle",
         },
     )
     for event in events:
@@ -617,7 +619,7 @@ def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None
             "status": "eq.completed",
             "payouts_enabled": "eq.true",
             "payout_all_paid_notified_at": "is.null",
-            "select": "id,number,name",
+            "select": "id,number,name,subtitle",
         },
     )
     for event in events:
@@ -667,7 +669,7 @@ def _followup_at(event_date: datetime) -> datetime:
 def _next_event_text(db: SupabaseClient, now: datetime) -> str:
     # Drafts are only hidden from the public site - we already know the date,
     # so include them here instead of saying "we don't know yet".
-    events = db.select("events", {"select": "id,number,name,event_date"})
+    events = db.select("events", {"select": "id,number,name,subtitle,event_date"})
     future = [e for e in events if e["event_date"] and _parse_dt(e["event_date"]) > now]
     if not future:
         return "Termín dalšího galavečeru ještě nevíme, sledujte upozornění."
@@ -684,7 +686,7 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
         {
             "status": "neq.draft",
             "followup_notified_at": "is.null",
-            "select": "id,number,name,event_date",
+            "select": "id,number,name,subtitle,event_date",
         },
     )
     for event in events:

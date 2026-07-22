@@ -45,7 +45,7 @@ export default async function EventsPage() {
   // filtered out per-row below.
   const { data: events } = await supabase
     .from("events")
-    .select("id, number, name, event_date, location, status, lock_at, image_url")
+    .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url")
     .order("event_date", { ascending: false });
 
   const { data: fights } = await supabase.from("fights").select("id, event_id");
@@ -124,6 +124,7 @@ export default async function EventsPage() {
               <TeaserEventCard
                 key={event.id}
                 title={event.number ? `OKTAGON ${event.number}` : event.name}
+                subtitle={event.subtitle}
                 location={event.location}
                 eventDateIso={event.event_date}
                 openAtIso={openAt}
@@ -170,6 +171,11 @@ export default async function EventsPage() {
                 <p className="font-semibold">
                   {event.number ? `OKTAGON ${event.number}` : event.name}
                 </p>
+                {event.subtitle && (
+                  <p className={cn("text-sm font-medium", event.image_url ? "text-accent" : "text-yellow-600 dark:text-accent")}>
+                    {event.subtitle}
+                  </p>
+                )}
                 <p className={cn("text-sm", event.image_url ? "text-white/80" : "text-neutral-600 dark:text-neutral-400")}>
                   {event.location}
                 </p>

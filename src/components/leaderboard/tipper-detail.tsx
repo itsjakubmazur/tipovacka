@@ -53,7 +53,7 @@ export async function TipperDetail({
     const [{ data: event }, { data: fights }, { data: bonusPrediction }] = await Promise.all([
       supabase
         .from("events")
-        .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id, image_url")
+        .select("id, number, name, subtitle, event_date, status, lock_at, actual_fotn_fight_id, image_url")
         .eq("id", eventId)
         .single(),
       supabase
@@ -135,6 +135,7 @@ export async function TipperDetail({
           <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {event.number ? `OKTAGON ${event.number}` : event.name}
+            {event.subtitle && <span className="text-yellow-600 dark:text-accent"> · {event.subtitle}</span>}
           </p>
         </div>
 
@@ -220,7 +221,7 @@ export async function TipperDetail({
 
   const { data: seasonEvents } = await supabase
     .from("events")
-    .select("id, number, name, event_date")
+    .select("id, number, name, subtitle, event_date")
     .neq("status", "draft")
     .order("event_date", { ascending: false });
 
@@ -518,9 +519,14 @@ export async function TipperDetail({
                 "flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
               )}
             >
-              <span className="flex items-center gap-1.5 font-semibold">
-                {event.number ? `OKTAGON ${event.number}` : event.name}
-                {row?.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-accent" />}
+              <span className="flex min-w-0 flex-col">
+                <span className="flex items-center gap-1.5 font-semibold">
+                  {event.number ? `OKTAGON ${event.number}` : event.name}
+                  {row?.perfect_card && <Trophy className="size-4 shrink-0 text-yellow-600 dark:text-accent" />}
+                </span>
+                {event.subtitle && (
+                  <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{event.subtitle}</span>
+                )}
               </span>
               <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}

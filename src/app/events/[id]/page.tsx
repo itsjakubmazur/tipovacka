@@ -43,7 +43,7 @@ export default async function EventDetailPage({
   const [{ data: event }, { data: userData }, cookieStore] = await Promise.all([
     supabase
       .from("events")
-      .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
+      .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
       .eq("id", id)
       .single(),
     supabase.auth.getUser(),
@@ -289,6 +289,9 @@ export default async function EventDetailPage({
         <h1 className="text-xl font-bold">
           {event.number ? `OKTAGON ${event.number}` : event.name}
         </h1>
+        {event.subtitle && (
+          <p className="text-sm font-semibold text-yellow-600 dark:text-accent">{event.subtitle}</p>
+        )}
         <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           {new Date(event.event_date).toLocaleString("cs-CZ", {
