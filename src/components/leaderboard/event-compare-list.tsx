@@ -95,7 +95,14 @@ export function EventCompareList({
                   {delta !== 0 && Math.abs(delta)}
                 </span>
               )}
-              <Link href={`/leaderboard/u/${row.user_id}?eventId=${eventId}`} className="font-semibold hover:underline">
+              <Link
+                href={`/leaderboard/u/${row.user_id}?eventId=${eventId}`}
+                // full-prefetch only the podium and the viewer's own row -
+                // prefetching all ~15 would fire a query storm at the
+                // free-tier DB; the rest keep Next's cheap default
+                prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
+                className="font-semibold hover:underline"
+              >
                 {row.nickname ?? "Bez přezdívky"}
               </Link>
               {row.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />}

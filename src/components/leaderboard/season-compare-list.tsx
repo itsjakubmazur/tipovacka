@@ -73,7 +73,13 @@ export function SeasonCompareList({
             </button>
             <RankMedal rank={i + 1} />
             <div className="flex flex-col">
-              <Link href={`/leaderboard/u/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
+              <Link
+                href={`/leaderboard/u/${row.user_id}?season=${season}`}
+                // podium + own row only, to spare the free-tier DB a
+                // query storm (see EventCompareList)
+                prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
+                className="font-semibold hover:underline"
+              >
                 {row.nickname ?? "Bez přezdívky"}
               </Link>
               <span className="text-xs text-neutral-500 dark:text-neutral-400">
