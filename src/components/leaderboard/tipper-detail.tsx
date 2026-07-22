@@ -35,27 +35,43 @@ export async function TipperDetail({
 }) {
   const supabase = await createClient();
 
-  const { data: userData } = await supabase.auth.getUser();
+  // auth check and the viewed profile are independent - fetch together
+  const [{ data: userData }, { data: profile }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("profiles").select("nickname").eq("id", userId).single(),
+  ]);
   if (!userData.user) {
     redirect("/login");
   }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("nickname")
-    .eq("id", userId)
-    .single();
-
   if (!profile) {
     notFound();
   }
 
   if (eventId) {
-    const { data: event } = await supabase
-      .from("events")
-      .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id, image_url")
-      .eq("id", eventId)
-      .single();
+    // event, its card, and this user's bonus pick are all independent
+    const [{ data: event }, { data: fights }, { data: bonusPrediction }] = await Promise.all([
+      supabase
+        .from("events")
+        .select("id, number, name, event_date, status, lock_at, actual_fotn_fight_id, image_url")
+        .eq("id", eventId)
+        .single(),
+      supabase
+        .from("fights")
+        .select(
+          `id, weight_class, is_title_fight, is_main_event, card_order, rounds, status,
+           winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
+           fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba),
+           fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba)`
+        )
+        .eq("event_id", eventId)
+        .order("card_order", { ascending: false }),
+      supabase
+        .from("bonus_predictions")
+        .select("predicted_fotn_fight_id, points")
+        .eq("user_id", userId)
+        .eq("event_id", eventId)
+        .maybeSingle(),
+    ]);
 
     if (!event || event.status === "draft") {
       notFound();
@@ -64,36 +80,33 @@ export async function TipperDetail({
     const locked =
       event.status === "completed" ||
       (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
-
-    const { data: fights } = await supabase
-      .from("fights")
-      .select(
-        `id, weight_class, is_title_fight, is_main_event, card_order, rounds, status,
-         winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
-         fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba),
-         fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba)`
-      )
-      .eq("event_id", eventId)
-      .order("card_order", { ascending: false });
+    const isOwnResult = userData.user.id === userId;
 
     const fightIds = (fights ?? []).map((f) => f.id);
 
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points")
-      .eq("user_id", userId)
-      .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]);
+    // this user's predictions (needs the fight ids) and, only for their
+    // own locked result, the full ranked board - fetched together
+    const [{ data: predictions }, { data: leaderboardRows }] = await Promise.all([
+      supabase
+        .from("predictions")
+        .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points")
+        .eq("user_id", userId)
+        .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]),
+      isOwnResult && locked
+        ? supabase
+            .from("event_leaderboard")
+            .select("user_id, points")
+            .eq("event_id", eventId)
+            .order("points", { ascending: false })
+            .order("fights_correct_winner", { ascending: false })
+            .order("perfect_card", { ascending: false })
+            .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
+        : Promise.resolve({ data: null as { user_id: string; points: number }[] | null }),
+    ]);
 
     const predictionByFight = new Map<string, Prediction>(
       (predictions ?? []).map((p) => [p.fight_id, p])
     );
-
-    const { data: bonusPrediction } = await supabase
-      .from("bonus_predictions")
-      .select("predicted_fotn_fight_id, points")
-      .eq("user_id", userId)
-      .eq("event_id", eventId)
-      .maybeSingle();
 
     const bonusFight = bonusPrediction
       ? (fights ?? []).find((f) => f.id === bonusPrediction.predicted_fotn_fight_id)
@@ -101,24 +114,15 @@ export async function TipperDetail({
     const actualFotnFight = (fights ?? []).find((f) => f.id === event.actual_fotn_fight_id);
 
     // Rank + share button, only when the viewer is looking at their own
-    // finished result.
-    const isOwnResult = userData.user.id === userId;
+    // finished result (leaderboardRows fetched in the wave above).
     let shareData: { points: number; rank: number | null; total: number | null } | null = null;
-    if (isOwnResult && locked) {
-      const { data: leaderboardRows } = await supabase
-        .from("event_leaderboard")
-        .select("user_id, points")
-        .eq("event_id", eventId)
-        .order("points", { ascending: false })
-        .order("fights_correct_winner", { ascending: false })
-        .order("perfect_card", { ascending: false })
-        .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
-      const index = (leaderboardRows ?? []).findIndex((r) => r.user_id === userId);
+    if (leaderboardRows) {
+      const index = leaderboardRows.findIndex((r) => r.user_id === userId);
       if (index >= 0) {
         shareData = {
-          points: leaderboardRows![index].points,
+          points: leaderboardRows[index].points,
           rank: index + 1,
-          total: leaderboardRows!.length,
+          total: leaderboardRows.length,
         };
       }
     }
@@ -225,32 +229,35 @@ export async function TipperDetail({
     (e) => new Date(e.event_date).getFullYear() === season
   );
   const eventIds = eventsInSeason.map((e) => e.id);
+  const eventIdFilter = eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"];
 
-  const { data: rows } = await supabase
-    .from("event_leaderboard")
-    .select("event_id, points, fights_scored, fights_completed, perfect_card")
-    .eq("user_id", userId)
-    .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
+  // All three only need the season's event ids - fetch together.
+  const [{ data: rows }, { data: completedFights }, { data: allEventRows }] = await Promise.all([
+    supabase
+      .from("event_leaderboard")
+      .select("event_id, points, fights_scored, fights_completed, perfect_card")
+      .eq("user_id", userId)
+      .in("event_id", eventIdFilter),
+    supabase
+      .from("fights")
+      .select(
+        "id, event_id, card_order, card_segment, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
+      )
+      .in("event_id", eventIdFilter)
+      .eq("status", "completed"),
+    // Who actually won each event - all users' rows, ranked per event
+    // client-side with the same tiebreak chain the leaderboard uses.
+    supabase
+      .from("event_leaderboard")
+      .select("event_id, user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
+      .in("event_id", eventIdFilter),
+  ]);
 
   const rowByEvent = new Map<string, EventLeaderboardRow>(
     (rows ?? []).map((r) => [r.event_id, r])
   );
   const totalPoints = (rows ?? []).reduce((sum, r) => sum + r.points, 0);
 
-  const { data: completedFights } = await supabase
-    .from("fights")
-    .select(
-      "id, event_id, card_order, card_segment, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
-    )
-    .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"])
-    .eq("status", "completed");
-
-  // Who actually won each event - one query over every user's rows,
-  // ranked per event with the same tiebreak chain the leaderboard uses.
-  const { data: allEventRows } = await supabase
-    .from("event_leaderboard")
-    .select("event_id, user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
-    .in("event_id", eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
   const rowsByEventAll = new Map<string, NonNullable<typeof allEventRows>>();
   for (const r of allEventRows ?? []) {
     const list = rowsByEventAll.get(r.event_id) ?? [];

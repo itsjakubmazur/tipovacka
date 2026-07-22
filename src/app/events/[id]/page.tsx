@@ -18,6 +18,7 @@ import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
+import { perfStart, perfLog } from "@/lib/perf";
 import type { Fight, Prediction } from "@/lib/types";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
@@ -33,6 +34,7 @@ export default async function EventDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const perf = perfStart();
 
   // First wave: everything that needs only the event id (or nothing).
   // These used to run one after another - a ~10-query serial waterfall
@@ -252,6 +254,8 @@ export default async function EventDetailPage({
     nickname: c.profiles?.nickname ?? "Bez přezdívky",
     reactions: c.event_comment_reactions,
   }));
+
+  perfLog(`event/${id}`, perf);
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
