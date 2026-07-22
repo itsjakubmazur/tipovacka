@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
 type GroupLeaderboardRow = {
@@ -56,9 +58,7 @@ export default async function GroupDetailPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link href="/groups" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black">
-          ← Zpět na skupiny
-        </Link>
+        <BackLink href="/groups">Zpět na skupiny</BackLink>
         <h1 className="mt-1 text-xl font-bold">{group.name}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Kód pro pozvání kámošů: <span className="font-mono font-semibold">{group.invite_code}</span>
@@ -75,14 +75,14 @@ export default async function GroupDetailPage({
             key={row.user_id}
             href={`/leaderboard/u/${row.user_id}?season=${season}`}
             className={cn(
-              "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl transition-colors hover:border-white/80 dark:shadow-black/60",
+              "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 transition hover:border-white/80 hover:shadow-xl dark:shadow-black/60",
               row.user_id === currentUserId
-                ? "border-[#FFD400] bg-[#FFFBE6] dark:bg-[#3C3722]"
+                ? "border-accent bg-accent/15"
                 : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500/80"
             )}
           >
             <div className="flex items-center gap-3">
-              <span className="w-6 text-center text-sm font-bold text-neutral-500 dark:text-neutral-300">{i + 1}.</span>
+              <RankMedal rank={i + 1} />
               <span className="font-semibold">{row.nickname ?? "Bez přezdívky"}</span>
             </div>
             <span className="text-lg font-bold">{row.points}</span>

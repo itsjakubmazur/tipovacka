@@ -80,7 +80,7 @@ export function EventSettingsForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <p className="text-sm font-semibold">Nastavení galavečera</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name">Název</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -121,6 +121,7 @@ export function EventSettingsForm({
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
+          className="size-4 accent-accent"
           checked={autoLock}
           onChange={(e) => setAutoLock(e.target.checked)}
         />
@@ -129,6 +130,7 @@ export function EventSettingsForm({
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
+          className="size-4 accent-accent"
           checked={payoutsEnabled}
           onChange={(e) => setPayoutsEnabled(e.target.checked)}
         />

@@ -26,10 +26,10 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
           key={item.href}
           href={item.href}
           className={cn(
-            "text-sm font-medium",
+            "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
             isActive(pathname, item.href)
-              ? "text-[#FFD400]"
-              : "text-white/80 hover:text-[#FFD400]"
+              ? "text-accent after:w-full"
+              : "text-white/80 hover:text-accent after:w-0"
           )}
         >
           {item.label}
@@ -39,8 +39,10 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
         <Link
           href="/admin"
           className={cn(
-            "text-sm font-medium",
-            isActive(pathname, "/admin") ? "text-[#FFD400]" : "text-white/80 hover:text-[#FFD400]"
+            "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
+            isActive(pathname, "/admin")
+              ? "text-accent after:w-full"
+              : "text-white/80 hover:text-accent after:w-0"
           )}
         >
           Admin
@@ -64,9 +66,9 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 py-2 text-xs",
+                "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
                 active
-                  ? "text-[#FFD400]"
+                  ? "bg-accent/10 text-accent"
                   : "text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
               )}
             >
@@ -81,7 +83,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
             className={cn(
               "flex flex-1 flex-col items-center gap-1 py-2 text-xs",
               isActive(pathname, "/admin")
-                ? "text-[#FFD400]"
+                ? "text-accent"
                 : "text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
             )}
           >

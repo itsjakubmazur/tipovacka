@@ -299,7 +299,7 @@ export default async function EventDetailPage({
         </p>
         {event.payouts_enabled && (
           <p className={cn(GLASS_PILL, "mt-2 inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium")}>
-            <Wallet className="size-3.5 text-yellow-600 dark:text-[#FFD400]" />
+            <Wallet className="size-3.5 text-yellow-600 dark:text-accent" />
             Startovné 50 Kč · vítěz bere vše · QR platba po vyhodnocení
           </p>
         )}

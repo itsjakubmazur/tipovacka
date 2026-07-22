@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Swords, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +63,8 @@ export function FotnPicker({
       >
         <span className="flex items-center gap-2">
           {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-          🥊 Bonus tip: Fight of the Night
+          <Swords className="size-4 text-yellow-600 dark:text-accent" />
+          Bonus tip: Fight of the Night
         </span>
         {!open && pickedFight && (
           <span className="truncate text-xs font-normal text-neutral-500 dark:text-neutral-300">
@@ -81,10 +82,10 @@ export function FotnPicker({
                 disabled={locked}
                 onClick={() => pick(fight.id)}
                 className={cn(
-                  "rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
+                  "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
                   pickedId === fight.id
-                    ? "border-[#FFD400] bg-[#FFD400]/10 font-semibold"
-                    : "border-neutral-200 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 hover:border-neutral-300"
+                    ? "border-accent bg-accent/10 font-semibold"
+                    : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-neutral-300 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500"
                 )}
               >
                 {fight.fighterAName} vs {fight.fighterBName}
@@ -92,9 +93,10 @@ export function FotnPicker({
             ))}
           </div>
           {locked && actualFight && (
-            <p className="text-xs font-medium">
-              🏆 Skutečný Fight of the Night:{" "}
-              <span className="text-yellow-600 dark:text-[#FFD400]">
+            <p className="flex items-center gap-1.5 text-xs font-medium">
+              <Trophy className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
+              Skutečný Fight of the Night:{" "}
+              <span className="text-yellow-600 dark:text-accent">
                 {actualFight.fighterAName} vs {actualFight.fighterBName}
               </span>
             </p>

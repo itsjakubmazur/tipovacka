@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { notFound, redirect } from "next/navigation";
 import {
   CalendarCheck,
@@ -130,9 +131,7 @@ export async function TipperDetail({
     return (
       <>
         <div>
-          <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
-            ← Zpět na žebříček
-          </Link>
+          <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
           <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {event.number ? `OKTAGON ${event.number}` : event.name}
@@ -156,7 +155,7 @@ export async function TipperDetail({
             {(bonusFight || actualFotnFight) && (
               <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
                 <p className="flex items-center gap-1.5 font-semibold">
-                  <Target className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+                  <Target className="size-4 text-yellow-600 dark:text-accent" />
                   Bonus tip: Fight of the Night
                 </p>
                 {bonusFight && (
@@ -174,9 +173,9 @@ export async function TipperDetail({
                 )}
                 {actualFotnFight && (
                   <p className="mt-1 flex items-center gap-1.5 text-xs font-medium">
-                    <Trophy className="size-3.5 text-yellow-600 dark:text-[#FFD400]" />
+                    <Trophy className="size-3.5 text-yellow-600 dark:text-accent" />
                     Skutečný Fight of the Night:{" "}
-                    <span className="text-yellow-600 dark:text-[#FFD400]">
+                    <span className="text-yellow-600 dark:text-accent">
                       {(actualFotnFight as unknown as Fight).fighter_a.name} vs{" "}
                       {(actualFotnFight as unknown as Fight).fighter_b.name}
                     </span>
@@ -371,7 +370,7 @@ export async function TipperDetail({
   const exactHits = ordered.filter((p) => (p.points ?? 0) >= 3).length;
 
   const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
-  const badgeIconClass = "size-3.5 text-yellow-600 dark:text-[#FFD400]";
+  const badgeIconClass = "size-3.5 text-yellow-600 dark:text-accent";
   const badges: { icon: React.ReactNode; label: string }[] = [];
   if (eventWins > 0) {
     badges.push({
@@ -404,9 +403,7 @@ export async function TipperDetail({
   return (
     <>
       <div>
-        <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
-          ← Zpět na žebříček
-        </Link>
+        <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
         <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Sezóna {season} · celkem {totalPoints} b.
@@ -418,7 +415,7 @@ export async function TipperDetail({
           {badges.map((badge) => (
             <span
               key={badge.label}
-              className="flex items-center gap-1.5 rounded-full border border-[#FFD400]/40 bg-[#FFD400]/10 px-3 py-1 text-xs font-medium"
+              className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-medium"
             >
               {badge.icon}
               {badge.label}
@@ -430,48 +427,83 @@ export async function TipperDetail({
       {totalGraded > 0 && (
         <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
           <p className="text-sm font-semibold">Statistiky sezóny</p>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-700 dark:text-neutral-300">
-            <span>
-              Úspěšnost: <strong>{accuracy}%</strong> ({hits}/{totalGraded})
-            </span>
-            {streak >= 2 && (
-              <span className="flex items-center gap-1">
-                <Flame className="size-4 text-yellow-600 dark:text-[#FFD400]" />
-                Aktuální série: <strong>{streak}</strong> trefených v řadě
-              </span>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
-            {Array.from(methodStats.entries()).map(([method, s]) => (
-              <span key={method}>
-                {METHOD_LABELS[method]}: {s.hits}/{s.total}
-              </span>
-            ))}
-          </div>
-          {segmentStats.size > 0 && (
-            <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
-              {Array.from(segmentStats.entries()).map(([label, s]) => (
-                <span key={label}>
-                  {label}: {s.hits}/{s.total}
-                  {s.total > 0 && ` (${Math.round((s.hits / s.total) * 100)}%)`}
-                </span>
-              ))}
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-xl border border-black/5 bg-black/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <p className="text-2xl font-bold tabular-nums text-yellow-600 dark:text-accent">{accuracy}%</p>
+              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+                Úspěšnost · {hits}/{totalGraded}
+              </p>
             </div>
-          )}
-          {oddsClassified > 0 && (
-            <div className="flex flex-wrap gap-3 text-xs text-neutral-500 dark:text-neutral-300">
-              <span>
-                Favorité: {favoriteStats.hits}/{favoriteStats.total}
-                {favoriteStats.total > 0 &&
-                  ` (${Math.round((favoriteStats.hits / favoriteStats.total) * 100)}%)`}
-              </span>
-              <span>
-                Outsideři: {underdogStats.hits}/{underdogStats.total}
-                {underdogStats.total > 0 &&
-                  ` (${Math.round((underdogStats.hits / underdogStats.total) * 100)}%)`}
-              </span>
+            <div className="rounded-xl border border-black/5 bg-black/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <p className="flex items-center gap-1.5 text-2xl font-bold tabular-nums">
+                {streak >= 2 ? (
+                  <>
+                    <Flame className="size-5 text-yellow-600 dark:text-accent" />
+                    {streak}
+                  </>
+                ) : (
+                  <span className="text-neutral-400">—</span>
+                )}
+              </p>
+              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+                {streak >= 2 ? "Trefených v řadě" : "Bez série"}
+              </p>
             </div>
-          )}
+          </div>
+
+          {(() => {
+            const tiles: { label: string; value: string; pct?: number }[] = [
+              ...Array.from(methodStats.entries()).map(([method, s]) => ({
+                label: METHOD_LABELS[method],
+                value: `${s.hits}/${s.total}`,
+              })),
+              ...Array.from(segmentStats.entries()).map(([label, s]) => ({
+                label,
+                value: `${s.hits}/${s.total}`,
+                pct: s.total > 0 ? Math.round((s.hits / s.total) * 100) : undefined,
+              })),
+              ...(oddsClassified > 0
+                ? [
+                    {
+                      label: "Favorité",
+                      value: `${favoriteStats.hits}/${favoriteStats.total}`,
+                      pct:
+                        favoriteStats.total > 0
+                          ? Math.round((favoriteStats.hits / favoriteStats.total) * 100)
+                          : undefined,
+                    },
+                    {
+                      label: "Outsideři",
+                      value: `${underdogStats.hits}/${underdogStats.total}`,
+                      pct:
+                        underdogStats.total > 0
+                          ? Math.round((underdogStats.hits / underdogStats.total) * 100)
+                          : undefined,
+                    },
+                  ]
+                : []),
+            ];
+            if (tiles.length === 0) return null;
+            return (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {tiles.map((t) => (
+                  <div
+                    key={t.label}
+                    className="rounded-lg border border-black/5 bg-black/[0.02] p-2.5 dark:border-white/10 dark:bg-white/[0.03]"
+                  >
+                    <p className="text-sm font-semibold tabular-nums">
+                      {t.value}
+                      {t.pct != null && (
+                        <span className="ml-1 text-xs font-normal text-neutral-400">{t.pct}%</span>
+                      )}
+                    </p>
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400">{t.label}</p>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -488,7 +520,7 @@ export async function TipperDetail({
             >
               <span className="flex items-center gap-1.5 font-semibold">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
-                {row?.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />}
+                {row?.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-accent" />}
               </span>
               <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
                 {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}

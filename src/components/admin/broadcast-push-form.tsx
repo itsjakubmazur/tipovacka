@@ -29,7 +29,10 @@ export function BroadcastPushForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+    >
       <Input
         placeholder="Název upozornění"
         value={title}
@@ -42,7 +45,7 @@ export function BroadcastPushForm() {
         onChange={(e) => setBody(e.target.value)}
         maxLength={250}
         rows={3}
-        className="rounded-md border border-neutral-200 dark:border-neutral-800 bg-transparent p-2 text-sm"
+        className="rounded-md border border-neutral-300 bg-white p-2 text-sm outline-none placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:focus-visible:ring-white"
       />
       <Input
         placeholder="Odkaz po kliknutí (volitelné, např. /events)"

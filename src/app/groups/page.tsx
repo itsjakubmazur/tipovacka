@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Users, ChevronRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CreateGroupForm } from "@/components/groups/create-group-form";
@@ -36,9 +37,15 @@ export default async function GroupsPage() {
           <Link
             key={group.id}
             href={`/groups/${group.id}`}
-            className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+            className="flex items-center justify-between gap-3 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg transition hover:border-white/80 hover:shadow-xl dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
           >
-            <span className="font-semibold">{group.name}</span>
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
+                <Users className="size-4" />
+              </span>
+              <span className="truncate font-semibold">{group.name}</span>
+            </span>
+            <ChevronRight className="size-4 shrink-0 text-neutral-400" />
           </Link>
         ))}
       </div>

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Swords, Trophy } from "lucide-react";
+import { BackLink } from "@/components/ui/back-link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -25,9 +26,7 @@ export default async function ComparePage({
   if (profilesError) {
     return (
       <div className="flex flex-col gap-4 px-4 py-8">
-        <Link href="/leaderboard" className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
-          ← Zpět na žebříček
-        </Link>
+        <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
         <p className="text-sm text-red-600">Chyba při načítání porovnání: {profilesError.message}</p>
       </div>
     );
@@ -104,9 +103,7 @@ export default async function ComparePage({
 
     return (
       <div className="flex flex-col gap-4 px-4 py-8">
-        <Link href={`/leaderboard?view=event&eventId=${eventId}`} className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
-          ← Zpět na žebříček
-        </Link>
+        <BackLink href={`/leaderboard?view=event&eventId=${eventId}`}>Zpět na žebříček</BackLink>
 
         <h1 className="text-xl font-bold">
           {nicknameA} vs {nicknameB}
@@ -117,7 +114,7 @@ export default async function ComparePage({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-            <span className="font-semibold text-yellow-600 dark:text-[#FFD400]">{nicknameA}</span>
+            <span className="font-semibold text-yellow-600 dark:text-accent">{nicknameA}</span>
             <span className="text-2xl font-bold">{totalA}</span>
           </div>
           <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
@@ -128,8 +125,11 @@ export default async function ComparePage({
 
         {(bonusFightA || bonusFightB || actualFotnFight) && (
           <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-            <p className="font-semibold">🥊 Bonus tip: Fight of the Night</p>
-            <p className="text-yellow-600 dark:text-[#FFD400]">
+            <p className="flex items-center gap-1.5 font-semibold">
+              <Swords className="size-4 text-yellow-600 dark:text-accent" />
+              Bonus tip: Fight of the Night
+            </p>
+            <p className="text-yellow-600 dark:text-accent">
               {nicknameA}:{" "}
               {bonusFightA ? (
                 <span className="text-neutral-700 dark:text-neutral-300">
@@ -161,8 +161,9 @@ export default async function ComparePage({
             </p>
             {actualFotnFight && (
               <p className="mt-1 text-xs font-medium">
-                🏆 Skutečný Fight of the Night:{" "}
-                <span className="text-yellow-600 dark:text-[#FFD400]">
+                <Trophy className="mr-1 inline size-3.5 text-yellow-600 dark:text-accent" />
+                Skutečný Fight of the Night:{" "}
+                <span className="text-yellow-600 dark:text-accent">
                   {(actualFotnFight as unknown as Fight).fighter_a.name} vs {(actualFotnFight as unknown as Fight).fighter_b.name}
                 </span>
               </p>
@@ -245,9 +246,7 @@ export default async function ComparePage({
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
-      <Link href={`/leaderboard?view=season`} className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-black dark:hover:text-white">
-        ← Zpět na žebříček
-      </Link>
+      <BackLink href={`/leaderboard?view=season`}>Zpět na žebříček</BackLink>
 
       <h1 className="text-xl font-bold">
         {nicknameA} vs {nicknameB}
@@ -260,7 +259,10 @@ export default async function ComparePage({
           <span className="text-2xl font-bold">{totalA}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsA}× lepší večer</span>
           {perfectCardsA > 0 && (
-            <span className="text-xs text-neutral-500 dark:text-neutral-300">🏆 {perfectCardsA}× perfektní karta</span>
+            <span className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-300">
+              <Trophy className="size-3 text-yellow-600 dark:text-accent" />
+              {perfectCardsA}× perfektní karta
+            </span>
           )}
         </div>
         <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
@@ -268,7 +270,10 @@ export default async function ComparePage({
           <span className="text-2xl font-bold">{totalB}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsB}× lepší večer</span>
           {perfectCardsB > 0 && (
-            <span className="text-xs text-neutral-500 dark:text-neutral-300">🏆 {perfectCardsB}× perfektní karta</span>
+            <span className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-300">
+              <Trophy className="size-3 text-yellow-600 dark:text-accent" />
+              {perfectCardsB}× perfektní karta
+            </span>
           )}
         </div>
       </div>
@@ -288,11 +293,11 @@ export default async function ComparePage({
               key={event.id}
               className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
             >
-              <span className={cn("w-12 text-right font-bold", pa > pb && "text-yellow-600 dark:text-[#FFD400]")}>{pa}</span>
+              <span className={cn("w-12 text-right font-bold", pa > pb && "text-yellow-600 dark:text-accent")}>{pa}</span>
               <span className="flex-1 px-3 text-center text-neutral-600 dark:text-neutral-400">
                 {event.number ? `OKTAGON ${event.number}` : event.name}
               </span>
-              <span className={cn("w-12 font-bold", pb > pa && "text-yellow-600 dark:text-[#FFD400]")}>{pb}</span>
+              <span className={cn("w-12 font-bold", pb > pa && "text-yellow-600 dark:text-accent")}>{pb}</span>
             </div>
           );
         })}

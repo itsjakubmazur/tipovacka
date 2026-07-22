@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 px-6 py-24 text-center">
       <h1 className="text-3xl font-bold tracking-tight">
-        OKTAGON GARÁŽ <span className="text-black bg-[#FFD400] px-1">Tipovačka</span>
+        OKTAGON GARÁŽ <span className="text-black bg-accent px-1">Tipovačka</span>
       </h1>
       <p className="max-w-md text-neutral-600 dark:text-neutral-400">
         Tipuj vítěze, způsob ukončení a kolo u zápasů galavečerů OKTAGON a

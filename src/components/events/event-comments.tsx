@@ -201,7 +201,7 @@ export function EventComments({
           <MessageCircle className="size-4" />
           Kecárna
           {unread > 0 && (
-            <span className="flex size-5 items-center justify-center rounded-full bg-[#FFD400] text-[11px] font-bold text-black">
+            <span className="flex size-5 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-black">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
@@ -243,7 +243,7 @@ export function EventComments({
                 comment.isSystem ? (
                   <div
                     key={comment.id}
-                    className="mx-auto max-w-[85%] rounded-full bg-[#FFD400]/15 px-3 py-1.5 text-center text-xs font-medium text-yellow-800 dark:text-[#FFD400]"
+                    className="mx-auto max-w-[85%] rounded-full bg-accent/15 px-3 py-1.5 text-center text-xs font-medium text-yellow-800 dark:text-accent"
                   >
                     {comment.body}
                   </div>
@@ -251,7 +251,7 @@ export function EventComments({
                   <div key={comment.id} className="flex items-start justify-between gap-2 text-sm">
                     <div className="min-w-0">
                       <p>
-                        <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-[#FFD400]")}>
+                        <span className={cn("font-semibold", comment.user_id === userId && "text-yellow-600 dark:text-accent")}>
                           {comment.nickname}
                         </span>{" "}
                         <span className="text-xs text-neutral-400 dark:text-neutral-500">
@@ -277,7 +277,7 @@ export function EventComments({
                               className={cn(
                                 "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none",
                                 mine
-                                  ? "border-[#FFD400] bg-[#FFD400]/15 text-yellow-800 dark:text-[#FFD400]"
+                                  ? "border-accent bg-accent/15 text-yellow-800 dark:text-accent"
                                   : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
                               )}
                             >

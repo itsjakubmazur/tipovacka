@@ -18,7 +18,7 @@ function NavBarFallback() {
     <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
-          OKTAGON <span className="text-[#FFD400]">GARÁŽ</span>
+          OKTAGON <span className="text-accent">GARÁŽ</span>
           <span className="hidden sm:inline"> Tipovačka</span>
         </Link>
       </div>

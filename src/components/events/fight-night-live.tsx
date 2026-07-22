@@ -64,7 +64,7 @@ export async function FightNightLive({
           href={`#fight-${nextUp.id}`}
           className="flex items-center gap-2 text-sm text-neutral-700 hover:underline dark:text-neutral-300"
         >
-          <Swords className="size-4 shrink-0 text-yellow-600 dark:text-[#FFD400]" />
+          <Swords className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
           <span>
             Další na řadě: <strong>{nextUp.fighter_a.name}</strong> vs{" "}
             <strong>{nextUp.fighter_b.name}</strong>
@@ -127,7 +127,7 @@ function MiniRow({
     <div
       className={cn(
         "flex items-center justify-between rounded-md px-1.5 py-0.5 text-sm",
-        isMe && "bg-[#FFD400]/15 font-semibold"
+        isMe && "bg-accent/15 font-semibold"
       )}
     >
       <span className="flex items-center gap-2">

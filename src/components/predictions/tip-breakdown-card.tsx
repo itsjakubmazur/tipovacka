@@ -57,7 +57,7 @@ export function TipBreakdownCard({
               prediction.points == null
                 ? "text-neutral-400"
                 : prediction.points > 0
-                  ? "text-green-700"
+                  ? "text-green-700 dark:text-green-400"
                   : "text-neutral-500 dark:text-neutral-300"
             )}
           >
@@ -77,14 +77,14 @@ export function TipBreakdownCard({
               key={fighter.id}
               className={cn(
                 "flex flex-col items-center gap-1.5 px-2 pb-3 text-center",
-                isTip && "bg-[#FFD400]/10"
+                isTip && "bg-accent/10"
               )}
             >
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
                 grayedOut={grayedOut}
-                className={cn(isTip && "ring-2 ring-inset ring-[#FFD400]")}
+                className={cn(isTip && "ring-2 ring-inset ring-accent")}
               />
               <div className="mt-1.5">
                 <FighterLabel fighter={fighter} />
@@ -94,7 +94,7 @@ export function TipBreakdownCard({
                   <span className="flex items-center gap-0.5">
                     {fighter.oktagon_rank}
                     {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
-                      <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
+                      <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")}>
                         {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
                       </span>
                     )}

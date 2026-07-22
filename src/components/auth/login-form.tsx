@@ -79,8 +79,10 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setMode("login")}
-          className={`flex-1 rounded-md py-1.5 font-medium ${
-            mode === "login" ? "bg-black text-white" : "text-neutral-600 dark:text-neutral-400"
+          className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
+            mode === "login"
+              ? "bg-accent text-black"
+              : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
           }`}
         >
           Přihlášení
@@ -88,8 +90,10 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setMode("register")}
-          className={`flex-1 rounded-md py-1.5 font-medium ${
-            mode === "register" ? "bg-black text-white" : "text-neutral-600 dark:text-neutral-400"
+          className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
+            mode === "register"
+              ? "bg-accent text-black"
+              : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
           }`}
         >
           Registrace

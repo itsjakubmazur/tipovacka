@@ -26,7 +26,10 @@ export function SegmentJump({
               .getElementById(`segment-${segment.key}`)
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
-          className={cn(GLASS_PILL, "shrink-0 px-3.5 py-1.5 text-xs font-semibold")}
+          className={cn(
+            GLASS_PILL,
+            "shrink-0 px-3.5 py-1.5 text-xs font-semibold outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          )}
         >
           {segment.label}
         </button>

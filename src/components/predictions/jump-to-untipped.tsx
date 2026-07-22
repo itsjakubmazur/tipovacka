@@ -38,7 +38,7 @@ export function JumpToUntipped({
       onClick={() =>
         document.getElementById(`fight-${firstUntipped}`)?.scrollIntoView({ behavior: "smooth", block: "start" })
       }
-      className="fixed bottom-24 right-4 z-30 flex items-center gap-2 rounded-full bg-[#FFD400] px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-black/30 hover:bg-[#e6bf00] md:bottom-6"
+      className="fixed bottom-24 right-4 z-30 flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-black/30 outline-none transition-transform hover:bg-[#e6bf00] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-95 md:bottom-6"
     >
       <ArrowDown className="size-4" />
       Netipnuto: {untipped.size}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,8 +44,11 @@ export function NicknameForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-3">
-      <div className="flex flex-col gap-1.5">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+    >
+      <div className="flex max-w-sm flex-col gap-1.5">
         <Label htmlFor="nickname">Přezdívka</Label>
         <Input
           id="nickname"
@@ -57,8 +61,13 @@ export function NicknameForm({
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {saved && <p className="text-sm text-neutral-600 dark:text-neutral-400">Uloženo.</p>}
-      <Button type="submit" variant="accent" disabled={saving}>
+      {saved && (
+        <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+          <Check className="size-4" />
+          Uloženo.
+        </p>
+      )}
+      <Button type="submit" variant="accent" disabled={saving} className="self-start">
         {saving ? "Ukládám…" : "Uložit"}
       </Button>
     </form>

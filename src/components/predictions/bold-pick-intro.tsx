@@ -33,8 +33,8 @@ export function BoldPickIntro() {
   if (!show) return null;
 
   return (
-    <div className="mt-3 flex items-start gap-2 rounded-xl border border-[#FFD400]/50 bg-[#FFD400]/10 p-3 text-sm shadow-lg shadow-black/15 backdrop-blur-lg dark:shadow-black/40">
-      <Star className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-[#FFD400]" fill="currentColor" />
+    <div className="mt-3 flex items-start gap-2 rounded-xl border border-accent/50 bg-accent/10 p-3 text-sm shadow-lg shadow-black/15 backdrop-blur-lg dark:shadow-black/40">
+      <Star className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-accent" fill="currentColor" />
       <p className="flex-1 text-neutral-700 dark:text-neutral-200">
         <span className="font-semibold">Novinka – Jistotka.</span> U jednoho zápasu na kartě klepni na
         hvězdičku „Dát jistotku“. Body z něj se ti pak počítají <strong>dvakrát</strong>. Dej ji tam,

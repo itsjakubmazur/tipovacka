@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -52,12 +52,7 @@ export default async function ClientErrorsPage() {
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link
-          href="/admin"
-          className="text-sm text-neutral-500 hover:text-black dark:text-neutral-300 dark:hover:text-white"
-        >
-          ← Zpět do adminu
-        </Link>
+        <BackLink href="/admin">Zpět do adminu</BackLink>
         <h1 className="mt-1 text-xl font-bold">Chyby v prohlížečích</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Neodchycené chyby z appky tipérů, posledních 100.

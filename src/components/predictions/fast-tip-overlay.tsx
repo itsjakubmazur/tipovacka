@@ -53,7 +53,7 @@ export function FastTipOverlay({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD400] bg-[#FFD400] px-3 py-1 text-xs font-semibold text-black shadow-lg shadow-black/15 transition-transform hover:scale-105"
+        className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent px-3 py-1 text-xs font-semibold text-black shadow-lg shadow-black/15 transition-transform hover:scale-105"
       >
         <Zap className="size-3.5" />
         Rychlé tipování
@@ -250,7 +250,7 @@ function FastTipCarousel({
         </button>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
           <div
-            className="h-full rounded-full bg-[#FFD400] transition-all duration-300"
+            className="h-full rounded-full bg-accent transition-all duration-300"
             style={{ width: `${(tippedCount / fights.length) * 100}%` }}
           />
         </div>
@@ -301,7 +301,7 @@ function FastTipCarousel({
             className={cn(
               "size-2 rounded-full transition-colors",
               i === index
-                ? "bg-[#FFD400]"
+                ? "bg-accent"
                 : tipComplete(tips[f.id])
                   ? "bg-neutral-400 dark:bg-neutral-500"
                   : "bg-neutral-200 dark:bg-neutral-700"
@@ -317,7 +317,7 @@ function FastTipCarousel({
           <button
             type="button"
             onClick={close}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-[#FFD400] bg-[#FFD400] py-3 text-sm font-semibold text-black"
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-accent bg-accent py-3 text-sm font-semibold text-black"
           >
             <Check className="size-4" strokeWidth={3} />
             Hotovo, máš tipnuto vše
@@ -336,11 +336,11 @@ function FastTipCarousel({
       >
         <div className="flex items-center gap-8 rounded-2xl bg-black/70 px-7 py-5 text-white backdrop-blur-sm">
           <span className="flex flex-col items-center gap-1.5 text-xs font-medium">
-            <Pointer className="size-7 text-[#FFD400]" />
+            <Pointer className="size-7 text-accent" />
             Klepni na vítěze
           </span>
           <span className="flex flex-col items-center gap-1.5 text-xs font-medium">
-            <Hand className="size-7 text-[#FFD400]" />
+            <Hand className="size-7 text-accent" />
             Potáhni na další
           </span>
         </div>
@@ -397,14 +397,14 @@ function FightSlide({
               className={cn(
                 "flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors",
                 tip.winnerId === fighter.id
-                  ? "border-[#FFD400] bg-[#FFD400]/10"
+                  ? "border-accent bg-accent/10"
                   : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-neutral-400 dark:border-neutral-700/45 dark:bg-neutral-800/35"
               )}
             >
               <FighterPortrait
                 name={fighter.name}
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                className={cn(tip.winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
+                className={cn(tip.winnerId === fighter.id && "ring-2 ring-inset ring-accent")}
               />
               <span className="flex items-center gap-1.5 text-center text-base font-bold leading-tight">
                 {fighter.flag_code && (
@@ -420,7 +420,7 @@ function FightSlide({
                 {fighter.name}
               </span>
               {tip.winnerId === fighter.id && (
-                <span className="flex items-center gap-1 text-xs font-semibold text-yellow-700 dark:text-[#FFD400]">
+                <span className="flex items-center gap-1 text-xs font-semibold text-yellow-700 dark:text-accent">
                   <Check className="size-3.5" strokeWidth={3} />
                   Tvůj tip
                 </span>
@@ -458,7 +458,7 @@ function FightSlide({
                 onClick={() => onPickMethod(m)}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium",
-                  tip.method === m ? "border border-[#FFD400] bg-[#FFD400] text-black" : GLASS_PILL
+                  tip.method === m ? "border border-accent bg-accent text-black" : GLASS_PILL
                 )}
               >
                 {METHOD_LABELS[m]}
@@ -474,7 +474,7 @@ function FightSlide({
                   onClick={() => onPickRound(r)}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium",
-                    tip.round === r ? "border border-[#FFD400] bg-[#FFD400] text-black" : GLASS_PILL
+                    tip.round === r ? "border border-accent bg-accent text-black" : GLASS_PILL
                   )}
                 >
                   {r}. kolo
@@ -491,8 +491,8 @@ function FightSlide({
             className={cn(
               "flex items-center justify-center gap-2 rounded-full border py-2.5 text-sm font-semibold transition-colors",
               isBold
-                ? "border-[#FFD400] bg-[#FFD400]/15 text-yellow-700 dark:text-[#FFD400]"
-                : "border-neutral-300 text-neutral-600 hover:border-[#FFD400] dark:border-neutral-600 dark:text-neutral-300"
+                ? "border-accent bg-accent/15 text-yellow-700 dark:text-accent"
+                : "border-neutral-300 text-neutral-600 hover:border-accent dark:border-neutral-600 dark:text-neutral-300"
             )}
           >
             <Star className="size-4" fill={isBold ? "currentColor" : "none"} />

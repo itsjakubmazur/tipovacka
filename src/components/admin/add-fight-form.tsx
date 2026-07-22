@@ -103,7 +103,7 @@ export function AddFightForm({
           <option key={f.id} value={f.name} />
         ))}
       </datalist>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="fighter_a">Zápasník A</Label>
           <Input
@@ -153,11 +153,11 @@ export function AddFightForm({
       </div>
       <div className="flex gap-4 text-sm">
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={isTitleFight} onChange={(e) => setIsTitleFight(e.target.checked)} />
+          <input type="checkbox" className="size-4 accent-accent" checked={isTitleFight} onChange={(e) => setIsTitleFight(e.target.checked)} />
           Titulový zápas
         </label>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={isMainEvent} onChange={(e) => setIsMainEvent(e.target.checked)} />
+          <input type="checkbox" className="size-4 accent-accent" checked={isMainEvent} onChange={(e) => setIsMainEvent(e.target.checked)} />
           Main event
         </label>
       </div>

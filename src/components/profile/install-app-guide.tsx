@@ -17,9 +17,9 @@ export function InstallAppGuide() {
   if (!platform) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-[#FFD400] bg-[#FFD400]/10 p-4">
+    <div className="flex flex-col gap-2 rounded-xl border border-accent/50 bg-accent/10 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:shadow-black/60">
       <p className="flex items-center gap-2 text-sm font-semibold">
-        <Smartphone className="size-4" />
+        <Smartphone className="size-4 text-yellow-600 dark:text-accent" />
         Přidej si tipovačku na plochu
       </p>
       <p className="text-sm text-neutral-700 dark:text-neutral-300">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, Bell, Smartphone } from "lucide-react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -94,11 +95,11 @@ export default async function AdminPage() {
 
       {isSuperadmin && (
         <div className="flex gap-4">
-          <Link href="/admin/scraper-log" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
-            Log scraperu →
+          <Link href="/admin/scraper-log" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
+            Log scraperu <ArrowRight className="size-3.5" />
           </Link>
-          <Link href="/admin/client-errors" className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-black">
-            Chyby v prohlížečích →
+          <Link href="/admin/client-errors" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
+            Chyby v prohlížečích <ArrowRight className="size-3.5" />
           </Link>
         </div>
       )}
@@ -137,8 +138,9 @@ export default async function AdminPage() {
           {profilesError && (
             <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
           )}
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            📱 = spustil nainstalovanou appku (PWA) · 🔔 = má zapnutá push upozornění na daném zařízení
+          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+            <Smartphone className="size-3.5" /> = spustil nainstalovanou appku (PWA) ·
+            <Bell className="size-3.5" /> = má zapnutá push upozornění na daném zařízení
           </p>
           <div className="flex flex-col gap-2">
             {profiles?.map((p) => {
@@ -151,13 +153,13 @@ export default async function AdminPage() {
                   <span className="flex min-w-0 flex-col">
                     <span>
                       {p.nickname ?? "Bez přezdívky"}
-                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-yellow-600 dark:text-[#FFD400]">ADMIN</span>}
+                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-yellow-600 dark:text-accent">ADMIN</span>}
                     </span>
                     <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
                     <span className="mt-1 flex flex-wrap gap-1.5">
                       {p.standalone_seen_at ? (
-                        <span className="rounded-full bg-green-600/15 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-400">
-                          📱 PWA · {formatSeen(p.standalone_seen_at)}
+                        <span className="inline-flex items-center gap-1 rounded-full bg-green-600/15 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-400">
+                          <Smartphone className="size-3" /> PWA · {formatSeen(p.standalone_seen_at)}
                         </span>
                       ) : (
                         <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
@@ -168,9 +170,9 @@ export default async function AdminPage() {
                         platforms.map((platform, i) => (
                           <span
                             key={`${platform}-${i}`}
-                            className="rounded-full bg-[#FFD400]/15 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:text-[#FFD400]"
+                            className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:text-accent"
                           >
-                            🔔 {platform}
+                            <Bell className="size-3" /> {platform}
                           </span>
                         ))
                       ) : (

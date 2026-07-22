@@ -30,7 +30,7 @@ function Pill({
       onClick={onClick}
       className={cn(
         "rounded-full px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60",
-        active ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
+        active ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
       )}
     >
       {children}
@@ -44,7 +44,7 @@ function RankBadge({ fighter }: { fighter: Fighter }) {
     <span className="flex items-center gap-0.5 text-xs text-neutral-500 dark:text-neutral-300">
       {fighter.oktagon_rank}
       {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
-        <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600" : "text-red-600")}>
+        <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")}>
           {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
         </span>
       )}
@@ -346,8 +346,8 @@ export function FightTipCard({
                 className={cn(
                   "flex items-center gap-1 text-xs font-medium transition-colors",
                   isBold
-                    ? "text-yellow-600 dark:text-[#FFD400]"
-                    : "text-neutral-500 hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-[#FFD400]"
+                    ? "text-yellow-600 dark:text-accent"
+                    : "text-neutral-500 hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-accent"
                 )}
               >
                 <Star className="size-3.5" fill={isBold ? "currentColor" : "none"} />
@@ -406,7 +406,7 @@ export function FightTipCard({
               className={cn(
                 "flex w-full flex-col items-center gap-1.5 pt-0 transition-colors disabled:cursor-not-allowed",
                 winnerId === fighter.id
-                  ? "bg-[#FFD400]/10"
+                  ? "bg-accent/10"
                   : "hover:bg-neutral-50 dark:hover:bg-neutral-700/40"
               )}
             >
@@ -415,7 +415,7 @@ export function FightTipCard({
                 photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
                 isTba={fighter.is_tba}
                 grayedOut={grayedOut}
-                className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-[#FFD400]")}
+                className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-accent")}
               />
               {isActualWinner && (
                 <Badge variant="accent" className="mt-1">

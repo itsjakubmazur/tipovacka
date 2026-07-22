@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type ShareParams = {
   event?: string;
@@ -49,12 +50,9 @@ export default async function SharePage({
       <p className="text-neutral-600 dark:text-neutral-400">
         Kamarádská tipovačka na galavečery OKTAGON MMA. Tipuješ vítěze, způsob ukončení i kolo.
       </p>
-      <Link
-        href="/login"
-        className="rounded-md bg-[#FFD400] px-4 py-2 text-sm font-semibold text-black hover:bg-[#e6bf00]"
-      >
-        Chci se přidat
-      </Link>
+      <Button asChild variant="accent">
+        <Link href="/login">Chci se přidat</Link>
+      </Button>
     </div>
   );
 }

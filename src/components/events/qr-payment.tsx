@@ -54,7 +54,7 @@ export function QrPayment({
       alt="QR platba"
       width={140}
       height={140}
-      className="rounded-lg border border-black/10 bg-white p-1.5 dark:border-white/10"
+      className="rounded-xl border border-black/10 bg-white p-1.5 dark:border-white/10"
     />
   );
 }

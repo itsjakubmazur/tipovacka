@@ -36,17 +36,17 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(255, 212, 0, 0.4), transparent 40%),
-    radial-gradient(circle at 88% 18%, rgba(99, 102, 241, 0.28), transparent 45%),
-    radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.22), transparent 45%);
+    radial-gradient(circle at 12% 8%, rgba(255, 212, 0, 0.34), transparent 42%),
+    radial-gradient(circle at 88% 16%, rgba(255, 212, 0, 0.14), transparent 46%),
+    radial-gradient(circle at 50% 98%, rgba(255, 212, 0, 0.1), transparent 50%);
   filter: blur(70px);
 }
 
 .dark body::before {
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(255, 212, 0, 0.22), transparent 40%),
-    radial-gradient(circle at 88% 18%, rgba(99, 102, 241, 0.35), transparent 45%),
-    radial-gradient(circle at 50% 95%, rgba(236, 72, 153, 0.28), transparent 45%);
+    radial-gradient(circle at 12% 8%, rgba(255, 212, 0, 0.2), transparent 42%),
+    radial-gradient(circle at 88% 16%, rgba(255, 212, 0, 0.09), transparent 46%),
+    radial-gradient(circle at 50% 98%, rgba(255, 212, 0, 0.07), transparent 50%);
 }
 
 @keyframes modal-backdrop-in {
@@ -58,6 +58,14 @@ body::before {
 @keyframes modal-panel-in {
   from {
     opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-modal-panel,
+  .animate-modal-backdrop {
+    animation: none;
   }
 }
 

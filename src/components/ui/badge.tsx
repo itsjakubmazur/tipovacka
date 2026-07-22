@@ -10,7 +10,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "border-transparent bg-black text-white",
-        accent: "border-transparent bg-[#FFD400] text-black",
+        accent: "border-transparent bg-accent text-black",
         outline: GLASS_PILL,
         secondary: GLASS_PILL,
       },

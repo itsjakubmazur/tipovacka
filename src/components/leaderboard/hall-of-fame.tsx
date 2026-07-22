@@ -67,7 +67,7 @@ export async function HallOfFame() {
                   href={`/leaderboard/u/${row.user_id}?season=${season}`}
                   className={cn(
                     "flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5",
-                    i === 0 && !running && "bg-[#FFD400]/15"
+                    i === 0 && !running && "bg-accent/15"
                   )}
                 >
                   <span className="flex items-center gap-2 font-semibold">
@@ -82,7 +82,7 @@ export async function HallOfFame() {
                   <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
                     {row.perfect_cards > 0 && (
                       <span className="flex items-center gap-1">
-                        <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />×{row.perfect_cards}
+                        <Trophy className="size-4 text-yellow-600 dark:text-accent" />×{row.perfect_cards}
                       </span>
                     )}
                     <span className="text-lg font-bold text-black dark:text-white">{row.points}</span>

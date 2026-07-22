@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 // gold / silver / bronze, in the same lucide stroke style as the nav icons
 const MEDAL_COLORS = [
-  "text-yellow-500 dark:text-[#FFD400]",
+  "text-yellow-600 dark:text-accent",
   "text-neutral-400 dark:text-neutral-300",
   "text-amber-700 dark:text-amber-600",
 ];

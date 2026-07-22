@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { WrappedShareCard } from "@/components/leaderboard/wrapped-share-card";
@@ -117,12 +117,7 @@ export default async function WrappedPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
-        <Link
-          href="/leaderboard"
-          className="text-sm text-neutral-500 hover:text-black dark:text-neutral-300 dark:hover:text-white"
-        >
-          ← Zpět na žebříček
-        </Link>
+        <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
         <h1 className="mt-1 text-xl font-bold">Tvoje sezóna {season}</h1>
       </div>
 

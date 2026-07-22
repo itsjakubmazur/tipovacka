@@ -63,9 +63,9 @@ export async function EventPayoutPool({
   const iban = bankAccount ? czAccountToIban(bankAccount) : null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-[#FFD400]/50 bg-[#FFD400]/10 p-4 shadow-lg shadow-black/20 dark:shadow-black/60">
+    <div className="flex flex-col gap-3 rounded-xl border border-accent/50 bg-accent/10 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:shadow-black/60">
       <p className="flex items-center gap-1.5 text-sm font-semibold">
-        <Wallet className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+        <Wallet className="size-4 text-yellow-600 dark:text-accent" />
         Startovné · {STARTOVNE_CZK} Kč / tipér
       </p>
       <p className="text-sm">

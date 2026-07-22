@@ -40,7 +40,7 @@ function Dot({ state }: { state: StepState }) {
       className={cn(
         "mt-1 size-3 shrink-0 rounded-full border-2",
         state === "current" &&
-          "border-[#FFD400] bg-[#FFD400] shadow-[0_0_0_4px_rgba(255,212,0,0.18)]",
+          "border-accent bg-accent shadow-[0_0_0_4px_rgba(255,212,0,0.18)]",
         state === "done" && "border-neutral-400 bg-neutral-400 dark:border-neutral-500 dark:bg-neutral-500",
         state === "future" && "border-neutral-300 bg-transparent dark:border-neutral-600"
       )}
@@ -89,7 +89,7 @@ function Countdown({ targetIso }: { targetIso: string }) {
           <div
             className={cn(
               "text-base font-bold leading-none tabular-nums",
-              urgent ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-[#FFD400]"
+              urgent ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-accent"
             )}
           >
             {urgent ? String(u.value).padStart(2, "0") : u.value}
@@ -186,7 +186,7 @@ export function EventStatusTimeline({
   return (
     <div className="mt-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-        <Clock className="size-3.5 text-yellow-600 dark:text-[#FFD400]" />
+        <Clock className="size-3.5 text-yellow-600 dark:text-accent" />
         Stav galavečera
       </p>
 
@@ -204,7 +204,7 @@ export function EventStatusTimeline({
                   className={cn(
                     "flex items-center gap-2 text-[11px] font-bold tracking-wide",
                     step.state === "current"
-                      ? "text-yellow-600 dark:text-[#FFD400]"
+                      ? "text-yellow-600 dark:text-accent"
                       : "text-neutral-400 dark:text-neutral-500"
                   )}
                 >
@@ -234,7 +234,7 @@ export function EventStatusTimeline({
                 )}
                 {step.countdownTo && <Countdown targetIso={step.countdownTo} />}
                 {step.points != null && (
-                  <div className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-[#FFD400]/60 bg-[#FFD400]/15 px-3 py-1">
+                  <div className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
                     <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
                     <span className="text-lg font-bold tabular-nums">{step.points}</span>
                   </div>

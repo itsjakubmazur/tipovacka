@@ -54,7 +54,7 @@ export async function StartovneStats({ userId }: { userId: string }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <p className="flex items-center gap-1.5 text-sm font-semibold">
-        <Wallet className="size-4 text-yellow-600 dark:text-[#FFD400]" />
+        <Wallet className="size-4 text-yellow-600 dark:text-accent" />
         Startovné za celou dobu
       </p>
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">

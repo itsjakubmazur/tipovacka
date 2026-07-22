@@ -102,7 +102,7 @@ export default async function AdminEventPage({
       </h1>
 
       {event.status === "draft" && (
-        <p className="rounded-xl border border-[#FFD400]/40 bg-[#FFD400]/10 p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60 text-neutral-700 dark:text-neutral-300">
+        <p className="rounded-xl border border-accent/40 bg-accent/10 p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60 text-neutral-700 dark:text-neutral-300">
           Tohle je jen návrh, skrytý tipérům. Zápasová karta se naimportuje a galavečer se
           automaticky zveřejní v 9:00 (český čas) 3 dny před začátkem, cca{" "}
           {new Date(
@@ -127,8 +127,8 @@ export default async function AdminEventPage({
                   <span
                     className={
                       complete
-                        ? "text-sm font-semibold text-green-700"
-                        : "text-sm font-semibold text-red-600"
+                        ? "text-sm font-semibold text-green-700 dark:text-green-400"
+                        : "text-sm font-semibold text-red-600 dark:text-red-400"
                     }
                   >
                     {p.tipped} / {sortedFights.length}

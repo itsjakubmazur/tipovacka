@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Landmark } from "lucide-react";
+import { Landmark, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
@@ -132,7 +132,7 @@ export default async function LeaderboardPage({
           href={`/leaderboard?view=event&eventId=${selectedEvent.id}`}
           className={cn(
             "rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "event" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
+            view === "event" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
           )}
         >
           Galavečer
@@ -141,7 +141,7 @@ export default async function LeaderboardPage({
           href={`/leaderboard?view=season&eventId=${selectedEvent.id}`}
           className={cn(
             "rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "season" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
+            view === "season" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
           )}
         >
           Sezóna {season}
@@ -150,7 +150,7 @@ export default async function LeaderboardPage({
           href="/leaderboard?view=history"
           className={cn(
             "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "history" ? "border border-[#FFD400] bg-[#FFD400] text-black transition-colors" : GLASS_PILL
+            view === "history" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
           )}
         >
           <Landmark className="size-4" />
@@ -204,7 +204,7 @@ export default async function LeaderboardPage({
             )}
           >
             Tvoje sezóna v číslech (Wrapped)
-            <span className="text-neutral-400">→</span>
+            <ArrowRight className="size-4 text-neutral-400" />
           </Link>
           <HallOfFame />
         </>

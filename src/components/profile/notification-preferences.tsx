@@ -67,7 +67,7 @@ export function NotificationPreferences({
             onClick={() => toggle(pref.key)}
             className={cn(
               "relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors",
-              prefs[pref.key] ? "bg-[#FFD400]" : "bg-neutral-300 dark:bg-neutral-600"
+              prefs[pref.key] ? "bg-accent" : "bg-neutral-300 dark:bg-neutral-600"
             )}
           >
             <span

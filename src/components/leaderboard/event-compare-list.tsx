@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Scale, TrendingUp, TrendingDown, Minus, Trophy } from "lucide-react";
+import { Scale, TrendingUp, TrendingDown, Minus, Trophy, Check } from "lucide-react";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +55,7 @@ export function EventCompareList({
             className={cn(
               "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
               row.user_id === currentUserId
-                ? "border-[#FFD400] bg-[#FFFBE6] dark:bg-[#3C3722]"
+                ? "border-accent bg-accent/15"
                 : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
             )}
           >
@@ -65,13 +65,13 @@ export function EventCompareList({
                 onClick={() => toggle(row.user_id)}
                 aria-label="Vybrat k porovnání"
                 className={cn(
-                  "flex size-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold transition-colors",
+                  "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                   selected.includes(row.user_id)
-                    ? "border-[#FFD400] bg-[#FFD400] text-black"
-                    : "border-neutral-300 dark:border-neutral-700 text-transparent"
+                    ? "border-accent bg-accent text-black"
+                    : "border-neutral-300 dark:border-neutral-700"
                 )}
               >
-                ✓
+                {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
               </button>
               <RankMedal rank={rank} />
               {delta != null && (
@@ -105,7 +105,7 @@ export function EventCompareList({
               >
                 {row.nickname ?? "Bez přezdívky"}
               </Link>
-              {row.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-[#FFD400]" />}
+              {row.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-accent" />}
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-neutral-500 dark:text-neutral-300">
@@ -121,7 +121,7 @@ export function EventCompareList({
         <button
           type="button"
           onClick={compare}
-          className="sticky bottom-4 mt-2 flex items-center justify-center gap-2 self-center rounded-full border border-[#FFD400] bg-[#FFD400] px-4 py-2 text-sm font-semibold text-black shadow-lg"
+          className="sticky bottom-4 mt-2 flex items-center justify-center gap-2 self-center rounded-full border border-accent bg-accent px-4 py-2 text-sm font-semibold text-black shadow-lg"
         >
           <Scale className="size-4" />
           Porovnat

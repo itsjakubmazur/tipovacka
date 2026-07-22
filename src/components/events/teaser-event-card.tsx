@@ -50,7 +50,7 @@ export function TeaserEventCard({
     .replace(",", "");
 
   return (
-    <div className="relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-[#FFD400]/35 bg-gradient-to-br from-[#FFD400]/[0.06] to-white/[0.02] p-4">
+    <div className="relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-accent/35 bg-gradient-to-br from-accent/[0.06] to-white/[0.02] p-4">
       {imageUrl && (
         <>
           <Image src={imageUrl} alt="" fill className="object-cover opacity-40 blur-[2px] grayscale" />
@@ -78,7 +78,7 @@ export function TeaserEventCard({
 
       <div className="relative z-10 mt-4 flex items-center justify-between gap-3 border-t border-black/10 pt-3 dark:border-white/10">
         <p className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-          <CalendarClock className="size-4 shrink-0 text-yellow-600 dark:text-[#FFD400]" />
+          <CalendarClock className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
           <span>
             Tipování se otevře
             <br />
@@ -91,7 +91,7 @@ export function TeaserEventCard({
               key={i}
               className="min-w-[42px] rounded-lg border border-black/10 bg-black/[0.03] px-1 py-1.5 text-center dark:border-white/10 dark:bg-white/[0.05]"
             >
-              <div className="text-lg font-bold leading-none tabular-nums text-yellow-600 dark:text-[#FFD400]">
+              <div className="text-lg font-bold leading-none tabular-nums text-yellow-600 dark:text-accent">
                 {u.value}
               </div>
               <div className="mt-1 text-[9px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
