@@ -66,11 +66,25 @@ CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
 FOLLOWUP_DAYS_AFTER = 1
 FOLLOWUP_HOUR_PRAGUE = 14
+HYPE_DAYS_BEFORE = 6
+HYPE_HOUR_PRAGUE = 14
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
 MAX_FUTURE_EVENTS = 2
+OKTAGON_YOUTUBE_URL = "https://youtube.com/@oktagon_czsk"
 PRAGUE_TZ = ZoneInfo("Europe/Prague")
 PUBLISH_DAYS_BEFORE = 3
 PUBLISH_HOUR_PRAGUE = 9
+
+# weekday() -> Czech "in <day>" with the right preposition (v/ve)
+CZECH_DAY_PREPOSITIONAL = {
+    0: "v pondělí",
+    1: "v úterý",
+    2: "ve středu",
+    3: "ve čtvrtek",
+    4: "v pátek",
+    5: "v sobotu",
+    6: "v neděli",
+}
 
 CZECH_MONTHS_GENITIVE = {
     1: "ledna",
@@ -162,6 +176,20 @@ def _publish_at(event_date: datetime) -> datetime:
     return local_date.replace(hour=PUBLISH_HOUR_PRAGUE, minute=0, second=0, microsecond=0)
 
 
+def _hype_at(event_date: datetime) -> datetime:
+    """14:00 Prague time, HYPE_DAYS_BEFORE days before the event - the
+    "get hyped, watch OKTAGON's YouTube" heads-up, same DST-safe local
+    computation as _publish_at."""
+    local_date = event_date.astimezone(PRAGUE_TZ) - timedelta(days=HYPE_DAYS_BEFORE)
+    return local_date.replace(hour=HYPE_HOUR_PRAGUE, minute=0, second=0, microsecond=0)
+
+
+def _publish_day_name(event_date: datetime) -> str:
+    """The Czech prepositional weekday the tipping card opens on ("ve
+    středu") - i.e. the weekday of _publish_at, in Prague time."""
+    return CZECH_DAY_PREPOSITIONAL[_publish_at(event_date).weekday()]
+
+
 def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
     """At 9:00 Prague time, PUBLISH_DAYS_BEFORE days before a draft event
     starts, flips it to 'upcoming' - it becomes visible to tippers
@@ -175,6 +203,45 @@ def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
         label = event_label(event)
         db.update("events", {"status": "upcoming"}, {"id": f"eq.{event['id']}"})
         print(f"{label}: zveřejněno tipérům, karta se naimportuje při nejbližším běhu cronu.")
+
+
+def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
+    """~6 days before a gala (14:00 Prague), a heads-up that links
+    straight to OKTAGON's YouTube - there are usually fighter/matchup
+    videos up by then. Fires once per event, before the card opens, and
+    names the exact weekday tipping starts. Skips (but still marks) an
+    event whose card has already opened, so a late deploy doesn't send a
+    now-wrong "opens on <day>" message."""
+    events = db.select(
+        "events",
+        {
+            "status": "neq.completed",
+            "hype_notified_at": "is.null",
+            "select": "id,number,name,event_date",
+        },
+    )
+    for event in events:
+        if not event["event_date"]:
+            continue
+        event_date = _parse_dt(event["event_date"])
+        if now < _hype_at(event_date):
+            continue
+
+        label = event_label(event)
+        if now < _publish_at(event_date):
+            with log_run("cron_hype_notification", event["id"]):
+                send_to_all(
+                    db,
+                    f"{label} už příští víkend",
+                    (
+                        "Nalaď se na galavečer — klepnutím se dostaneš rovnou na YouTube "
+                        "OKTAGON MMA s videi k zápasům a bojovníkům. Tipovačka se otevře "
+                        f"{_publish_day_name(event_date)}."
+                    ),
+                    OKTAGON_YOUTUBE_URL,
+                )
+            print(f"{label}: upoutávka na YouTube odeslána.")
+        db.update("events", {"hype_notified_at": now.isoformat()}, {"id": f"eq.{event['id']}"})
 
 
 def import_new_cards(db: SupabaseClient, now: datetime) -> None:
@@ -642,6 +709,7 @@ def main() -> None:
     db = SupabaseClient()
     now = datetime.now(timezone.utc)
     auto_create_events(db, now)
+    send_hype_notifications(db, now)
     publish_draft_events(db, now)
     import_new_cards(db, now)
     recheck_cards(db, now)
