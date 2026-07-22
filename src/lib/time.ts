@@ -45,7 +45,10 @@ export function pragueLocalToUtcIso(localDateTime: string): string {
 const PUBLISH_DAYS_BEFORE = 3;
 const PUBLISH_HOUR_PRAGUE = 9;
 
-export function cardOpensAtIso(eventDateIso: string): string {
+// N calendar days before a gala, pinned to a given Prague wall-clock
+// hour. Date math is done on the Prague calendar date (not raw -N*24h)
+// so it lands on the intended day even across a DST switch.
+export function pragueDaysBeforeIso(eventDateIso: string, days: number, hour: number): string {
   const eventDate = new Date(eventDateIso);
   const map: Record<string, string> = {};
   for (const part of new Intl.DateTimeFormat("en-CA", {
@@ -56,15 +59,20 @@ export function cardOpensAtIso(eventDateIso: string): string {
   }).formatToParts(eventDate)) {
     map[part.type] = part.value;
   }
-  // shift the calendar date back PUBLISH_DAYS_BEFORE days in plain UTC
-  // (date-only, so no hour drift), then pin it to 09:00 Prague wall time
   const d = new Date(Date.UTC(Number(map.year), Number(map.month) - 1, Number(map.day)));
-  d.setUTCDate(d.getUTCDate() - PUBLISH_DAYS_BEFORE);
+  d.setUTCDate(d.getUTCDate() - days);
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, "0");
   const day = String(d.getUTCDate()).padStart(2, "0");
-  const hh = String(PUBLISH_HOUR_PRAGUE).padStart(2, "0");
+  const hh = String(hour).padStart(2, "0");
   return pragueLocalToUtcIso(`${y}-${m}-${day}T${hh}:00`);
+}
+
+// The moment a draft gala's card opens for tipping: 09:00 Prague,
+// PUBLISH_DAYS_BEFORE calendar days before it starts. Mirrors the
+// scraper's _publish_at.
+export function cardOpensAtIso(eventDateIso: string): string {
+  return pragueDaysBeforeIso(eventDateIso, PUBLISH_DAYS_BEFORE, PUBLISH_HOUR_PRAGUE);
 }
 
 // Inverse of the above, for pre-filling <input type="datetime-local">

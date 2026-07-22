@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { TeaserEventCard } from "@/components/events/teaser-event-card";
 import { cn } from "@/lib/utils";
-import { cardOpensAtIso } from "@/lib/time";
+import { cardOpensAtIso, pragueDaysBeforeIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
 // How long before a gala starts its dimmed "coming soon" teaser card
@@ -98,7 +98,10 @@ export default async function EventsPage() {
   function teaserOpenAt(eventDate: string | null): string | null {
     if (!eventDate) return null;
     const openAt = cardOpensAtIso(eventDate);
-    const windowStart = new Date(eventDate).getTime() - TEASER_WINDOW_DAYS * 86_400_000;
+    // window opens at 00:00 Prague on the day TEASER_WINDOW_DAYS before,
+    // so the teaser is visible for that whole calendar day (not gated to
+    // the exact event time of day)
+    const windowStart = new Date(pragueDaysBeforeIso(eventDate, TEASER_WINDOW_DAYS, 0)).getTime();
     const t = now.getTime();
     return t >= windowStart && t < new Date(openAt).getTime() ? openAt : null;
   }

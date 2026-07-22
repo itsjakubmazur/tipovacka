@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock } from "lucide-react";
+import { ChevronDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** The gala lifecycle as a single vertical rail: Tipování → Galavečer
- * živě → Vyhodnoceno. The current phase glows OKTAGON yellow (with a
- * live countdown while tipping is open); past phases are muted solid
- * dots, future phases are hollow. Replaces the scattered status lines
- * (read-only notice, standalone countdown, score chip) with one
- * at-a-glance view. Client component so the countdown ticks. */
+/** The gala lifecycle as a vertical rail: Tipování → Galavečer živě →
+ * Vyhodnoceno. Collapsed by default to just the current phase (+ live
+ * countdown); tap to unfold the whole journey. The current phase glows
+ * OKTAGON yellow, past phases are muted solid dots, future ones hollow.
+ * Client component so the countdown ticks. */
 
 type StepState = "done" | "current" | "future";
 
@@ -39,13 +38,16 @@ function Dot({ state }: { state: StepState }) {
     <span
       className={cn(
         "mt-1 size-3 shrink-0 rounded-full border-2",
-        state === "current" &&
-          "border-accent bg-accent shadow-[0_0_0_4px_rgba(255,212,0,0.18)]",
+        state === "current" && "border-accent bg-accent shadow-[0_0_0_4px_rgba(255,212,0,0.18)]",
         state === "done" && "border-neutral-400 bg-neutral-400 dark:border-neutral-500 dark:bg-neutral-500",
         state === "future" && "border-neutral-300 bg-transparent dark:border-neutral-600"
       )}
     />
   );
+}
+
+function pad(n: number): string {
+  return String(n).padStart(2, "0");
 }
 
 function Countdown({ targetIso }: { targetIso: string }) {
@@ -64,41 +66,56 @@ function Countdown({ targetIso }: { targetIso: string }) {
   const hours = Math.floor((totalSec % 86400) / 3600);
   const minutes = Math.floor((totalSec % 3600) / 60);
   const seconds = totalSec % 60;
-  // under an hour, urgency kicks in: switch to hh:mm:ss in red
+  // under an hour to go, the clock turns red
   const urgent = remaining < 3_600_000;
 
-  const units = urgent
-    ? [
-        { value: hours, label: "hod" },
-        { value: minutes, label: "min" },
-        { value: seconds, label: "s" },
-      ]
-    : [
-        { value: days, label: days === 1 ? "den" : "dní" },
-        { value: hours, label: "hod" },
-        { value: minutes, label: "min" },
-      ];
+  const units: { value: string; label: string }[] = [];
+  if (days > 0) units.push({ value: String(days), label: days === 1 ? "den" : "dní" });
+  units.push({ value: pad(hours), label: "hod" });
+  units.push({ value: pad(minutes), label: "min" });
+  units.push({ value: pad(seconds), label: "s" });
 
   return (
-    <div className="mt-2.5 flex gap-1.5">
+    <div className="mt-2 flex gap-1">
       {units.map((u, i) => (
         <div
           key={i}
-          className="min-w-[38px] rounded-lg border border-black/10 bg-black/[0.03] px-1.5 py-1 text-center dark:border-white/10 dark:bg-white/[0.04]"
+          className="min-w-[34px] rounded-md border border-black/10 bg-black/[0.03] px-1 py-1 text-center dark:border-white/10 dark:bg-white/[0.04]"
         >
           <div
             className={cn(
-              "text-base font-bold leading-none tabular-nums",
+              "text-sm font-bold leading-none tabular-nums",
               urgent ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-accent"
             )}
           >
-            {urgent ? String(u.value).padStart(2, "0") : u.value}
+            {u.value}
           </div>
-          <div className="mt-1 text-[9px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <div className="mt-0.5 text-[8px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             {u.label}
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function LiveBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 text-red-500">
+      <span className="relative flex size-1.5">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
+        <span className="relative inline-flex size-1.5 rounded-full bg-red-500" />
+      </span>
+      Živě
+    </span>
+  );
+}
+
+function PointsPill({ points }: { points: number }) {
+  return (
+    <div className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
+      <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
+      <span className="text-lg font-bold tabular-nums">{points}</span>
     </div>
   );
 }
@@ -132,6 +149,8 @@ export function EventStatusTimeline({
   gradedCount: number;
   points: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
+
   const tipState: StepState = locked || completed ? "done" : "current";
   const liveState: StepState = completed ? "done" : locked ? "current" : "future";
   const doneState: StepState = completed ? "current" : "future";
@@ -158,10 +177,7 @@ export function EventStatusTimeline({
     },
     {
       state: liveState,
-      when:
-        liveState === "current"
-          ? "Právě teď"
-          : `${shortDateTime(eventDateIso)}${liveState === "future" ? "" : ""}`,
+      when: liveState === "current" ? "Právě teď" : shortDateTime(eventDateIso),
       title: liveState === "done" ? "Galavečer odjel" : "Galavečer živě",
       desc:
         liveState === "current"
@@ -183,67 +199,83 @@ export function EventStatusTimeline({
     },
   ];
 
-  return (
-    <div className="mt-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-        <Clock className="size-3.5 text-yellow-600 dark:text-accent" />
-        Stav galavečera
-      </p>
+  const current = steps.find((s) => s.state === "current") ?? steps[0];
 
-      <div>
-        {steps.map((step, i) => {
-          const last = i === steps.length - 1;
-          return (
-            <div key={i} className="flex gap-3">
-              <div className="flex flex-col items-center self-stretch">
-                <Dot state={step.state} />
-                {!last && <span className="w-0.5 flex-1 bg-black/10 dark:bg-white/10" />}
-              </div>
-              <div className={cn("min-w-0 flex-1", last ? "pb-1" : "pb-4")}>
-                <div
-                  className={cn(
-                    "flex items-center gap-2 text-[11px] font-bold tracking-wide",
-                    step.state === "current"
-                      ? "text-yellow-600 dark:text-accent"
-                      : "text-neutral-400 dark:text-neutral-500"
-                  )}
-                >
-                  <span>{step.when}</span>
-                  {step.live && (
-                    <span className="inline-flex items-center gap-1 text-red-500">
-                      <span className="relative flex size-1.5">
-                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
-                        <span className="relative inline-flex size-1.5 rounded-full bg-red-500" />
-                      </span>
-                      Živě
-                    </span>
-                  )}
-                </div>
-                <div
-                  className={cn(
-                    "text-sm font-semibold",
-                    step.state === "future"
-                      ? "text-neutral-500 dark:text-neutral-400"
-                      : "text-black dark:text-white"
-                  )}
-                >
-                  {step.title}
-                </div>
-                {step.desc && (
-                  <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{step.desc}</div>
-                )}
-                {step.countdownTo && <Countdown targetIso={step.countdownTo} />}
-                {step.points != null && (
-                  <div className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
-                    <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
-                    <span className="text-lg font-bold tabular-nums">{step.points}</span>
+  return (
+    <div className="relative mt-3 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        aria-label={expanded ? "Sbalit průběh" : "Zobrazit celý průběh"}
+        className="absolute right-2 top-2 rounded-full p-1.5 text-neutral-400 outline-none transition-colors hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-accent dark:hover:text-neutral-200"
+      >
+        <ChevronDown className={cn("size-4 transition-transform", expanded && "rotate-180")} />
+      </button>
+
+      {expanded ? (
+        <>
+          <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            <Clock className="size-3.5 text-yellow-600 dark:text-accent" />
+            Stav galavečera
+          </p>
+          <div>
+            {steps.map((step, i) => {
+              const last = i === steps.length - 1;
+              return (
+                <div key={i} className="flex gap-3">
+                  <div className="flex flex-col items-center self-stretch">
+                    <Dot state={step.state} />
+                    {!last && <span className="w-0.5 flex-1 bg-black/10 dark:bg-white/10" />}
                   </div>
-                )}
-              </div>
+                  <div className={cn("min-w-0 flex-1", last ? "pb-1" : "pb-4")}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 text-[11px] font-bold tracking-wide",
+                        step.state === "current"
+                          ? "text-yellow-600 dark:text-accent"
+                          : "text-neutral-400 dark:text-neutral-500"
+                      )}
+                    >
+                      <span>{step.when}</span>
+                      {step.live && <LiveBadge />}
+                    </div>
+                    <div
+                      className={cn(
+                        "text-sm font-semibold",
+                        step.state === "future" ? "text-neutral-500 dark:text-neutral-400" : "text-black dark:text-white"
+                      )}
+                    >
+                      {step.title}
+                    </div>
+                    {step.desc && (
+                      <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{step.desc}</div>
+                    )}
+                    {step.countdownTo && <Countdown targetIso={step.countdownTo} />}
+                    {step.points != null && <PointsPill points={step.points} />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="flex items-start gap-2.5 pr-6">
+          <Dot state="current" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-[11px] font-bold tracking-wide text-yellow-600 dark:text-accent">
+              <span>{current.when}</span>
+              {current.live && <LiveBadge />}
             </div>
-          );
-        })}
-      </div>
+            <div className="text-sm font-semibold">{current.title}</div>
+            {current.desc && (
+              <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{current.desc}</div>
+            )}
+            {current.countdownTo && <Countdown targetIso={current.countdownTo} />}
+            {current.points != null && <PointsPill points={current.points} />}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
