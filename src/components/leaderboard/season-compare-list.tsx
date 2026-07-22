@@ -11,7 +11,14 @@ type SeasonLeaderboardRow = {
   user_id: string;
   nickname: string | null;
   points: number;
+  events_played: number;
 };
+
+function galasWord(n: number): string {
+  if (n === 1) return "galavečer";
+  if (n >= 2 && n <= 4) return "galavečery";
+  return "galavečerů";
+}
 
 export function SeasonCompareList({
   rows,
@@ -65,9 +72,14 @@ export function SeasonCompareList({
               ✓
             </button>
             <RankMedal rank={i + 1} />
-            <Link href={`/leaderboard/u/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
-              {row.nickname ?? "Bez přezdívky"}
-            </Link>
+            <div className="flex flex-col">
+              <Link href={`/leaderboard/u/${row.user_id}?season=${season}`} className="font-semibold hover:underline">
+                {row.nickname ?? "Bez přezdívky"}
+              </Link>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                {row.events_played} {galasWord(row.events_played)}
+              </span>
+            </div>
           </div>
           <span className="text-lg font-bold">{row.points}</span>
         </div>

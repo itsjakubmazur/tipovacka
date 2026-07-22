@@ -28,6 +28,7 @@ type SeasonLeaderboardRow = {
   fights_correct_winner: number;
   perfect_cards: number;
   earliest_prediction_at: string | null;
+  events_played: number;
 };
 
 export default async function LeaderboardPage({
@@ -110,7 +111,9 @@ export default async function LeaderboardPage({
   } else {
     const { data } = await supabase
       .from("season_leaderboard")
-      .select("user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at")
+      .select(
+        "user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at, events_played"
+      )
       .eq("season", season)
       .order("points", { ascending: false })
       .order("fights_correct_winner", { ascending: false })
