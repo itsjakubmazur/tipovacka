@@ -63,6 +63,20 @@ export default async function EventsPage() {
     });
   }
 
+  // The one gala a tapper most likely opens next - prefetched in full
+  // (data and all) so opening it feels instant, while every other card
+  // keeps only Next's cheap default prefetch. Live gala first, else the
+  // soonest upcoming, else the most recent - and only one, so this
+  // stays a single extra render, not one per card.
+  const now = new Date();
+  const liveEvent = (events ?? []).find(
+    (e) => e.status !== "completed" && e.lock_at && new Date(e.lock_at) <= now
+  );
+  const upcomingEvent = (events ?? [])
+    .filter((e) => new Date(e.event_date) > now)
+    .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())[0];
+  const primaryEventId = liveEvent?.id ?? upcomingEvent?.id ?? (events ?? [])[0]?.id ?? null;
+
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Galavečery</h1>
@@ -86,6 +100,7 @@ export default async function EventsPage() {
             <Link
               key={event.id}
               href={`/events/${event.id}`}
+              prefetch={event.id === primaryEventId ? true : undefined}
               className={cn(
                 "relative flex min-h-[160px] justify-between overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
                 event.image_url
