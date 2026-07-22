@@ -63,8 +63,12 @@ export default async function EventDetailPage({
     event.status === "completed" ||
     (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
 
-  // Second wave: everything scoped by user and/or event but not by the
-  // individual fight ids - all independent, so fetched together.
+  // Second (and last) wave: everything scoped by user and/or event.
+  // The prediction queries filter through the fights' event via an
+  // inner join (fights!inner), so they no longer wait on a separate
+  // "get the fight ids first" round-trip - the whole page is now two
+  // waves (auth, then this batch) instead of three, one fewer ~100ms
+  // hop to the co-located-but-still-not-instant Supabase.
   const [
     { data: profile },
     { data: fights },
@@ -72,6 +76,8 @@ export default async function EventDetailPage({
     { data: boldPick },
     { data: myLeaderboardRow },
     { data: rawComments },
+    { data: predictions },
+    { data: allPredictions },
   ] = await Promise.all([
     supabase.from("profiles").select("is_admin, is_superadmin").eq("id", user.id).single(),
     supabase
@@ -112,6 +118,24 @@ export default async function EventDetailPage({
       .eq("event_id", id)
       .order("created_at", { ascending: false })
       .limit(100),
+    // the viewer's own predictions for this event, filtered via the
+    // fight's event_id (no fight-id list needed first)
+    supabase
+      .from("predictions")
+      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points, fights!inner(event_id)")
+      .eq("fights.event_id", id)
+      .eq("user_id", user.id),
+    // everyone's picks, but only once the event is locked
+    locked
+      ? supabase
+          .from("predictions")
+          .select("fight_id, predicted_winner_id, profiles(nickname), fights!inner(event_id)")
+          .eq("fights.event_id", id)
+      : Promise.resolve({
+          data: null as
+            | { fight_id: string; predicted_winner_id: string; profiles: { nickname: string } | null }[]
+            | null,
+        }),
   ]);
   const perfW2 = perfStart();
 
@@ -127,32 +151,11 @@ export default async function EventDetailPage({
     notFound();
   }
 
-  const fightIds = (fights ?? []).map((f) => f.id);
   const boldFightId = boldPick?.fight_id ?? null;
   const scoredSoFar = myLeaderboardRow?.points ?? 0;
 
-  // Third wave: the two prediction queries that need the fight ids.
-  const [{ data: predictions }, { data: allPredictions }] = await Promise.all([
-    supabase
-      .from("predictions")
-      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points")
-      .eq("user_id", user.id)
-      .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]),
-    locked && fightIds.length
-      ? supabase
-          .from("predictions")
-          .select("fight_id, predicted_winner_id, profiles(nickname)")
-          .in("fight_id", fightIds)
-      : Promise.resolve({
-          data: null as
-            | { fight_id: string; predicted_winner_id: string; profiles: { nickname: string } | null }[]
-            | null,
-        }),
-  ]);
-  const perfW3 = perfStart();
-
   const predictionByFight = new Map<string, Prediction>(
-    (predictions ?? []).map((p) => [p.fight_id, p])
+    (predictions ?? []).map((p) => [p.fight_id, p as unknown as Prediction])
   );
 
   const fotnOptions = (fights ?? [])
@@ -262,8 +265,7 @@ export default async function EventDetailPage({
   perfLogParts(`event/${id}`, {
     w1_auth: perfW1 - perf,
     w2_batch: perfW2 - perfW1,
-    w3_preds: perfW3 - perfW2,
-    total: perfW3 - perf,
+    total: perfW2 - perf,
   });
 
   return (
