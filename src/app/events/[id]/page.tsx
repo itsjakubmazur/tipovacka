@@ -324,9 +324,11 @@ export default async function EventDetailPage({
             </span>
             {tippableFightsAsc.length > 0 && (
               <FastTipOverlay
+                eventId={id}
                 userId={user.id}
                 fights={tippableFightsAsc}
                 initialPredictions={fastTipPredictions}
+                initialBoldFightId={boldFightId}
                 tippedCountable={countablePredictions.length}
                 totalCountable={countableFights.length}
               />

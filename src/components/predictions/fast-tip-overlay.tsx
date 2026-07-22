@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Hand, Pointer, X, Zap } from "lucide-react";
+import { Check, Hand, Pointer, Star, X, Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
@@ -30,15 +30,19 @@ function tipComplete(t: LocalTip): boolean {
  * reload). Drag horizontally between fights, tap a fighter to pick,
  * pick method/round, auto-advances when a tip is complete. */
 export function FastTipOverlay({
+  eventId,
   userId,
   fights,
   initialPredictions,
+  initialBoldFightId,
   tippedCountable,
   totalCountable,
 }: {
+  eventId: string;
   userId: string;
   fights: Fight[];
   initialPredictions: Record<string, Prediction>;
+  initialBoldFightId: string | null;
   tippedCountable: number;
   totalCountable: number;
 }) {
@@ -56,9 +60,11 @@ export function FastTipOverlay({
       </button>
       {open && (
         <FastTipCarousel
+          eventId={eventId}
           userId={userId}
           fights={fights}
           initialPredictions={initialPredictions}
+          initialBoldFightId={initialBoldFightId}
           onClose={() => setOpen(false)}
         />
       )}
@@ -71,18 +77,24 @@ export function FastTipOverlay({
 }
 
 function FastTipCarousel({
+  eventId,
   userId,
   fights,
   initialPredictions,
+  initialBoldFightId,
   onClose,
 }: {
+  eventId: string;
   userId: string;
   fights: Fight[];
   initialPredictions: Record<string, Prediction>;
+  initialBoldFightId: string | null;
   onClose: () => void;
 }) {
   const router = useRouter();
   const supabase = createClient();
+
+  const [boldFightId, setBoldFightId] = useState<string | null>(initialBoldFightId);
 
   const [index, setIndex] = useState(() => {
     const firstUntipped = fights.findIndex((f) => !initialPredictions[f.id]);
@@ -159,6 +171,26 @@ function FastTipCarousel({
       }
       return { ...prev, [fightId]: next };
     });
+  }
+
+  function toggleBold(fightId: string) {
+    const willBe = boldFightId !== fightId; // tapping the current bold clears it
+    setBoldFightId(willBe ? fightId : null);
+    setError(null);
+    // keep the underlying fight cards in sync live (they listen for this)
+    window.dispatchEvent(
+      new CustomEvent("bold-state-changed", { detail: { fightId: willBe ? fightId : null } })
+    );
+    const p = (async () => {
+      const { error } = willBe
+        ? await supabase
+            .from("bold_picks")
+            .upsert({ event_id: eventId, user_id: userId, fight_id: fightId }, { onConflict: "event_id,user_id" })
+        : await supabase.from("bold_picks").delete().eq("event_id", eventId).eq("user_id", userId);
+      if (error) setError("Uložení jistotky se nepodařilo.");
+    })();
+    pending.current.add(p);
+    p.finally(() => pending.current.delete(p));
   }
 
   async function close() {
@@ -247,10 +279,12 @@ function FastTipCarousel({
               key={fight.id}
               fight={fight}
               tip={tips[fight.id]}
+              isBold={boldFightId === fight.id}
               width={`${100 / fights.length}%`}
               onPickWinner={(id) => pick(fight.id, () => update(fight.id, { winnerId: id }))}
               onPickMethod={(m) => pick(fight.id, () => update(fight.id, { method: m }))}
               onPickRound={(r) => pick(fight.id, () => update(fight.id, { round: r }))}
+              onToggleBold={() => pick(fight.id, () => toggleBold(fight.id))}
             />
           ))}
         </div>
@@ -329,17 +363,21 @@ function TapeRow({ label, a, b }: { label: string; a: string | null; b: string |
 function FightSlide({
   fight,
   tip,
+  isBold,
   width,
   onPickWinner,
   onPickMethod,
   onPickRound,
+  onToggleBold,
 }: {
   fight: Fight;
   tip: LocalTip;
+  isBold: boolean;
   width: string;
   onPickWinner: (id: string) => void;
   onPickMethod: (m: Method) => void;
   onPickRound: (r: number) => void;
+  onToggleBold: () => void;
 }) {
   return (
     <div style={{ width }} className="h-full shrink-0 overflow-y-auto px-4 pb-4">
@@ -445,6 +483,22 @@ function FightSlide({
             </div>
           )}
         </div>
+
+        {tip.winnerId && (
+          <button
+            type="button"
+            onClick={onToggleBold}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-full border py-2.5 text-sm font-semibold transition-colors",
+              isBold
+                ? "border-[#FFD400] bg-[#FFD400]/15 text-yellow-700 dark:text-[#FFD400]"
+                : "border-neutral-300 text-neutral-600 hover:border-[#FFD400] dark:border-neutral-600 dark:text-neutral-300"
+            )}
+          >
+            <Star className="size-4" fill={isBold ? "currentColor" : "none"} />
+            {isBold ? "Jistotka ×2 — body dvakrát" : "Dát jistotku (body ×2)"}
+          </button>
+        )}
       </div>
     </div>
   );
