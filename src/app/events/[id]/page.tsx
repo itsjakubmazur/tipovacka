@@ -9,7 +9,7 @@ import { FightTipCard } from "@/components/predictions/fight-tip-card";
 import { FotnPicker } from "@/components/predictions/fotn-picker";
 import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
 import { SegmentJump } from "@/components/predictions/segment-jump";
-import { DigitalCountdown } from "@/components/digital-countdown";
+import { EventStatusTimeline } from "@/components/events/event-status-timeline";
 import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
@@ -303,60 +303,32 @@ export default async function EventDetailPage({
             Startovné 50 Kč · vítěz bere vše · QR platba po vyhodnocení
           </p>
         )}
-        {locked ? (
-          <div className="mt-2">
-            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Tipy jsou uzamčené, jen pro čtení.
-            </p>
-            {event.status !== "completed" && (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Galavečer začíná v{" "}
-                {new Date(event.event_date).toLocaleTimeString("cs-CZ", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: "Europe/Prague",
-                })}
-                , výsledky naskakují průběžně.
-              </p>
-            )}
-          </div>
-        ) : (
-          event.lock_at && (
-            <div className="mt-3">
-              <DigitalCountdown lockAt={event.lock_at} />
-            </div>
-          )
+        {countableFights.length > 0 && (
+          <EventStatusTimeline
+            locked={locked}
+            completed={event.status === "completed"}
+            lockAtIso={event.lock_at}
+            eventDateIso={event.event_date}
+            tippedCount={countablePredictions.length}
+            totalCount={countableFights.length}
+            gradedCount={gradedFights.length}
+            points={scoredSoFar}
+          />
         )}
-        {!locked && countableFights.length > 0 && (
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className={cn(GLASS_PILL, "inline-flex items-center px-3 py-1 text-xs font-medium")}>
-              Tipnuto {countablePredictions.length} z {countableFights.length} zápasů
-            </span>
-            {tippableFightsAsc.length > 0 && (
-              <FastTipOverlay
-                eventId={id}
-                userId={user.id}
-                fights={tippableFightsAsc}
-                initialPredictions={fastTipPredictions}
-                initialBoldFightId={boldFightId}
-                tippedCountable={countablePredictions.length}
-                totalCountable={countableFights.length}
-              />
-            )}
+        {!locked && countableFights.length > 0 && tippableFightsAsc.length > 0 && (
+          <div className="mt-3">
+            <FastTipOverlay
+              eventId={id}
+              userId={user.id}
+              fights={tippableFightsAsc}
+              initialPredictions={fastTipPredictions}
+              initialBoldFightId={boldFightId}
+              tippedCountable={countablePredictions.length}
+              totalCountable={countableFights.length}
+            />
           </div>
         )}
         {!locked && countableFights.length > 0 && <BoldPickIntro />}
-        {locked && gradedFights.length > 0 && (
-          <span className="mt-2 inline-flex items-baseline gap-2 rounded-full border border-[#FFD400]/60 bg-[#FFD400]/15 backdrop-blur-lg px-4 py-1.5 text-black dark:text-white">
-            <span className="text-xs font-medium">
-              {event.status === "completed" ? "Tvé body" : "Tvé body zatím"}
-            </span>
-            <span className="text-xl font-bold tabular-nums">{scoredSoFar}</span>
-            <span className="text-xs text-neutral-600 dark:text-neutral-400">
-              {gradedFights.length} z {countableFights.length} zápasů odbodováno
-            </span>
-          </span>
-        )}
       </div>
 
       {!locked && countableFights.length > 0 && <WhoHasntTipped eventId={id} />}

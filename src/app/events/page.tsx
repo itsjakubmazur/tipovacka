@@ -3,8 +3,15 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { TeaserEventCard } from "@/components/events/teaser-event-card";
 import { cn } from "@/lib/utils";
+import { cardOpensAtIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
+
+// How long before a gala starts its dimmed "coming soon" teaser card
+// appears to tippers - a few days ahead of the card actually opening
+// (3 days before, 9:00 Prague), to build anticipation.
+const TEASER_WINDOW_DAYS = 10;
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Návrh",
@@ -32,14 +39,14 @@ export default async function EventsPage() {
     }
   }
 
-  let eventsQuery = supabase
+  // Fetch everything (drafts included): admins in admin-view see drafts
+  // as normal cards, and regular tippers see a draft as a dimmed teaser
+  // card once it's inside the teaser window. Anything else draft is
+  // filtered out per-row below.
+  const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date, location, status, lock_at, image_url")
     .order("event_date", { ascending: false });
-  if (!showDrafts) {
-    eventsQuery = eventsQuery.neq("status", "draft");
-  }
-  const { data: events } = await eventsQuery;
 
   const { data: fights } = await supabase.from("fights").select("id, event_id");
 
@@ -71,16 +78,30 @@ export default async function EventsPage() {
   // (it also renders the startovné pool). At most two, so this stays two
   // extra renders, not one per card.
   const now = new Date();
-  const liveEvent = (events ?? []).find(
+  // Prefetch targets are only the real, tappable cards - never a draft
+  // (its detail 404s for tippers), so compute over the published set.
+  const published = (events ?? []).filter((e) => e.status !== "draft");
+  const liveEvent = published.find(
     (e) => e.status !== "completed" && e.lock_at && new Date(e.lock_at) <= now
   );
-  const upcomingEvent = (events ?? [])
+  const upcomingEvent = published
     .filter((e) => new Date(e.event_date) > now)
     .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())[0];
-  const primaryEventId = liveEvent?.id ?? upcomingEvent?.id ?? (events ?? [])[0]?.id ?? null;
+  const primaryEventId = liveEvent?.id ?? upcomingEvent?.id ?? published[0]?.id ?? null;
   // events are sorted event_date desc, so the first completed is the latest
-  const lastCompletedId = (events ?? []).find((e) => e.status === "completed")?.id ?? null;
+  const lastCompletedId = published.find((e) => e.status === "completed")?.id ?? null;
   const prefetchIds = new Set([primaryEventId, lastCompletedId].filter(Boolean));
+
+  // Whether a draft should show to a regular tipper as a dimmed teaser:
+  // inside the [start - TEASER_WINDOW_DAYS, card-opens) window. At/after
+  // card-open the scraper flips it to "upcoming" (a normal card).
+  function teaserOpenAt(eventDate: string | null): string | null {
+    if (!eventDate) return null;
+    const openAt = cardOpensAtIso(eventDate);
+    const windowStart = new Date(eventDate).getTime() - TEASER_WINDOW_DAYS * 86_400_000;
+    const t = now.getTime();
+    return t >= windowStart && t < new Date(openAt).getTime() ? openAt : null;
+  }
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
@@ -90,6 +111,24 @@ export default async function EventsPage() {
 
       <div className="flex flex-col gap-3">
         {events?.map((event) => {
+          // Drafts: admins in admin-view see them as normal cards; every
+          // other viewer sees a teaser card inside the window, nothing
+          // otherwise.
+          if (event.status === "draft" && !showDrafts) {
+            const openAt = teaserOpenAt(event.event_date);
+            if (!openAt) return null;
+            return (
+              <TeaserEventCard
+                key={event.id}
+                title={event.number ? `OKTAGON ${event.number}` : event.name}
+                location={event.location}
+                eventDateIso={event.event_date}
+                openAtIso={openAt}
+                imageUrl={event.image_url}
+              />
+            );
+          }
+
           const locked = event.lock_at ? new Date(event.lock_at) <= new Date() : false;
           const effectiveStatus =
             event.status === "draft"
