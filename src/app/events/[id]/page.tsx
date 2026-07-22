@@ -34,65 +34,120 @@ export default async function EventDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: event } = await supabase
-    .from("events")
-    .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
-    .eq("id", id)
-    .single();
+  // First wave: everything that needs only the event id (or nothing).
+  // These used to run one after another - a ~10-query serial waterfall
+  // was the biggest chunk of this page's load time.
+  const [{ data: event }, { data: userData }, cookieStore] = await Promise.all([
+    supabase
+      .from("events")
+      .select("id, number, name, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
+      .eq("id", id)
+      .single(),
+    supabase.auth.getUser(),
+    cookies(),
+  ]);
 
   if (!event) {
     notFound();
   }
-
-  const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   if (!user) {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin, is_superadmin")
-    .eq("id", user.id)
-    .single();
+  const locked =
+    event.status === "completed" ||
+    (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
+
+  // Second wave: everything scoped by user and/or event but not by the
+  // individual fight ids - all independent, so fetched together.
+  const [
+    { data: profile },
+    { data: fights },
+    { data: bonusPrediction },
+    { data: boldPick },
+    { data: myLeaderboardRow },
+    { data: rawComments },
+  ] = await Promise.all([
+    supabase.from("profiles").select("is_admin, is_superadmin").eq("id", user.id).single(),
+    supabase
+      .from("fights")
+      .select(
+        `id, weight_class, is_title_fight, is_main_event, card_order, card_segment, rounds, status,
+         winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
+         fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba),
+         fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba)`
+      )
+      .eq("event_id", id)
+      .order("card_order", { ascending: false }),
+    supabase
+      .from("bonus_predictions")
+      .select("predicted_fotn_fight_id, points")
+      .eq("user_id", user.id)
+      .eq("event_id", id)
+      .maybeSingle(),
+    supabase
+      .from("bold_picks")
+      .select("fight_id")
+      .eq("user_id", user.id)
+      .eq("event_id", id)
+      .maybeSingle(),
+    // event_leaderboard already folds in the FOTN and perfect-card
+    // bonuses, so "Tvé body" always matches the leaderboard exactly.
+    supabase
+      .from("event_leaderboard")
+      .select("points")
+      .eq("event_id", id)
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("event_comments")
+      .select(
+        "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
+      )
+      .eq("event_id", id)
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+
   const isAdmin = profile?.is_admin ?? false;
   // Same "browse as a regular tipper" preference the events listing
   // uses for draft visibility - a superadmin testing what everyone
   // else sees shouldn't still get the payout checklist's admin powers.
   const isSuperadmin =
     (profile?.is_superadmin ?? false) &&
-    (await cookies()).get(VIEW_MODE_COOKIE)?.value === "admin";
+    cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin";
 
   if (event.status === "draft" && !isAdmin) {
     notFound();
   }
 
-  const { data: fights } = await supabase
-    .from("fights")
-    .select(
-      `id, weight_class, is_title_fight, is_main_event, card_order, card_segment, rounds, status,
-       winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
-       fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba),
-       fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba)`
-    )
-    .eq("event_id", id)
-    .order("card_order", { ascending: false });
-
   const fightIds = (fights ?? []).map((f) => f.id);
+  const boldFightId = boldPick?.fight_id ?? null;
+  const scoredSoFar = myLeaderboardRow?.points ?? 0;
 
-  const { data: predictions } = await supabase
-    .from("predictions")
-    .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points")
-    .eq("user_id", user.id)
-    .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]);
+  // Third wave: the two prediction queries that need the fight ids.
+  const [{ data: predictions }, { data: allPredictions }] = await Promise.all([
+    supabase
+      .from("predictions")
+      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points")
+      .eq("user_id", user.id)
+      .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]),
+    locked && fightIds.length
+      ? supabase
+          .from("predictions")
+          .select("fight_id, predicted_winner_id, profiles(nickname)")
+          .in("fight_id", fightIds)
+      : Promise.resolve({
+          data: null as
+            | { fight_id: string; predicted_winner_id: string; profiles: { nickname: string } | null }[]
+            | null,
+        }),
+  ]);
 
   const predictionByFight = new Map<string, Prediction>(
     (predictions ?? []).map((p) => [p.fight_id, p])
   );
-
-  const locked =
-    event.status === "completed" ||
-    (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
 
   const fotnOptions = (fights ?? [])
     .map((rawFight) => rawFight as unknown as Fight)
@@ -106,21 +161,6 @@ export default async function EventDetailPage({
   const actualFotnFight = (fights ?? [])
     .map((f) => f as unknown as Fight)
     .find((f) => f.id === event.actual_fotn_fight_id);
-
-  const { data: bonusPrediction } = await supabase
-    .from("bonus_predictions")
-    .select("predicted_fotn_fight_id, points")
-    .eq("user_id", user.id)
-    .eq("event_id", id)
-    .maybeSingle();
-
-  const { data: boldPick } = await supabase
-    .from("bold_picks")
-    .select("fight_id")
-    .eq("user_id", user.id)
-    .eq("event_id", id)
-    .maybeSingle();
-  const boldFightId = boldPick?.fight_id ?? null;
 
   const cancelledFights = (fights ?? [])
     .map((f) => f as unknown as Fight)
@@ -144,22 +184,16 @@ export default async function EventDetailPage({
   );
 
   const picksByFight = new Map<string, Map<string, string[]>>();
-  if (locked && fightIds.length) {
-    const { data: allPredictions } = await supabase
-      .from("predictions")
-      .select("fight_id, predicted_winner_id, profiles(nickname)")
-      .in("fight_id", fightIds);
-    for (const p of (allPredictions ?? []) as unknown as {
-      fight_id: string;
-      predicted_winner_id: string;
-      profiles: { nickname: string } | null;
-    }[]) {
-      const names = picksByFight.get(p.fight_id) ?? new Map<string, string[]>();
-      const list = names.get(p.predicted_winner_id) ?? [];
-      list.push(p.profiles?.nickname ?? "Bez přezdívky");
-      names.set(p.predicted_winner_id, list);
-      picksByFight.set(p.fight_id, names);
-    }
+  for (const p of (allPredictions ?? []) as unknown as {
+    fight_id: string;
+    predicted_winner_id: string;
+    profiles: { nickname: string } | null;
+  }[]) {
+    const names = picksByFight.get(p.fight_id) ?? new Map<string, string[]>();
+    const list = names.get(p.predicted_winner_id) ?? [];
+    list.push(p.profiles?.nickname ?? "Bez přezdívky");
+    names.set(p.predicted_winner_id, list);
+    picksByFight.set(p.fight_id, names);
   }
 
   const segmentsOnCard = fightsWithHeaders
@@ -178,18 +212,6 @@ export default async function EventDetailPage({
   const countableFightIds = new Set(countableFights.map((f) => f.id));
   const gradedFights = countableFights.filter((f) => f.status === "completed");
   const countablePredictions = (predictions ?? []).filter((p) => countableFightIds.has(p.fight_id));
-
-  // Sourced from event_leaderboard rather than summed from `predictions`
-  // here, so it always matches the leaderboard exactly - that view
-  // already folds in the Fight of the Night bonus and the perfect-card
-  // bonus, neither of which live on individual prediction rows.
-  const { data: myLeaderboardRow } = await supabase
-    .from("event_leaderboard")
-    .select("points")
-    .eq("event_id", id)
-    .eq("user_id", user.id)
-    .maybeSingle();
-  const scoredSoFar = myLeaderboardRow?.points ?? 0;
 
   const tippableFightIds = (fights ?? [])
     .filter((f) => {
@@ -213,14 +235,6 @@ export default async function EventDetailPage({
       .map((f) => [f.id, predictionByFight.get(f.id)!])
   );
 
-  const { data: rawComments } = await supabase
-    .from("event_comments")
-    .select(
-      "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
-    )
-    .eq("event_id", id)
-    .order("created_at", { ascending: false })
-    .limit(100);
   const comments = ((rawComments ?? []) as unknown as {
     id: string;
     user_id: string | null;
