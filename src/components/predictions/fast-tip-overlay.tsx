@@ -53,10 +53,15 @@ export function FastTipOverlay({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent px-3 py-1 text-xs font-semibold text-black shadow-lg shadow-black/15 transition-transform hover:scale-105"
+        className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border border-white/45 bg-white/35 px-3 py-2 text-black outline-none backdrop-blur-lg transition-colors hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-accent dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white dark:hover:border-neutral-500"
       >
-        <Zap className="size-3.5" />
-        Rychlé tipování
+        <span className="flex items-center gap-1.5 text-sm font-bold leading-tight">
+          <Zap className="size-4 text-yellow-600 dark:text-accent" />
+          Rychlá tipovačka
+        </span>
+        <span className="text-[10.5px] font-medium leading-tight text-neutral-500 dark:text-neutral-400">
+          bez detailů
+        </span>
       </button>
       {open && (
         <FastTipCarousel

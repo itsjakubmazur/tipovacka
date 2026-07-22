@@ -33,20 +33,19 @@ export function BoldPickIntro() {
   if (!show) return null;
 
   return (
-    <div className="mt-3 flex items-start gap-2 rounded-xl border border-accent/50 bg-accent/10 p-3 text-sm shadow-lg shadow-black/15 backdrop-blur-lg dark:shadow-black/40">
-      <Star className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-accent" fill="currentColor" />
-      <p className="flex-1 text-neutral-700 dark:text-neutral-200">
-        <span className="font-semibold">Novinka – Jistotka.</span> U jednoho zápasu na kartě klepni na
-        hvězdičku „Dát jistotku“. Body z něj se ti pak počítají <strong>dvakrát</strong>. Dej ji tam,
-        kde si nejvíc věříš.
+    <div className="mt-2 flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/[0.07] px-3 py-2 text-xs text-neutral-600 dark:text-neutral-300">
+      <Star className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" fill="currentColor" />
+      <p className="flex-1 leading-snug">
+        <span className="font-semibold text-black dark:text-white">Novinka – Jistotka:</span> dej ×2 body
+        na svůj nejjistější tip (hvězdička u zápasu).
       </p>
       <button
         type="button"
         onClick={dismiss}
         aria-label="Zavřít"
-        className="shrink-0 rounded-full p-1 text-neutral-500 transition-colors hover:bg-black/5 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-white/10 dark:hover:text-neutral-100"
+        className="shrink-0 rounded-full p-0.5 text-neutral-400 transition-colors hover:bg-black/5 hover:text-neutral-700 dark:hover:bg-white/10 dark:hover:text-neutral-200"
       >
-        <X className="size-4" />
+        <X className="size-3.5" />
       </button>
     </div>
   );

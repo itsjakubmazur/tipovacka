@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import Image from "next/image";
-import { Wallet } from "lucide-react";
+import { Wallet, MapPin, CalendarClock } from "lucide-react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -15,10 +15,9 @@ import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
 import { WhoHasntTipped } from "@/components/events/who-hasnt-tipped";
 import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
+import { TipActionBar } from "@/components/predictions/tip-action-bar";
 import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
-import { cn } from "@/lib/utils";
-import { GLASS_PILL } from "@/lib/pills";
 import { perfStart, perfLogParts } from "@/lib/perf";
 import type { Fight, Prediction } from "@/lib/types";
 
@@ -310,18 +309,31 @@ export default async function EventDetailPage({
         {event.subtitle && (
           <p className="text-sm font-semibold text-yellow-600 dark:text-accent">{event.subtitle}</p>
         )}
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">{event.location}</p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-300">
-          {new Date(event.event_date).toLocaleString("cs-CZ", {
-            dateStyle: "long",
-            timeStyle: "short",
-            timeZone: "Europe/Prague",
-          })}
-        </p>
+        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
+          {event.location && (
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0" />
+              {event.location}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1.5">
+            <CalendarClock className="size-3.5 shrink-0" />
+            {new Date(event.event_date).toLocaleString("cs-CZ", {
+              day: "numeric",
+              month: "long",
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "Europe/Prague",
+            })}
+          </span>
+        </div>
         {event.payouts_enabled && (
-          <p className={cn(GLASS_PILL, "mt-2 inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium")}>
-            <Wallet className="size-3.5 text-yellow-600 dark:text-accent" />
-            Startovné 50 Kč · vítěz bere vše · QR platba po vyhodnocení
+          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
+            <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
+            <span>
+              <span className="font-semibold text-black dark:text-white">Startovné 50 Kč</span> · vítěz bere
+              vše · QR platba po vyhodnocení
+            </span>
           </p>
         )}
         {countableFights.length > 0 && (
@@ -336,20 +348,22 @@ export default async function EventDetailPage({
             points={scoredSoFar}
             rank={finalRank}
             participants={participants}
+            actions={
+              !locked && tippableFightsAsc.length > 0 ? (
+                <TipActionBar tippableFightIds={tippableFightIds} initialUntipped={untippedFightIds}>
+                  <FastTipOverlay
+                    eventId={id}
+                    userId={user.id}
+                    fights={tippableFightsAsc}
+                    initialPredictions={fastTipPredictions}
+                    initialBoldFightId={boldFightId}
+                    tippedCountable={countablePredictions.length}
+                    totalCountable={countableFights.length}
+                  />
+                </TipActionBar>
+              ) : undefined
+            }
           />
-        )}
-        {!locked && countableFights.length > 0 && tippableFightsAsc.length > 0 && (
-          <div className="mt-3">
-            <FastTipOverlay
-              eventId={id}
-              userId={user.id}
-              fights={tippableFightsAsc}
-              initialPredictions={fastTipPredictions}
-              initialBoldFightId={boldFightId}
-              tippedCountable={countablePredictions.length}
-              totalCountable={countableFights.length}
-            />
-          </div>
         )}
         {!locked && countableFights.length > 0 && <BoldPickIntro />}
       </div>

@@ -146,12 +146,12 @@ export function EventStatusTimeline({
   completed,
   lockAtIso,
   eventDateIso,
-  tippedCount,
   totalCount,
   gradedCount,
   points,
   rank,
   participants,
+  actions,
 }: {
   locked: boolean;
   completed: boolean;
@@ -163,6 +163,7 @@ export function EventStatusTimeline({
   points: number;
   rank?: number | null;
   participants?: number | null;
+  actions?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -186,7 +187,7 @@ export function EventStatusTimeline({
       title: tipState === "current" ? "Tipování otevřené" : "Tipování uzamčeno",
       desc:
         tipState === "current"
-          ? `Máš natipováno ${tippedCount} z ${totalCount} zápasů.`
+          ? undefined
           : `Tvých ${totalCount} tipů je zamčených, jen pro čtení.`,
       countdownTo: tipState === "current" && lockAtIso ? lockAtIso : undefined,
     },
@@ -297,6 +298,8 @@ export function EventStatusTimeline({
           </div>
         </div>
       )}
+
+      {actions}
     </div>
   );
 }
