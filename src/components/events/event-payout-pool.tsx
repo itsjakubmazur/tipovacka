@@ -24,14 +24,19 @@ export async function EventPayoutPool({
 }) {
   const supabase = await createClient();
 
-  const { data: rows } = await supabase
-    .from("event_leaderboard")
-    .select("user_id, nickname, points, fights_correct_winner, perfect_card, earliest_prediction_at")
-    .eq("event_id", eventId)
-    .order("points", { ascending: false })
-    .order("fights_correct_winner", { ascending: false })
-    .order("perfect_card", { ascending: false })
-    .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
+  // the ranked board and the paid-checklist rows are independent, so
+  // fetch them together instead of one after another
+  const [{ data: rows }, { data: payoutRows }] = await Promise.all([
+    supabase
+      .from("event_leaderboard")
+      .select("user_id, nickname, points, fights_correct_winner, perfect_card, earliest_prediction_at")
+      .eq("event_id", eventId)
+      .order("points", { ascending: false })
+      .order("fights_correct_winner", { ascending: false })
+      .order("perfect_card", { ascending: false })
+      .order("earliest_prediction_at", { ascending: true, nullsFirst: false }),
+    supabase.from("event_payouts").select("user_id, paid").eq("event_id", eventId),
+  ]);
 
   if (!rows || rows.length < 2) return null;
 
@@ -39,16 +44,12 @@ export async function EventPayoutPool({
   const pot = others.length * STARTOVNE_CZK;
   const winnerName = winner.nickname ?? "Bez přezdívky";
 
+  // only the winner's bank account is left, and it needs the winner id
   const { data: winnerProfile } = await supabase
     .from("profiles")
     .select("bank_account")
     .eq("id", winner.user_id)
     .single();
-
-  const { data: payoutRows } = await supabase
-    .from("event_payouts")
-    .select("user_id, paid")
-    .eq("event_id", eventId);
 
   const paidByUser = new Map((payoutRows ?? []).map((r) => [r.user_id, r.paid]));
   const payoutStatusRows = others.map((o) => ({
