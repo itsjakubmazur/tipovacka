@@ -42,7 +42,7 @@ def _alert_admins_on_streak(db: SupabaseClient, mode: str, message: str) -> None
         send_to_user(
             db,
             admin["id"],
-            f"Scraper selhává: {mode}",
+            f"⚠️ Scraper selhává: {mode}",
             f"Posledních {FAILURE_ALERT_STREAK} běhů skončilo chybou. {message}"[:180],
             "/admin/scraper-log",
         )

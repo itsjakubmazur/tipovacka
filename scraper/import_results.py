@@ -57,7 +57,7 @@ def _notify_fight_result(
             "bold_picks", {"fight_id": f"eq.{db_fight['id']}", "select": "user_id"}
         )
     }
-    title = f"{fighter_a_name} vs {fighter_b_name}"
+    title = f"🥊 {fighter_a_name} vs {fighter_b_name}"
     url = f"/events/{event_id}"
     for pred in predictions:
         if winner_name is None:
@@ -124,7 +124,7 @@ def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> Non
         send_to_user(
             db,
             winner["user_id"],
-            f"{label}: vyhrál/a jsi startovné!",
+            f"💰 {label}: vyhrál/a jsi startovné!",
             f"Bereš {pot} Kč. Nastav si v profilu číslo účtu, ať ti kamarádi mají kam poslat výhru.",
             "/profile",
         )

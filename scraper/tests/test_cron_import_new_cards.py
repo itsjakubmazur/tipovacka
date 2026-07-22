@@ -48,7 +48,7 @@ def test_notifies_when_card_was_preimported_during_draft(monkeypatch):
 
     cron.import_new_cards(db, datetime(2026, 7, 8, 8, 0, tzinfo=timezone.utc))
 
-    assert sent == [("OKTAGON 91: karta je online", "Zápasy byly zveřejněny, můžeš tipovat!", "/events/evt-1")]
+    assert sent == [("🥊 OKTAGON 91: karta je online", "Zápasy byly zveřejněny, můžeš tipovat!", "/events/evt-1")]
     notified_updates = [u for u in db.updates if "card_notified_at" in u[1]]
     assert len(notified_updates) == 1
 

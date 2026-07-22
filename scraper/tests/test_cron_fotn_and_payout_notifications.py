@@ -97,7 +97,7 @@ def test_payout_settled_notifies_winner_once_everyone_else_paid(monkeypatch):
 
     cron.send_payout_settled_notifications(db, now)
 
-    assert sent == [("alice", "OKTAGON 91: startovné vyplaceno")]
+    assert sent == [("alice", "💰 OKTAGON 91: startovné vyplaceno")]
     notified = [u for u in db.updates if u[0] == "events"]
     assert notified == [
         ("events", {"payout_all_paid_notified_at": now.isoformat()}, {"id": "eq.evt-1"})

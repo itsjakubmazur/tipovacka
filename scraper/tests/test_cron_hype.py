@@ -52,7 +52,7 @@ def test_sends_once_before_card_opens(monkeypatch):
 
     assert len(sent) == 1
     title, body, url = sent[0]
-    assert title == "OKTAGON 92 už příští víkend"
+    assert title == "🔥 OKTAGON 92 už příští víkend"
     assert "ve středu" in body
     assert url == "https://youtube.com/@oktagon_czsk"
     assert any("hype_notified_at" in u[1] for u in db.updates)
@@ -72,7 +72,7 @@ def test_weekday_gala_names_the_day_in_the_title(monkeypatch):
 
     assert len(sent) == 1
     title, body = sent[0]
-    assert title == "OKTAGON 93 už příští čtvrtek"
+    assert title == "🔥 OKTAGON 93 už příští čtvrtek"
     # card opens 3 days before Thursday = Monday
     assert "v pondělí" in body
 

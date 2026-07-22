@@ -253,7 +253,7 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
             with log_run("cron_hype_notification", event["id"]):
                 send_to_all(
                     db,
-                    f"{label} už {_event_when_phrase(event_date)}",
+                    f"🔥 {label} už {_event_when_phrase(event_date)}",
                     (
                         "Nalaď se na galavečer — klepnutím se dostaneš rovnou na YouTube "
                         "OKTAGON MMA s videi k zápasům a bojovníkům. Tipovačka se otevře "
@@ -300,7 +300,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
             db.update("events", {"card_notified_at": now_iso}, {"id": f"eq.{event['id']}"})
             send_to_all(
                 db,
-                f"{label}: karta je online",
+                f"🥊 {label}: karta je online",
                 "Zápasy byly zveřejněny, můžeš tipovat!",
                 f"/events/{event['id']}",
                 pref="notify_card_updates",
@@ -342,7 +342,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
         if (created > 0 or cancelled > 0) and event["status"] != "draft":
             send_to_all(
                 db,
-                f"{label}: karta se změnila",
+                f"🔄 {label}: karta se změnila",
                 "Na zápasové kartě nastala změna, zkontroluj a tipuj!",
                 f"/events/{event['id']}",
                 pref="notify_card_updates",
@@ -422,7 +422,7 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
                     send_to_user(
                         db,
                         user_id,
-                        f"{label} začíná za hodinu",
+                        f"⏰ {label} začíná za hodinu",
                         body,
                         f"/events/{event['id']}",
                     )
@@ -449,7 +449,7 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
         with log_run("cron_lock_notification", event["id"]):
             send_to_all(
                 db,
-                f"{label} začíná",
+                f"🔒 {label} začíná",
                 "Tipy jsou uzavřené, mrkni na žebříček, kdo na koho tipoval!",
                 f"/leaderboard?eventId={event['id']}",
             )
@@ -515,7 +515,7 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
         with log_run("cron_comment_notification", event_id):
             send_to_all(
                 db,
-                f"{label}: nová zpráva v kecárně",
+                f"💬 {label}: nová zpráva v kecárně",
                 preview,
                 f"/events/{event_id}",
                 pref="notify_comments",
@@ -556,7 +556,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
                 body += " QR platbu pro vítěze startovného najdeš na stránce galavečera."
             send_to_all(
                 db,
-                f"{label}: výsledky jsou hotové",
+                f"🏆 {label}: výsledky jsou hotové",
                 body,
                 f"/leaderboard?eventId={event['id']}",
             )
@@ -595,7 +595,7 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
             send_to_user(
                 db,
                 admin["id"],
-                f"{label}: chybí Fight of the Night",
+                f"⚠️ {label}: chybí Fight of the Night",
                 "Všechny zápasy jsou odbodované, ale eventu chybí Fight of the Night - bez něj se nedokončí.",
                 f"/admin/events/{event['id']}",
             )
@@ -644,7 +644,7 @@ def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None
         send_to_user(
             db,
             winner["user_id"],
-            f"{label}: startovné vyplaceno",
+            f"💰 {label}: startovné vyplaceno",
             "Všichni ti poslali startovné, máš vybráno!",
             f"/events/{event['id']}",
         )
@@ -707,7 +707,7 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
                     send_to_user(
                         db,
                         profile["id"],
-                        f"{label}: díky za tipy!",
+                        f"🙌 {label}: díky za tipy!",
                         f"Mrkni na žebříčky, jak se dařilo ostatním. {next_event_text}",
                         f"/leaderboard?eventId={event['id']}",
                     )
@@ -715,7 +715,7 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
                     send_to_user(
                         db,
                         profile["id"],
-                        f"{label} je za námi",
+                        f"👀 {label} je za námi",
                         f"Mrkni, jak se dařilo ostatním v žebříčku. {next_event_text}",
                         f"/leaderboard?eventId={event['id']}",
                     )
