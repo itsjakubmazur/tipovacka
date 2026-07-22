@@ -58,6 +58,25 @@ def test_sends_once_before_card_opens(monkeypatch):
     assert any("hype_notified_at" in u[1] for u in db.updates)
 
 
+def test_weekday_gala_names_the_day_in_the_title(monkeypatch):
+    # A Thursday gala (2026-08-06) should read "už příští čtvrtek",
+    # not "už příští víkend".
+    event = {"id": "e1", "number": 93, "name": "OKTAGON 93", "event_date": "2026-08-06T16:30:00Z"}
+    db = FakeDB([event])
+    monkeypatch.setattr(cron, "log_run", _fake_log_run)
+    sent = []
+    monkeypatch.setattr(cron, "send_to_all", lambda db, title, body, url, **kw: sent.append((title, body)))
+
+    # hype fires 6 days before (Jul 31 12:00 UTC); before publish (Aug 3)
+    cron.send_hype_notifications(db, datetime(2026, 8, 1, 10, 0, tzinfo=timezone.utc))
+
+    assert len(sent) == 1
+    title, body = sent[0]
+    assert title == "OKTAGON 93 už příští čtvrtek"
+    # card opens 3 days before Thursday = Monday
+    assert "v pondělí" in body
+
+
 def test_too_early_does_nothing(monkeypatch):
     event = {"id": "e1", "number": 92, "name": "OKTAGON 92", "event_date": "2026-08-01T16:30:00Z"}
     db = FakeDB([event])

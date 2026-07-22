@@ -86,6 +86,17 @@ CZECH_DAY_PREPOSITIONAL = {
     6: "v neděli",
 }
 
+# weekday() -> the day name in the form used after "příští" (accusative)
+CZECH_DAY_NEXT = {
+    0: "pondělí",
+    1: "úterý",
+    2: "středu",
+    3: "čtvrtek",
+    4: "pátek",
+    5: "sobotu",
+    6: "neděli",
+}
+
 CZECH_MONTHS_GENITIVE = {
     1: "ledna",
     2: "února",
@@ -190,6 +201,16 @@ def _publish_day_name(event_date: datetime) -> str:
     return CZECH_DAY_PREPOSITIONAL[_publish_at(event_date).weekday()]
 
 
+def _event_when_phrase(event_date: datetime) -> str:
+    """Tail of the hype title after the event name: "příští víkend" for
+    a weekend gala, otherwise the specific day ("příští čtvrtek") -
+    OKTAGON usually runs on Saturdays but not always."""
+    weekday = event_date.astimezone(PRAGUE_TZ).weekday()
+    if weekday >= 5:  # Saturday or Sunday
+        return "příští víkend"
+    return f"příští {CZECH_DAY_NEXT[weekday]}"
+
+
 def publish_draft_events(db: SupabaseClient, now: datetime) -> None:
     """At 9:00 Prague time, PUBLISH_DAYS_BEFORE days before a draft event
     starts, flips it to 'upcoming' - it becomes visible to tippers
@@ -232,7 +253,7 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
             with log_run("cron_hype_notification", event["id"]):
                 send_to_all(
                     db,
-                    f"{label} už příští víkend",
+                    f"{label} už {_event_when_phrase(event_date)}",
                     (
                         "Nalaď se na galavečer — klepnutím se dostaneš rovnou na YouTube "
                         "OKTAGON MMA s videi k zápasům a bojovníkům. Tipovačka se otevře "
