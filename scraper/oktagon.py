@@ -460,12 +460,16 @@ def import_image(event_id: str) -> None:
     if not events:
         return
     event = events[0]
-    if event.get("image_url") or not event.get("number"):
+    if not event.get("number"):
         return
 
     url = fetch_event_cover_image_url(event["number"])
-    if url:
+    # Only overwrite when a real, different URL comes back - a missing
+    # image (event not on the homepage yet) must never wipe the one we
+    # already have. This runs on every card recheck, so a new poster
+    # (e.g. after a main-event change) replaces the stale one.
+    if url and url != event.get("image_url"):
         db.update("events", {"image_url": url}, {"id": f"eq.{event_id}"})
-        print(f"Titulní obrázek doplněn: {url}")
-    else:
+        print(f"Titulní obrázek {'aktualizován' if event.get('image_url') else 'doplněn'}: {url}")
+    elif not url and not event.get("image_url"):
         print("Titulní obrázek na oktagonmma.com nenalezen (událost možná ještě není na homepage).")
