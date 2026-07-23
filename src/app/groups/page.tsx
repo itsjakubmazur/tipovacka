@@ -31,7 +31,15 @@ export default async function GroupsPage() {
 
       <div className="flex flex-col gap-2">
         {groups.length === 0 && (
-          <p className="text-neutral-600 dark:text-neutral-400">Zatím nejsi v žádné skupině.</p>
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-neutral-300 py-10 text-center dark:border-neutral-700">
+            <span className="flex size-11 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
+              <Users className="size-5" />
+            </span>
+            <p className="font-medium">Zatím nejsi v žádné skupině</p>
+            <p className="max-w-xs text-sm text-neutral-500 dark:text-neutral-400">
+              Založ si vlastní partu, nebo se připoj přes zvací kód od kámoše — formuláře máš níže.
+            </p>
+          </div>
         )}
         {groups.map((group) => (
           <Link

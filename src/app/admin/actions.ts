@@ -27,6 +27,25 @@ export async function setViewMode(mode: "user" | "admin") {
   });
 }
 
+/** Distinct devices (push subscriptions) a broadcast would reach - shown in
+ * the admin form so "send to everyone" isn't a blind action. */
+export async function getBroadcastRecipientCount(): Promise<{ devices: number; people: number } | { error: string }> {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return { error: "Nejsi přihlášený." };
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_superadmin")
+    .eq("id", userData.user.id)
+    .single();
+  if (!profile?.is_superadmin) return { error: "Nemáš oprávnění." };
+
+  const { data: subs } = await supabase.from("push_subscriptions").select("user_id");
+  const devices = subs?.length ?? 0;
+  const people = new Set((subs ?? []).map((s) => s.user_id)).size;
+  return { devices, people };
+}
+
 export async function triggerBroadcastPush(title: string, body: string, url: string) {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();

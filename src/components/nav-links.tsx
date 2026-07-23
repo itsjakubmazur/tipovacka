@@ -25,6 +25,7 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
         <Link
           key={item.href}
           href={item.href}
+          aria-current={isActive(pathname, item.href) ? "page" : undefined}
           className={cn(
             "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
             isActive(pathname, item.href)
@@ -38,6 +39,7 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
       {isAdmin && (
         <Link
           href="/admin"
+          aria-current={isActive(pathname, "/admin") ? "page" : undefined}
           className={cn(
             "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
             isActive(pathname, "/admin")
@@ -65,6 +67,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
                 active
@@ -80,10 +83,11 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
         {isAdmin && (
           <Link
             href="/admin"
+            aria-current={isActive(pathname, "/admin") ? "page" : undefined}
             className={cn(
-              "flex flex-1 flex-col items-center gap-1 py-2 text-xs",
+              "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
               isActive(pathname, "/admin")
-                ? "text-accent"
+                ? "bg-accent/10 text-accent"
                 : "text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
             )}
           >

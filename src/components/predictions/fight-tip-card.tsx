@@ -432,7 +432,7 @@ export function FightTipCard({
               />
               {isActualWinner && (
                 <Badge variant="accent" className="mt-1">
-                  Výhra
+                  Výherce
                 </Badge>
               )}
               <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">

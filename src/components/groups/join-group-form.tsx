@@ -22,11 +22,23 @@ export function JoinGroupForm() {
     setError(null);
     const { data, error } = await supabase.rpc("join_group", { p_invite_code: code.trim() });
     setSaving(false);
-    if (error || !data) {
-      setError("Neplatný kód skupiny.");
+    if (error) {
+      // The RPC raises when the code matches no group; anything else is a
+      // connection/permission hiccup worth distinguishing so people don't
+      // keep retyping a code that's actually fine.
+      setError(
+        error.message.includes("Neplatný")
+          ? "Takový kód nikam nevede. Zkontroluj překlepy — kód má 6 znaků."
+          : "Připojení selhalo, zkus to za chvíli znovu."
+      );
+      return;
+    }
+    if (!data) {
+      setError("Takový kód nikam nevede. Zkontroluj překlepy — kód má 6 znaků.");
       return;
     }
     router.push(`/groups/${data}`);
+    router.refresh();
   }
 
   return (

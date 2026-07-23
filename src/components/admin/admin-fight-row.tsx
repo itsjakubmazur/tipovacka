@@ -55,11 +55,18 @@ export function AdminFightRow({
   async function move(neighbor: { id: string; card_order: number } | null) {
     if (!neighbor) return;
     setSaving(true);
-    await Promise.all([
-      supabase.from("fights").update({ card_order: neighbor.card_order }).eq("id", fight.id),
-      supabase.from("fights").update({ card_order: fight.card_order }).eq("id", neighbor.id),
-    ]);
+    setError(null);
+    // One atomic swap instead of two racing UPDATEs - a partial failure
+    // could otherwise leave both fights on the same card_order.
+    const { error: swapError } = await supabase.rpc("swap_fight_order", {
+      p_fight_a: fight.id,
+      p_fight_b: neighbor.id,
+    });
     setSaving(false);
+    if (swapError) {
+      setError("Přesunutí se nepodařilo, zkus to znovu.");
+      return;
+    }
     router.refresh();
   }
 

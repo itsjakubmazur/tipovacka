@@ -21,7 +21,8 @@ export function ThemeToggle({ className }: { className?: string }) {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label="Přepnout tmavý režim"
+      aria-label={isDark ? "Přepnout na světlý režim" : "Přepnout na tmavý režim"}
+      title={isDark ? "Přepnout na světlý režim" : "Přepnout na tmavý režim"}
       className={className}
     >
       {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}

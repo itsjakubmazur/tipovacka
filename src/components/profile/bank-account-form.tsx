@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,7 +55,9 @@ export function BankAccountForm({
       <div className="flex flex-col gap-1">
         <p className="text-sm font-semibold">Číslo účtu pro výhry</p>
         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-          Kdo vyhraje startovné za galavečer, ostatním se tady zobrazí QR platba na tvůj účet.
+          Když vyhraješ startovné za galavečer, ostatní hráči uvidí QR platbu na tenhle účet — ale až
+          po vyhodnocení a jen ti, kdo ti mají poslat peníze. Nikde jinde se nezobrazuje a můžeš ho
+          nechat prázdný.
         </p>
       </div>
       <div className="flex max-w-sm flex-col gap-1.5">
@@ -70,7 +73,12 @@ export function BankAccountForm({
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {saved && <p className="text-sm text-neutral-600 dark:text-neutral-400">Uloženo.</p>}
+      {saved && (
+        <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+          <Check className="size-4" />
+          Uloženo.
+        </p>
+      )}
       <Button type="submit" variant="accent" disabled={saving} className="self-start">
         {saving ? "Ukládám…" : "Uložit"}
       </Button>
