@@ -9,7 +9,7 @@ import { ageFromBirthDate, cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X, ArrowUp, ArrowDown, ChevronDown, Star, HelpCircle } from "lucide-react";
+import { X, ArrowUp, ArrowDown, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
 import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 function Pill({
@@ -230,6 +230,12 @@ export function FightTipCard({
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
   const hasTba = fight.fighter_a.is_tba || fight.fighter_b.is_tba;
   const effectiveLocked = locked || voided || hasTba;
+
+  // A pick only counts once winner + method (+ round unless decision) are
+  // all set - until then nothing is saved. Surface that clearly so a
+  // half-finished pick never *looks* done.
+  const tipComplete = Boolean(winnerId) && Boolean(method) && (method === "DECISION" || round !== null);
+  const tipInProgress = !effectiveLocked && Boolean(winnerId) && !tipComplete;
 
   function selectWinner(id: string) {
     if (effectiveLocked) return;
@@ -477,7 +483,16 @@ export function FightTipCard({
 
       <div className="flex flex-col gap-3 p-4 pt-4">
         <div>
-          <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Způsob</p>
+          <p
+            className={cn(
+              "mb-1.5 text-xs font-medium uppercase",
+              tipInProgress && !method
+                ? "text-yellow-700 dark:text-accent"
+                : "text-neutral-500 dark:text-neutral-300"
+            )}
+          >
+            Způsob
+          </p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(METHOD_LABELS) as Method[]).map((m) => (
               <Pill key={m} active={method === m} disabled={effectiveLocked} onClick={() => selectMethod(m)}>
@@ -491,7 +506,16 @@ export function FightTipCard({
           <p className="text-sm text-neutral-600 dark:text-neutral-400">Tip: zápas dojde do konce, na body.</p>
         ) : (
           <div>
-            <p className="mb-1.5 text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Kolo</p>
+            <p
+              className={cn(
+                "mb-1.5 text-xs font-medium uppercase",
+                tipInProgress && round === null
+                  ? "text-yellow-700 dark:text-accent"
+                  : "text-neutral-500 dark:text-neutral-300"
+              )}
+            >
+              Kolo
+            </p>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (
                 <Pill key={r} active={round === r} disabled={effectiveLocked} onClick={() => selectRound(r)}>
@@ -503,15 +527,26 @@ export function FightTipCard({
         )}
       </div>
 
-      <div className="px-4 pb-3 h-4 text-xs text-neutral-500 dark:text-neutral-300">
-        {voided && winnerId
-          ? "Zápas se nekoná, tip se nezapočítá."
-          : saving
-            ? "Ukládám…"
-            : saved
-              ? "Uloženo."
-              : null}
-        {error && <span className="text-red-600">{error}</span>}
+      <div className="min-h-4 px-4 pb-3 text-xs">
+        {error ? (
+          <span className="text-red-600 dark:text-red-400">{error}</span>
+        ) : voided && winnerId ? (
+          <span className="text-neutral-500 dark:text-neutral-300">Zápas se nekoná, tip se nezapočítá.</span>
+        ) : tipInProgress ? (
+          <span className="flex items-center gap-1 font-medium text-yellow-700 dark:text-accent">
+            <TriangleAlert className="size-3.5 shrink-0" />
+            {method && method !== "DECISION" && round === null
+              ? "Vyber ještě kolo, jinak se tip neuloží."
+              : "Vyber ještě způsob ukončení, jinak se tip neuloží."}
+          </span>
+        ) : saving ? (
+          <span className="text-neutral-500 dark:text-neutral-300">Ukládám…</span>
+        ) : saved ? (
+          <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+            <Check className="size-3.5 shrink-0" />
+            Uloženo.
+          </span>
+        ) : null}
       </div>
     </div>
   );

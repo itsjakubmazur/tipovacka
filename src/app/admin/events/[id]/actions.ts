@@ -1,8 +1,26 @@
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
+
 const REPO = "itsjakubmazur/tipovacka";
 
 export async function triggerSherdogImport(eventId: string, mode: "card" | "results") {
+  // Server actions are callable independently of the page's redirect
+  // guard, so authorize here too - only admins may kick off an import.
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return { error: "Nejsi přihlášený." };
+  }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin, is_superadmin")
+    .eq("id", userData.user.id)
+    .single();
+  if (!profile?.is_admin && !profile?.is_superadmin) {
+    return { error: "Nemáš oprávnění." };
+  }
+
   const token = process.env.GITHUB_DISPATCH_TOKEN;
   if (!token) {
     return { error: "GITHUB_DISPATCH_TOKEN není nastavený ve Vercel env proměnných." };
