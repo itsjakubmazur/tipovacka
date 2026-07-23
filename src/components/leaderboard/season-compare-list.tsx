@@ -47,7 +47,9 @@ export function SeasonCompareList({
 
   return (
     <div className="flex flex-col gap-2">
-      {rows.map((row, i) => (
+      {rows.map((row, i) => {
+        const gapToNext = i === 0 ? 0 : rows[i - 1].points - row.points;
+        return (
         <div
           key={row.user_id}
           className={cn(
@@ -87,9 +89,17 @@ export function SeasonCompareList({
               </span>
             </div>
           </div>
-          <span className="text-lg font-bold">{row.points}</span>
+          <div className="flex flex-col items-end leading-tight">
+            <span className="text-lg font-bold">{row.points}</span>
+            {gapToNext > 0 && (
+              <span className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">
+                −{gapToNext} na {i}. místo
+              </span>
+            )}
+          </div>
         </div>
-      ))}
+        );
+      })}
 
       {selected.length === 2 && (
         <button

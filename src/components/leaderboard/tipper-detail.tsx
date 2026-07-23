@@ -454,52 +454,73 @@ export async function TipperDetail({
           </div>
 
           {(() => {
-            const tiles: { label: string; value: string; pct?: number }[] = [
-              ...Array.from(methodStats.entries()).map(([method, s]) => ({
-                label: METHOD_LABELS[method],
-                value: `${s.hits}/${s.total}`,
-              })),
-              ...Array.from(segmentStats.entries()).map(([label, s]) => ({
-                label,
-                value: `${s.hits}/${s.total}`,
-                pct: s.total > 0 ? Math.round((s.hits / s.total) * 100) : undefined,
-              })),
-              ...(oddsClassified > 0
-                ? [
-                    {
-                      label: "Favorité",
-                      value: `${favoriteStats.hits}/${favoriteStats.total}`,
-                      pct:
-                        favoriteStats.total > 0
-                          ? Math.round((favoriteStats.hits / favoriteStats.total) * 100)
-                          : undefined,
-                    },
-                    {
-                      label: "Outsideři",
-                      value: `${underdogStats.hits}/${underdogStats.total}`,
-                      pct:
-                        underdogStats.total > 0
-                          ? Math.round((underdogStats.hits / underdogStats.total) * 100)
-                          : undefined,
-                    },
-                  ]
-                : []),
-            ];
-            if (tiles.length === 0) return null;
+            type Tile = { label: string; value: string; pct?: number };
+            const groups: { heading: string; tiles: Tile[] }[] = [
+              {
+                heading: "Podle způsobu ukončení",
+                tiles: Array.from(methodStats.entries()).map(([method, s]) => ({
+                  label: METHOD_LABELS[method],
+                  value: `${s.hits}/${s.total}`,
+                  pct: s.total > 0 ? Math.round((s.hits / s.total) * 100) : undefined,
+                })),
+              },
+              {
+                heading: "Podle karty",
+                tiles: Array.from(segmentStats.entries()).map(([label, s]) => ({
+                  label,
+                  value: `${s.hits}/${s.total}`,
+                  pct: s.total > 0 ? Math.round((s.hits / s.total) * 100) : undefined,
+                })),
+              },
+              {
+                heading: "Podle kurzu",
+                tiles:
+                  oddsClassified > 0
+                    ? [
+                        {
+                          label: "Favorité",
+                          value: `${favoriteStats.hits}/${favoriteStats.total}`,
+                          pct:
+                            favoriteStats.total > 0
+                              ? Math.round((favoriteStats.hits / favoriteStats.total) * 100)
+                              : undefined,
+                        },
+                        {
+                          label: "Outsideři",
+                          value: `${underdogStats.hits}/${underdogStats.total}`,
+                          pct:
+                            underdogStats.total > 0
+                              ? Math.round((underdogStats.hits / underdogStats.total) * 100)
+                              : undefined,
+                        },
+                      ]
+                    : [],
+              },
+            ].filter((g) => g.tiles.length > 0);
+            if (groups.length === 0) return null;
             return (
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {tiles.map((t) => (
-                  <div
-                    key={t.label}
-                    className="rounded-lg border border-black/5 bg-black/[0.02] p-2.5 dark:border-white/10 dark:bg-white/[0.03]"
-                  >
-                    <p className="text-sm font-semibold tabular-nums">
-                      {t.value}
-                      {t.pct != null && (
-                        <span className="ml-1 text-xs font-normal text-neutral-400">{t.pct}%</span>
-                      )}
+              <div className="flex flex-col gap-3">
+                {groups.map((group) => (
+                  <div key={group.heading} className="flex flex-col gap-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                      {group.heading}
                     </p>
-                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400">{t.label}</p>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {group.tiles.map((t) => (
+                        <div
+                          key={t.label}
+                          className="rounded-lg border border-black/5 bg-black/[0.02] p-2.5 dark:border-white/10 dark:bg-white/[0.03]"
+                        >
+                          <p className="text-sm font-semibold tabular-nums">
+                            {t.value}
+                            {t.pct != null && (
+                              <span className="ml-1 text-xs font-normal text-neutral-400">{t.pct}%</span>
+                            )}
+                          </p>
+                          <p className="text-[11px] text-neutral-500 dark:text-neutral-400">{t.label}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>

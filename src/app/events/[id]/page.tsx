@@ -387,20 +387,6 @@ export default async function EventDetailPage({
         />
       )}
 
-      <FotnPicker
-        eventId={id}
-        userId={user.id}
-        fights={fotnOptions}
-        initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
-        initialPoints={bonusPrediction?.points ?? null}
-        locked={locked}
-        actualFight={
-          actualFotnFight
-            ? { fighterAName: actualFotnFight.fighter_a.name, fighterBName: actualFotnFight.fighter_b.name }
-            : null
-        }
-      />
-
       <SegmentJump segments={segmentsOnCard} />
 
       <div className="flex flex-col gap-5">
@@ -434,6 +420,22 @@ export default async function EventDetailPage({
           );
         })}
       </div>
+
+      {/* FOTN is a bonus meta-pick on top of the fights, so it sits after the
+          card - people tip the fights first, then crown the best one. */}
+      <FotnPicker
+        eventId={id}
+        userId={user.id}
+        fights={fotnOptions}
+        initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
+        initialPoints={bonusPrediction?.points ?? null}
+        locked={locked}
+        actualFight={
+          actualFotnFight
+            ? { fighterAName: actualFotnFight.fighter_a.name, fighterBName: actualFotnFight.fighter_b.name }
+            : null
+        }
+      />
 
       {cancelledFights.length > 0 && (
         <div className="flex flex-col gap-5">

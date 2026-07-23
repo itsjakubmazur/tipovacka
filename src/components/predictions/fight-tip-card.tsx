@@ -306,36 +306,6 @@ export function FightTipCard({
           {fight.is_main_event && <Badge variant="default">Main event</Badge>}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
           {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
-          {showResult &&
-            (() => {
-              // color the result by how the user's own tip did - scanning
-              // the card after the gala, green/red tells the story alone
-              const graded = initialPrediction?.points != null;
-              const hit = graded && initialPrediction!.points! > 0;
-              return (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    graded &&
-                      (hit
-                        ? "border-green-600/50 bg-green-600/15 text-green-800 dark:text-green-400"
-                        : "border-red-600/50 bg-red-600/15 text-red-800 dark:text-red-400")
-                  )}
-                >
-                  Výsledek: {fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name} ·{" "}
-                  {fight.method ? METHOD_LABELS[fight.method] : ""}
-                  {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
-                  {fight.result_time ? ` · ${fight.result_time}` : ""}
-                  {graded
-                    ? ` · ${
-                        hit
-                          ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.`
-                          : "0 b."
-                      }`
-                    : ""}
-                </Badge>
-              );
-            })()}
           {effectiveLocked && isBold && (
             <Badge variant="accent" className="gap-1">
               <Star className="size-3" fill="currentColor" />
@@ -398,6 +368,43 @@ export function FightTipCard({
         </div>
       </div>
 
+      {showResult &&
+        (() => {
+          // Its own full-width row under the header - the result is the
+          // headline once a fight is graded, not another chip in the cluster.
+          // Color it by how the user's own tip did: green/red tells the story
+          // when scanning the card after the gala.
+          const graded = initialPrediction?.points != null;
+          const hit = graded && initialPrediction!.points! > 0;
+          const winnerName =
+            fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name;
+          return (
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-x-2 gap-y-1 border-t px-4 py-2.5 text-sm",
+                graded
+                  ? hit
+                    ? "border-green-600/30 bg-green-600/10 text-green-800 dark:text-green-400"
+                    : "border-red-600/30 bg-red-600/10 text-red-800 dark:text-red-400"
+                  : "border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-300"
+              )}
+            >
+              <span className="text-xs font-semibold uppercase tracking-wide opacity-70">Výsledek</span>
+              <span className="font-semibold">{winnerName}</span>
+              <span className="opacity-80">
+                {fight.method ? METHOD_LABELS[fight.method] : ""}
+                {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+                {fight.result_time ? ` · ${fight.result_time}` : ""}
+              </span>
+              {graded && (
+                <span className="ml-auto font-bold tabular-nums">
+                  {hit ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.` : "0 b."}
+                </span>
+              )}
+            </div>
+          );
+        })()}
+
       <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
         {[fight.fighter_a, fight.fighter_b].map((fighter) => {
           const isActualWinner = showResult && fight.winner_fighter_id === fighter.id;
@@ -442,6 +449,11 @@ export function FightTipCard({
                 )}
                 {fighter.name}
               </span>
+              {fighter.nickname && (
+                <span className="-mt-1 text-xs italic text-neutral-400 dark:text-neutral-500">
+                  „{fighter.nickname}“
+                </span>
+              )}
               {/* record · rank · odds on one row - vertical space is scarce
                   with 14 fights on the card */}
               {!fighter.is_tba ? (

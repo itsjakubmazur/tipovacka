@@ -49,6 +49,9 @@ export function EventCompareList({
       {rows.map((row, i) => {
         const rank = i + 1;
         const delta = row.delta;
+        // Gap to the player directly ahead - the number that actually tells
+        // you how close the next spot is.
+        const gapToNext = i === 0 ? 0 : rows[i - 1].points - row.points;
         return (
           <div
             key={row.user_id}
@@ -111,7 +114,14 @@ export function EventCompareList({
               <span className="text-xs text-neutral-500 dark:text-neutral-300">
                 po {row.fights_scored} z {totalFights} zápasů
               </span>
-              <span className="text-lg font-bold">{row.points}</span>
+              <div className="flex flex-col items-end leading-tight">
+                <span className="text-lg font-bold">{row.points}</span>
+                {gapToNext > 0 && (
+                  <span className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">
+                    −{gapToNext} na {rank - 1}. místo
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         );

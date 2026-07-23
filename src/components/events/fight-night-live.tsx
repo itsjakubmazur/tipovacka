@@ -51,7 +51,7 @@ export async function FightNightLive({
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
           <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
         </span>
-        Fight Night živě
+        Galavečer živě
         {gradedCount > 0 && (
           <span className="font-normal text-neutral-500 dark:text-neutral-400">
             · {gradedCount} {gradedCount === 1 ? "zápas" : gradedCount <= 4 ? "zápasy" : "zápasů"} odbodováno
@@ -87,6 +87,7 @@ export async function FightNightLive({
             rank={i + 1}
             nickname={row.nickname ?? "Bez přezdívky"}
             points={row.points}
+            gapToNext={i === 0 ? 0 : rows[i - 1].points - row.points}
             isMe={row.user_id === currentUserId}
           />
         ))}
@@ -97,6 +98,7 @@ export async function FightNightLive({
               rank={myIndex + 1}
               nickname={rows[myIndex].nickname ?? "Bez přezdívky"}
               points={rows[myIndex].points}
+              gapToNext={rows[myIndex - 1].points - rows[myIndex].points}
               isMe
             />
           </>
@@ -116,11 +118,13 @@ function MiniRow({
   rank,
   nickname,
   points,
+  gapToNext,
   isMe,
 }: {
   rank: number;
   nickname: string;
   points: number;
+  gapToNext: number;
   isMe: boolean;
 }) {
   return (
@@ -137,7 +141,14 @@ function MiniRow({
         {nickname}
         {isMe && <span className="text-xs font-normal text-neutral-500 dark:text-neutral-400">(ty)</span>}
       </span>
-      <span className="font-bold tabular-nums">{points}</span>
+      <span className="flex items-baseline gap-2">
+        {gapToNext > 0 && (
+          <span className="text-[11px] font-normal tabular-nums text-neutral-400 dark:text-neutral-500">
+            −{gapToNext}
+          </span>
+        )}
+        <span className="font-bold tabular-nums">{points}</span>
+      </span>
     </div>
   );
 }
