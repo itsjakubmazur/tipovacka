@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChartNoAxesColumn, ArrowRight } from "lucide-react";
+import { ChartNoAxesColumn, ArrowRight, BookOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
 import { BankAccountForm } from "@/components/profile/bank-account-form";
 import { StartovneStats } from "@/components/profile/startovne-stats";
 import { InstallAppGuide } from "@/components/profile/install-app-guide";
 import { NotificationPreferences } from "@/components/profile/notification-preferences";
+import { ChangePasswordForm } from "@/components/profile/change-password-form";
 import { PushNotificationToggle } from "@/components/push/push-notification-toggle";
 import { Badge } from "@/components/ui/badge";
 
@@ -45,6 +46,15 @@ export default async function ProfilePage() {
         Moje statistiky a odznaky
         <ArrowRight className="ml-auto size-4 text-neutral-400" />
       </Link>
+      <Link
+        href="/pravidla"
+        className="flex items-center gap-2 rounded-xl border border-white/45 bg-white/35 p-4 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-lg transition hover:border-white/80 hover:shadow-xl dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+      >
+        <BookOpen className="size-4 text-yellow-600 dark:text-accent" />
+        Jak se hraje — pravidla a body
+        <ArrowRight className="ml-auto size-4 text-neutral-400" />
+      </Link>
+      <ChangePasswordForm />
       <InstallAppGuide />
       <PushNotificationToggle userId={user.id} />
       <NotificationPreferences
