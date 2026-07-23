@@ -117,3 +117,20 @@ body::before {
 .splash-failsafe {
   animation: splash-failsafe-hide 0.3s ease-out 6s forwards;
 }
+
+/* Respect reduced-motion for decorative loops: freeze the wordmark shimmer
+   to a solid color and stop the live-pulse ping. The splash failsafe is
+   deliberately left running - it's a functional reveal, not decoration, and
+   disabling it could leave the overlay covering the app. */
+@media (prefers-reduced-motion: reduce) {
+  .brand-loader {
+    animation: none;
+    background-image: none;
+    background-clip: initial;
+    -webkit-background-clip: initial;
+    color: var(--foreground);
+  }
+  .animate-ping {
+    animation: none;
+  }
+}
