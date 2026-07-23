@@ -31,11 +31,11 @@ function czechAuthError(message: string): string {
   return "Něco se nepovedlo. Zkus to prosím znovu.";
 }
 
-export function LoginForm() {
+export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "register" }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const [mode, setMode] = useState<Mode>("login");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
