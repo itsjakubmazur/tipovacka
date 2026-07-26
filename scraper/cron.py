@@ -114,9 +114,11 @@ CZECH_MONTHS_GENITIVE = {
 
 
 def event_label(event: dict) -> str:
-    base = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
-    subtitle = (event.get("subtitle") or "").strip()
-    return f"{base}: {subtitle}" if subtitle else base
+    # Push-notification titles are tight (iOS truncates around ~30-40 chars,
+    # and every title already appends "za hodinu"/"karta je online"/…), so we
+    # deliberately keep this to just "OKTAGON 92" and never fold in the
+    # subtitle. The full subtitle still shows in-app on the event pages.
+    return f"OKTAGON {event['number']}" if event.get("number") else event["name"]
 
 
 def _parse_dt(value: str) -> datetime:
