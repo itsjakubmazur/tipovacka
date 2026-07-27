@@ -47,6 +47,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  // Draw into the notch / home-indicator area so env(safe-area-inset-*) is
+  // non-zero - fixed elements (header, bottom nav, kecárna composer) then pad
+  // themselves off the Dynamic Island and rounded corners.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

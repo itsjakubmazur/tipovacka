@@ -112,6 +112,18 @@ export function EventComments({
     setLastSeen(now);
   }, [seenKey]);
 
+  // While the panel is open, freeze the page behind it - otherwise dragging on
+  // the non-scrollable parts of the sheet (header, poll) scrolls the event
+  // page instead of the chat.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   useEffect(() => {
     async function refetch() {
       const { data } = await supabase
@@ -287,7 +299,7 @@ export function EventComments({
             )}
 
             {/* messages */}
-            <div className="flex min-h-0 flex-1 flex-col-reverse gap-1 overflow-y-auto px-3 py-3 [-webkit-overflow-scrolling:touch]">
+            <div className="flex min-h-0 flex-1 flex-col-reverse gap-1 overflow-y-auto overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch]">
               {comments.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-10 text-center">
                   <span className="flex size-12 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
@@ -471,7 +483,7 @@ export function EventComments({
             {/* composer */}
             <form
               onSubmit={submit}
-              className="flex shrink-0 items-center gap-2 border-t border-neutral-200 px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
+              className="flex shrink-0 items-center gap-2 border-t border-neutral-200 px-[max(0.75rem,env(safe-area-inset-left))] py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
             >
               {gifsEnabled && (
                 <button
