@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { MessageCircle, SmilePlus, Trash2, X, Send } from "lucide-react";
+import { MessageCircle, SmilePlus, Trash2, X, Send, Film } from "lucide-react";
 import { EmojiGlyph } from "@/components/events/emoji-glyph";
 import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
+import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 
 type Reaction = { id: string; user_id: string; emoji: string };
@@ -17,6 +18,7 @@ type Comment = {
   created_at: string;
   nickname: string;
   isSystem: boolean;
+  gifUrl: string | null;
   reactions: Reaction[];
 };
 
@@ -93,6 +95,7 @@ export function EventComments({
   const [lastSeen, setLastSeen] = useState<string | null>(null);
   const [reactingTo, setReactingTo] = useState<string | null>(null);
   const [pickerFor, setPickerFor] = useState<string | null>(null);
+  const [gifOpen, setGifOpen] = useState(false);
   const seenKey = `kecarna-seen-${eventId}`;
 
   useEffect(() => {
@@ -114,7 +117,7 @@ export function EventComments({
       const { data } = await supabase
         .from("event_comments")
         .select(
-          "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
+          "id, user_id, body, created_at, is_system, gif_url, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
         )
         .eq("event_id", eventId)
         .order("created_at", { ascending: false })
@@ -128,6 +131,7 @@ export function EventComments({
               body: string;
               created_at: string;
               is_system: boolean;
+              gif_url: string | null;
               profiles: { nickname: string } | null;
               event_comment_reactions: Reaction[];
             }[]
@@ -137,6 +141,7 @@ export function EventComments({
             body: c.body,
             created_at: c.created_at,
             isSystem: c.is_system,
+            gifUrl: c.gif_url,
             nickname: c.profiles?.nickname ?? "Bez přezdívky",
             reactions: c.event_comment_reactions,
           }))
@@ -194,6 +199,15 @@ export function EventComments({
       return;
     }
     setBody("");
+  }
+
+  async function sendGif(gifUrl: string) {
+    setGifOpen(false);
+    setError(null);
+    const { error } = await supabase
+      .from("event_comments")
+      .insert({ event_id: eventId, user_id: userId, body: "", gif_url: gifUrl });
+    if (error) setError("Odeslání GIFu se nepodařilo.");
   }
 
   async function remove(id: string) {
@@ -340,16 +354,27 @@ export function EventComments({
                       )}
 
                       <div className={cn("group/msg relative flex items-end gap-1", isOwn && "flex-row-reverse")}>
-                        <div
-                          className={cn(
-                            "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
-                            isOwn
-                              ? "rounded-2xl rounded-br-md bg-accent text-black"
-                              : "rounded-2xl rounded-bl-md bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100"
-                          )}
-                        >
-                          {comment.body}
-                        </div>
+                        {comment.gifUrl ? (
+                          <div className="overflow-hidden rounded-2xl shadow-sm">
+                            {/* eslint-disable-next-line @next/next/no-img-element -- animated remote GIF, next/image can't optimize it */}
+                            <img
+                              src={comment.gifUrl}
+                              alt="GIF"
+                              className="max-h-56 w-auto max-w-[220px] rounded-2xl"
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className={cn(
+                              "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
+                              isOwn
+                                ? "rounded-2xl rounded-br-md bg-accent text-black"
+                                : "rounded-2xl rounded-bl-md bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100"
+                            )}
+                          >
+                            {comment.body}
+                          </div>
+                        )}
 
                         {/* hover actions: react + delete */}
                         <div className="flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/msg:opacity-100 max-md:opacity-60">
@@ -448,6 +473,16 @@ export function EventComments({
               onSubmit={submit}
               className="flex shrink-0 items-center gap-2 border-t border-neutral-200 px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
             >
+              {gifsEnabled && (
+                <button
+                  type="button"
+                  onClick={() => setGifOpen(true)}
+                  aria-label="Přidat GIF"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-neutral-300 text-neutral-500 transition-colors hover:border-accent hover:text-yellow-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:text-accent"
+                >
+                  <Film className="size-4" />
+                </button>
+              )}
               <input
                 value={body}
                 onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
@@ -478,6 +513,8 @@ export function EventComments({
           onClose={() => setPickerFor(null)}
         />
       )}
+
+      {gifOpen && <GifPicker onSelect={sendGif} onClose={() => setGifOpen(false)} />}
     </>
   );
 }

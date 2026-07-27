@@ -114,7 +114,7 @@ export default async function EventDetailPage({
     supabase
       .from("event_comments")
       .select(
-        "id, user_id, body, created_at, is_system, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
+        "id, user_id, body, created_at, is_system, gif_url, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
       )
       .eq("event_id", id)
       .order("created_at", { ascending: false })
@@ -268,6 +268,7 @@ export default async function EventDetailPage({
     body: string;
     created_at: string;
     is_system: boolean;
+    gif_url: string | null;
     profiles: { nickname: string } | null;
     event_comment_reactions: { id: string; user_id: string; emoji: string }[];
   }[]).map((c) => ({
@@ -276,6 +277,7 @@ export default async function EventDetailPage({
     body: c.body,
     created_at: c.created_at,
     isSystem: c.is_system,
+    gifUrl: c.gif_url,
     nickname: c.profiles?.nickname ?? "Bez přezdívky",
     reactions: c.event_comment_reactions,
   }));

@@ -524,7 +524,7 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
         {
             "notified_at": "is.null",
             "is_system": "eq.false",
-            "select": "id,event_id,user_id,body,created_at",
+            "select": "id,event_id,user_id,body,gif_url,created_at",
         },
     )
     if not comments:
@@ -560,9 +560,12 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
         if len(group) == 1:
             comment = group[0]
             nickname = nicknames.get(comment["user_id"], "Někdo")
-            body = comment["body"]
-            body_preview = body if len(body) <= 100 else f"{body[:99]}…"
-            preview = f"{nickname}: {body_preview}"
+            body = comment["body"] or ""
+            if not body.strip() and comment.get("gif_url"):
+                preview = f"{nickname} poslal/a GIF 🎬"
+            else:
+                body_preview = body if len(body) <= 100 else f"{body[:99]}…"
+                preview = f"{nickname}: {body_preview}"
         else:
             preview = f"{len(group)} nových zpráv, zajdi se podívat."
 
