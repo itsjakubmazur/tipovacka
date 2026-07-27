@@ -21,12 +21,16 @@ export async function GET(request: NextRequest) {
   const points = params.get("points") ?? "0";
   const rank = params.get("rank");
   const total = params.get("total");
+  // Optional highlight ribbon for a special moment (perfect card, bold-pick
+  // upset, ...). Free text from the share link, capped so it can't blow up
+  // the layout.
+  const moment = params.get("moment")?.slice(0, 40) || null;
   const rawImageUrl = safeImageUrl(params.get("img"));
   const imageUrl = rawImageUrl ? await fetchImageDataUri(rawImageUrl) : null;
 
   const rankLabel = rank ? `${rank}. místo${total ? ` z ${total}` : ""}` : null;
   const footer = `TIPNI SI TAKY · ${request.nextUrl.host.toUpperCase()}`;
-  const allText = `OKTAGON GARÁŽ TIPOVAČKA ${event} ${nick} ${points} ${rankLabel ?? ""} ${footer}`;
+  const allText = `OKTAGON GARÁŽ TIPOVAČKA ${event} ${nick} ${points} ${rankLabel ?? ""} ${moment ?? ""} ${footer}`;
   const fontData = await loadCzechFont(allText);
 
   return new ImageResponse(
@@ -62,6 +66,25 @@ export async function GET(request: NextRequest) {
           <div style={{ display: "flex", fontSize: 19, letterSpacing: 9, color: "#d4d4d4" }}>
             TIPOVAČKA
           </div>
+
+          {moment && (
+            <div
+              style={{
+                display: "flex",
+                marginTop: 18,
+                padding: "6px 24px",
+                borderRadius: 999,
+                backgroundColor: "#FFD400",
+                color: "#0a0a0a",
+                fontSize: 24,
+                fontWeight: 800,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+              }}
+            >
+              {moment}
+            </div>
+          )}
 
           <div
             style={{

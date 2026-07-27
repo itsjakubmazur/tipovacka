@@ -99,13 +99,15 @@ export async function TipperDetail({
       isOwnResult && locked
         ? supabase
             .from("event_leaderboard")
-            .select("user_id, points")
+            .select("user_id, points, perfect_card")
             .eq("event_id", eventId)
             .order("points", { ascending: false })
             .order("fights_correct_winner", { ascending: false })
             .order("perfect_card", { ascending: false })
             .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
-        : Promise.resolve({ data: null as { user_id: string; points: number }[] | null }),
+        : Promise.resolve({
+            data: null as { user_id: string; points: number; perfect_card: boolean }[] | null,
+          }),
     ]);
 
     const predictionByFight = new Map<string, Prediction>(
@@ -119,14 +121,24 @@ export async function TipperDetail({
 
     // Rank + share button, only when the viewer is looking at their own
     // finished result (leaderboardRows fetched in the wave above).
-    let shareData: { points: number; rank: number | null; total: number | null } | null = null;
+    let shareData:
+      | { points: number; rank: number | null; total: number | null; moment: string | null }
+      | null = null;
     if (leaderboardRows) {
       const index = leaderboardRows.findIndex((r) => r.user_id === userId);
       if (index >= 0) {
+        // Celebrate the standout moments right on the share card.
+        const moment =
+          leaderboardRows[index].perfect_card
+            ? "Perfektní karta"
+            : index === 0
+              ? "Král večera"
+              : null;
         shareData = {
           points: leaderboardRows[index].points,
           rank: index + 1,
           total: leaderboardRows.length,
+          moment,
         };
       }
     }
@@ -154,6 +166,7 @@ export async function TipperDetail({
                 rank={shareData.rank}
                 total={shareData.total}
                 imageUrl={event.image_url}
+                moment={shareData.moment}
               />
             )}
             {(bonusFight || actualFotnFight) && (

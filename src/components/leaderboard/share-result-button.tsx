@@ -17,6 +17,7 @@ export function ShareResultCard({
   rank,
   total,
   imageUrl,
+  moment,
 }: {
   eventLabel: string;
   nickname: string;
@@ -24,6 +25,7 @@ export function ShareResultCard({
   rank: number | null;
   total: number | null;
   imageUrl?: string | null;
+  moment?: string | null;
 }) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -35,11 +37,12 @@ export function ShareResultCard({
   if (rank != null) query.set("rank", String(rank));
   if (total != null) query.set("total", String(total));
   if (imageUrl) query.set("img", imageUrl);
+  if (moment) query.set("moment", moment);
   const cardUrl = `/share/card?${query.toString()}`;
 
   async function share() {
     const pageUrl = `${window.location.origin}/share?${query.toString()}`;
-    const text = `${nickname}: ${points} b. na ${eventLabel}${rank ? ` (${rank}. místo)` : ""} 🥊`;
+    const text = `${nickname}: ${points} b. na ${eventLabel}${moment ? ` — ${moment}` : rank ? ` (${rank}. místo)` : ""} 🥊`;
 
     // Prefer sharing the PNG itself - recipients get the picture, not a link.
     if (navigator.share) {
