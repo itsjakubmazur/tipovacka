@@ -16,6 +16,7 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
     if (!supported || needsInstall) return;
@@ -29,12 +30,14 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
   async function subscribe() {
     setLoading(true);
     setError(null);
+    setDenied(false);
     const result = await subscribeToPush(userId);
     setLoading(false);
     if (result.success) {
       setSubscribed(true);
     } else {
       setError(result.error);
+      setDenied(Boolean(result.denied));
     }
   }
 
@@ -86,7 +89,14 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
         {subscribed ? <BellOff className="size-4" /> : <Bell className="size-4" />}
         {loading ? "Ukládám…" : subscribed ? "Vypnout upozornění" : "Zapnout upozornění"}
       </Button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error &&
+        (denied ? (
+          <p className="rounded-lg bg-amber-500/10 p-2.5 text-sm text-amber-700 dark:text-amber-300">
+            {error}
+          </p>
+        ) : (
+          <p className="text-sm text-red-600">{error}</p>
+        ))}
     </div>
   );
 }

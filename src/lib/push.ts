@@ -22,19 +22,41 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export async function subscribeToPush(
   userId: string
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<{ success: true } | { success: false; error: string; denied?: boolean }> {
   const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   if (!vapidKey) {
     return { success: false, error: "Upozornění nejsou na tomto webu nastavená." };
   }
 
+  // On iOS the permission prompt only appears if requestPermission() runs
+  // directly inside the tap. Once it's been denied, iOS won't prompt again -
+  // point people at Settings rather than showing the same failed button.
+  if (typeof Notification !== "undefined" && Notification.permission === "denied") {
+    return {
+      success: false,
+      denied: true,
+      error:
+        "Upozornění máš pro appku zakázaná. Zapni je v Nastavení iPhonu → Upozornění → OKTAGON GARÁŽ (nebo appku smaž z plochy a přidej znovu).",
+    };
+  }
+
   try {
-    const registration = await navigator.serviceWorker.register("/sw.js");
+    // Request permission FIRST, before any long await - iOS WebKit can drop
+    // the user-gesture token across an awaited serviceWorker.register(),
+    // which then silently returns "default".
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
-      return { success: false, error: "Bez povolení v prohlížeči to nepůjde." };
+      return {
+        success: false,
+        denied: permission === "denied",
+        error:
+          permission === "denied"
+            ? "Upozornění máš pro appku zakázaná. Zapni je v Nastavení iPhonu → Upozornění → OKTAGON GARÁŽ (nebo appku smaž z plochy a přidej znovu)."
+            : "Klepni na Zapnout upozornění ještě jednou a dej Povolit.",
+      };
     }
 
+    const registration = await navigator.serviceWorker.register("/sw.js");
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapidKey),
