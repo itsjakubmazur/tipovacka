@@ -7,6 +7,9 @@ import {
   Crown,
   Dices,
   Flame,
+  Ghost,
+  Rocket,
+  Swords,
   Target,
   Trophy,
 } from "lucide-react";
@@ -241,7 +244,7 @@ export async function TipperDetail({
     supabase
       .from("fights")
       .select(
-        "id, event_id, card_order, card_segment, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
+        "id, event_id, card_order, card_segment, is_main_event, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
       )
       .in("event_id", eventIdFilter)
       .eq("status", "completed"),
@@ -285,6 +288,7 @@ export async function TipperDetail({
         eventDate: eventDateById.get(f.event_id) ?? "",
         cardOrder: f.card_order,
         cardSegment: f.card_segment as string | null,
+        isMainEvent: Boolean(f.is_main_event),
       },
     ])
   );
@@ -300,12 +304,33 @@ export async function TipperDetail({
     ])
   );
   const completedFightIds = (completedFights ?? []).map((f) => f.id);
+  const fightIdFilter = completedFightIds.length
+    ? completedFightIds
+    : ["00000000-0000-0000-0000-000000000000"];
 
-  const { data: gradedPredictions } = await supabase
-    .from("predictions")
-    .select("fight_id, predicted_winner_id, predicted_method, points")
-    .eq("user_id", userId)
-    .in("fight_id", completedFightIds.length ? completedFightIds : ["00000000-0000-0000-0000-000000000000"]);
+  const [{ data: gradedPredictions }, { data: boldPicks }, { data: allPicks }] = await Promise.all([
+    supabase
+      .from("predictions")
+      .select("fight_id, predicted_winner_id, predicted_method, points")
+      .eq("user_id", userId)
+      .in("fight_id", fightIdFilter),
+    // The user's jistotka fight per season event (for the underdog badge).
+    supabase.from("bold_picks").select("fight_id").eq("user_id", userId).in("event_id", eventIdFilter),
+    // Everyone's winner picks on the graded fights, to work out which of the
+    // user's correct calls went against the crowd (the "Solitér" badge).
+    supabase.from("predictions").select("fight_id, predicted_winner_id").in("fight_id", fightIdFilter),
+  ]);
+
+  const boldFightIds = new Set((boldPicks ?? []).map((b) => b.fight_id));
+
+  // Per fight: how many people picked each fighter, and the total.
+  const pickCounts = new Map<string, { total: number; byFighter: Map<string, number> }>();
+  for (const p of allPicks ?? []) {
+    const entry = pickCounts.get(p.fight_id) ?? { total: 0, byFighter: new Map<string, number>() };
+    entry.total += 1;
+    entry.byFighter.set(p.predicted_winner_id, (entry.byFighter.get(p.predicted_winner_id) ?? 0) + 1);
+    pickCounts.set(p.fight_id, entry);
+  }
 
   const ordered = (gradedPredictions ?? [])
     .filter((p) => fightMeta.has(p.fight_id))
@@ -370,6 +395,44 @@ export async function TipperDetail({
   // Exact hits: winner + method + round/decision all right (3 points).
   const exactHits = ordered.filter((p) => (p.points ?? 0) >= 3).length;
 
+  // Longest run of consecutive correctly-called main events, in chronological
+  // order - rewards nailing the headliners gala after gala.
+  let mainEventStreak = 0;
+  let mainEventRun = 0;
+  for (const p of ordered) {
+    if (!fightMeta.get(p.fight_id)?.isMainEvent) continue;
+    if ((p.points ?? 0) > 0) {
+      mainEventRun += 1;
+      mainEventStreak = Math.max(mainEventStreak, mainEventRun);
+    } else {
+      mainEventRun = 0;
+    }
+  }
+
+  // Jistotka staked on the underdog (higher odds) that actually landed - the
+  // gutsiest possible call.
+  let boldUnderdogHits = 0;
+  for (const p of ordered) {
+    if (!boldFightIds.has(p.fight_id) || (p.points ?? 0) <= 0) continue;
+    const meta = oddsMetaByFight.get(p.fight_id);
+    if (!meta || meta.oddsA == null || meta.oddsB == null || meta.oddsA === meta.oddsB) continue;
+    const pickedA = p.predicted_winner_id === meta.fighterAId;
+    const pickedOdds = pickedA ? meta.oddsA : meta.oddsB;
+    const otherOdds = pickedA ? meta.oddsB : meta.oddsA;
+    if (pickedOdds > otherOdds) boldUnderdogHits += 1;
+  }
+
+  // Contrarian hits: correct calls that went against the crowd - at most a
+  // third of tippers picked that fighter, and it came in.
+  let soloHits = 0;
+  for (const p of ordered) {
+    if ((p.points ?? 0) <= 0) continue;
+    const counts = pickCounts.get(p.fight_id);
+    if (!counts || counts.total < 3) continue;
+    const share = (counts.byFighter.get(p.predicted_winner_id) ?? 0) / counts.total;
+    if (share <= 1 / 3) soloHits += 1;
+  }
+
   const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
   const badgeIconClass = "size-3.5 text-yellow-600 dark:text-accent";
   const badges: { icon: React.ReactNode; label: string }[] = [];
@@ -399,6 +462,24 @@ export async function TipperDetail({
   }
   if (oddsClassified >= 5 && underdogShare >= 0.3) {
     badges.push({ icon: <Dices className={badgeIconClass} />, label: "Odvážlivec" });
+  }
+  if (boldUnderdogHits > 0) {
+    badges.push({
+      icon: <Rocket className={badgeIconClass} />,
+      label: boldUnderdogHits > 1 ? `Odvážlivec večera ×${boldUnderdogHits}` : "Odvážlivec večera",
+    });
+  }
+  if (mainEventStreak >= 3) {
+    badges.push({
+      icon: <Swords className={badgeIconClass} />,
+      label: `Pán hlavního zápasu (${mainEventStreak} v řadě)`,
+    });
+  }
+  if (soloHits >= 3) {
+    badges.push({
+      icon: <Ghost className={badgeIconClass} />,
+      label: `Solitér (proti davu ×${soloHits})`,
+    });
   }
 
   return (
