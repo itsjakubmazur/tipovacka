@@ -33,14 +33,36 @@ export default async function ScraperLogPage() {
     redirect("/");
   }
 
-  const [{ data: runs }, { data: heartbeat }] = await Promise.all([
+  const [{ data: runs }, { data: heartbeat }, { data: activeEvents }] = await Promise.all([
     supabase
       .from("scraper_runs")
       .select("id, mode, event_id, status, message, started_at, finished_at, events(number, name)")
       .order("started_at", { ascending: false })
       .limit(50),
     supabase.from("cron_heartbeat").select("last_run_at").eq("id", 1).maybeSingle(),
+    supabase
+      .from("events")
+      .select("id, number, name, fights(card_order, status)")
+      .not("status", "in", "(draft,completed)"),
   ]);
+
+  // Safety net: since the reorder is atomic now, duplicate card_order values
+  // shouldn't happen - but if one ever slips in, surface it here rather than
+  // letting the card render in a confusing order.
+  const cardIssues: string[] = [];
+  for (const ev of (activeEvents ?? []) as unknown as {
+    number: number | null;
+    name: string;
+    fights: { card_order: number; status: string }[];
+  }[]) {
+    const orders = (ev.fights ?? [])
+      .filter((f) => f.status !== "cancelled")
+      .map((f) => f.card_order);
+    const dupes = orders.filter((o, i) => orders.indexOf(o) !== i);
+    if (dupes.length > 0) {
+      cardIssues.push(ev.number ? `OKTAGON ${ev.number}` : ev.name);
+    }
+  }
 
   const lastRun = heartbeat?.last_run_at ? new Date(heartbeat.last_run_at) : null;
   const ageMinutes = lastRun ? (new Date().getTime() - lastRun.getTime()) / 60000 : null;
@@ -80,6 +102,17 @@ export default async function ScraperLogPage() {
           </span>
         )}
       </div>
+
+      {cardIssues.length > 0 && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm dark:border-red-900 dark:bg-red-950/40">
+          <span className="font-semibold text-red-700 dark:text-red-400">
+            Pozor: duplicitní pořadí zápasů
+          </span>
+          <span className="text-neutral-600 dark:text-neutral-300">
+            {" "}na kartě {cardIssues.join(", ")}. Zkontroluj pořadí v administraci.
+          </span>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         {(runs ?? []).length === 0 && (

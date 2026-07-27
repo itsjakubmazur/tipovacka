@@ -82,6 +82,10 @@ OKTAGON_YOUTUBE_URL = "https://youtube.com/@oktagon_czsk"
 PRAGUE_TZ = ZoneInfo("Europe/Prague")
 PUBLISH_DAYS_BEFORE = 3
 PUBLISH_HOUR_PRAGUE = 9
+# "Season is wrapping up" heads-up: once per season, from mid-December on.
+SEASON_WRAP_MONTH = 12
+SEASON_WRAP_DAY = 15
+SEASON_WRAP_HOUR_PRAGUE = 18
 
 # weekday() -> Czech "in <day>" with the right preposition (v/ve)
 CZECH_DAY_PREPOSITIONAL = {
@@ -336,6 +340,25 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
                 f"/events/{event['id']}",
                 pref="notify_card_updates",
             )
+            # Kick off the kecárna with a system message, so the chat isn't a
+            # cold empty box when everyone lands to tip.
+            try:
+                db.insert(
+                    "event_comments",
+                    [
+                        {
+                            "event_id": event["id"],
+                            "user_id": None,
+                            "is_system": True,
+                            "body": (
+                                f"🥊 Karta na {label} je venku! Natipuj vítěze, způsob a kolo. "
+                                "Kdo si troufne na perfektní kartu?"
+                            ),
+                        }
+                    ],
+                )
+            except Exception as exc:
+                print(f"Nepodařilo se založit systémovou hlášku v kecárně: {exc}")
 
 
 def recheck_cards(db: SupabaseClient, now: datetime) -> None:
@@ -757,6 +780,63 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def send_season_wrap_warning(db: SupabaseClient, now: datetime) -> None:
+    """Once per season, from mid-December, a personalized "here's where you
+    stand, the race is closing" nudge - rank, points, and the gap to the spot
+    above. Fires exactly once (guarded by season_notifications) for anyone with
+    push on who hasn't opted out of reminders."""
+    local = now.astimezone(PRAGUE_TZ)
+    in_window = local.month == SEASON_WRAP_MONTH and (
+        local.day > SEASON_WRAP_DAY
+        or (local.day == SEASON_WRAP_DAY and local.hour >= SEASON_WRAP_HOUR_PRAGUE)
+    )
+    if not in_window:
+        return
+
+    season = local.year
+    already = db.select(
+        "season_notifications",
+        {"season": f"eq.{season}", "kind": "eq.wrap_warning", "select": "season"},
+    )
+    if already:
+        return
+
+    rows = db.select(
+        "season_leaderboard",
+        {"season": f"eq.{season}", "order": "points.desc", "select": "user_id,nickname,points"},
+    )
+    if len(rows) < 2:
+        return  # not enough of a race yet; try again next tick within the window
+
+    with log_run("cron_season_wrap"):
+        total = len(rows)
+        subscribers = {r["user_id"] for r in db.select("push_subscriptions", {"select": "user_id"})}
+        opted_out = {
+            p["id"] for p in db.select("profiles", {"notify_reminders": "eq.false", "select": "id"})
+        }
+        rank_by_user = {row["user_id"]: idx for idx, row in enumerate(rows)}
+
+        for user_id in subscribers - opted_out:
+            idx = rank_by_user.get(user_id)
+            if idx is None:
+                continue
+            points = rows[idx]["points"]
+            if idx == 0:
+                body = (
+                    f"Vedeš sezónu {season} s {points} b.! Udržíš první místo až do konce roku?"
+                )
+            else:
+                gap = rows[idx - 1]["points"] - points
+                body = (
+                    f"Jsi {idx + 1}. z {total} v sezóně {season} ({points} b.). Na {idx}. místo "
+                    f"ztrácíš {gap} b. – ještě se to dá dohnat!"
+                )
+            send_to_user(db, user_id, f"🏁 Sezóna {season} finišuje", body, "/leaderboard")
+
+        db.insert("season_notifications", [{"season": season, "kind": "wrap_warning"}])
+        print(f"Season wrap warning odeslán pro sezónu {season} ({total} hráčů).")
+
+
 def _alert_all_admins(db: SupabaseClient, title: str, body: str, url: str) -> None:
     admins = db.select(
         "profiles",
@@ -829,6 +909,7 @@ def main() -> None:
     send_fotn_reminders(db, now)
     send_payout_settled_notifications(db, now)
     send_followup_notifications(db, now)
+    send_season_wrap_warning(db, now)
 
 
 if __name__ == "__main__":
