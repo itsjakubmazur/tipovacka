@@ -52,8 +52,12 @@ Does eight things, in order:
    PUBLISH_DAYS_BEFORE days before it starts.
 """
 
+import os
+
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+import requests
 
 from import_card import import_card, update_odds
 from import_results import import_results
@@ -64,6 +68,10 @@ from supabase_client import SupabaseClient
 
 CARD_GRACE_PERIOD = timedelta(minutes=5)
 CARD_RECHECK_INTERVAL = timedelta(hours=3)
+# The external scheduler ticks every few minutes; if we wake up and the last
+# recorded run is older than this, the scheduler was down and something may
+# have been missed - tell the admins.
+HEARTBEAT_OUTAGE_THRESHOLD = timedelta(minutes=30)
 FOLLOWUP_DAYS_AFTER = 1
 FOLLOWUP_HOUR_PRAGUE = 14
 HYPE_DAYS_BEFORE = 6
@@ -749,9 +757,65 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def _alert_all_admins(db: SupabaseClient, title: str, body: str, url: str) -> None:
+    admins = db.select(
+        "profiles",
+        {"or": "(is_admin.eq.true,is_superadmin.eq.true)", "select": "id"},
+    )
+    for admin in admins:
+        try:
+            send_to_user(db, admin["id"], title, body[:180], url)
+        except Exception as exc:
+            print(f"Nepodařilo se poslat alert adminovi {admin['id']}: {exc}")
+
+
+def _humanize_gap(gap: timedelta) -> str:
+    minutes = int(gap.total_seconds() // 60)
+    if minutes < 90:
+        return f"{minutes} min"
+    hours = minutes / 60
+    if hours < 36:
+        return f"{round(hours)} h"
+    return f"{round(hours / 24)} d"
+
+
+def record_heartbeat(db: SupabaseClient, now: datetime) -> None:
+    """Records that the scraper actually ran, and - since it's driven by an
+    external scheduler - alerts admins if we just woke up after a longer gap
+    than a normal tick (the scheduler was down). Also pings an external
+    healthcheck URL if HEALTHCHECK_URL is set, so a *total* outage (scheduler
+    never fires) is caught from outside. All best-effort: heartbeat problems
+    must never abort the real cron work."""
+    try:
+        rows = db.select("cron_heartbeat", {"select": "last_run_at", "limit": "1"})
+        last = _parse_dt(rows[0]["last_run_at"]) if rows and rows[0].get("last_run_at") else None
+        if last and now - last > HEARTBEAT_OUTAGE_THRESHOLD:
+            _alert_all_admins(
+                db,
+                "⚠️ Scraper se probudil po výpadku",
+                f"Naposledy běžel před {_humanize_gap(now - last)}. Zkontroluj, jestli něco neuteklo "
+                "(publikace karty, bodování, notifikace).",
+                "/admin/scraper-log",
+            )
+        if rows:
+            db.update("cron_heartbeat", {"last_run_at": now.isoformat()}, {"id": "eq.1"})
+        else:
+            db.insert("cron_heartbeat", [{"id": 1, "last_run_at": now.isoformat()}])
+    except Exception as exc:
+        print(f"Heartbeat se nepodařilo zaznamenat: {exc}")
+
+    healthcheck_url = os.environ.get("HEALTHCHECK_URL")
+    if healthcheck_url:
+        try:
+            requests.get(healthcheck_url, timeout=10)
+        except Exception as exc:
+            print(f"Healthcheck ping selhal: {exc}")
+
+
 def main() -> None:
     db = SupabaseClient()
     now = datetime.now(timezone.utc)
+    record_heartbeat(db, now)
     auto_create_events(db, now)
     send_hype_notifications(db, now)
     publish_draft_events(db, now)

@@ -33,15 +33,46 @@ export default async function ScraperLogPage() {
     redirect("/");
   }
 
-  const { data: runs } = await supabase
-    .from("scraper_runs")
-    .select("id, mode, event_id, status, message, started_at, finished_at, events(number, name)")
-    .order("started_at", { ascending: false })
-    .limit(50);
+  const [{ data: runs }, { data: heartbeat }] = await Promise.all([
+    supabase
+      .from("scraper_runs")
+      .select("id, mode, event_id, status, message, started_at, finished_at, events(number, name)")
+      .order("started_at", { ascending: false })
+      .limit(50),
+    supabase.from("cron_heartbeat").select("last_run_at").eq("id", 1).maybeSingle(),
+  ]);
+
+  const lastRun = heartbeat?.last_run_at ? new Date(heartbeat.last_run_at) : null;
+  const ageMinutes = lastRun ? (new Date().getTime() - lastRun.getTime()) / 60000 : null;
+  // A couple of missed ticks is normal jitter; flag only a real gap.
+  const stale = ageMinutes != null && ageMinutes > 30;
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Log scraperu</h1>
+
+      <div
+        className={cn(
+          "flex items-center justify-between rounded-xl border p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
+          lastRun == null || stale
+            ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
+            : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30"
+        )}
+      >
+        <span className="font-semibold">
+          {lastRun == null ? "Scraper zatím neběžel" : stale ? "Scraper možná stojí" : "Scraper běží"}
+        </span>
+        {lastRun && (
+          <span className="text-xs text-neutral-500 dark:text-neutral-300">
+            poslední běh{" "}
+            {lastRun.toLocaleString("cs-CZ", {
+              dateStyle: "short",
+              timeStyle: "short",
+              timeZone: "Europe/Prague",
+            })}
+          </span>
+        )}
+      </div>
 
       <div className="flex flex-col gap-2">
         {(runs ?? []).length === 0 && (
