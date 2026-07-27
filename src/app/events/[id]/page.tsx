@@ -14,6 +14,7 @@ import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
 import { WhoHasntTipped } from "@/components/events/who-hasnt-tipped";
+import { BraveryReveal } from "@/components/events/bravery-reveal";
 import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { TipActionBar } from "@/components/predictions/tip-action-bar";
 import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
@@ -376,6 +377,10 @@ export default async function EventDetailPage({
           fights={(fights ?? []).map((f) => f as unknown as Fight)}
           currentUserId={user.id}
         />
+      )}
+
+      {locked && (
+        <BraveryReveal eventId={id} fights={(fights ?? []).map((f) => f as unknown as Fight)} />
       )}
 
       {event.status === "completed" && event.payouts_enabled && (

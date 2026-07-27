@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
 import { BankAccountForm } from "@/components/profile/bank-account-form";
 import { StartovneStats } from "@/components/profile/startovne-stats";
+import { NemesisCard } from "@/components/profile/nemesis-card";
 import { InstallAppGuide } from "@/components/profile/install-app-guide";
 import { NotificationPreferences } from "@/components/profile/notification-preferences";
 import { ChangePasswordForm } from "@/components/profile/change-password-form";
@@ -38,6 +39,7 @@ export default async function ProfilePage() {
       <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
       <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
       <StartovneStats userId={user.id} />
+      <NemesisCard userId={user.id} />
       <Link
         href={`/leaderboard/u/${user.id}`}
         className="flex items-center gap-2 rounded-xl border border-white/45 bg-white/35 p-4 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-lg transition hover:border-white/80 hover:shadow-xl dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"

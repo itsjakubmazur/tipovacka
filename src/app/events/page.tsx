@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { TeaserEventCard } from "@/components/events/teaser-event-card";
+import { WelcomeCard } from "@/components/events/welcome-card";
 import { cn } from "@/lib/utils";
 import { cardOpensAtIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
@@ -109,6 +110,8 @@ export default async function EventsPage() {
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Galavečery</h1>
+
+      {user && <WelcomeCard />}
 
       {!events?.length && <p className="text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>}
 
