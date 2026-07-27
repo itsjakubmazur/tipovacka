@@ -53,21 +53,28 @@ export default async function ScraperLogPage() {
 
       <div
         className={cn(
-          "flex items-center justify-between rounded-xl border p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
+          "flex items-center gap-2 overflow-hidden rounded-xl border px-3 py-2 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
           lastRun == null || stale
             ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
             : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30"
         )}
       >
-        <span className="font-semibold">
+        <span
+          className={cn(
+            "size-2 shrink-0 rounded-full",
+            lastRun == null || stale ? "bg-red-500" : "bg-green-500"
+          )}
+        />
+        <span className="shrink-0 font-semibold">
           {lastRun == null ? "Scraper zatím neběžel" : stale ? "Scraper možná stojí" : "Scraper běží"}
         </span>
         {lastRun && (
-          <span className="text-xs text-neutral-500 dark:text-neutral-300">
-            poslední běh{" "}
+          <span className="ml-auto truncate whitespace-nowrap text-xs text-neutral-500 dark:text-neutral-300">
             {lastRun.toLocaleString("cs-CZ", {
-              dateStyle: "short",
-              timeStyle: "short",
+              day: "numeric",
+              month: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
               timeZone: "Europe/Prague",
             })}
           </span>
