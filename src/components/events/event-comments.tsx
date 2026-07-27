@@ -478,9 +478,10 @@ export function EventComments({
                   type="button"
                   onClick={() => setGifOpen(true)}
                   aria-label="Přidat GIF"
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-neutral-300 text-neutral-500 transition-colors hover:border-accent hover:text-yellow-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:text-accent"
+                  className="flex h-9 shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-2.5 text-xs font-bold text-neutral-500 transition-colors hover:border-accent hover:text-yellow-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:text-accent"
                 >
                   <Film className="size-4" />
+                  GIF
                 </button>
               )}
               <input
