@@ -286,7 +286,7 @@ export function EventComments({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Zavřít"
-                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                className="rounded-full bg-black/5 p-1.5 text-neutral-600 transition-colors hover:bg-black/10 hover:text-black dark:bg-white/10 dark:text-neutral-300 dark:hover:bg-white/20 dark:hover:text-white"
               >
                 <X className="size-5" />
               </button>

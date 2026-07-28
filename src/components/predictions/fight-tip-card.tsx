@@ -381,7 +381,7 @@ export function FightTipCard({
           return (
             <div
               className={cn(
-                "flex flex-wrap items-center gap-x-2 gap-y-1 border-t px-4 py-2.5 text-sm",
+                "flex items-center gap-2 border-t px-4 py-2.5 text-sm",
                 graded
                   ? hit
                     ? "border-green-600/30 bg-green-600/10 text-green-800 dark:text-green-400"
@@ -389,15 +389,19 @@ export function FightTipCard({
                   : "border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-300"
               )}
             >
-              <span className="text-xs font-semibold uppercase tracking-wide opacity-70">Výsledek</span>
-              <span className="font-semibold">{winnerName}</span>
-              <span className="opacity-80">
-                {fight.method ? METHOD_LABELS[fight.method] : ""}
-                {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
-                {fight.result_time ? ` · ${fight.result_time}` : ""}
+              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide opacity-70">
+                Výsledek
+              </span>
+              <span className="min-w-0 flex-1 truncate">
+                <span className="font-semibold">{winnerName}</span>
+                <span className="opacity-80">
+                  {fight.method ? ` · ${METHOD_LABELS[fight.method]}` : ""}
+                  {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
+                  {fight.result_time ? ` · ${fight.result_time}` : ""}
+                </span>
               </span>
               {graded && (
-                <span className="ml-auto font-bold tabular-nums">
+                <span className="shrink-0 font-bold tabular-nums">
                   {hit ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.` : "0 b."}
                 </span>
               )}
