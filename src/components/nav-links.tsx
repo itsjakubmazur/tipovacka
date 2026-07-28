@@ -58,8 +58,8 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
-      <div className="mx-auto flex max-w-3xl px-6 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)-1.25rem))]">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-black md:hidden">
+      <div className="mx-auto flex max-w-3xl px-6 pb-3">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);

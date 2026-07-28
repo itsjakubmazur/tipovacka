@@ -261,10 +261,10 @@ export function EventComments({
       {/* slide-up chat panel */}
       {open && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setOpen(false)}>
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/75 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/75"
+            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/55 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/55"
           >
             {/* grab handle */}
             <div className="flex shrink-0 justify-center pt-2">
