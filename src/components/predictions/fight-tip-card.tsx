@@ -389,9 +389,6 @@ export function FightTipCard({
                   : "border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-300"
               )}
             >
-              <span className="shrink-0 text-xs font-semibold uppercase tracking-wide opacity-70">
-                Výsledek
-              </span>
               <span className="min-w-0 flex-1 truncate">
                 <span className="font-semibold">{winnerName}</span>
                 <span className="opacity-80">
