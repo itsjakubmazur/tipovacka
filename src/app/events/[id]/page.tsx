@@ -335,7 +335,7 @@ export default async function EventDetailPage({
             <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
             <span>
               <span className="font-semibold text-black dark:text-white">Startovné 50 Kč</span> · vítěz bere
-              vše · QR platba po vyhodnocení
+              vše · QR po turnaji
             </span>
           </p>
         )}

@@ -194,7 +194,7 @@ export function EventStatusTimeline({
     {
       state: liveState,
       when: liveState === "current" ? "Právě teď" : shortDateTime(eventDateIso),
-      title: liveState === "done" ? "Galavečer odjel" : "Galavečer živě",
+      title: liveState === "done" ? "Galavečer skončil" : "Galavečer živě",
       desc:
         liveState === "current"
           ? `Odbodováno ${gradedCount} z ${totalCount} zápasů${points > 0 ? ` · zatím ${points} b.` : ""}.`
