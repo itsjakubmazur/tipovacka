@@ -67,10 +67,10 @@ export function GifPicker({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
         onClick={(e) => e.stopPropagation()}
-        className="animate-modal-panel relative flex max-h-[70vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900"
+        className="animate-modal-panel relative flex max-h-[70vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/75 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/75"
       >
         <div className="flex shrink-0 items-center gap-2 px-3 py-2.5">
-          <div className="flex flex-1 items-center gap-2 rounded-full border border-neutral-300 bg-neutral-50 px-3 py-1.5 dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="flex flex-1 items-center gap-2 rounded-full border border-white/50 bg-white/60 px-3 py-1.5 backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/60">
             <Search className="size-4 shrink-0 text-neutral-400" />
             <input
               ref={inputRef}

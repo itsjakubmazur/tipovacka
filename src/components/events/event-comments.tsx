@@ -264,7 +264,7 @@ export function EventComments({
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900"
+            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/75 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/75"
           >
             {/* grab handle */}
             <div className="flex shrink-0 justify-center pt-2">
@@ -381,7 +381,7 @@ export function EventComments({
                               "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
                               isOwn
                                 ? "rounded-2xl rounded-br-md bg-accent text-black"
-                                : "rounded-2xl rounded-bl-md bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100"
+                                : "rounded-2xl rounded-bl-md border border-white/50 bg-white/60 text-neutral-800 backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:text-neutral-100"
                             )}
                           >
                             {comment.body}
@@ -483,7 +483,7 @@ export function EventComments({
             {/* composer */}
             <form
               onSubmit={submit}
-              className="flex shrink-0 items-center gap-2 border-t border-neutral-200 px-[max(0.75rem,env(safe-area-inset-left))] py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-800"
+              className="flex shrink-0 items-center gap-2 border-t border-white/40 px-[max(0.75rem,env(safe-area-inset-left))] py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-700/40"
             >
               {gifsEnabled && (
                 <button
@@ -500,7 +500,7 @@ export function EventComments({
                 value={body}
                 onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
                 placeholder="Napiš něco ostatním…"
-                className="min-w-0 flex-1 rounded-full border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm outline-none transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:focus-visible:bg-neutral-950"
+                className="min-w-0 flex-1 rounded-full border border-white/50 bg-white/60 px-4 py-2 text-sm outline-none backdrop-blur-sm transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white/90 dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:focus-visible:bg-neutral-950/80"
               />
               <button
                 type="submit"
