@@ -158,3 +158,24 @@ body::before {
     animation: none;
   }
 }
+
+/* A tip just landed: a single accent pulse around the fight card, so saving
+   registers as something that happened rather than a line of small text. */
+@keyframes tip-saved {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 212, 0, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 212, 0, 0);
+  }
+}
+
+.animate-tip-saved {
+  animation: tip-saved 0.7s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tip-saved {
+    animation: none;
+  }
+}

@@ -148,6 +148,7 @@ export function FightTipCard({
   const [isBold, setIsBold] = useState(initialIsBold ?? false);
   const [boldHelpOpen, setBoldHelpOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [flash, setFlash] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -220,6 +221,9 @@ export function FightTipCard({
       setError("Uložení se nepodařilo.");
       return;
     }
+    // the tip is in - pulse the card so it's felt, not just read
+    setFlash(true);
+    setTimeout(() => setFlash(false), 700);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
     window.dispatchEvent(
@@ -294,6 +298,7 @@ export function FightTipCard({
     <div
       className={cn(
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
+        flash && "animate-tip-saved",
         voided
           ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
           : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
