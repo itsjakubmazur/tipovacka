@@ -114,13 +114,20 @@ export default async function EventsPage() {
 
   return (
     <div className="stagger-in flex flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-bold">Galavečery</h1>
+      <h1 className="text-xl font-bold lg:text-3xl">Galavečery</h1>
 
       {user && <WelcomeCard />}
 
       {!events?.length && <p className="text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>}
 
-      <div className="flex flex-col gap-3">
+      <div
+        className={cn(
+          "flex flex-col gap-3",
+          "lg:grid lg:grid-cols-3 lg:gap-4",
+          // the newest gala leads at full width and gets room for its poster
+          "lg:[&>*:first-child]:col-span-3 lg:[&>*:first-child]:min-h-[250px]"
+        )}
+      >
         {events?.map((event) => {
           // Drafts always use the teaser card, so an admin previews exactly
           // what everyone else will see. Admins in admin-view get every draft

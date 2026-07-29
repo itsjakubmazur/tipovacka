@@ -15,8 +15,8 @@ import { ErrorReporter } from "@/components/error-reporter";
  * instant so the splash/loader shows as early as possible. */
 function NavBarFallback() {
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-black">
-      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 lg:max-w-5xl xl:max-w-6xl">
         <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
           OKTAGON <span className="text-accent">GARÁŽ</span>
           <span className="hidden sm:inline"> Tipovačka</span>
@@ -73,7 +73,7 @@ export default function RootLayout({
           </Suspense>
           <PushPromptBanner />
           <BankAccountPromptBanner />
-          <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0">{children}</main>
+          <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0 lg:max-w-5xl xl:max-w-6xl">{children}</main>
         </ThemeProvider>
       </body>
     </html>
