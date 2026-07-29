@@ -44,11 +44,16 @@ export function EmojiPickerSheet({
   }, [resolvedTheme]);
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col justify-end" onClick={onClose}>
+    <div
+      // centred dialog from lg, bottom sheet below - emoji-mart's grid is a
+      // fixed width, so a full-viewport sheet just left it stranded in space
+      className="fixed inset-0 z-[60] flex flex-col justify-end lg:items-center lg:justify-center lg:p-6"
+      onClick={onClose}
+    >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative flex max-h-[75vh] flex-col rounded-t-2xl border-t border-white/45 bg-white shadow-2xl dark:border-neutral-700/45 dark:bg-neutral-900"
+        className="relative flex max-h-[75vh] flex-col rounded-t-2xl border-t border-white/45 bg-white shadow-2xl lg:w-full lg:max-w-sm lg:rounded-2xl lg:border dark:border-neutral-700/45 dark:bg-neutral-900"
       >
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
           <p className="text-sm font-semibold">Vyber reakci</p>
