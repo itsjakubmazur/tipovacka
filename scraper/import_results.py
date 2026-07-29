@@ -57,6 +57,28 @@ def _notify_fight_result(
             "bold_picks", {"fight_id": f"eq.{db_fight['id']}", "select": "user_id"}
         )
     }
+    # Where everyone stands *after* this fight, so the push can say what the
+    # result actually did to you rather than just handing over a number.
+    standings = db.select(
+        "event_leaderboard",
+        {
+            "event_id": f"eq.{event_id}",
+            "select": "user_id,points",
+            "order": "points.desc,fights_correct_winner.desc,perfect_card.desc,earliest_prediction_at.asc",
+        },
+    )
+    rank_by_user = {row["user_id"]: i + 1 for i, row in enumerate(standings)}
+    total_players = len(standings)
+
+    def _standing_suffix(user_id: str) -> str:
+        rank = rank_by_user.get(user_id)
+        if not rank or total_players < 2:
+            return ""
+        if rank == 1:
+            return f" Vedeš, {rank}. z {total_players}!"
+        behind = standings[rank - 2]["points"] - standings[rank - 1]["points"]
+        return f" Jsi {rank}. z {total_players}, na {rank - 1}. místo ztrácíš {behind} b."
+
     title = f"🥊 {fighter_a_name} vs {fighter_b_name}"
     url = f"/events/{event_id}"
     for pred in predictions:
@@ -70,7 +92,10 @@ def _notify_fight_result(
             bold_suffix = ""
             if pred["user_id"] in bold_user_ids and points > 0:
                 bold_suffix = f" (jistotka ×2 = {points * 2} b.)"
-            body = f"Vyhrál {winner_name} ({result_desc}). Tvůj tip: {predicted_name} → {points} b.{bold_suffix}"
+            body = (
+                f"Vyhrál {winner_name} ({result_desc}). Tvůj tip: {predicted_name} → "
+                f"{points} b.{bold_suffix}{_standing_suffix(pred['user_id'])}"
+            )
         send_to_user(db, pred["user_id"], title, body, url)
 
 
