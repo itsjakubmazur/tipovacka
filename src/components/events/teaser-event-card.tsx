@@ -63,9 +63,14 @@ export function TeaserEventCard({
     })
     .replace(",", "");
 
+  // The dashed outline is the card's signature, so it has to read in both
+  // themes. Light mode can't use the accent: the page sits at #f1f1f2 under a
+  // 34% yellow glow, so #ffd400 lands on near-identical hue *and* lightness
+  // and vanishes. Same fix the app uses elsewhere - a darker gold for light,
+  // the raw accent for dark (cf. text-yellow-600 dark:text-accent).
   const shell = cn(
-    "relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-accent/35 bg-gradient-to-br from-accent/[0.06] to-white/[0.02] p-4",
-    href && "transition-colors hover:border-accent/70"
+    "relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-yellow-600/70 bg-gradient-to-br from-accent/[0.06] to-white/[0.02] p-4 dark:border-accent/35",
+    href && "transition-colors hover:border-yellow-700 dark:hover:border-accent/70"
   );
   const content = (
     <>
