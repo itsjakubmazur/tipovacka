@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Scale, Check } from "lucide-react";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
+import { useFlipList } from "@/lib/use-flip-list";
 import { cn } from "@/lib/utils";
 
 type SeasonLeaderboardRow = {
@@ -31,6 +32,7 @@ export function SeasonCompareList({
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
+  const rowRef = useFlipList(rows.map((r) => r.user_id));
 
   function toggle(userId: string) {
     setSelected((prev) => {
@@ -52,51 +54,51 @@ export function SeasonCompareList({
         return (
         <div
           key={row.user_id}
+          ref={rowRef(row.user_id)}
           className={cn(
-            "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
+            // same fixed columns as the event board: pick · rank · name+meta
+            // (flexible, truncating) · points
+            "flex items-center gap-3 rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
             row.user_id === currentUserId
               ? "border-accent bg-accent/15"
               : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
           )}
         >
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => toggle(row.user_id)}
-              aria-label="Vybrat k porovnání"
-              className={cn(
-                "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-                selected.includes(row.user_id)
-                  ? "border-accent bg-accent text-black"
-                  : "border-neutral-300 dark:border-neutral-700"
-              )}
-            >
-              {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
-            </button>
-            <RankMedal rank={i + 1} />
-            <div className="flex flex-col">
-              <Link
-                href={`/leaderboard/u/${row.user_id}?season=${season}`}
-                // podium + own row only, to spare the free-tier DB a
-                // query storm (see EventCompareList)
-                prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
-                className="font-semibold hover:underline"
-              >
-                {row.nickname ?? "Bez přezdívky"}
-              </Link>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                {row.events_played} {galasWord(row.events_played)}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col items-end leading-tight">
-            <span className="text-lg font-bold">{row.points}</span>
-            {gapToNext > 0 && (
-              <span className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">
-                −{gapToNext} na {i}. místo
-              </span>
+          <button
+            type="button"
+            onClick={() => toggle(row.user_id)}
+            aria-label="Vybrat k porovnání"
+            className={cn(
+              "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+              selected.includes(row.user_id)
+                ? "border-accent bg-accent text-black"
+                : "border-neutral-300 dark:border-neutral-700"
             )}
+          >
+            {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
+          </button>
+
+          <span className="flex w-7 shrink-0 justify-center">
+            <RankMedal rank={i + 1} />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <Link
+              href={`/leaderboard/u/${row.user_id}?season=${season}`}
+              // podium + own row only, to spare the free-tier DB a
+              // query storm (see EventCompareList)
+              prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
+              className="block truncate font-semibold hover:underline"
+            >
+              {row.nickname ?? "Bez přezdívky"}
+            </Link>
+            <span className="block truncate text-xs text-neutral-500 dark:text-neutral-400">
+              {row.events_played} {galasWord(row.events_played)}
+              {gapToNext > 0 && ` · −${gapToNext} na ${i}. místo`}
+            </span>
           </div>
+
+          <span className="shrink-0 text-lg font-bold tabular-nums">{row.points}</span>
         </div>
         );
       })}

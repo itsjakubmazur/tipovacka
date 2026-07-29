@@ -19,6 +19,7 @@ import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { TipActionBar } from "@/components/predictions/tip-action-bar";
 import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { Confetti } from "@/components/confetti";
 import { perfStart, perfLogParts } from "@/lib/perf";
 import type { Fight, Prediction } from "@/lib/types";
 
@@ -297,6 +298,9 @@ export default async function EventDetailPage({
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
+      {/* you won the night - celebrate every time it's opened, it's a
+          few seconds and never takes a tap */}
+      {event.status === "completed" && finalRank === 1 && <Confetti />}
       <RealtimeRefresh table="fights" />
       <RealtimeRefresh table="predictions" />
       <RealtimeRefresh table="event_payouts" />

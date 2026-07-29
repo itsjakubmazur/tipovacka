@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { Confetti } from "@/components/confetti";
 import { HallOfFame } from "@/components/leaderboard/hall-of-fame";
 import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
@@ -125,6 +126,9 @@ export default async function LeaderboardPage({
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
       <RealtimeRefresh table="predictions" />
+      {view === "event" &&
+        selectedEvent.status === "completed" &&
+        eventRows[0]?.user_id === currentUserId && <Confetti />}
       <h1 className="text-xl font-bold">Žebříček</h1>
 
       <div className="flex gap-2">

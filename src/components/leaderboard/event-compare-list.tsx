@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Scale, TrendingUp, TrendingDown, Minus, Trophy, Check } from "lucide-react";
+import { Scale, TrendingUp, TrendingDown, Trophy, Check } from "lucide-react";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
+import { useFlipList } from "@/lib/use-flip-list";
 import { cn } from "@/lib/utils";
 
 type EventCompareRow = {
@@ -30,6 +31,9 @@ export function EventCompareList({
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
+  // The board refreshes live on new predictions, so rows overtaking each
+  // other during a gala slide past instead of jumping.
+  const rowRef = useFlipList(rows.map((r) => r.user_id));
 
   function toggle(userId: string) {
     setSelected((prev) => {
@@ -55,74 +59,71 @@ export function EventCompareList({
         return (
           <div
             key={row.user_id}
+            ref={rowRef(row.user_id)}
             className={cn(
-              "flex items-center justify-between rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
+              // fixed columns: pick · rank · name+meta (flexible) · points.
+              // Everything variable-width lives in the middle column and
+              // truncates, so names never shove the numbers out of line.
+              "flex items-center gap-3 rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
               row.user_id === currentUserId
                 ? "border-accent bg-accent/15"
                 : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
             )}
           >
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => toggle(row.user_id)}
-                aria-label="Vybrat k porovnání"
-                className={cn(
-                  "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-                  selected.includes(row.user_id)
-                    ? "border-accent bg-accent text-black"
-                    : "border-neutral-300 dark:border-neutral-700"
-                )}
-              >
-                {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
-              </button>
-              <RankMedal rank={rank} />
-              {delta != null && (
-                <span
-                  className={cn(
-                    "flex items-center gap-0.5 text-xs font-medium",
-                    delta > 0
-                      ? "text-green-600"
-                      : delta < 0
-                        ? "text-red-600"
-                        : "text-neutral-400"
-                  )}
-                >
-                  {delta > 0 ? (
-                    <TrendingUp className="size-3.5" />
-                  ) : delta < 0 ? (
-                    <TrendingDown className="size-3.5" />
-                  ) : (
-                    <Minus className="size-3.5" />
-                  )}
-                  {delta !== 0 && Math.abs(delta)}
-                </span>
+            <button
+              type="button"
+              onClick={() => toggle(row.user_id)}
+              aria-label="Vybrat k porovnání"
+              className={cn(
+                "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                selected.includes(row.user_id)
+                  ? "border-accent bg-accent text-black"
+                  : "border-neutral-300 dark:border-neutral-700"
               )}
-              <Link
-                href={`/leaderboard/u/${row.user_id}?eventId=${eventId}`}
-                // full-prefetch only the podium and the viewer's own row -
-                // prefetching all ~15 would fire a query storm at the
-                // free-tier DB; the rest keep Next's cheap default
-                prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
-                className="font-semibold hover:underline"
-              >
-                {row.nickname ?? "Bez přezdívky"}
-              </Link>
-              {row.perfect_card && <Trophy className="size-4 text-yellow-600 dark:text-accent" />}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-neutral-500 dark:text-neutral-300">
-                po {row.fights_scored} z {totalFights} zápasů
-              </span>
-              <div className="flex flex-col items-end leading-tight">
-                <span className="text-lg font-bold">{row.points}</span>
-                {gapToNext > 0 && (
-                  <span className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">
-                    −{gapToNext} na {rank - 1}. místo
-                  </span>
+            >
+              {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
+            </button>
+
+            <span className="flex w-7 shrink-0 justify-center">
+              <RankMedal rank={rank} />
+            </span>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <Link
+                  href={`/leaderboard/u/${row.user_id}?eventId=${eventId}`}
+                  // full-prefetch only the podium and the viewer's own row -
+                  // prefetching all ~15 would fire a query storm at the
+                  // free-tier DB; the rest keep Next's cheap default
+                  prefetch={i < 3 || row.user_id === currentUserId ? true : undefined}
+                  className="truncate font-semibold hover:underline"
+                >
+                  {row.nickname ?? "Bez přezdívky"}
+                </Link>
+                {row.perfect_card && (
+                  <Trophy className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
                 )}
               </div>
+              <div className="flex items-center gap-1.5 truncate text-xs text-neutral-500 dark:text-neutral-400">
+                {delta != null && delta !== 0 && (
+                  <span
+                    className={cn(
+                      "flex shrink-0 items-center gap-0.5 font-medium",
+                      delta > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                    )}
+                  >
+                    {delta > 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
+                    {Math.abs(delta)}
+                  </span>
+                )}
+                <span className="truncate">
+                  {row.fights_scored} z {totalFights} zápasů
+                  {gapToNext > 0 && ` · −${gapToNext} na ${rank - 1}. místo`}
+                </span>
+              </div>
             </div>
+
+            <span className="shrink-0 text-lg font-bold tabular-nums">{row.points}</span>
           </div>
         );
       })}
