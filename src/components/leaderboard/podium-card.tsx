@@ -93,7 +93,7 @@ export function PodiumCard({
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <div className="mx-auto flex w-full max-w-xs items-end gap-2">
-        {PODIUM_ORDER.map((rank, i) => {
+        {PODIUM_ORDER.map((rank) => {
           const place = byRank.get(rank);
           if (!place) return null;
           return (
@@ -109,9 +109,10 @@ export function PodiumCard({
                 {place.nick}
               </span>
               <div
-                // the blocks grow up out of the base, third first - a small
-                // ceremony rather than three boxes appearing at once
-                style={{ animationDelay: `${i * 200}ms` }}
+                // Staggered by placing, not by position on screen: the winner
+                // rises first, then second, then third. (Keying off the DOM
+                // index would follow the 2-1-3 layout order instead.)
+                style={{ animationDelay: `${(rank - 1) * 260}ms` }}
                 className={cn(
                   "animate-podium-rise flex w-full flex-col items-center justify-center rounded-t-lg",
                   BLOCK[rank as 1 | 2 | 3]
