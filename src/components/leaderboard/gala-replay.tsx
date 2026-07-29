@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 // long enough for a row's move to finish and register before the next
 // result lands on top of it
-const STEP_MS = 1650;
+const STEP_MS = 2100;
 
 export type ReplayStep = {
   fightId: string;
@@ -22,7 +22,7 @@ type Standing = { userId: string; nickname: string; points: number; gained: numb
 /** Plays a finished gala back fight by fight: the board starts empty and
  * reshuffles as each result lands, so you can watch the night unfold.
  *
- * It runs itself - the whole card is over in about fifteen seconds without a
+ * It runs itself - a full card takes something like half a minute without a
  * single tap - and the chapter strip below doubles as a scrubber for anyone
  * who wants to stop on a particular fight. */
 export function GalaReplay({

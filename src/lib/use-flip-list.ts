@@ -43,7 +43,7 @@ export function useFlipList(keys: string[]) {
         // shift > 0 means the row ended up higher on the board than it was
         const climbed = shift > 0;
         const distance = Math.abs(shift);
-        const duration = Math.min(900, 520 + distance * 0.8);
+        const duration = Math.min(1200, 700 + distance);
 
         // Travel over the neighbours rather than through them.
         const previousZ = el.style.zIndex;

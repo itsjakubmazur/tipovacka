@@ -197,7 +197,7 @@ body::before {
 
 .animate-podium-rise {
   transform-origin: bottom;
-  animation: podium-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: podium-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

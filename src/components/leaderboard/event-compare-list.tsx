@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 type Snapshot = { order: string[]; points: Record<string, number> };
 
-const REPLAY_HOLD_MS = 700;
+const REPLAY_HOLD_MS = 900;
 
 type EventCompareRow = {
   user_id: string;

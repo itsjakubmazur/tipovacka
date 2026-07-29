@@ -111,7 +111,7 @@ export function PodiumCard({
               <div
                 // the blocks grow up out of the base, third first - a small
                 // ceremony rather than three boxes appearing at once
-                style={{ animationDelay: `${i * 120}ms` }}
+                style={{ animationDelay: `${i * 200}ms` }}
                 className={cn(
                   "animate-podium-rise flex w-full flex-col items-center justify-center rounded-t-lg",
                   BLOCK[rank as 1 | 2 | 3]
