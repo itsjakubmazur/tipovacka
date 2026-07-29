@@ -235,6 +235,27 @@ export default async function LeaderboardPage({
         </Link>
       </div>
 
+      {/* the gala switcher belongs right under the Galavečer tab that turns it
+          on, not off in the side rail */}
+      {view === "event" && (
+        <div className="flex flex-wrap gap-2">
+          {events.map((event) => (
+            <Link
+              key={event.id}
+              href={`/leaderboard?view=event&eventId=${event.id}`}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-medium",
+                event.id === selectedEvent.id
+                  ? "border border-neutral-700 bg-neutral-900 text-white transition-colors"
+                  : GLASS_PILL
+              )}
+            >
+              {event.number ? `OKTAGON ${event.number}` : event.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
       {view === "history" && (
         <>
           <Link
@@ -274,25 +295,6 @@ export default async function LeaderboardPage({
                 </div>
               </details>
 
-              {view === "event" && (
-                <div className="flex flex-wrap gap-2">
-                  {events.map((event) => (
-                    <Link
-                      key={event.id}
-                      href={`/leaderboard?view=event&eventId=${event.id}`}
-                      className={cn(
-                        "rounded-full px-3 py-1 text-xs font-medium",
-                        event.id === selectedEvent.id
-                          ? "border border-neutral-700 bg-neutral-900 text-white transition-colors"
-                          : GLASS_PILL
-                      )}
-                    >
-                      {event.number ? `OKTAGON ${event.number}` : event.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-
               {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
                 <PodiumCard
                   // without a key React keeps the same DOM nodes across galas, and a
@@ -310,6 +312,22 @@ export default async function LeaderboardPage({
                   imageUrl={selectedEvent.image_url}
                 />
               )}
+
+              {view === "event" && eventRows.length > 0 && replaySteps.length > 0 && (
+                <GalaReplay
+                  // distinct from the board's key: two siblings sharing one key
+                  // makes React reuse the wrong instance, which carried the
+                  // player's open/playing state across galas
+                  key={`replay-${selectedEvent.id}`}
+                  steps={replaySteps}
+                  finalOrder={eventRows.map((r) => ({
+                    userId: r.user_id,
+                    nickname: r.nickname ?? "Bez přezdívky",
+                    points: r.points,
+                  }))}
+                  currentUserId={currentUserId}
+                />
+              )}
             </div>
           </aside>
 
@@ -322,33 +340,16 @@ export default async function LeaderboardPage({
             )}
 
             {view === "event" && eventRows.length > 0 && (
-              <>
-                {replaySteps.length > 0 && (
-                  <GalaReplay
-                    // distinct from the board's key below: two siblings sharing one
-                    // key makes React reuse the wrong instance, which carried the
-                    // player's open/playing state across galas
-                    key={`replay-${selectedEvent.id}`}
-                    steps={replaySteps}
-                    finalOrder={eventRows.map((r) => ({
-                      userId: r.user_id,
-                      nickname: r.nickname ?? "Bez přezdívky",
-                      points: r.points,
-                    }))}
-                    currentUserId={currentUserId}
-                  />
-                )}
-                <EventCompareList
-                  key={`board-${selectedEvent.id}`}
-                  rows={eventRows.map((row, i) => {
-                    const prevRank = prevRankByUser.get(row.user_id);
-                    return { ...row, delta: prevRank != null ? prevRank - (i + 1) : null };
-                  })}
-                  eventId={selectedEvent.id}
-                  totalFights={totalFights}
-                  currentUserId={currentUserId}
-                />
-              </>
+              <EventCompareList
+                key={`board-${selectedEvent.id}`}
+                rows={eventRows.map((row, i) => {
+                  const prevRank = prevRankByUser.get(row.user_id);
+                  return { ...row, delta: prevRank != null ? prevRank - (i + 1) : null };
+                })}
+                eventId={selectedEvent.id}
+                totalFights={totalFights}
+                currentUserId={currentUserId}
+              />
             )}
 
             {view === "season" && seasonRows.length > 0 && (

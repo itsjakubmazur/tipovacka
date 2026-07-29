@@ -285,7 +285,7 @@ export function EventComments({
             className={cn(
               "relative flex flex-col overflow-hidden",
               docked
-                ? "h-[26rem] shrink-0 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                ? "h-[min(32rem,calc(100dvh-20rem))] shrink-0 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
                 : "animate-modal-panel rounded-t-2xl border-t border-white/45 bg-white/35 shadow-2xl shadow-black/40 backdrop-blur-2xl dark:border-neutral-700/45 dark:bg-neutral-900/55"
             )}
           >
@@ -394,14 +394,17 @@ export function EventComments({
 
                       <div className={cn("group/msg relative flex items-end gap-1", isOwn && "flex-row-reverse")}>
                         {comment.gifUrl ? (
-                          <div className="overflow-hidden rounded-2xl shadow-sm">
-                            {/* eslint-disable-next-line @next/next/no-img-element -- animated remote GIF, next/image can't optimize it */}
-                            <img
-                              src={comment.gifUrl}
-                              alt="GIF"
-                              className="max-h-56 w-auto max-w-[220px] rounded-2xl"
-                            />
-                          </div>
+                          /* No wrapper: a block-level box around an inline img
+                             stretched to the width of the message row while the
+                             GIF stayed at its own size, so the rounded corners
+                             and shadow sat way out past the picture. Rounding
+                             the img itself means the visual box IS the GIF. */
+                          /* eslint-disable-next-line @next/next/no-img-element -- animated remote GIF, next/image can't optimize it */
+                          <img
+                            src={comment.gifUrl}
+                            alt="GIF"
+                            className="block h-auto max-h-64 w-auto max-w-[240px] rounded-2xl object-contain shadow-sm"
+                          />
                         ) : (
                           <div
                             className={cn(

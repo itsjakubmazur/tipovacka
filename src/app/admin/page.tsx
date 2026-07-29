@@ -87,108 +87,120 @@ export default async function AdminPage() {
 
   return (
     <div className="flex flex-col gap-8 px-4 py-8">
-      <h1 className="text-xl font-bold">Admin</h1>
+      <h1 className="text-xl font-bold lg:text-3xl">Admin</h1>
 
-      {isSuperadmin && <ViewModeToggle initialMode={viewMode} />}
+      {/* From lg the admin splits into the two things it actually is: the wide
+          column is the working list (galas, users) and the rail holds the
+          switches and one-off tools. Below lg the rail is display:contents, so
+          it all just stacks. */}
+      <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
+        <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-20">
+            {isSuperadmin && <ViewModeToggle initialMode={viewMode} />}
 
-      {isSuperadmin && <InviteCodeCard />}
+            {isSuperadmin && <InviteCodeCard />}
 
-      {isSuperadmin && (
-        <div className="flex gap-4">
-          <Link href="/admin/scraper-log" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
-            Log scraperu <ArrowRight className="size-3.5" />
-          </Link>
-          <Link href="/admin/client-errors" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
-            Chyby v prohlížečích <ArrowRight className="size-3.5" />
-          </Link>
-        </div>
-      )}
+            {isSuperadmin && (
+              <div className="flex flex-wrap gap-4">
+                <Link href="/admin/scraper-log" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                  Log scraperu <ArrowRight className="size-3.5" />
+                </Link>
+                <Link href="/admin/client-errors" className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                  Chyby v prohlížečích <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
+            )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Galavečery</h2>
-        <div className="flex flex-col gap-2">
-          {events?.map((event) => (
-            <Link
-              key={event.id}
-              href={`/admin/events/${event.id}`}
-              className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
-            >
-              <span className="font-medium">
-                {event.number ? `OKTAGON ${event.number}` : event.name}
-              </span>
-              <span className="text-sm text-neutral-500 dark:text-neutral-300">
-                {STATUS_LABELS[event.status] ?? event.status}
-              </span>
-            </Link>
-          ))}
-        </div>
-        <AddEventForm />
-      </section>
-
-      {isSuperadmin && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Poslat upozornění</h2>
-          <BroadcastPushForm />
-        </section>
-      )}
-
-      {isSuperadmin && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Uživatelé</h2>
-          {profilesError && (
-            <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
-          )}
-          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
-            <Smartphone className="size-3.5" /> = spustil nainstalovanou appku (PWA) ·
-            <Bell className="size-3.5" /> = má zapnutá push upozornění na daném zařízení
-          </p>
-          <div className="flex flex-col gap-2">
-            {profiles?.map((p) => {
-              const platforms = (p.push_endpoints ?? []).map(pushPlatform);
-              return (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
-                >
-                  <span className="flex min-w-0 flex-col">
-                    <span>
-                      {p.nickname ?? "Bez přezdívky"}
-                      {p.is_admin && <span className="ml-2 text-xs font-semibold text-yellow-600 dark:text-accent">ADMIN</span>}
-                    </span>
-                    <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
-                    <span className="mt-1 flex flex-wrap gap-1.5">
-                      {p.standalone_seen_at ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-600/15 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-400">
-                          <Smartphone className="size-3" /> PWA · {formatSeen(p.standalone_seen_at)}
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
-                          bez instalace
-                        </span>
-                      )}
-                      {platforms.length > 0 ? (
-                        platforms.map((platform, i) => (
-                          <span
-                            key={`${platform}-${i}`}
-                            className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:text-accent"
-                          >
-                            <Bell className="size-3" /> {platform}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
-                          bez notifikací
-                        </span>
-                      )}
-                    </span>
-                  </span>
-                  {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
-                </div>
-              );
-            })}
+            {isSuperadmin && (
+              <section className="flex flex-col gap-3">
+                <h2 className="text-lg font-semibold">Poslat upozornění</h2>
+                <BroadcastPushForm />
+              </section>
+            )}
           </div>
-        </section>
-      )}
+        </aside>
+
+        <div className="flex flex-col gap-8 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Galavečery</h2>
+            <div className="flex flex-col gap-2">
+              {events?.map((event) => (
+                <Link
+                  key={event.id}
+                  href={`/admin/events/${event.id}`}
+                  className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+                >
+                  <span className="font-medium">
+                    {event.number ? `OKTAGON ${event.number}` : event.name}
+                  </span>
+                  <span className="text-sm text-neutral-500 dark:text-neutral-300">
+                    {STATUS_LABELS[event.status] ?? event.status}
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <AddEventForm />
+          </section>
+
+          {isSuperadmin && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-lg font-semibold">Uživatelé</h2>
+              {profilesError && (
+                <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
+              )}
+              <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <Smartphone className="size-3.5" /> = spustil nainstalovanou appku (PWA) ·
+                <Bell className="size-3.5" /> = má zapnutá push upozornění na daném zařízení
+              </p>
+              <div className="flex flex-col gap-2">
+                {profiles?.map((p) => {
+                  const platforms = (p.push_endpoints ?? []).map(pushPlatform);
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                    >
+                      <span className="flex min-w-0 flex-col">
+                        <span>
+                          {p.nickname ?? "Bez přezdívky"}
+                          {p.is_admin && <span className="ml-2 text-xs font-semibold text-yellow-600 dark:text-accent">ADMIN</span>}
+                        </span>
+                        <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{p.email}</span>
+                        <span className="mt-1 flex flex-wrap gap-1.5">
+                          {p.standalone_seen_at ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-600/15 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:text-green-400">
+                              <Smartphone className="size-3" /> PWA · {formatSeen(p.standalone_seen_at)}
+                            </span>
+                          ) : (
+                            <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                              bez instalace
+                            </span>
+                          )}
+                          {platforms.length > 0 ? (
+                            platforms.map((platform, i) => (
+                              <span
+                                key={`${platform}-${i}`}
+                                className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-yellow-700 dark:text-accent"
+                              >
+                                <Bell className="size-3" /> {platform}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                              bez notifikací
+                            </span>
+                          )}
+                        </span>
+                      </span>
+                      {p.id !== user.id && <PromoteUserButton targetUserId={p.id} isAdmin={p.is_admin} />}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

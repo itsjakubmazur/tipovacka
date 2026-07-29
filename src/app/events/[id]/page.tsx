@@ -511,18 +511,19 @@ export default async function EventDetailPage({
           </div>
 
           {cancelledFights.length > 0 && (
-            <div className="flex flex-col gap-5">
-              <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
+              <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400">
                 Zrušené zápasy
               </h2>
               {cancelledFights.map((fight) => (
-                <FightTipCard
-                  key={fight.id}
-                  fight={fight}
-                  userId={user.id}
-                  initialPrediction={predictionByFight.get(fight.id) ?? null}
-                  locked={locked}
-                />
+                <div key={fight.id} className="xl:min-w-0">
+                  <FightTipCard
+                    fight={fight}
+                    userId={user.id}
+                    initialPrediction={predictionByFight.get(fight.id) ?? null}
+                    locked={locked}
+                  />
+                </div>
               ))}
             </div>
           )}
