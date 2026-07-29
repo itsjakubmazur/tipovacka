@@ -52,14 +52,19 @@ function pad(n: number): string {
 
 function Countdown({ targetIso }: { targetIso: string }) {
   const target = new Date(targetIso).getTime();
-  const [remaining, setRemaining] = useState(() => target - Date.now());
+  // null until mounted - a countdown rendered on the server no longer matches
+  // the browser's value at hydration time, which React reports as a hydration
+  // error (#418). With seconds on show it would mismatch on nearly every load.
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setRemaining(target - Date.now()), 1000);
+    const tick = () => setRemaining(target - Date.now());
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [target]);
 
-  if (remaining <= 0) return null;
+  if (remaining === null || remaining <= 0) return null;
 
   const totalSec = Math.floor(remaining / 1000);
   const days = Math.floor(totalSec / 86400);

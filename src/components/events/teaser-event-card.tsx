@@ -25,17 +25,23 @@ export function TeaserEventCard({
   imageUrl: string | null;
 }) {
   const target = new Date(openAtIso).getTime();
-  const [remaining, setRemaining] = useState(() => target - Date.now());
+  // Deliberately null on the first render. A countdown computed during SSR is
+  // already stale by the time the browser hydrates (a minute can tick over in
+  // between), and React reports that text difference as a hydration error
+  // (#418). We render placeholders until mount, then tick.
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setRemaining(target - Date.now()), 1000);
+    const tick = () => setRemaining(target - Date.now());
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [target]);
 
-  const totalSec = Math.max(0, Math.floor(remaining / 1000));
-  const days = Math.floor(totalSec / 86400);
-  const hours = Math.floor((totalSec % 86400) / 3600);
-  const minutes = Math.floor((totalSec % 3600) / 60);
+  const totalSec = remaining === null ? null : Math.max(0, Math.floor(remaining / 1000));
+  const days = totalSec === null ? null : Math.floor(totalSec / 86400);
+  const hours = totalSec === null ? null : Math.floor((totalSec % 86400) / 3600);
+  const minutes = totalSec === null ? null : Math.floor((totalSec % 3600) / 60);
   const units = [
     { value: days, label: days === 1 ? "den" : "dní" },
     { value: hours, label: "hod" },
@@ -95,7 +101,7 @@ export function TeaserEventCard({
               className="min-w-[42px] rounded-lg border border-black/10 bg-black/[0.03] px-1 py-1.5 text-center dark:border-white/10 dark:bg-white/[0.05]"
             >
               <div className="text-lg font-bold leading-none tabular-nums text-yellow-600 dark:text-accent">
-                {u.value}
+                {u.value ?? "–"}
               </div>
               <div className="mt-1 text-[9px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                 {u.label}
