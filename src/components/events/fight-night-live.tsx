@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Swords, TrendingUp, Target, Flag } from "lucide-react";
+import { Swords, TrendingUp, Target, Flag, Flame } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LiveMiniBoard } from "@/components/events/live-mini-board";
 import { WatchingNow } from "@/components/events/watching-now";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import type { Fight, Method } from "@/lib/types";
+import type { Fight, Method, Prediction } from "@/lib/types";
 
 const MINI_LEADERBOARD_SIZE = 5;
 const MAX_POINTS_PER_FIGHT = 3;
@@ -20,12 +20,18 @@ export async function FightNightLive({
   currentUserId,
   nickname,
   showWatcherNames,
+  predictionByFight,
+  picksByFight,
 }: {
   eventId: string;
   fights: Fight[];
   currentUserId: string;
   nickname: string;
   showWatcherNames: boolean;
+  /** the viewer's own tips, already loaded by the page */
+  predictionByFight: Map<string, Prediction>;
+  /** everyone's picks per fight (fighter id -> nicknames), post-lock */
+  picksByFight: Map<string, Map<string, string[]>>;
 }) {
   const supabase = await createClient();
 
@@ -37,7 +43,7 @@ export async function FightNightLive({
   const nextUp = remaining[0] ?? null;
   const gradedCount = fights.filter((f) => f.status === "completed").length;
 
-  const [{ data: rows }, { data: myPick }, { data: myBold }] = await Promise.all([
+  const [{ data: rows }, { data: myBold }] = await Promise.all([
     supabase
       .from("event_leaderboard")
       .select("user_id, nickname, points, fights_correct_winner, perfect_card, earliest_prediction_at")
@@ -46,20 +52,6 @@ export async function FightNightLive({
       .order("fights_correct_winner", { ascending: false })
       .order("perfect_card", { ascending: false })
       .order("earliest_prediction_at", { ascending: true, nullsFirst: false }),
-    nextUp
-      ? supabase
-          .from("predictions")
-          .select("predicted_winner_id, predicted_method, predicted_round")
-          .eq("user_id", currentUserId)
-          .eq("fight_id", nextUp.id)
-          .maybeSingle()
-      : Promise.resolve({
-          data: null as {
-            predicted_winner_id: string;
-            predicted_method: Method;
-            predicted_round: number | null;
-          } | null,
-        }),
     supabase
       .from("bold_picks")
       .select("fight_id")
@@ -67,6 +59,8 @@ export async function FightNightLive({
       .eq("event_id", eventId)
       .maybeSingle(),
   ]);
+
+  const myPick = nextUp ? predictionByFight.get(nextUp.id) ?? null : null;
 
   if (!rows || rows.length === 0) return null;
 
@@ -115,6 +109,23 @@ export async function FightNightLive({
         ? nextUp.fighter_a.name
         : nextUp.fighter_b.name
       : null;
+
+  // ---- how the party is split on the fight about to happen ----
+  const split = nextUp ? picksByFight.get(nextUp.id) : undefined;
+  const forA = split?.get(nextUp?.fighter_a.id ?? "")?.length ?? 0;
+  const forB = split?.get(nextUp?.fighter_b.id ?? "")?.length ?? 0;
+  const splitTotal = forA + forB;
+
+  // ---- current run of correct calls, in card order ----
+  const graded = fights
+    .filter((f) => f.status === "completed")
+    .sort((a, b) => a.card_order - b.card_order);
+  let streak = 0;
+  for (let i = graded.length - 1; i >= 0; i--) {
+    const points = predictionByFight.get(graded[i].id)?.points ?? 0;
+    if (points > 0) streak += 1;
+    else break;
+  }
 
   // ---- is the night still winnable? ----
   // Upper bound on what anyone can still collect, so "nobody can catch you"
@@ -194,6 +205,29 @@ export async function FightNightLive({
             )}
           </p>
 
+          {splitTotal > 0 && (
+            <div className="flex flex-col gap-1">
+              <div className="flex h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                <span
+                  className="bg-yellow-600 dark:bg-accent"
+                  style={{ width: `${(forA / splitTotal) * 100}%` }}
+                />
+                <span
+                  className="bg-neutral-400 dark:bg-neutral-500"
+                  style={{ width: `${(forB / splitTotal) * 100}%` }}
+                />
+              </div>
+              <p className="flex justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+                <span className="truncate">
+                  {forA}× {nextUp.fighter_a.name}
+                </span>
+                <span className="truncate">
+                  {nextUp.fighter_b.name} ×{forB}
+                </span>
+              </p>
+            </div>
+          )}
+
           {pickedFighter && (
             <div className="flex flex-wrap gap-1.5">
               <span className="rounded-full border border-yellow-600/50 bg-accent/15 px-2.5 py-0.5 text-[11px] font-semibold dark:border-accent/40">
@@ -211,6 +245,13 @@ export async function FightNightLive({
       ) : (
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Všechny zápasy jsou dobojované, čeká se na vyhodnocení.
+        </p>
+      )}
+
+      {streak >= 2 && (
+        <p className="flex items-center gap-1.5 text-xs font-semibold text-yellow-700 dark:text-accent">
+          <Flame className="size-3.5 shrink-0" />
+          {streak} {streak <= 4 ? "trefy" : "tref"} v řadě – jedeš!
         </p>
       )}
 

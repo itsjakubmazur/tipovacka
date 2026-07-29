@@ -394,6 +394,8 @@ export default async function EventDetailPage({
           currentUserId={user.id}
           nickname={profile?.nickname ?? "Bez přezdívky"}
           showWatcherNames={isSuperadmin}
+          predictionByFight={predictionByFight}
+          picksByFight={picksByFight}
         />
       )}
 
