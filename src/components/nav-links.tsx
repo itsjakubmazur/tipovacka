@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,38 +19,47 @@ function isActive(pathname: string, href: string) {
 
 export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
+  const items = isAdmin
+    ? [...navItems, { href: "/admin", label: "Admin", icon: ShieldCheck }]
+    : navItems;
+
+  // A highlight that slides between items beats a static underline: you see
+  // where you came from and where you landed. Measured rather than guessed,
+  // because the labels are different widths.
+  const listRef = useRef<HTMLElement>(null);
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const active = listRef.current?.querySelector<HTMLElement>('[data-active="true"]');
+    setPill(active ? { left: active.offsetLeft, width: active.offsetWidth } : null);
+  }, [pathname, isAdmin]);
 
   return (
-    <nav className="hidden items-center gap-4 md:flex">
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          aria-current={isActive(pathname, item.href) ? "page" : undefined}
-          className={cn(
-            "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
-            isActive(pathname, item.href)
-              ? "text-accent after:w-full"
-              : "text-white/80 hover:text-accent after:w-0"
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
-      {isAdmin && (
-        <Link
-          href="/admin"
-          aria-current={isActive(pathname, "/admin") ? "page" : undefined}
-          className={cn(
-            "relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:content-['']",
-            isActive(pathname, "/admin")
-              ? "text-accent after:w-full"
-              : "text-white/80 hover:text-accent after:w-0"
-          )}
-        >
-          Admin
-        </Link>
+    <nav ref={listRef} className="relative hidden items-center gap-0.5 md:flex">
+      {pill && (
+        <span
+          aria-hidden
+          className="absolute inset-y-0 rounded-full bg-white/10 ring-1 ring-inset ring-white/15 transition-all duration-300 ease-out motion-reduce:transition-none"
+          style={{ left: pill.left, width: pill.width }}
+        />
       )}
+      {items.map((item) => {
+        const active = isActive(pathname, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            data-active={active}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "relative z-10 rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+              active ? "text-accent" : "text-white/70 hover:text-white"
+            )}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
