@@ -147,6 +147,7 @@ export default async function AdminEventPage({
         initialSubtitleLocked={event.subtitle_locked ?? false}
         initialLocation={event.location}
         initialLockAt={event.lock_at}
+        initialLocked={event.lock_at ? new Date(event.lock_at) <= new Date() : false}
         initialAutoLock={event.auto_lock}
         initialStatus={event.status}
         initialPayoutsEnabled={event.payouts_enabled}

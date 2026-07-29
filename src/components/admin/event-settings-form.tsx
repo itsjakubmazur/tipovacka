@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,25 @@ const STATUS_OPTIONS = [
   { value: "completed", label: "Vyhodnoceno" },
 ];
 
-function effectiveStatusLabel(status: string, lockAt: string): string {
+function effectiveStatusLabel(status: string, locked: boolean): string {
   if (status === "draft") return "Návrh (skryté tipérům)";
   if (status === "completed") return "Vyhodnoceno";
-  const locked = lockAt ? new Date(lockAt) <= new Date() : false;
   return locked ? "Uzamčeno" : "Chystá se";
+}
+
+/** Has the (Prague-local) lock time in the form passed yet? The input holds a
+ * naive "2026-08-01T18:30" string, so it has to go through
+ * pragueLocalToUtcIso before comparing - a bare new Date() would read it in
+ * whatever zone the code runs in (UTC on the server), putting the answer
+ * hours off. Returns null while the value is incomplete/mid-typing. */
+function isLockedNow(lockAt: string): boolean | null {
+  if (!lockAt) return false;
+  try {
+    const utc = new Date(pragueLocalToUtcIso(lockAt)).getTime();
+    return Number.isNaN(utc) ? null : utc <= Date.now();
+  } catch {
+    return null;
+  }
 }
 
 export function EventSettingsForm({
@@ -28,6 +42,7 @@ export function EventSettingsForm({
   initialSubtitleLocked,
   initialLocation,
   initialLockAt,
+  initialLocked,
   initialAutoLock,
   initialStatus,
   initialPayoutsEnabled,
@@ -38,6 +53,7 @@ export function EventSettingsForm({
   initialSubtitleLocked: boolean;
   initialLocation: string | null;
   initialLockAt: string | null;
+  initialLocked: boolean;
   initialAutoLock: boolean;
   initialStatus: string;
   initialPayoutsEnabled: boolean;
@@ -55,6 +71,21 @@ export function EventSettingsForm({
   const [autoLock, setAutoLock] = useState(initialAutoLock);
   const [status, setStatus] = useState(initialStatus);
   const [payoutsEnabled, setPayoutsEnabled] = useState(initialPayoutsEnabled);
+  // Seeded from the server's own verdict so the first client render matches it
+  // exactly (deciding this from the clock during render would disagree right
+  // at the lock instant - hydration error #418). Re-checked after mount, when
+  // the admin edits the lock time, and periodically as it passes.
+  const [locked, setLocked] = useState(initialLocked);
+
+  useEffect(() => {
+    const check = () => {
+      const next = isLockedNow(lockAt);
+      if (next !== null) setLocked(next);
+    };
+    check();
+    const id = setInterval(check, 30_000);
+    return () => clearInterval(id);
+  }, [lockAt]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,7 +173,7 @@ export function EventSettingsForm({
         </div>
       </div>
       <p className="text-xs text-neutral-500 dark:text-neutral-300">
-        Aktuální stav pro tipéry: <strong>{effectiveStatusLabel(status, lockAt)}</strong>
+        Aktuální stav pro tipéry: <strong>{effectiveStatusLabel(status, locked)}</strong>
         {status !== "draft" && status !== "completed" && " (řídí se časem uzamčení tipů výše, ne polem Stav)"}
       </p>
       <label className="flex items-center gap-2 text-sm">
