@@ -130,3 +130,23 @@ def test_push_omits_standing_when_alone(monkeypatch):
     )
 
     assert "z 1" not in sent["alice"]
+
+
+def test_notification_failure_never_stops_grading(monkeypatch):
+    """A push that blows up must not abandon the results import - the rest of
+    the card still has to be graded."""
+    def explode(*args, **kwargs):
+        raise RuntimeError("push service down")
+
+    monkeypatch.setattr(import_results, "_notify_fight_result", explode)
+
+    # must not raise
+    import_results._notify_fight_result_safely(
+        None,
+        "evt-1",
+        {"id": "fight-1", "fighter_a_id": "f-a", "fighter_b_id": "f-b"},
+        "Vemola",
+        "Marpo",
+        "Vemola",
+        "KO/TKO, 2. kolo",
+    )

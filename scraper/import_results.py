@@ -31,6 +31,20 @@ def _result_description(method: str | None, result_round: int | None, result_tim
     return desc
 
 
+def _notify_fight_result_safely(*args, **kwargs) -> None:
+    """Push notifications are a nicety; scoring is the point.
+
+    _notify_fight_result reaches out to the standings and the push service,
+    and it runs inside the loop that grades the card - so anything it raises
+    used to abandon the import and leave the remaining fights ungraded. Any
+    failure here is logged and swallowed instead.
+    """
+    try:
+        _notify_fight_result(*args, **kwargs)
+    except Exception as exc:
+        print(f"Upozornění na výsledek se nepodařilo odeslat: {exc}")
+
+
 def _notify_fight_result(
     db: SupabaseClient,
     event_id: str,
@@ -201,7 +215,7 @@ def import_results(event_id: str) -> None:
             db.rpc("recalculate_fight_points", {"p_fight_id": db_fight["id"]})
             updated += 1
             print(f"Zápas {fighter_a_name} vs {fighter_b_name} -> remíza / no contest.")
-            _notify_fight_result(db, event_id, db_fight, fighter_a_name, fighter_b_name, None, "")
+            _notify_fight_result_safely(db, event_id, db_fight, fighter_a_name, fighter_b_name, None, "")
             continue
 
         winner_id = db_fight["fighter_a_id"] if fight["winner_side"] == "a" else db_fight["fighter_b_id"]
@@ -222,7 +236,9 @@ def import_results(event_id: str) -> None:
         print(f"Uložen výsledek: {fighter_a_name} vs {fighter_b_name} -> {fight['method']}")
 
         result_desc = _result_description(fight["method"], fight["result_round"], fight["result_time"])
-        _notify_fight_result(db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc)
+        _notify_fight_result_safely(
+            db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc
+        )
 
     if updated:
         print(f"Přepočítány body pro {updated} zápasů.")
