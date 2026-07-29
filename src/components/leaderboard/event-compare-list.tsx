@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
 
 type Snapshot = { order: string[]; points: Record<string, number> };
 
-const REPLAY_HOLD_MS = 900;
+// past the row entrance (up to ~1150ms with its stagger): the catch-up
+// must not start measuring rows that are still arriving
+const REPLAY_HOLD_MS = 1300;
 
 type EventCompareRow = {
   user_id: string;
@@ -175,7 +177,7 @@ export function EventCompareList({
           <div
             key={row.user_id}
             ref={rowRef(row.user_id)}
-            style={{ animationDelay: `${Math.min(i, 10) * 35}ms` }}
+            style={{ animationDelay: `${Math.min(i, 10) * 55}ms` }}
             className={cn(
               "animate-row-in",
               // fixed columns: pick · rank · name+meta (flexible) · points.

@@ -214,7 +214,7 @@ body::before {
 @keyframes row-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -223,7 +223,7 @@ body::before {
 }
 
 .animate-row-in {
-  animation: row-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: row-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
