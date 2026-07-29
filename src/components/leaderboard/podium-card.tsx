@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Share2, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GeneratedCardImage } from "@/components/leaderboard/generated-card-image";
 import { cn } from "@/lib/utils";
 
-type Place = { rank: number; nick: string; points: number };
+type Place = { rank: number; userId: string; nick: string; points: number };
 
 // classic podium arrangement: runner-up left, winner centre, third right
 const PODIUM_ORDER = [2, 1, 3];
@@ -30,10 +31,12 @@ const BLOCK = {
 export function PodiumCard({
   eventLabel,
   places,
+  eventId,
   imageUrl,
 }: {
   eventLabel: string;
   places: Place[];
+  eventId: string;
   imageUrl?: string | null;
 }) {
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -94,9 +97,15 @@ export function PodiumCard({
           const place = byRank.get(rank);
           if (!place) return null;
           return (
-            <div key={rank} className="flex min-w-0 flex-1 flex-col items-center gap-1">
+            <Link
+              key={rank}
+              href={`/leaderboard/u/${place.userId}?eventId=${eventId}`}
+              // the podium shouldn't be a dead end - "how did the winner
+              // actually tip?" is the thing you want next
+              className="flex min-w-0 flex-1 flex-col items-center gap-1 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
               {rank === 1 && <Crown className="size-4 shrink-0 text-yellow-600 dark:text-accent" />}
-              <span className="w-full truncate text-center text-xs font-semibold" title={place.nick}>
+              <span className="w-full truncate text-center text-xs font-semibold underline-offset-2 hover:underline" title={place.nick}>
                 {place.nick}
               </span>
               <div
@@ -111,7 +120,7 @@ export function PodiumCard({
                 <span className="text-base font-bold leading-none tabular-nums">{place.points}</span>
                 <span className="mt-0.5 text-[10px] font-semibold opacity-70">{rank}.</span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

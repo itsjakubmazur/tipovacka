@@ -292,9 +292,11 @@ export default async function LeaderboardPage({
           eventLabel={selectedEvent.number ? `OKTAGON ${selectedEvent.number}` : selectedEvent.name}
           places={eventRows.slice(0, 3).map((row, i) => ({
             rank: i + 1,
+            userId: row.user_id,
             nick: row.nickname ?? "Bez přezdívky",
             points: row.points,
           }))}
+          eventId={selectedEvent.id}
           imageUrl={selectedEvent.image_url}
         />
       )}
