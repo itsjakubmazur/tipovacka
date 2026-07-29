@@ -367,7 +367,12 @@ export default async function EventDetailPage({
             eventId={id}
             actions={
               !locked && tippableFightsAsc.length > 0 ? (
-                <TipActionBar tippableFightIds={tippableFightIds} initialUntipped={untippedFightIds}>
+                <TipActionBar
+                  tippableFightIds={tippableFightIds}
+                  initialUntipped={untippedFightIds}
+                  fotnAvailable={fotnOptions.length > 0}
+                  initialFotnPicked={Boolean(bonusPrediction?.predicted_fotn_fight_id)}
+                >
                   <FastTipOverlay
                     eventId={id}
                     userId={user.id}
@@ -448,6 +453,7 @@ export default async function EventDetailPage({
 
       {/* FOTN is a bonus meta-pick on top of the fights, so it sits after the
           card - people tip the fights first, then crown the best one. */}
+      <div id="fotn" className="scroll-mt-16">
       <FotnPicker
         eventId={id}
         userId={user.id}
@@ -461,6 +467,7 @@ export default async function EventDetailPage({
             : null
         }
       />
+      </div>
 
       {cancelledFights.length > 0 && (
         <div className="flex flex-col gap-5">

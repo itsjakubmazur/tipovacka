@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Star } from "lucide-react";
 
 /** The tipping call-to-action inside the status hero: a progress bar and
  * two clearly-labelled paths. The primary button scrolls down to the
@@ -13,13 +13,19 @@ import { ArrowDown } from "lucide-react";
 export function TipActionBar({
   tippableFightIds,
   initialUntipped,
+  fotnAvailable,
+  initialFotnPicked,
   children,
 }: {
   tippableFightIds: string[];
   initialUntipped: string[];
+  /** whether this gala offers a Fight of the Night pick at all */
+  fotnAvailable: boolean;
+  initialFotnPicked: boolean;
   children: React.ReactNode;
 }) {
   const [untipped, setUntipped] = useState(() => new Set(initialUntipped));
+  const [fotnPicked, setFotnPicked] = useState(initialFotnPicked);
 
   useEffect(() => {
     function onChange(e: Event) {
@@ -31,9 +37,20 @@ export function TipActionBar({
         return next;
       });
     }
+    function onFotn(e: Event) {
+      setFotnPicked((e as CustomEvent<{ picked: boolean }>).detail.picked);
+    }
     window.addEventListener("tip-state-changed", onChange);
-    return () => window.removeEventListener("tip-state-changed", onChange);
+    window.addEventListener("fotn-state-changed", onFotn);
+    return () => {
+      window.removeEventListener("tip-state-changed", onChange);
+      window.removeEventListener("fotn-state-changed", onFotn);
+    };
   }, []);
+
+  function goToFotn() {
+    document.getElementById("fotn")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 
   const total = tippableFightIds.length;
   const remaining = tippableFightIds.filter((id) => untipped.has(id)).length;
@@ -60,6 +77,20 @@ export function TipActionBar({
             />
           </span>
         </div>
+      )}
+      {fotnAvailable && !fotnPicked && (
+        // The picker sits below the card on purpose - fights first, then crown
+        // the best one - but that made it easy to scroll past. This keeps it
+        // on the radar without moving it back up.
+        <button
+          type="button"
+          onClick={goToFotn}
+          className="mb-2.5 flex w-full items-center gap-1.5 rounded-lg border border-yellow-600/50 bg-accent/10 px-2.5 py-1.5 text-left text-xs font-medium dark:border-accent/40"
+        >
+          <Star className="size-3.5 shrink-0 text-yellow-700 dark:text-accent" />
+          <span className="flex-1">Ještě ti chybí tip na zápas večera (+2 b.)</span>
+          <ArrowDown className="size-3.5 shrink-0 text-neutral-400" />
+        </button>
       )}
       <div className="flex items-stretch gap-2">
         <button

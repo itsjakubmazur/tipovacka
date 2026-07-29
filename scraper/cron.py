@@ -466,13 +466,30 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
                 for prediction in predictions:
                     tipped_counts[prediction["user_id"]] = tipped_counts.get(prediction["user_id"], 0) + 1
 
+                # the Fight of the Night pick scores too, so a reminder that
+                # ignores it can tell someone they're done when they aren't
+                fotn_picked = {
+                    b["user_id"]
+                    for b in db.select(
+                        "bonus_predictions",
+                        {"event_id": f"eq.{event['id']}", "select": "user_id"},
+                    )
+                }
+
                 for user_id in user_ids - opted_out:
                     have = tipped_counts.get(user_id, 0)
-                    body = (
-                        f"Máš tipnuto všech {total} zápasů, nic dalšího tě nečeká!"
-                        if have >= total
-                        else f"Máš tipnuto {have} z {total} zápasů, nezapomeň dotipovat!"
-                    )
+                    missing_fotn = user_id not in fotn_picked
+                    if have >= total and not missing_fotn:
+                        body = f"Máš tipnuto všech {total} zápasů, nic dalšího tě nečeká!"
+                    elif have >= total:
+                        body = (
+                            f"Máš tipnuto všech {total} zápasů, ale chybí ti tip na zápas "
+                            "večera (+2 b.)!"
+                        )
+                    else:
+                        body = f"Máš tipnuto {have} z {total} zápasů, nezapomeň dotipovat!"
+                        if missing_fotn:
+                            body += " Chybí ti i tip na zápas večera."
                     send_to_user(
                         db,
                         user_id,

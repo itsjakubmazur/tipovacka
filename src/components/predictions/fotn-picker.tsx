@@ -48,6 +48,8 @@ export function FotnPicker({
     }
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+    // the tip bar up top counts this as part of "natipováno", so tell it
+    window.dispatchEvent(new CustomEvent("fotn-state-changed", { detail: { picked: true } }));
   }
 
   if (fights.length === 0) return null;

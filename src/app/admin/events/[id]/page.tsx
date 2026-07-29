@@ -67,6 +67,15 @@ export default async function AdminEventPage({
     .select("user_id, fight_id")
     .in("fight_id", fightIds.length ? fightIds : ["00000000-0000-0000-0000-000000000000"]);
 
+  // The Fight of the Night pick is scored too, so "kdo má natipováno" has to
+  // account for it - otherwise someone shows as complete while missing a
+  // bonus worth 2 points and nobody can tell them.
+  const { data: bonusPicks } = await supabase
+    .from("bonus_predictions")
+    .select("user_id")
+    .eq("event_id", id);
+  const fotnPickedBy = new Set((bonusPicks ?? []).map((b) => b.user_id));
+
   const tippedCountByUser = new Map<string, number>();
   for (const p of predictions ?? []) {
     tippedCountByUser.set(p.user_id, (tippedCountByUser.get(p.user_id) ?? 0) + 1);
@@ -77,8 +86,9 @@ export default async function AdminEventPage({
       id: p.id,
       nickname: p.nickname ?? "Bez přezdívky",
       tipped: tippedCountByUser.get(p.id) ?? 0,
+      fotn: fotnPickedBy.has(p.id),
     }))
-    .sort((a, b) => a.tipped - b.tipped);
+    .sort((a, b) => a.tipped - b.tipped || Number(a.fotn) - Number(b.fotn));
 
   const sortedFights = (fights ?? []) as unknown as {
     id: string;
@@ -117,21 +127,33 @@ export default async function AdminEventPage({
           <h2 className="text-lg font-semibold">Kdo má natipováno</h2>
           <div className="flex flex-col gap-2">
             {tipProgress.map((p) => {
-              const complete = p.tipped >= sortedFights.length;
+              const fightsDone = p.tipped >= sortedFights.length;
               return (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
                 >
-                  <span>{p.nickname}</span>
-                  <span
-                    className={
-                      complete
-                        ? "text-sm font-semibold text-green-700 dark:text-green-400"
-                        : "text-sm font-semibold text-red-600 dark:text-red-400"
-                    }
-                  >
-                    {p.tipped} / {sortedFights.length}
+                  <span className="min-w-0 truncate">{p.nickname}</span>
+                  <span className="flex shrink-0 items-center gap-3 text-sm font-semibold">
+                    <span
+                      className={
+                        p.fotn
+                          ? "text-green-700 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                      title="Tip na zápas večera"
+                    >
+                      {p.fotn ? "FOTN ✓" : "FOTN ✗"}
+                    </span>
+                    <span
+                      className={
+                        fightsDone
+                          ? "text-green-700 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {p.tipped} / {sortedFights.length}
+                    </span>
                   </span>
                 </div>
               );
