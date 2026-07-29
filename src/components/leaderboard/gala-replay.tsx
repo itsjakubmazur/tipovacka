@@ -5,7 +5,9 @@ import { Play, Pause, RotateCcw, Zap } from "lucide-react";
 import { useFlipList } from "@/lib/use-flip-list";
 import { cn } from "@/lib/utils";
 
-const STEP_MS = 1400;
+// long enough for a row's move to finish and register before the next
+// result lands on top of it
+const STEP_MS = 1650;
 
 export type ReplayStep = {
   fightId: string;
