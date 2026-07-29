@@ -10,6 +10,9 @@ import { HallOfFame } from "@/components/leaderboard/hall-of-fame";
 import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
 import { EventCompareList } from "@/components/leaderboard/event-compare-list";
+import { GalaReplay } from "@/components/leaderboard/gala-replay";
+import { METHOD_LABELS } from "@/lib/method-labels";
+import type { Method } from "@/lib/types";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -75,6 +78,15 @@ export default async function LeaderboardPage({
   let seasonRows: SeasonLeaderboardRow[] = [];
   let totalFights = 0;
   const prevRankByUser = new Map<string, number>();
+  // Fight-by-fight replay of a finished gala. Reconstructed from data we
+  // already keep - points live on each prediction and fights carry their card
+  // order - so there's no stored history to maintain.
+  let replaySteps: {
+    fightId: string;
+    label: string;
+    result: string;
+    gains: Record<string, number>;
+  }[] = [];
 
   if (view === "event") {
     const selectedIndex = events.findIndex((e) => e.id === selectedEvent.id);
@@ -106,6 +118,67 @@ export default async function LeaderboardPage({
     ]);
     eventRows = data ?? [];
     totalFights = count ?? 0;
+
+    if (selectedEvent.status === "completed") {
+      const [{ data: replayFights }, { data: replayPicks }, { data: replayBold }] =
+        await Promise.all([
+          supabase
+            .from("fights")
+            .select(
+              `id, card_order, status, winner_fighter_id, method, result_round,
+               fighter_a:fighters!fights_fighter_a_id_fkey(name),
+               fighter_b:fighters!fights_fighter_b_id_fkey(name)`
+            )
+            .eq("event_id", selectedEvent.id)
+            .eq("status", "completed")
+            .order("card_order", { ascending: true }),
+          supabase
+            .from("predictions")
+            .select("user_id, fight_id, points, fights!inner(event_id)")
+            .eq("fights.event_id", selectedEvent.id),
+          supabase
+            .from("bold_picks")
+            .select("user_id, fight_id")
+            .eq("event_id", selectedEvent.id),
+        ]);
+
+      const boldByUser = new Map(
+        (replayBold ?? []).map((b: { user_id: string; fight_id: string }) => [b.user_id, b.fight_id])
+      );
+      const picks = (replayPicks ?? []) as unknown as {
+        user_id: string;
+        fight_id: string;
+        points: number | null;
+      }[];
+
+      replaySteps = ((replayFights ?? []) as unknown as {
+        id: string;
+        winner_fighter_id: string | null;
+        method: string | null;
+        result_round: number | null;
+        fighter_a: { name: string };
+        fighter_b: { name: string };
+      }[]).map((fight) => {
+        const gains: Record<string, number> = {};
+        for (const p of picks) {
+          if (p.fight_id !== fight.id || !p.points) continue;
+          // the jistotka doubles whatever its fight paid out
+          gains[p.user_id] = p.points * (boldByUser.get(p.user_id) === fight.id ? 2 : 1);
+        }
+        return {
+          fightId: fight.id,
+          label: `${fight.fighter_a.name} vs ${fight.fighter_b.name}`,
+          result: [
+            fight.winner_fighter_id ? "" : "bez vítěze",
+            fight.method ? METHOD_LABELS[fight.method as Method] : "",
+            fight.result_round ? `${fight.result_round}. kolo` : "",
+          ]
+            .filter(Boolean)
+            .join(" · "),
+          gains,
+        };
+      });
+    }
     (prevResult.data ?? []).forEach((row: { user_id: string }, i: number) => {
       prevRankByUser.set(row.user_id, i + 1);
     });
@@ -235,6 +308,19 @@ export default async function LeaderboardPage({
         )}
 
         {view === "event" && eventRows.length > 0 && (
+          <>
+          {replaySteps.length > 0 && (
+            <GalaReplay
+              key={selectedEvent.id}
+              steps={replaySteps}
+              finalOrder={eventRows.map((r) => ({
+                userId: r.user_id,
+                nickname: r.nickname ?? "Bez přezdívky",
+                points: r.points,
+              }))}
+              currentUserId={currentUserId}
+            />
+          )}
           <EventCompareList
             key={selectedEvent.id}
             rows={eventRows.map((row, i) => {
@@ -245,6 +331,7 @@ export default async function LeaderboardPage({
             totalFights={totalFights}
             currentUserId={currentUserId}
           />
+          </>
         )}
 
         {view === "season" && seasonRows.length > 0 && (
