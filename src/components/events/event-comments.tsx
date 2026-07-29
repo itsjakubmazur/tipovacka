@@ -8,6 +8,7 @@ import { EmojiGlyph } from "@/components/events/emoji-glyph";
 import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
 import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
+import { useKeyboardInset } from "@/lib/use-keyboard-inset";
 
 type Reaction = { id: string; user_id: string; emoji: string };
 
@@ -97,6 +98,9 @@ export function EventComments({
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [gifOpen, setGifOpen] = useState(false);
   const seenKey = `kecarna-seen-${eventId}`;
+  // Lifts the sheet above the on-screen keyboard instead of letting the
+  // keyboard cover it.
+  const keyboardInset = useKeyboardInset(open);
 
   useEffect(() => {
     // deferred so the initial read doesn't trigger a cascading render
@@ -260,11 +264,16 @@ export function EventComments({
 
       {/* slide-up chat panel */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setOpen(false)}>
+        <div
+          className="fixed inset-0 z-50 flex flex-col justify-end"
+          style={{ paddingBottom: keyboardInset }}
+          onClick={() => setOpen(false)}
+        >
           <div className="absolute inset-0 bg-black/15 backdrop-blur-sm" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="animate-modal-panel relative flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/35 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/55"
+            style={{ maxHeight: keyboardInset > 0 ? "100%" : "82vh" }}
+            className="animate-modal-panel relative flex flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/35 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/55"
           >
             {/* grab handle */}
             <div className="flex shrink-0 justify-center pt-2">
@@ -483,6 +492,9 @@ export function EventComments({
             {/* composer */}
             <form
               onSubmit={submit}
+              // with the keyboard up, the home indicator is covered by it, so
+              // the safe-area padding would just add dead space
+              style={keyboardInset > 0 ? { paddingBottom: "0.625rem" } : undefined}
               className="flex shrink-0 items-center gap-2 border-t border-white/40 px-[max(0.75rem,env(safe-area-inset-left))] py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] dark:border-neutral-700/40"
             >
               {gifsEnabled && (
@@ -500,7 +512,9 @@ export function EventComments({
                 value={body}
                 onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
                 placeholder="Napiš něco ostatním…"
-                className="min-w-0 flex-1 rounded-full border border-white/50 bg-white/60 px-4 py-2 text-sm outline-none backdrop-blur-sm transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white/90 dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:focus-visible:bg-neutral-950/80"
+                // 16px minimum: anything smaller makes iOS Safari zoom the
+                // whole page in when the field takes focus
+                className="min-w-0 flex-1 rounded-full border border-white/50 bg-white/60 px-4 py-2 text-base outline-none backdrop-blur-sm transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white/90 dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:focus-visible:bg-neutral-950/80"
               />
               <button
                 type="submit"
