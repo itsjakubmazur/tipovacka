@@ -72,7 +72,7 @@ export default async function GroupDetailPage({
   const unscoredMembers = members.filter((m) => !scoredIds.has(m.userId));
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <div className="flex flex-col gap-3">
         <div>
           <BackLink href="/groups">Zpět na skupiny</BackLink>

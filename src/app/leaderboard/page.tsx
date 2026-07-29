@@ -197,7 +197,7 @@ export default async function LeaderboardPage({
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <RealtimeRefresh table="predictions" />
       {view === "event" &&
         selectedEvent.status === "completed" &&

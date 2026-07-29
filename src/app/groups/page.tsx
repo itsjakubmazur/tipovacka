@@ -23,7 +23,7 @@ export default async function GroupsPage() {
     .filter((g): g is { id: string; name: string } => g !== null);
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Skupiny</h1>
       <p className="text-sm text-neutral-600 dark:text-neutral-400">
         Založ si privátní skupinu s kámoši a poměřte se jen mezi sebou.

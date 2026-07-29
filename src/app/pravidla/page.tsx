@@ -42,7 +42,7 @@ function Pts({ n }: { n: number }) {
 
 export default function RulesPage() {
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-8">
+    <div className="stagger-in mx-auto flex max-w-2xl flex-col gap-4 px-4 py-8">
       <div>
         <BackLink href="/profile">Zpět na profil</BackLink>
         <h1 className="mt-1 text-2xl font-bold">Jak se hraje</h1>

@@ -113,7 +113,7 @@ export default async function EventsPage() {
         .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())[0] ?? null;
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold">Galavečery</h1>
 
       {user && <WelcomeCard />}
