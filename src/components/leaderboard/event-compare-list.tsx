@@ -45,6 +45,9 @@ export function EventCompareList({
   const [replay, setReplay] = useState<Snapshot | null>(null);
   const [since, setSince] = useState<{ gainedPoints: number; movedPlaces: number } | null>(null);
   const lastSeen = useRef<Snapshot | null>(null);
+  // which gala `lastSeen` belongs to - switching galas must not compare
+  // this board against a different one
+  const lastSeenEvent = useRef<string | null>(null);
   // kept apart from `lastSeen` (which advances to the current state) so the
   // replay button still has the old board to play from
   const replayedFrom = useRef<Snapshot | null>(null);
@@ -57,7 +60,8 @@ export function EventCompareList({
       points: Object.fromEntries(rows.map((r) => [r.user_id, r.points])),
     };
 
-    let previous: Snapshot | null = lastSeen.current;
+    let previous: Snapshot | null =
+      lastSeenEvent.current === eventId ? lastSeen.current : null;
     if (!previous) {
       try {
         previous = JSON.parse(localStorage.getItem(storageKey) ?? "null") as Snapshot | null;
@@ -66,6 +70,7 @@ export function EventCompareList({
       }
     }
     lastSeen.current = current;
+    lastSeenEvent.current = eventId;
     try {
       localStorage.setItem(storageKey, JSON.stringify(current));
     } catch {
@@ -96,7 +101,7 @@ export function EventCompareList({
     // `rows` is covered by `signature`; depending on the array itself would
     // re-run this on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature, storageKey, currentUserId]);
+  }, [signature, storageKey, currentUserId, eventId]);
 
   // During the replay the board is drawn as the viewer last left it; dropping
   // `replay` lets it flip and count up into the live state.

@@ -236,6 +236,7 @@ export default async function LeaderboardPage({
 
         {view === "event" && eventRows.length > 0 && (
           <EventCompareList
+            key={selectedEvent.id}
             rows={eventRows.map((row, i) => {
               const prevRank = prevRankByUser.get(row.user_id);
               return { ...row, delta: prevRank != null ? prevRank - (i + 1) : null };

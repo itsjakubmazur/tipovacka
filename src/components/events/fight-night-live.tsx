@@ -1,23 +1,31 @@
 import Link from "next/link";
-import { Swords, TrendingUp } from "lucide-react";
+import { Swords, TrendingUp, Target, Flag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LiveMiniBoard } from "@/components/events/live-mini-board";
-import type { Fight } from "@/lib/types";
+import { WatchingNow } from "@/components/events/watching-now";
+import { METHOD_LABELS } from "@/lib/method-labels";
+import type { Fight, Method } from "@/lib/types";
 
 const MINI_LEADERBOARD_SIZE = 5;
+const MAX_POINTS_PER_FIGHT = 3;
 
-/** Live strip for gala night, shown between lock and completion: which
- * fight is up next and a mini leaderboard that reshuffles as results
- * come in (the page already re-renders via RealtimeRefresh on fights/
- * predictions, so this stays current without any polling of its own). */
+/** Live strip for gala night, shown between lock and completion: what's at
+ * stake in the next fight, whether the night is still winnable, and a mini
+ * leaderboard that reshuffles as results come in (the page already re-renders
+ * via RealtimeRefresh on fights/predictions, so this stays current without any
+ * polling of its own). */
 export async function FightNightLive({
   eventId,
   fights,
   currentUserId,
+  nickname,
+  showWatcherNames,
 }: {
   eventId: string;
   fights: Fight[];
   currentUserId: string;
+  nickname: string;
+  showWatcherNames: boolean;
 }) {
   const supabase = await createClient();
 
@@ -29,14 +37,36 @@ export async function FightNightLive({
   const nextUp = remaining[0] ?? null;
   const gradedCount = fights.filter((f) => f.status === "completed").length;
 
-  const { data: rows } = await supabase
-    .from("event_leaderboard")
-    .select("user_id, nickname, points, fights_correct_winner, perfect_card, earliest_prediction_at")
-    .eq("event_id", eventId)
-    .order("points", { ascending: false })
-    .order("fights_correct_winner", { ascending: false })
-    .order("perfect_card", { ascending: false })
-    .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
+  const [{ data: rows }, { data: myPick }, { data: myBold }] = await Promise.all([
+    supabase
+      .from("event_leaderboard")
+      .select("user_id, nickname, points, fights_correct_winner, perfect_card, earliest_prediction_at")
+      .eq("event_id", eventId)
+      .order("points", { ascending: false })
+      .order("fights_correct_winner", { ascending: false })
+      .order("perfect_card", { ascending: false })
+      .order("earliest_prediction_at", { ascending: true, nullsFirst: false }),
+    nextUp
+      ? supabase
+          .from("predictions")
+          .select("predicted_winner_id, predicted_method, predicted_round")
+          .eq("user_id", currentUserId)
+          .eq("fight_id", nextUp.id)
+          .maybeSingle()
+      : Promise.resolve({
+          data: null as {
+            predicted_winner_id: string;
+            predicted_method: Method;
+            predicted_round: number | null;
+          } | null,
+        }),
+    supabase
+      .from("bold_picks")
+      .select("fight_id")
+      .eq("user_id", currentUserId)
+      .eq("event_id", eventId)
+      .maybeSingle(),
+  ]);
 
   if (!rows || rows.length === 0) return null;
 
@@ -68,35 +98,132 @@ export async function FightNightLive({
       : []),
   ];
 
+  // ---- what the next fight is worth to this viewer ----
+  const boldOnNext = nextUp != null && myBold?.fight_id === nextUp.id;
+  const stakeMax = MAX_POINTS_PER_FIGHT * (boldOnNext ? 2 : 1);
+  const myPoints = myIndex >= 0 ? rows[myIndex].points : 0;
+  // who is directly ahead, and would a perfect call on this fight clear them?
+  const personAhead = myIndex > 0 ? rows[myIndex - 1] : null;
+  const overtakes =
+    personAhead != null && myPoints + stakeMax > personAhead.points
+      ? personAhead.nickname ?? "Bez přezdívky"
+      : null;
+
+  const pickedFighter =
+    myPick && nextUp
+      ? myPick.predicted_winner_id === nextUp.fighter_a.id
+        ? nextUp.fighter_a.name
+        : nextUp.fighter_b.name
+      : null;
+
+  // ---- is the night still winnable? ----
+  // Upper bound on what anyone can still collect, so "nobody can catch you"
+  // is only ever claimed when it's certainly true.
+  const boldStillToCome = myBold != null && remaining.some((f) => f.id === myBold.fight_id);
+  const maxStillAvailable =
+    remaining.length * MAX_POINTS_PER_FIGHT + (boldStillToCome ? MAX_POINTS_PER_FIGHT : 0);
+  const leader = rows[0];
+  const iAmLeading = myIndex === 0;
+  const leadOverSecond = iAmLeading && rows.length > 1 ? myPoints - rows[1].points : 0;
+  const gapToLeader = iAmLeading ? 0 : leader.points - myPoints;
+
+  let endgame: { tone: "good" | "bad"; text: string } | null = null;
+  if (remaining.length > 0 && myIndex >= 0 && rows.length > 1) {
+    if (iAmLeading && leadOverSecond > maxStillAvailable) {
+      endgame = { tone: "good", text: "Vedeš tak, že už tě nikdo nepředběhne." };
+    } else if (!iAmLeading && gapToLeader > maxStillAvailable) {
+      endgame = {
+        tone: "bad",
+        text: `Na první místo to už matematicky nevyjde – ztrácíš ${gapToLeader} b. a ve hře jich zbývá ${maxStillAvailable}.`,
+      };
+    } else if (!iAmLeading) {
+      endgame = {
+        tone: "good",
+        text: `Ztrácíš ${gapToLeader} b. a ve hře jich ještě je ${maxStillAvailable} – pořád to máš ve svých rukou.`,
+      };
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="flex items-center gap-2 text-sm font-semibold">
-        <span className="relative flex size-2.5">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
-          <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
-        </span>
-        Galavečer živě
-        {gradedCount > 0 && (
-          <span className="font-normal text-neutral-500 dark:text-neutral-400">
-            · {gradedCount} {gradedCount === 1 ? "zápas" : gradedCount <= 4 ? "zápasy" : "zápasů"} odbodováno
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="flex items-center gap-2 text-sm font-semibold">
+          <span className="relative flex size-2.5">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
           </span>
-        )}
-      </p>
+          Galavečer živě
+          {gradedCount > 0 && (
+            <span className="font-normal text-neutral-500 dark:text-neutral-400">
+              · {gradedCount} {gradedCount === 1 ? "zápas" : gradedCount <= 4 ? "zápasy" : "zápasů"} odbodováno
+            </span>
+          )}
+        </p>
+        <WatchingNow
+          eventId={eventId}
+          userId={currentUserId}
+          nickname={nickname}
+          showNames={showWatcherNames}
+        />
+      </div>
 
       {nextUp ? (
-        <a
-          href={`#fight-${nextUp.id}`}
-          className="flex items-center gap-2 text-sm text-neutral-700 hover:underline dark:text-neutral-300"
-        >
-          <Swords className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
-          <span>
-            Další na řadě: <strong>{nextUp.fighter_a.name}</strong> vs{" "}
-            <strong>{nextUp.fighter_b.name}</strong>
-          </span>
-        </a>
+        <div className="flex flex-col gap-2 rounded-lg border border-yellow-600/40 bg-accent/[0.07] p-3 dark:border-accent/30">
+          <a
+            href={`#fight-${nextUp.id}`}
+            className="flex items-center gap-2 text-sm hover:underline"
+          >
+            <Swords className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
+            <span>
+              Na řadě: <strong>{nextUp.fighter_a.name}</strong> vs{" "}
+              <strong>{nextUp.fighter_b.name}</strong>
+            </span>
+          </a>
+
+          <p className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-300">
+            <Target className="size-3.5 shrink-0 text-neutral-400" />
+            {pickedFighter ? (
+              <span>
+                Tvůj tip: <strong className="text-black dark:text-white">{pickedFighter}</strong>
+                {myPick?.predicted_method &&
+                  ` · ${METHOD_LABELS[myPick.predicted_method as Method]}`}
+                {myPick?.predicted_round ? ` · ${myPick.predicted_round}. kolo` : ""}
+              </span>
+            ) : (
+              <span>Na tenhle zápas nemáš tip – body z něj ti utečou.</span>
+            )}
+          </p>
+
+          {pickedFighter && (
+            <div className="flex flex-wrap gap-1.5">
+              <span className="rounded-full border border-yellow-600/50 bg-accent/15 px-2.5 py-0.5 text-[11px] font-semibold dark:border-accent/40">
+                Ve hře až {stakeMax} b.
+                {boldOnNext && " (jistotka ×2)"}
+              </span>
+              {overtakes && (
+                <span className="rounded-full border border-green-600/40 bg-green-600/10 px-2.5 py-0.5 text-[11px] font-semibold text-green-700 dark:text-green-400">
+                  Vyjde-li → přeskočíš {overtakes}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       ) : (
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Všechny zápasy jsou dobojované, čeká se na vyhodnocení.
+        </p>
+      )}
+
+      {endgame && (
+        <p
+          className={
+            endgame.tone === "good"
+              ? "flex items-start gap-1.5 text-xs font-medium text-green-700 dark:text-green-400"
+              : "flex items-start gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400"
+          }
+        >
+          <Flag className="mt-0.5 size-3.5 shrink-0" />
+          {endgame.text}
         </p>
       )}
 
@@ -116,4 +243,3 @@ export async function FightNightLive({
     </div>
   );
 }
-

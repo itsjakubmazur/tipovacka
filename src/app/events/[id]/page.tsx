@@ -81,7 +81,7 @@ export default async function EventDetailPage({
     { data: allPredictions },
     { data: finalStandings },
   ] = await Promise.all([
-    supabase.from("profiles").select("is_admin, is_superadmin").eq("id", user.id).single(),
+    supabase.from("profiles").select("is_admin, is_superadmin, nickname").eq("id", user.id).single(),
     supabase
       .from("fights")
       .select(
@@ -392,6 +392,8 @@ export default async function EventDetailPage({
           eventId={id}
           fights={(fights ?? []).map((f) => f as unknown as Fight)}
           currentUserId={user.id}
+          nickname={profile?.nickname ?? "Bez přezdívky"}
+          showWatcherNames={isSuperadmin}
         />
       )}
 
