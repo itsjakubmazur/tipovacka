@@ -65,7 +65,10 @@ export function Modal({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="animate-modal-backdrop fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-10 backdrop-blur-sm sm:items-center [-webkit-overflow-scrolling:touch]"
+      // the fixed layer spans the whole screen (viewport-fit=cover), so the
+      // top padding has to clear the notch / Dynamic Island itself - a flat
+      // pt-10 left the panel tucked under the status bar
+      className="animate-modal-backdrop fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-[max(2.5rem,calc(env(safe-area-inset-top)+0.75rem))] pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:items-center [-webkit-overflow-scrolling:touch]"
       onClick={onDismiss}
     >
       <div
