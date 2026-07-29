@@ -289,6 +289,10 @@ export default async function LeaderboardPage({
 
       {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
         <PodiumCard
+          // without a key React keeps the same DOM nodes across galas, and a
+          // CSS animation only runs when its element is created - so the
+          // podium would rise once and never again
+          key={`podium-${selectedEvent.id}`}
           eventLabel={selectedEvent.number ? `OKTAGON ${selectedEvent.number}` : selectedEvent.name}
           places={eventRows.slice(0, 3).map((row, i) => ({
             rank: i + 1,
