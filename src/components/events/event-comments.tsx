@@ -9,6 +9,7 @@ import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
 import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 type Reaction = { id: string; user_id: string; emoji: string };
 
@@ -61,11 +62,14 @@ function formatTime(iso: string): string {
   );
 }
 
-/** Kecárna as a floating chat bubble (bottom-left, opposite the
- * jump-to-untipped button) opening a slide-up panel - a live per-event
- * chat for gala night instead of a block buried under 14 fight cards.
- * The bubble shows an unread count based on a per-event last-seen
- * timestamp in localStorage; realtime keeps the list fresh. */
+/** Kecárna - the live per-event chat for gala night.
+ *
+ * On phones it's a floating bubble (bottom-left, opposite the
+ * jump-to-untipped button) opening a slide-up sheet, with an unread count
+ * based on a per-event last-seen timestamp in localStorage. From 1024 px up
+ * there's room in the event sidebar, so the same chat lives there as a
+ * permanently docked panel - no bubble, nothing to open, you just see the
+ * party talking while you read the card. Realtime keeps both fresh. */
 export function EventComments({
   eventId,
   userId,
@@ -98,9 +102,14 @@ export function EventComments({
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [gifOpen, setGifOpen] = useState(false);
   const seenKey = `kecarna-seen-${eventId}`;
+  // Docked in the sidebar from lg up; a bubble + slide-up sheet below that.
+  const docked = useMediaQuery("(min-width: 1024px)");
+  const sheetOpen = open && !docked;
+  // the chat is on screen either way - docked it never closes
+  const showing = docked || open;
   // Lifts the sheet above the on-screen keyboard instead of letting the
   // keyboard cover it.
-  const keyboardInset = useKeyboardInset(open);
+  const keyboardInset = useKeyboardInset(sheetOpen);
 
   useEffect(() => {
     // deferred so the initial read doesn't trigger a cascading render
@@ -120,13 +129,13 @@ export function EventComments({
   // the non-scrollable parts of the sheet (header, poll) scrolls the event
   // page instead of the chat.
   useEffect(() => {
-    if (!open) return;
+    if (!sheetOpen) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previous;
     };
-  }, [open]);
+  }, [sheetOpen]);
 
   useEffect(() => {
     async function refetch() {
@@ -183,12 +192,12 @@ export function EventComments({
     };
   }, [supabase, eventId]);
 
-  // while the panel is open, everything that arrives counts as read
+  // while the chat is on screen, everything that arrives counts as read
   useEffect(() => {
-    if (!open) return;
+    if (!showing) return;
     const timer = setTimeout(markSeen, 0);
     return () => clearTimeout(timer);
-  }, [comments, open, markSeen]);
+  }, [comments, showing, markSeen]);
 
   const unread = lastSeen
     ? comments.filter((c) => c.created_at > lastSeen && c.user_id !== userId).length
@@ -244,8 +253,8 @@ export function EventComments({
 
   return (
     <>
-      {/* floating bubble */}
-      {!open && (
+      {/* floating bubble - only when the chat isn't already docked */}
+      {!docked && !open && (
         <button
           type="button"
           onClick={openPanel}
@@ -262,23 +271,30 @@ export function EventComments({
         </button>
       )}
 
-      {/* slide-up chat panel */}
-      {open && (
+      {/* the same chat, either as a slide-up sheet or docked in the sidebar */}
+      {showing && (
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-end"
-          style={{ paddingBottom: keyboardInset }}
-          onClick={() => setOpen(false)}
+          className={docked ? "contents" : "fixed inset-0 z-50 flex flex-col justify-end"}
+          style={docked ? undefined : { paddingBottom: keyboardInset }}
+          onClick={docked ? undefined : () => setOpen(false)}
         >
-          <div className="absolute inset-0 bg-black/15 backdrop-blur-sm" />
+          {!docked && <div className="absolute inset-0 bg-black/15 backdrop-blur-sm" />}
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ maxHeight: keyboardInset > 0 ? "100%" : "82vh" }}
-            className="animate-modal-panel relative flex flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/35 backdrop-blur-2xl shadow-2xl shadow-black/40 dark:border-neutral-700/45 dark:bg-neutral-900/55"
+            style={docked ? undefined : { maxHeight: keyboardInset > 0 ? "100%" : "82vh" }}
+            className={cn(
+              "relative flex flex-col overflow-hidden",
+              docked
+                ? "h-[26rem] shrink-0 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                : "animate-modal-panel rounded-t-2xl border-t border-white/45 bg-white/35 shadow-2xl shadow-black/40 backdrop-blur-2xl dark:border-neutral-700/45 dark:bg-neutral-900/55"
+            )}
           >
             {/* grab handle */}
-            <div className="flex shrink-0 justify-center pt-2">
-              <span className="h-1 w-10 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-            </div>
+            {!docked && (
+              <div className="flex shrink-0 justify-center pt-2">
+                <span className="h-1 w-10 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+              </div>
+            )}
 
             {/* header */}
             <div className="flex shrink-0 items-center justify-between px-4 py-2.5">
@@ -291,14 +307,16 @@ export function EventComments({
                   <p className="text-[11px] text-neutral-500 dark:text-neutral-400">Chat galavečera</p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Zavřít"
-                className="rounded-full bg-black/5 p-1.5 text-neutral-600 transition-colors hover:bg-black/10 hover:text-black dark:bg-white/10 dark:text-neutral-300 dark:hover:bg-white/20 dark:hover:text-white"
-              >
-                <X className="size-5" />
-              </button>
+              {!docked && (
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Zavřít"
+                  className="rounded-full bg-black/5 p-1.5 text-neutral-600 transition-colors hover:bg-black/10 hover:text-black dark:bg-white/10 dark:text-neutral-300 dark:hover:bg-white/20 dark:hover:text-white"
+                >
+                  <X className="size-5" />
+                </button>
+              )}
             </div>
 
             {livePoll && (

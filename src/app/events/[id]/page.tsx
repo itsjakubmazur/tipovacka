@@ -304,8 +304,10 @@ export default async function EventDetailPage({
       <RealtimeRefresh table="fights" />
       <RealtimeRefresh table="predictions" />
       <RealtimeRefresh table="event_payouts" />
+      {/* the poster is 16:9, which at desktop widths would be a 600px-tall wall
+          of image before a single fight - crop it to a banner instead */}
       {event.image_url && (
-        <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl">
+        <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl lg:aspect-[21/8]">
           <Image
             src={event.image_url}
             alt={event.number ? `OKTAGON ${event.number}` : event.name}
@@ -317,7 +319,7 @@ export default async function EventDetailPage({
         </div>
       )}
       <div>
-        <h1 className="text-xl font-bold">
+        <h1 className="text-xl font-bold lg:text-3xl">
           {event.number ? `OKTAGON ${event.number}` : event.name}
         </h1>
         {event.subtitle && (
@@ -350,163 +352,182 @@ export default async function EventDetailPage({
             </span>
           </p>
         )}
-        {countableFights.length > 0 && (
-          <EventStatusTimeline
-            locked={locked}
-            completed={event.status === "completed"}
-            lockAtIso={event.lock_at}
-            eventDateIso={event.event_date}
-            tippedCount={countablePredictions.length}
-            totalCount={countableFights.length}
-            gradedCount={gradedFights.length}
-            points={scoredSoFar}
-            rank={finalRank}
-            participants={participants}
-            standings={standingRows}
-            currentUserId={user.id}
-            eventId={id}
-            actions={
-              !locked && tippableFightsAsc.length > 0 ? (
-                <TipActionBar
-                  tippableFightIds={tippableFightIds}
-                  initialUntipped={untippedFightIds}
-                  fotnAvailable={fotnOptions.length > 0}
-                  initialFotnPicked={Boolean(bonusPrediction?.predicted_fotn_fight_id)}
-                >
-                  <FastTipOverlay
-                    eventId={id}
-                    userId={user.id}
-                    fights={tippableFightsAsc}
-                    initialPredictions={fastTipPredictions}
-                    initialBoldFightId={boldFightId}
-                    tippedCountable={countablePredictions.length}
-                    totalCountable={countableFights.length}
-                  />
-                </TipActionBar>
-              ) : undefined
-            }
-          />
-        )}
-        {!locked && countableFights.length > 0 && <BoldPickIntro />}
       </div>
 
-      {!locked && countableFights.length > 0 && <WhoHasntTipped eventId={id} />}
+      {/* From lg up the page splits in two: the card of fights on the left and
+          a sticky rail on the right with the status timeline, the live strip
+          and the kecárna. Below lg the rail is display:contents, so everything
+          stacks in exactly the mobile order it always had. */}
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
+        <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
+          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
+            {countableFights.length > 0 && (
+              <EventStatusTimeline
+                locked={locked}
+                completed={event.status === "completed"}
+                lockAtIso={event.lock_at}
+                eventDateIso={event.event_date}
+                tippedCount={countablePredictions.length}
+                totalCount={countableFights.length}
+                gradedCount={gradedFights.length}
+                points={scoredSoFar}
+                rank={finalRank}
+                participants={participants}
+                standings={standingRows}
+                currentUserId={user.id}
+                eventId={id}
+                actions={
+                  !locked && tippableFightsAsc.length > 0 ? (
+                    <TipActionBar
+                      tippableFightIds={tippableFightIds}
+                      initialUntipped={untippedFightIds}
+                      fotnAvailable={fotnOptions.length > 0}
+                      initialFotnPicked={Boolean(bonusPrediction?.predicted_fotn_fight_id)}
+                    >
+                      <FastTipOverlay
+                        eventId={id}
+                        userId={user.id}
+                        fights={tippableFightsAsc}
+                        initialPredictions={fastTipPredictions}
+                        initialBoldFightId={boldFightId}
+                        tippedCountable={countablePredictions.length}
+                        totalCountable={countableFights.length}
+                      />
+                    </TipActionBar>
+                  ) : undefined
+                }
+              />
+            )}
+            {!locked && countableFights.length > 0 && <BoldPickIntro />}
 
-      {locked && event.status !== "completed" && (
-        <FightNightLive
-          eventId={id}
-          fights={(fights ?? []).map((f) => f as unknown as Fight)}
-          currentUserId={user.id}
-          nickname={profile?.nickname ?? "Bez přezdívky"}
-          showWatcherNames={isSuperadmin}
-          predictionByFight={predictionByFight}
-          picksByFight={picksByFight}
-        />
-      )}
+            {!locked && countableFights.length > 0 && <WhoHasntTipped eventId={id} />}
 
-      {locked && (
-        <BraveryReveal eventId={id} fights={(fights ?? []).map((f) => f as unknown as Fight)} />
-      )}
+            {locked && event.status !== "completed" && (
+              <FightNightLive
+                eventId={id}
+                fights={(fights ?? []).map((f) => f as unknown as Fight)}
+                currentUserId={user.id}
+                nickname={profile?.nickname ?? "Bez přezdívky"}
+                showWatcherNames={isSuperadmin}
+                predictionByFight={predictionByFight}
+                picksByFight={picksByFight}
+              />
+            )}
 
-      {event.status === "completed" && event.payouts_enabled && (
-        <EventPayoutPool
-          eventId={id}
-          eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
-          currentUserId={user.id}
-          isSuperadmin={isSuperadmin}
-        />
-      )}
+            {locked && (
+              <BraveryReveal eventId={id} fights={(fights ?? []).map((f) => f as unknown as Fight)} />
+            )}
 
-      <SegmentJump segments={segmentsOnCard} />
+            {event.status === "completed" && event.payouts_enabled && (
+              <EventPayoutPool
+                eventId={id}
+                eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
+                currentUserId={user.id}
+                isSuperadmin={isSuperadmin}
+              />
+            )}
 
-      <div className="flex flex-col gap-5">
-        {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
-          const names = picksByFight.get(fight.id);
-          const fighterANames = names?.get(fight.fighter_a.id) ?? [];
-          const fighterBNames = names?.get(fight.fighter_b.id) ?? [];
-          const total = fighterANames.length + fighterBNames.length;
-          return (
-            <Fragment key={fight.id}>
-              {showSegmentHeader && (
-                <h2
-                  id={`segment-${fight.card_segment!}`}
-                  className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400"
-                >
-                  {CARD_SEGMENT_LABELS[fight.card_segment!]}
-                </h2>
-              )}
-              <div id={`fight-${fight.id}`} className="scroll-mt-16">
+            <EventComments
+              eventId={id}
+              userId={user.id}
+              isAdmin={isAdmin}
+              initialComments={comments}
+              livePoll={(() => {
+                if (!locked || event.status === "completed") return null;
+                const next = (fights ?? [])
+                  .map((f) => f as unknown as Fight)
+                  .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
+                  .sort((a, b) => a.card_order - b.card_order)[0];
+                if (!next) return null;
+                return {
+                  fightId: next.id,
+                  fighterAId: next.fighter_a.id,
+                  fighterAName: next.fighter_a.name,
+                  fighterBId: next.fighter_b.id,
+                  fighterBName: next.fighter_b.name,
+                };
+              })()}
+            />
+          </div>
+        </aside>
+
+        <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+          <SegmentJump segments={segmentsOnCard} />
+
+          {/* From xl the card pairs up - the column is wide enough that a
+              single stack of fight cards would just be a lot of empty space
+              either side of the fighter names. */}
+          <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
+            {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
+              const names = picksByFight.get(fight.id);
+              const fighterANames = names?.get(fight.fighter_a.id) ?? [];
+              const fighterBNames = names?.get(fight.fighter_b.id) ?? [];
+              const total = fighterANames.length + fighterBNames.length;
+              return (
+                <Fragment key={fight.id}>
+                  {showSegmentHeader && (
+                    <h2
+                      id={`segment-${fight.card_segment!}`}
+                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 xl:mt-1 dark:text-neutral-400"
+                    >
+                      {CARD_SEGMENT_LABELS[fight.card_segment!]}
+                    </h2>
+                  )}
+                  <div id={`fight-${fight.id}`} className="scroll-mt-16 xl:min-w-0">
+                    <FightTipCard
+                      fight={fight}
+                      userId={user.id}
+                      eventId={id}
+                      initialPrediction={predictionByFight.get(fight.id) ?? null}
+                      initialIsBold={boldFightId === fight.id}
+                      locked={locked}
+                      consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
+                    />
+                  </div>
+                </Fragment>
+              );
+            })}
+          </div>
+
+          {/* FOTN is a bonus meta-pick on top of the fights, so it sits after
+              the card - people tip the fights first, then crown the best one. */}
+          <div id="fotn" className="scroll-mt-16">
+            <FotnPicker
+              eventId={id}
+              userId={user.id}
+              fights={fotnOptions}
+              initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
+              initialPoints={bonusPrediction?.points ?? null}
+              locked={locked}
+              actualFight={
+                actualFotnFight
+                  ? {
+                      fighterAName: actualFotnFight.fighter_a.name,
+                      fighterBName: actualFotnFight.fighter_b.name,
+                    }
+                  : null
+              }
+            />
+          </div>
+
+          {cancelledFights.length > 0 && (
+            <div className="flex flex-col gap-5">
+              <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                Zrušené zápasy
+              </h2>
+              {cancelledFights.map((fight) => (
                 <FightTipCard
+                  key={fight.id}
                   fight={fight}
                   userId={user.id}
-                  eventId={id}
                   initialPrediction={predictionByFight.get(fight.id) ?? null}
-                  initialIsBold={boldFightId === fight.id}
                   locked={locked}
-                  consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
                 />
-              </div>
-            </Fragment>
-          );
-        })}
-      </div>
-
-      {/* FOTN is a bonus meta-pick on top of the fights, so it sits after the
-          card - people tip the fights first, then crown the best one. */}
-      <div id="fotn" className="scroll-mt-16">
-      <FotnPicker
-        eventId={id}
-        userId={user.id}
-        fights={fotnOptions}
-        initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
-        initialPoints={bonusPrediction?.points ?? null}
-        locked={locked}
-        actualFight={
-          actualFotnFight
-            ? { fighterAName: actualFotnFight.fighter_a.name, fighterBName: actualFotnFight.fighter_b.name }
-            : null
-        }
-      />
-      </div>
-
-      {cancelledFights.length > 0 && (
-        <div className="flex flex-col gap-5">
-          <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Zrušené zápasy
-          </h2>
-          {cancelledFights.map((fight) => (
-            <FightTipCard
-              key={fight.id}
-              fight={fight}
-              userId={user.id}
-              initialPrediction={predictionByFight.get(fight.id) ?? null}
-              locked={locked}
-            />
-          ))}
+              ))}
+            </div>
+          )}
         </div>
-      )}
-
-      <EventComments
-        eventId={id}
-        userId={user.id}
-        isAdmin={isAdmin}
-        initialComments={comments}
-        livePoll={(() => {
-          if (!locked || event.status === "completed") return null;
-          const next = (fights ?? [])
-            .map((f) => f as unknown as Fight)
-            .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
-            .sort((a, b) => a.card_order - b.card_order)[0];
-          if (!next) return null;
-          return {
-            fightId: next.id,
-            fighterAId: next.fighter_a.id,
-            fighterAName: next.fighter_a.name,
-            fighterBId: next.fighter_b.id,
-            fighterBName: next.fighter_b.name,
-          };
-        })()}
-      />
+      </div>
 
       {!locked && <JumpToUntipped fightIds={tippableFightIds} initialUntipped={untippedFightIds} />}
     </div>
