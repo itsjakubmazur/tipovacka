@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronDown, Clock, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -126,10 +127,86 @@ function ResultPills({ points, rank, participants }: { points: number; rank?: nu
           <span className="text-[11px] font-medium opacity-70">z {participants}</span>
         </div>
       )}
-      <div className="inline-flex items-baseline gap-2 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
-        <span className="text-[11px] text-neutral-600 dark:text-neutral-300">Tvé body</span>
-        <span className="text-lg font-bold tabular-nums">{points}</span>
+      {/* deliberately the same type scale and padding as the rank pill above -
+          a bigger number here made the pair look mismatched */}
+      <div className="inline-flex items-center gap-1.5 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
+        <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-300">Tvé body</span>
+        <span className="text-sm font-bold tabular-nums">{points}</span>
       </div>
+    </div>
+  );
+}
+
+const STANDINGS_SHOWN = 10;
+
+/** How the whole party finished, inside the expanded timeline - so you can see
+ * the result without leaving the gala, with the full board a tap away. */
+function FinalStandings({
+  rows,
+  currentUserId,
+  eventId,
+}: {
+  rows: { userId: string; nickname: string; points: number }[];
+  currentUserId?: string;
+  eventId?: string;
+}) {
+  const shown = rows.slice(0, STANDINGS_SHOWN);
+  const myIndex = rows.findIndex((r) => r.userId === currentUserId);
+  const meBelow = myIndex >= STANDINGS_SHOWN;
+
+  return (
+    <div className="mt-3 border-t border-black/10 pt-3 dark:border-white/10">
+      <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+        <Trophy className="size-3.5 text-yellow-600 dark:text-accent" />
+        Jak to dopadlo
+      </p>
+      <div className="flex flex-col gap-0.5">
+        {shown.map((row, i) => (
+          <StandingRow key={row.userId} rank={i + 1} row={row} isMe={row.userId === currentUserId} />
+        ))}
+        {meBelow && (
+          <>
+            <p className="pl-6 text-xs text-neutral-400 dark:text-neutral-500">…</p>
+            <StandingRow rank={myIndex + 1} row={rows[myIndex]} isMe />
+          </>
+        )}
+      </div>
+      {eventId && (
+        <Link
+          href={`/leaderboard?eventId=${eventId}`}
+          className="mt-1.5 inline-block text-xs text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+        >
+          Celý žebříček galavečera →
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function StandingRow({
+  rank,
+  row,
+  isMe,
+}: {
+  rank: number;
+  row: { nickname: string; points: number };
+  isMe: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-2 rounded-md px-1.5 py-0.5 text-sm",
+        isMe && "bg-accent/15 font-semibold"
+      )}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        <span className="w-4 shrink-0 text-right text-xs tabular-nums text-neutral-500 dark:text-neutral-400">
+          {rank}.
+        </span>
+        <span className="truncate">{row.nickname}</span>
+        {isMe && <span className="shrink-0 text-xs font-normal text-neutral-500 dark:text-neutral-400">(ty)</span>}
+      </span>
+      <span className="shrink-0 font-bold tabular-nums">{row.points}</span>
     </div>
   );
 }
@@ -156,6 +233,9 @@ export function EventStatusTimeline({
   points,
   rank,
   participants,
+  standings,
+  currentUserId,
+  eventId,
   actions,
 }: {
   locked: boolean;
@@ -168,6 +248,10 @@ export function EventStatusTimeline({
   points: number;
   rank?: number | null;
   participants?: number | null;
+  /** Final order among tippers, already ranked - only for a graded gala. */
+  standings?: { userId: string; nickname: string; points: number }[];
+  currentUserId?: string;
+  eventId?: string;
   actions?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -283,6 +367,10 @@ export function EventStatusTimeline({
               );
             })}
           </div>
+
+          {completed && standings && standings.length > 0 && (
+            <FinalStandings rows={standings} currentUserId={currentUserId} eventId={eventId} />
+          )}
         </>
       ) : (
         <div className="flex items-start gap-2.5 pr-6">

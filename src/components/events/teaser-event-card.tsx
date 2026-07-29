@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CalendarClock, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 /** A dimmed, locked "coming soon" card for the next gala, shown to
  * tippers ~10 days before it starts — before its card opens for tipping
@@ -16,6 +18,7 @@ export function TeaserEventCard({
   eventDateIso,
   openAtIso,
   imageUrl,
+  href,
 }: {
   title: string;
   subtitle?: string | null;
@@ -23,6 +26,9 @@ export function TeaserEventCard({
   eventDateIso: string;
   openAtIso: string;
   imageUrl: string | null;
+  /** Admins browsing in admin view get the same card everyone else sees, but
+   * tappable - they can already open a draft's detail. */
+  href?: string;
 }) {
   const target = new Date(openAtIso).getTime();
   // Deliberately null on the first render. A countdown computed during SSR is
@@ -57,8 +63,12 @@ export function TeaserEventCard({
     })
     .replace(",", "");
 
-  return (
-    <div className="relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-accent/35 bg-gradient-to-br from-accent/[0.06] to-white/[0.02] p-4">
+  const shell = cn(
+    "relative flex min-h-[168px] flex-col justify-between overflow-hidden rounded-xl border border-dashed border-accent/35 bg-gradient-to-br from-accent/[0.06] to-white/[0.02] p-4",
+    href && "transition-colors hover:border-accent/70"
+  );
+  const content = (
+    <>
       {imageUrl && (
         <>
           <Image src={imageUrl} alt="" fill className="object-cover opacity-40 blur-[2px] grayscale" />
@@ -110,6 +120,14 @@ export function TeaserEventCard({
           ))}
         </div>
       </div>
-    </div>
+    </>
+  );
+
+  return href ? (
+    <Link href={href} className={shell}>
+      {content}
+    </Link>
+  ) : (
+    <div className={shell}>{content}</div>
   );
 }

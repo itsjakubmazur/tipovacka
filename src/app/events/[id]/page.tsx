@@ -142,13 +142,15 @@ export default async function EventDetailPage({
     event.status === "completed"
       ? supabase
           .from("event_leaderboard")
-          .select("user_id")
+          .select("user_id, nickname, points")
           .eq("event_id", id)
           .order("points", { ascending: false })
           .order("fights_correct_winner", { ascending: false })
           .order("perfect_card", { ascending: false })
           .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
-      : Promise.resolve({ data: null as { user_id: string }[] | null }),
+      : Promise.resolve({
+          data: null as { user_id: string; nickname: string | null; points: number }[] | null,
+        }),
   ]);
   const perfW2 = perfStart();
 
@@ -171,6 +173,11 @@ export default async function EventDetailPage({
   const myRankIndex = standings.findIndex((r) => r.user_id === user.id);
   const finalRank = myRankIndex >= 0 ? myRankIndex + 1 : null;
   const participants = standings.length || null;
+  const standingRows = standings.map((r) => ({
+    userId: r.user_id,
+    nickname: r.nickname ?? "Bez přezdívky",
+    points: r.points,
+  }));
 
   const predictionByFight = new Map<string, Prediction>(
     (predictions ?? []).map((p) => [p.fight_id, p as unknown as Prediction])
@@ -351,6 +358,9 @@ export default async function EventDetailPage({
             points={scoredSoFar}
             rank={finalRank}
             participants={participants}
+            standings={standingRows}
+            currentUserId={user.id}
+            eventId={id}
             actions={
               !locked && tippableFightsAsc.length > 0 ? (
                 <TipActionBar tippableFightIds={tippableFightIds} initialUntipped={untippedFightIds}>

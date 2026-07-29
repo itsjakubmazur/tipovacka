@@ -122,11 +122,12 @@ export default async function EventsPage() {
 
       <div className="flex flex-col gap-3">
         {events?.map((event) => {
-          // Drafts: admins in admin-view see them as normal cards; every
-          // other viewer sees a teaser card inside the window, nothing
-          // otherwise.
-          if (event.status === "draft" && !showDrafts) {
-            if (event.id !== teaserDraft?.id) return null;
+          // Drafts always use the teaser card, so an admin previews exactly
+          // what everyone else will see. Admins in admin-view get every draft
+          // and can still tap through to the detail; other viewers get only
+          // the one inside the teaser window, unclickable.
+          if (event.status === "draft") {
+            if (!showDrafts && event.id !== teaserDraft?.id) return null;
             return (
               <TeaserEventCard
                 key={event.id}
@@ -136,6 +137,7 @@ export default async function EventsPage() {
                 eventDateIso={event.event_date}
                 openAtIso={cardOpensAtIso(event.event_date)}
                 imageUrl={event.image_url}
+                href={showDrafts ? `/events/${event.id}` : undefined}
               />
             );
           }
