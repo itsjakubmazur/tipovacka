@@ -69,10 +69,12 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
+                // the bottom bar is white in light mode, so the active item
+                // can't use the raw accent - yellow on white is unreadable
                 "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
                 active
-                  ? "bg-accent/10 text-accent"
-                  : "text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
+                  ? "bg-accent/10 font-semibold text-yellow-700 dark:font-normal dark:text-accent"
+                  : "text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white"
               )}
             >
               <Icon className="size-5" />
@@ -87,8 +89,8 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
             className={cn(
               "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
               isActive(pathname, "/admin")
-                ? "bg-accent/10 text-accent"
-                : "text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white"
+                ? "bg-accent/10 font-semibold text-yellow-700 dark:font-normal dark:text-accent"
+                : "text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white"
             )}
           >
             <ShieldCheck className="size-5" />

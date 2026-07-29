@@ -338,7 +338,7 @@ export default async function EventDetailPage({
           </span>
         </div>
         {event.payouts_enabled && (
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
+          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
             <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
             <span>
               <span className="font-semibold text-black dark:text-white">Startovné 50 Kč</span> · vítěz bere

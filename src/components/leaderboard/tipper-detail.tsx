@@ -510,7 +510,7 @@ export async function TipperDetail({
           {badges.map((badge) => (
             <span
               key={badge.label}
-              className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-medium"
+              className="flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/40 bg-accent/10 px-3 py-1 text-xs font-medium"
             >
               {badge.icon}
               {badge.label}

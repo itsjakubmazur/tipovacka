@@ -33,7 +33,7 @@ export function WelcomeCard() {
   }
 
   return (
-    <div className="relative flex flex-col gap-2 overflow-hidden rounded-xl border border-accent/40 bg-accent/10 p-4 shadow-lg shadow-black/10">
+    <div className="relative flex flex-col gap-2 overflow-hidden rounded-xl border border-yellow-600/60 dark:border-accent/40 bg-accent/10 p-4 shadow-lg shadow-black/10">
       <button
         type="button"
         onClick={dismiss}

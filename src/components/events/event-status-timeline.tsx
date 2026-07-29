@@ -129,7 +129,7 @@ function ResultPills({ points, rank, participants }: { points: number; rank?: nu
       )}
       {/* deliberately the same type scale and padding as the rank pill above -
           a bigger number here made the pair look mismatched */}
-      <div className="inline-flex items-center gap-1.5 rounded-full border border-accent/60 bg-accent/15 px-3 py-1">
+      <div className="inline-flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/60 bg-accent/15 px-3 py-1">
         <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-300">Tvé body</span>
         <span className="text-sm font-bold tabular-nums">{points}</span>
       </div>

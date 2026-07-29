@@ -118,6 +118,30 @@ body::before {
   animation: splash-failsafe-hide 0.3s ease-out 6s forwards;
 }
 
+/* Theme switch: the new theme is wiped in as a circle growing out of the
+   toggle (see theme-toggle.tsx). The browser's default cross-fade would
+   fight that, so both snapshots are pinned still and only the clip-path
+   animates - the old theme sits underneath and is progressively covered. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* Respect reduced-motion for decorative loops: freeze the wordmark shimmer
    to a solid color and stop the live-pulse ping. The splash failsafe is
    deliberately left running - it's a functional reveal, not decoration, and

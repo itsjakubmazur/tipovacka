@@ -33,7 +33,7 @@ export function BoldPickIntro() {
   if (!show) return null;
 
   return (
-    <div className="mt-2 flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/[0.07] px-3 py-2 text-xs text-neutral-600 dark:text-neutral-300">
+    <div className="mt-2 flex items-center gap-2 rounded-xl border border-yellow-600/60 dark:border-accent/40 bg-accent/[0.07] px-3 py-2 text-xs text-neutral-600 dark:text-neutral-300">
       <Star className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" fill="currentColor" />
       <p className="flex-1 leading-snug">
         <span className="font-semibold text-black dark:text-white">Novinka – Jistotka:</span> dej ×2 body
