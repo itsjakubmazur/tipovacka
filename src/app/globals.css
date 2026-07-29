@@ -187,11 +187,31 @@ body::before {
     /* not from zero - a fully collapsed block squashes the score inside it
        into an unreadable line on the first frame */
     transform: scaleY(0.2);
-    opacity: 0;
   }
   to {
     transform: scaleY(1);
+  }
+}
+
+/* The name and crown belong to the same moment as the block under them, so
+   the whole step fades in together - otherwise the labels sit there fully
+   drawn while their blocks are still on the way up. */
+@keyframes podium-step-in {
+  from {
+    opacity: 0;
+  }
+  to {
     opacity: 1;
+  }
+}
+
+.animate-podium-step {
+  animation: podium-step-in 0.6s ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-podium-step {
+    animation: none;
   }
 }
 

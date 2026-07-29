@@ -96,23 +96,25 @@ export function PodiumCard({
         {PODIUM_ORDER.map((rank) => {
           const place = byRank.get(rank);
           if (!place) return null;
+          // Staggered by placing, not by position on screen: the winner's step
+          // arrives first, then second, then third. (Keying off the DOM index
+          // would follow the 2-1-3 layout order instead.)
+          const delay = `${(rank - 1) * 260}ms`;
           return (
             <Link
               key={rank}
+              style={{ animationDelay: delay }}
               href={`/leaderboard/u/${place.userId}?eventId=${eventId}`}
               // the podium shouldn't be a dead end - "how did the winner
               // actually tip?" is the thing you want next
-              className="flex min-w-0 flex-1 flex-col items-center gap-1 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="animate-podium-step flex min-w-0 flex-1 flex-col items-center gap-1 outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               {rank === 1 && <Crown className="size-4 shrink-0 text-yellow-600 dark:text-accent" />}
               <span className="w-full truncate text-center text-xs font-semibold underline-offset-2 hover:underline" title={place.nick}>
                 {place.nick}
               </span>
               <div
-                // Staggered by placing, not by position on screen: the winner
-                // rises first, then second, then third. (Keying off the DOM
-                // index would follow the 2-1-3 layout order instead.)
-                style={{ animationDelay: `${(rank - 1) * 260}ms` }}
+                style={{ animationDelay: delay }}
                 className={cn(
                   "animate-podium-rise flex w-full flex-col items-center justify-center rounded-t-lg",
                   BLOCK[rank as 1 | 2 | 3]
