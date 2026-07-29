@@ -5,13 +5,18 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { TeaserEventCard } from "@/components/events/teaser-event-card";
 import { WelcomeCard } from "@/components/events/welcome-card";
+import { TippingStatus } from "@/components/events/tipping-status";
 import { cn } from "@/lib/utils";
 import { cardOpensAtIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 
+// Deliberately about the *tipping* state, not the gala's - matching the
+// status timeline on the event detail ("Tipování otevřené" -> "Tipování
+// uzamčeno" -> "Vyhodnoceno"). "Chystá se" used to sit here and contradicted
+// it. (The admin list keeps its own labels: admins think in record states.)
 const STATUS_LABELS: Record<string, string> = {
   draft: "Návrh",
-  upcoming: "Chystá se",
+  upcoming: "Otevřeno",
   locked: "Uzamčeno",
   completed: "Vyhodnoceno",
 };
@@ -194,12 +199,16 @@ export default async function EventsPage() {
                   </p>
                 )}
               </div>
-              <Badge
-                className="relative z-10"
-                variant={effectiveStatus === "upcoming" ? "accent" : "secondary"}
-              >
-                {STATUS_LABELS[effectiveStatus]}
-              </Badge>
+              {effectiveStatus === "upcoming" && event.lock_at ? (
+                <TippingStatus lockAtIso={event.lock_at} onImage={Boolean(event.image_url)} />
+              ) : (
+                <Badge
+                  className="relative z-10"
+                  variant={effectiveStatus === "upcoming" ? "accent" : "secondary"}
+                >
+                  {STATUS_LABELS[effectiveStatus]}
+                </Badge>
+              )}
             </Link>
           );
         })}
