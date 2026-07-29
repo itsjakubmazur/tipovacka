@@ -1,25 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GeneratedCardImage } from "@/components/leaderboard/generated-card-image";
+import { cn } from "@/lib/utils";
 
-/** Share the top-3 podium of a finished gala as a PNG.
+type Place = { rank: number; nick: string; points: number };
+
+// classic podium arrangement: runner-up left, winner centre, third right
+const PODIUM_ORDER = [2, 1, 3];
+
+const BLOCK = {
+  1: "h-16 bg-accent text-black",
+  2: "h-12 bg-neutral-300 text-black dark:bg-neutral-600 dark:text-white",
+  3: "h-9 bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white",
+} as const;
+
+/** The top three of a finished gala, as an actual podium.
  *
- * The image is *not* rendered on the page. It costs a couple of seconds to
- * generate, occupies a 1200x630 block above the board, and says nothing the
- * standings right below it don't already say (medals and all) - its only real
- * job is being shared. Sharing fetches the PNG directly, so it never needed
- * to be on screen; where the native share sheet can't take a file, the image
- * is revealed instead so it can be saved by hand. */
+ * Drawn in plain markup rather than the shareable PNG: the picture cost a
+ * couple of seconds and a 1200x630 block on every visit, and three names in a
+ * row is what the standings underneath already give you. A podium *shape*
+ * reads as a ceremony instead of more data - and costs nothing to draw.
+ *
+ * The PNG still exists purely to be shared, and is generated on demand: the
+ * share call fetches it itself, so it never needs to be on screen. Where the
+ * native share sheet can't carry a file, it's revealed to be saved by hand. */
 export function PodiumCard({
   eventLabel,
   places,
   imageUrl,
 }: {
   eventLabel: string;
-  places: { rank: number; nick: string; points: number }[];
+  places: Place[];
   imageUrl?: string | null;
 }) {
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -33,6 +47,8 @@ export function PodiumCard({
   }
   if (imageUrl) query.set("img", imageUrl);
   const cardUrl = `/share/podium?${query.toString()}`;
+
+  const byRank = new Map(places.map((p) => [p.rank, p]));
 
   async function share() {
     const text = `Nejlepší tipeři na ${eventLabel}: ${places
@@ -72,8 +88,36 @@ export function PodiumCard({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+      <div className="mx-auto flex w-full max-w-xs items-end gap-2">
+        {PODIUM_ORDER.map((rank, i) => {
+          const place = byRank.get(rank);
+          if (!place) return null;
+          return (
+            <div key={rank} className="flex min-w-0 flex-1 flex-col items-center gap-1">
+              {rank === 1 && <Crown className="size-4 shrink-0 text-yellow-600 dark:text-accent" />}
+              <span className="w-full truncate text-center text-xs font-semibold" title={place.nick}>
+                {place.nick}
+              </span>
+              <div
+                // the blocks grow up out of the base, third first - a small
+                // ceremony rather than three boxes appearing at once
+                style={{ animationDelay: `${i * 120}ms` }}
+                className={cn(
+                  "animate-podium-rise flex w-full flex-col items-center justify-center rounded-t-lg",
+                  BLOCK[rank as 1 | 2 | 3]
+                )}
+              >
+                <span className="text-base font-bold leading-none tabular-nums">{place.points}</span>
+                <span className="mt-0.5 text-[10px] font-semibold opacity-70">{rank}.</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {revealed && <GeneratedCardImage src={cardUrl} alt={`Pódium ${eventLabel}`} />}
+
       <Button
         type="button"
         variant="outline"

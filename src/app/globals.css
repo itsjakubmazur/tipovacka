@@ -179,3 +179,29 @@ body::before {
     animation: none;
   }
 }
+
+/* Podium blocks grow up out of their base, staggered, so the top three
+   arrive as a small ceremony instead of three boxes appearing at once. */
+@keyframes podium-rise {
+  from {
+    /* not from zero - a fully collapsed block squashes the score inside it
+       into an unreadable line on the first frame */
+    transform: scaleY(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.animate-podium-rise {
+  transform-origin: bottom;
+  animation: podium-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-podium-rise {
+    animation: none;
+  }
+}
