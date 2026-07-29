@@ -311,7 +311,10 @@ export default async function LeaderboardPage({
           <>
           {replaySteps.length > 0 && (
             <GalaReplay
-              key={selectedEvent.id}
+              // distinct from the board's key below: two siblings sharing one
+              // key makes React reuse the wrong instance, which carried the
+              // player's open/playing state across galas
+              key={`replay-${selectedEvent.id}`}
               steps={replaySteps}
               finalOrder={eventRows.map((r) => ({
                 userId: r.user_id,
@@ -322,7 +325,7 @@ export default async function LeaderboardPage({
             />
           )}
           <EventCompareList
-            key={selectedEvent.id}
+            key={`board-${selectedEvent.id}`}
             rows={eventRows.map((row, i) => {
               const prevRank = prevRankByUser.get(row.user_id);
               return { ...row, delta: prevRank != null ? prevRank - (i + 1) : null };
