@@ -175,7 +175,9 @@ export function EventCompareList({
           <div
             key={row.user_id}
             ref={rowRef(row.user_id)}
+            style={{ animationDelay: `${Math.min(i, 10) * 35}ms` }}
             className={cn(
+              "animate-row-in",
               // fixed columns: pick · rank · name+meta (flexible) · points.
               // Everything variable-width lives in the middle column and
               // truncates, so names never shove the numbers out of line.

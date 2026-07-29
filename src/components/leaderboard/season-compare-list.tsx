@@ -55,7 +55,9 @@ export function SeasonCompareList({
         <div
           key={row.user_id}
           ref={rowRef(row.user_id)}
+          style={{ animationDelay: `${Math.min(i, 10) * 35}ms` }}
           className={cn(
+            "animate-row-in",
             // same fixed columns as the event board: pick · rank · name+meta
             // (flexible, truncating) · points
             "flex items-center gap-3 rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",

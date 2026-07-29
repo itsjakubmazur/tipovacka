@@ -205,3 +205,29 @@ body::before {
     animation: none;
   }
 }
+
+/* Leaderboard rows arrive rather than appear: each one slides up a touch,
+   staggered down the list. Runs whenever the board mounts - which, since the
+   list is keyed by gala, means every time you switch between galas. A FLIP
+   can't do this job: a different gala has different people and different
+   scores, so there are no old positions to move from. */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-row-in {
+  animation: row-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-row-in {
+    animation: none;
+  }
+}
