@@ -135,3 +135,80 @@ def test_payout_settled_waits_for_everyone(monkeypatch):
 
     assert sent == []
     assert db.updates == []
+
+
+def test_fotn_reminder_repeats_after_the_interval(monkeypatch):
+    """One nudge that lands while nobody's looking used to leave the gala
+    stuck forever - the column is a "last sent", not a "sent"."""
+    now = datetime(2026, 7, 12, 20, 0, tzinfo=timezone.utc)
+    db = FakeDB(
+        {
+            "events": [
+                {
+                    "id": "evt-1",
+                    "number": 91,
+                    "name": "OKTAGON 91",
+                    # four hours ago, past FOTN_REMINDER_INTERVAL
+                    "fotn_reminder_sent_at": "2026-07-12T16:00:00+00:00",
+                }
+            ],
+            "fights": [{"status": "completed"}],
+            "profiles": [{"id": "admin-1"}],
+        }
+    )
+    sent = []
+    monkeypatch.setattr(cron, "send_to_user", lambda db, uid, title, body, url: sent.append(uid))
+
+    cron.send_fotn_reminders(db, now)
+
+    assert sent == ["admin-1"]
+
+
+def test_fotn_reminder_waits_out_the_interval(monkeypatch):
+    now = datetime(2026, 7, 12, 20, 0, tzinfo=timezone.utc)
+    db = FakeDB(
+        {
+            "events": [
+                {
+                    "id": "evt-1",
+                    "number": 91,
+                    "name": "OKTAGON 91",
+                    # only an hour ago
+                    "fotn_reminder_sent_at": "2026-07-12T19:00:00+00:00",
+                }
+            ],
+            "fights": [{"status": "completed"}],
+            "profiles": [{"id": "admin-1"}],
+        }
+    )
+    sent = []
+    monkeypatch.setattr(cron, "send_to_user", lambda db, uid, title, body, url: sent.append(uid))
+
+    cron.send_fotn_reminders(db, now)
+
+    assert sent == []
+
+
+def test_fotn_reminder_gives_up_after_the_cap(monkeypatch):
+    now = datetime(2026, 7, 12, 20, 0, tzinfo=timezone.utc)
+    db = FakeDB(
+        {
+            "events": [
+                {
+                    "id": "evt-1",
+                    "number": 91,
+                    "name": "OKTAGON 91",
+                    "fotn_reminder_sent_at": "2026-07-12T10:00:00+00:00",
+                }
+            ],
+            "fights": [{"status": "completed"}],
+            "profiles": [{"id": "admin-1"}],
+            "push_log": [{"id": str(i)} for i in range(cron.FOTN_REMINDER_MAX)],
+        }
+    )
+    sent = []
+    monkeypatch.setattr(cron, "send_to_user", lambda db, uid, title, body, url: sent.append(uid))
+
+    cron.send_fotn_reminders(db, now)
+
+    assert sent == []

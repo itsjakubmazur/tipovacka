@@ -291,7 +291,7 @@ body::before {
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -299,8 +299,12 @@ body::before {
   }
 }
 
+/* Short on purpose: most pages also carry .stagger-in, and two full-length
+   entrances stacked on top of each other read as the page being slow to load
+   rather than as choreography. This one is the settle; the stagger is the
+   detail. */
 .animate-page-in {
-  animation: page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: page-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 /* Switching galas on the leaderboard: the board you left slides out of the

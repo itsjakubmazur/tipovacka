@@ -77,6 +77,14 @@ FOLLOWUP_HOUR_PRAGUE = 14
 HYPE_DAYS_BEFORE = 6
 HYPE_HOUR_PRAGUE = 14
 LOCK_REMINDER_WINDOW = timedelta(hours=1)
+# The missing-FOTN nudge is the one thing blocking a gala from ever finishing,
+# so it repeats instead of firing once into a silent phone - but it stops
+# nagging after a few tries.
+FOTN_REMINDER_INTERVAL = timedelta(hours=3)
+FOTN_REMINDER_MAX = 5
+# "Card changed" is the only broadcast that can legitimately fire more than
+# once per gala; cap it so a scraper flapping on one fight can't spam everyone.
+CARD_CHANGED_MAX = 3
 MAX_FUTURE_EVENTS = 2
 OKTAGON_YOUTUBE_URL = "https://youtube.com/@oktagon_czsk"
 PRAGUE_TZ = ZoneInfo("Europe/Prague")
@@ -398,6 +406,16 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
             {"id": f"eq.{event['id']}"},
         )
         if (created > 0 or cancelled > 0) and event["status"] != "draft":
+            # The card keeps being imported either way - only the push is
+            # capped. A fight that flaps between imported and cancelled would
+            # otherwise buzz everyone's phone every three hours until lock.
+            sent_before = db.select(
+                "push_log",
+                {"event_id": f"eq.{event['id']}", "kind": "eq.card_changed", "select": "id"},
+            )
+            if len(sent_before) >= CARD_CHANGED_MAX:
+                print(f"{label}: karta se změnila, ale limit upozornění vyčerpán.")
+                continue
             send_to_all(
                 db,
                 f"🔄 {label}: karta se změnila",
@@ -663,18 +681,31 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
     """Fight of the Night is the one manual step blocking an event from
     ever completing (no leaderboard bonus, no payout, no "results done"
     push) - nudge admins once every real (non-cancelled/no_contest)
-    fight is graded but nobody's entered it yet."""
+    fight is graded but nobody's entered it yet.
+
+    Repeats every FOTN_REMINDER_INTERVAL up to FOTN_REMINDER_MAX times: one
+    push that arrives while nobody's looking used to leave the gala stuck
+    indefinitely. fotn_reminder_sent_at is therefore "last sent", not "sent"."""
     events = db.select(
         "events",
         {
             "status": "not.in.(draft,completed)",
             "actual_fotn_fight_id": "is.null",
-            "fotn_reminder_sent_at": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
-            "select": "id,number,name,subtitle",
+            "select": "id,number,name,subtitle,fotn_reminder_sent_at",
         },
     )
     for event in events:
+        last_sent = event.get("fotn_reminder_sent_at")
+        if last_sent and now - _parse_dt(last_sent) < FOTN_REMINDER_INTERVAL:
+            continue
+        already = db.select(
+            "push_log",
+            {"event_id": f"eq.{event['id']}", "kind": "eq.fotn_missing", "select": "id"},
+        )
+        if len(already) >= FOTN_REMINDER_MAX:
+            continue
+
         fights = db.select(
             "fights",
             {
@@ -709,7 +740,10 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
             {"fotn_reminder_sent_at": now.isoformat()},
             {"id": f"eq.{event['id']}"},
         )
-        print(f"{label}: chybí Fight of the Night, admini upozorněni.")
+        print(
+            f"{label}: chybí Fight of the Night, admini upozorněni "
+            f"({len(already) + 1}/{FOTN_REMINDER_MAX})."
+        )
 
 
 def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None:

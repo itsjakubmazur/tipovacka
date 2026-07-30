@@ -49,27 +49,23 @@ export default async function EventsPage() {
     .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url")
     .order("event_date", { ascending: false });
 
-  const { data: fights } = await supabase.from("fights").select("id, event_id");
+  // Counted in the database, one row per gala. Doing it here in JS meant
+  // fetching every fight ever imported plus every prediction the viewer has
+  // made, which PostgREST truncates at 1000 rows - around the 90th gala the
+  // counters would have started silently under-reporting.
+  const [{ data: fightCounts }, { data: tipCounts }] = await Promise.all([
+    supabase.from("event_fight_counts").select("event_id, fight_count"),
+    user
+      ? supabase.from("event_user_tip_counts").select("event_id, tipped").eq("user_id", user.id)
+      : Promise.resolve({ data: null as { event_id: string; tipped: number }[] | null }),
+  ]);
 
-  const fightCountByEvent = new Map<string, number>();
-  (fights ?? []).forEach((f) =>
-    fightCountByEvent.set(f.event_id, (fightCountByEvent.get(f.event_id) ?? 0) + 1)
+  const fightCountByEvent = new Map(
+    (fightCounts ?? []).map((r) => [r.event_id as string, r.fight_count as number])
   );
-
-  const predictionCountByEvent = new Map<string, number>();
-  if (user) {
-    const fightToEvent = new Map((fights ?? []).map((f) => [f.id, f.event_id]));
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("fight_id")
-      .eq("user_id", user.id);
-    (predictions ?? []).forEach((p) => {
-      const eventId = fightToEvent.get(p.fight_id);
-      if (eventId) {
-        predictionCountByEvent.set(eventId, (predictionCountByEvent.get(eventId) ?? 0) + 1);
-      }
-    });
-  }
+  const predictionCountByEvent = new Map(
+    (tipCounts ?? []).map((r) => [r.event_id as string, r.tipped as number])
+  );
 
   // The two galas a tapper most likely opens - prefetched in full (data
   // and all) so opening them feels instant, while every other card
