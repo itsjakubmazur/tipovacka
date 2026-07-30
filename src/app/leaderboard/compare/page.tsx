@@ -25,7 +25,7 @@ export default async function ComparePage({
 
   if (profilesError) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-8">
+      <div className="stagger-in flex flex-col gap-4 px-4 py-8">
         <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
         <p className="text-sm text-red-600">Chyba při načítání porovnání: {profilesError.message}</p>
       </div>
@@ -61,7 +61,7 @@ export default async function ComparePage({
 
     if (!locked) {
       return (
-        <div className="flex flex-col gap-4 px-4 py-8">
+        <div className="stagger-in flex flex-col gap-4 px-4 py-8">
           <BackLink href={`/leaderboard?view=event&eventId=${eventId}`}>Zpět na žebříček</BackLink>
           <h1 className="text-xl font-bold lg:text-3xl">
             {nicknameA} vs {nicknameB}
@@ -129,7 +129,7 @@ export default async function ComparePage({
     const totalB = (leaderboardRows ?? []).find((r) => r.user_id === b)?.points ?? 0;
 
     return (
-      <div className="flex flex-col gap-4 px-4 py-8">
+      <div className="stagger-in flex flex-col gap-4 px-4 py-8">
         <BackLink href={`/leaderboard?view=event&eventId=${eventId}`}>Zpět na žebříček</BackLink>
 
         <h1 className="text-xl font-bold">
@@ -272,7 +272,7 @@ export default async function ComparePage({
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <BackLink href={`/leaderboard?view=season`}>Zpět na žebříček</BackLink>
 
       <h1 className="text-xl font-bold">

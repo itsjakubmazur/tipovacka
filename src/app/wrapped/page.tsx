@@ -115,7 +115,7 @@ export default async function WrappedPage({
     : null;
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <div>
         <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
         <h1 className="mt-1 text-xl font-bold lg:text-3xl">Tvoje sezóna {season}</h1>

@@ -11,7 +11,7 @@ export default async function TipperDetailPage({
   const { eventId, season } = await searchParams;
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <TipperDetail userId={userId} eventId={eventId} season={season} />
     </div>
   );

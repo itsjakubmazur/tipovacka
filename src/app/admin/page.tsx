@@ -107,7 +107,7 @@ export default async function AdminPage() {
           it all just stacks. */}
       <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-6 lg:sticky lg:top-20">
+          <div className="stagger-in flex flex-col gap-6 lg:sticky lg:top-20">
             {isSuperadmin && <ViewModeToggle initialMode={viewMode} />}
 
             {isSuperadmin && <InviteCodeCard />}
@@ -153,7 +153,7 @@ export default async function AdminPage() {
           </div>
         </aside>
 
-        <div className="flex flex-col gap-8 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+        <div className="stagger-in flex flex-col gap-8 lg:col-start-1 lg:row-start-1 lg:min-w-0">
           <Section title="Galavečery" className="gap-3">
             <div className="flex flex-col gap-2">
               {events?.map((event) => (

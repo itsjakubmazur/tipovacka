@@ -297,7 +297,7 @@ export default async function EventDetailPage({
   });
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       {/* you won the night - celebrate every time it's opened, it's a
           few seconds and never takes a tap */}
       {event.status === "completed" && finalRank === 1 && <Confetti />}
@@ -362,7 +362,7 @@ export default async function EventDetailPage({
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:-mx-3 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
+          <div className="stagger-in flex flex-col gap-4 lg:sticky lg:top-20 lg:-mx-3 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
             {/* Mirrors the "Hlavní karta" heading in the main column so both
                 columns' first card starts on the same line. Desktop only -
                 on a phone the rail is just the page, and a label there would
@@ -460,7 +460,7 @@ export default async function EventDetailPage({
           </div>
         </aside>
 
-        <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+        <div className="stagger-in flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
           {/* From xl the card pairs up - the column is wide enough that a
               single stack of fight cards would just be a lot of empty space
               either side of the fighter names. */}

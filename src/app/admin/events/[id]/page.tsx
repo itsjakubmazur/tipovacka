@@ -136,7 +136,7 @@ export default async function AdminEventPage({
           moves into a sticky rail. Below lg the rail is display:contents. */}
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-6 lg:sticky lg:top-20 lg:-mx-3 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
+          <div className="stagger-in flex flex-col gap-6 lg:sticky lg:top-20 lg:-mx-3 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
             {/* First thing in the rail (and first on the page on a phone,
                 where the rail is display:contents): everything else runs
                 itself, so entering the Fight of the Night is the one reason
@@ -219,7 +219,7 @@ export default async function AdminEventPage({
           </div>
         </aside>
 
-        <div className="flex flex-col gap-6 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+        <div className="stagger-in flex flex-col gap-6 lg:col-start-1 lg:row-start-1 lg:min-w-0">
           <EventSettingsForm
             eventId={event.id}
             initialName={event.name}

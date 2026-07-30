@@ -70,7 +70,7 @@ export default async function ScraperLogPage() {
   const stale = ageMinutes != null && ageMinutes > 30;
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-8">
+    <div className="stagger-in flex flex-col gap-4 px-4 py-8">
       <h1 className="text-xl font-bold lg:text-3xl">Log scraperu</h1>
 
       <div
