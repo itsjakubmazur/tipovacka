@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { MessageCircle, SmilePlus, Trash2, X, Send, Film } from "lucide-react";
@@ -551,18 +552,28 @@ export function EventComments({
         </div>
       )}
 
-      {pickerFor && (
-        <EmojiPickerSheet
-          onSelect={(native) => {
-            const comment = comments.find((c) => c.id === pickerFor);
-            if (comment) toggleReaction(comment, native);
-            setPickerFor(null);
-          }}
-          onClose={() => setPickerFor(null)}
-        />
-      )}
+      {/* Both pickers go straight to <body>. Docked, the kecárna lives inside a
+          position:sticky rail, and sticky creates its own stacking context - a
+          fixed z-[60] dialog inside it still painted *under* the fight cards in
+          the neighbouring column, because that column comes later in the DOM. */}
+      {pickerFor &&
+        createPortal(
+          <EmojiPickerSheet
+            onSelect={(native) => {
+              const comment = comments.find((c) => c.id === pickerFor);
+              if (comment) toggleReaction(comment, native);
+              setPickerFor(null);
+            }}
+            onClose={() => setPickerFor(null)}
+          />,
+          document.body
+        )}
 
-      {gifOpen && <GifPicker onSelect={sendGif} onClose={() => setGifOpen(false)} />}
+      {gifOpen &&
+        createPortal(
+          <GifPicker onSelect={sendGif} onClose={() => setGifOpen(false)} />,
+          document.body
+        )}
     </>
   );
 }
