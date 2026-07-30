@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { pragueLocalToUtcIso, utcIsoToPragueLocalInput } from "@/lib/time";
+import { Section } from "@/components/ui/section-heading";
 
 const STATUS_OPTIONS = [
   { value: "draft", label: "Návrh (skryté tipérům)" },
@@ -117,8 +118,8 @@ export function EventSettingsForm({
   }
 
   return (
+    <Section title="Nastavení galavečera">
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="text-sm font-semibold">Nastavení galavečera</p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name">Název</Label>
@@ -199,5 +200,6 @@ export function EventSettingsForm({
         {saving ? "Ukládám…" : "Uložit"}
       </Button>
     </form>
+    </Section>
   );
 }

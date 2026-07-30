@@ -1,5 +1,6 @@
 import { Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { Section } from "@/components/ui/section-heading";
 
 type Row = {
   event_id: string;
@@ -80,11 +81,8 @@ export async function NemesisCard({ userId }: { userId: string }) {
   if (ranked.length === 0) return null;
 
   return (
+    <Section title="Vzájemné bilance sezóny" icon={<Swords className="size-4" />}>
     <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="flex items-center gap-1.5 text-sm font-semibold">
-        <Swords className="size-4 text-yellow-600 dark:text-accent" />
-        Vzájemné bilance sezóny
-      </p>
       <p className="text-xs text-neutral-500 dark:text-neutral-400">
         Za každý galavečer bere „výhru“ ten, kdo skončil výš.
       </p>
@@ -114,5 +112,6 @@ export async function NemesisCard({ userId }: { userId: string }) {
         })}
       </div>
     </div>
+    </Section>
   );
 }

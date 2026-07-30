@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Smartphone } from "lucide-react";
 import { isIos, isStandalone } from "@/lib/push";
+import { Section } from "@/components/ui/section-heading";
 
 function isAndroid(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -17,11 +18,8 @@ export function InstallAppGuide() {
   if (!platform) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-yellow-600/60 dark:border-accent/50 bg-accent/10 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:shadow-black/60">
-      <p className="flex items-center gap-2 text-sm font-semibold">
-        <Smartphone className="size-4 text-yellow-600 dark:text-accent" />
-        Přidej si tipovačku na plochu
-      </p>
+    <Section title="Přidej si tipovačku na plochu" icon={<Smartphone className="size-4" />}>
+    <div className="flex flex-col gap-2 rounded-xl border border-yellow-600/60 bg-accent/10 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-accent/50 dark:shadow-black/60">
       <p className="text-sm text-neutral-700 dark:text-neutral-300">
         {platform === "ios"
           ? "Na iPhonu/iPadu bez toho nepůjdou zapnout upozornění na uzávěrky."
@@ -47,5 +45,6 @@ export function InstallAppGuide() {
         </p>
       )}
     </div>
+    </Section>
   );
 }

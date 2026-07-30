@@ -5,6 +5,7 @@ import { AddFightForm } from "@/components/admin/add-fight-form";
 import { AdminFightRow } from "@/components/admin/admin-fight-row";
 import { AdminFotnForm } from "@/components/admin/admin-fotn-form";
 import { NotificationChecklist } from "@/components/admin/notification-checklist";
+import { Section } from "@/components/ui/section-heading";
 import { ImportSherdogButton } from "@/components/admin/import-sherdog-button";
 
 export default async function AdminEventPage({
@@ -135,7 +136,7 @@ export default async function AdminEventPage({
           moves into a sticky rail. Below lg the rail is display:contents. */}
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-6 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-20 lg:-mx-3 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
             {event.status === "draft" && (
               <p className="rounded-xl border border-yellow-600/60 dark:border-accent/40 bg-accent/10 p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60 text-neutral-700 dark:text-neutral-300">
                 Tohle je jen návrh, skrytý tipérům. Zápasová karta se naimportuje a galavečer se
@@ -148,18 +149,16 @@ export default async function AdminEventPage({
             )}
 
             {sortedFights.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-lg font-semibold">Kdo má natipováno</h2>
-                <div className="flex flex-col gap-2">
+              <Section title="Kdo má natipováno">
+                {/* One card, one row per person - twelve separate cards for
+                    "Jméno · FOTN · 4/10" was a wall of padding. */}
+                <div className="divide-y divide-black/5 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:divide-white/5 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
                   {tipProgress.map((p) => {
                     const fightsDone = p.tipped >= sortedFights.length;
                     return (
-                      <div
-                        key={p.id}
-                        className="flex items-center justify-between gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
-                      >
+                      <div key={p.id} className="flex items-center justify-between gap-3 px-3 py-1.5 text-sm">
                         <span className="min-w-0 truncate">{p.nickname}</span>
-                        <span className="flex shrink-0 items-center gap-3 text-sm font-semibold">
+                        <span className="flex shrink-0 items-center gap-3 font-semibold tabular-nums">
                           <span
                             className={
                               p.fotn
@@ -184,7 +183,7 @@ export default async function AdminEventPage({
                     );
                   })}
                 </div>
-              </section>
+              </Section>
             )}
 
             <NotificationChecklist
@@ -205,14 +204,13 @@ export default async function AdminEventPage({
             />
 
             {sortedFights.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-lg font-semibold">Bonus tip</h2>
+              <Section title="Bonus tip">
                 <AdminFotnForm
                   eventId={event.id}
                   fights={sortedFights}
                   initialFightId={event.actual_fotn_fight_id}
                 />
-              </section>
+              </Section>
             )}
           </div>
         </aside>
@@ -231,8 +229,7 @@ export default async function AdminEventPage({
             initialPayoutsEnabled={event.payouts_enabled}
           />
 
-          <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Zápasy</h2>
+          <Section title="Zápasy" className="gap-3">
             <div className="flex flex-wrap gap-3">
               <ImportSherdogButton
                 eventId={event.id}
@@ -264,7 +261,7 @@ export default async function AdminEventPage({
               ))}
             </div>
             <AddFightForm eventId={event.id} fighters={fighters ?? []} nextCardOrder={nextCardOrder} />
-          </section>
+          </Section>
 
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { Check, Clock, AlertTriangle, Minus, Megaphone } from "lucide-react";
+import { Section } from "@/components/ui/section-heading";
 import { pragueDaysBeforeIso } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
@@ -274,12 +275,7 @@ export function NotificationChecklist({
   ];
 
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="flex items-center gap-2 text-lg font-semibold">
-        <Megaphone className="size-4 text-yellow-600 dark:text-accent" />
-        Notifikace
-      </h2>
-
+    <Section title="Notifikace" icon={<Megaphone className="size-4" />} className="gap-3">
       <List rows={broadcasts} />
 
       <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
@@ -310,6 +306,6 @@ export function NotificationChecklist({
         značky na eventu, takže tam počty chybí. Jednorázový vlastní text pošleš přes „Poslat
         upozornění“ v přehledu adminu.
       </p>
-    </section>
+    </Section>
   );
 }

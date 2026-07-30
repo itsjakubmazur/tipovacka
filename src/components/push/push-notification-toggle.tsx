@@ -5,6 +5,7 @@ import { Bell, BellOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { subscribeToPush, isIos, isStandalone } from "@/lib/push";
+import { Section } from "@/components/ui/section-heading";
 
 export function PushNotificationToggle({ userId }: { userId: string }) {
   const supabase = createClient();
@@ -63,18 +64,19 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
 
   if (needsInstall) {
     return (
+      <Section title="Upozornění na blížící se uzávěrku">
       <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-        <p className="text-sm font-semibold">Upozornění na blížící se uzávěrku</p>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Na iPhonu/iPadu fungují upozornění jen po instalaci na plochu - postupuj podle návodu výš a pak se vrať sem.
         </p>
       </div>
+      </Section>
     );
   }
 
   return (
+    <Section title="Upozornění na blížící se uzávěrku">
     <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="text-sm font-semibold">Upozornění na blížící se uzávěrku</p>
       <p className="text-sm text-neutral-600 dark:text-neutral-400">
         Dáme ti vědět, když se blíží uzávěrka a ještě nemáš dotipováno.
       </p>
@@ -98,5 +100,6 @@ export function PushNotificationToggle({ userId }: { userId: string }) {
           <p className="text-sm text-red-600">{error}</p>
         ))}
     </div>
+    </Section>
   );
 }

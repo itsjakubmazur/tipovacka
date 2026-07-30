@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { parseCzechAccount } from "@/lib/cz-payment";
+import { Section } from "@/components/ui/section-heading";
 
 export function BankAccountForm({
   userId,
@@ -51,9 +52,9 @@ export function BankAccountForm({
   }
 
   return (
+    <Section title="Číslo účtu pro výhry">
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-semibold">Číslo účtu pro výhry</p>
         <p className="text-xs text-neutral-500 dark:text-neutral-400">
           Když vyhraješ startovné za galavečer, ostatní hráči uvidí QR platbu na tenhle účet — ale až
           po vyhodnocení a jen ti, kdo ti mají poslat peníze. Nikde jinde se nezobrazuje a můžeš ho
@@ -83,5 +84,6 @@ export function BankAccountForm({
         {saving ? "Ukládám…" : "Uložit"}
       </Button>
     </form>
+    </Section>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Section } from "@/components/ui/section-heading";
 
 export function CreateGroupForm() {
   const router = useRouter();
@@ -30,8 +31,8 @@ export function CreateGroupForm() {
   }
 
   return (
+    <Section title="Vytvořit skupinu">
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="text-sm font-semibold">Vytvořit skupinu</p>
       <Input
         placeholder="Název skupiny"
         value={name}
@@ -43,5 +44,6 @@ export function CreateGroupForm() {
         {saving ? "Vytvářím…" : "Vytvořit"}
       </Button>
     </form>
+    </Section>
   );
 }

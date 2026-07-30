@@ -362,7 +362,7 @@ export default async function EventDetailPage({
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
+          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:-mx-3 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
             {/* Mirrors the "Hlavní karta" heading in the main column so both
                 columns' first card starts on the same line. Desktop only -
                 on a phone the rail is just the page, and a label there would
@@ -475,7 +475,7 @@ export default async function EventDetailPage({
                   {showSegmentHeader && (
                     <h2
                       id={`segment-${fight.card_segment!}`}
-                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 xl:mt-1 dark:text-neutral-400"
+                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
                     >
                       {CARD_SEGMENT_LABELS[fight.card_segment!]}
                     </h2>

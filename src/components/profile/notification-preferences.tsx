@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { Section } from "@/components/ui/section-heading";
 
 const PREFS = [
   {
@@ -64,8 +65,8 @@ export function NotificationPreferences({
   }
 
   return (
+    <Section title="Jaká upozornění chceš dostávat">
     <div className="flex flex-col gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <p className="mb-2 text-sm font-semibold">Jaká upozornění chceš dostávat</p>
       {PREFS.map((pref) => (
         <button
           key={pref.key}
@@ -108,5 +109,6 @@ export function NotificationPreferences({
       </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
+    </Section>
   );
 }

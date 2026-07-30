@@ -9,6 +9,7 @@ import { BroadcastPushForm } from "@/components/admin/broadcast-push-form";
 import { InviteCodeCard } from "@/components/admin/invite-code-card";
 import { ViewModeToggle } from "@/components/admin/view-mode-toggle";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
+import { Section } from "@/components/ui/section-heading";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "Návrh (skryté tipérům)",
@@ -123,8 +124,7 @@ export default async function AdminPage() {
             )}
 
             {isSuperadmin && (
-              <section className="flex flex-col gap-3">
-                <h2 className="text-lg font-semibold">Poslat upozornění</h2>
+              <Section title="Poslat upozornění" className="gap-3">
                 <BroadcastPushForm />
                 {sentBroadcasts && sentBroadcasts.length > 0 && (
                   <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
@@ -148,14 +148,13 @@ export default async function AdminPage() {
                     ))}
                   </div>
                 )}
-              </section>
+              </Section>
             )}
           </div>
         </aside>
 
         <div className="flex flex-col gap-8 lg:col-start-1 lg:row-start-1 lg:min-w-0">
-          <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Galavečery</h2>
+          <Section title="Galavečery" className="gap-3">
             <div className="flex flex-col gap-2">
               {events?.map((event) => (
                 <Link
@@ -173,11 +172,10 @@ export default async function AdminPage() {
               ))}
             </div>
             <AddEventForm />
-          </section>
+          </Section>
 
           {isSuperadmin && (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-lg font-semibold">Uživatelé</h2>
+            <Section title="Uživatelé" className="gap-3">
               {profilesError && (
                 <p className="text-sm text-red-600">Chyba při načítání uživatelů: {profilesError.message}</p>
               )}
@@ -230,7 +228,7 @@ export default async function AdminPage() {
                   );
                 })}
               </div>
-            </section>
+            </Section>
           )}
         </div>
       </div>
