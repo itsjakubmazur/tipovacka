@@ -113,9 +113,13 @@ export function TeaserEventCard({
           {units.map((u, i) => (
             <div
               key={i}
-              className="min-w-[42px] rounded-lg border border-black/10 bg-black/[0.03] px-1 py-1.5 text-center dark:border-white/10 dark:bg-white/[0.05]"
+              className="min-w-[42px] overflow-hidden rounded-lg border border-black/10 bg-black/[0.03] px-1 py-1.5 text-center dark:border-white/10 dark:bg-white/[0.05]"
             >
-              <div className="text-lg font-bold leading-none tabular-nums text-yellow-600 dark:text-accent">
+              {/* keyed by the value so only the unit that changed rolls over */}
+              <div
+                key={u.value ?? "-"}
+                className="animate-digit-roll text-lg font-bold leading-none tabular-nums text-yellow-600 dark:text-accent"
+              >
                 {u.value ?? "–"}
               </div>
               <div className="mt-1 text-[9px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">

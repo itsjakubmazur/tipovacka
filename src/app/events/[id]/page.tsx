@@ -465,7 +465,7 @@ export default async function EventDetailPage({
               single stack of fight cards would just be a lot of empty space
               either side of the fighter names. */}
           <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
-            {fightsWithHeaders.map(({ fight, showSegmentHeader }) => {
+            {fightsWithHeaders.map(({ fight, showSegmentHeader }, cardIndex) => {
               const names = picksByFight.get(fight.id);
               const fighterANames = names?.get(fight.fighter_a.id) ?? [];
               const fighterBNames = names?.get(fight.fighter_b.id) ?? [];
@@ -489,6 +489,7 @@ export default async function EventDetailPage({
                       initialIsBold={boldFightId === fight.id}
                       locked={locked}
                       consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
+                      revealIndex={cardIndex}
                     />
                   </div>
                 </Fragment>

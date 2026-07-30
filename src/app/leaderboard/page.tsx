@@ -14,6 +14,7 @@ import { GalaReplay } from "@/components/leaderboard/gala-replay";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import type { Method } from "@/lib/types";
 import { Disclosure } from "@/components/ui/disclosure";
+import { SlideOnChange } from "@/components/ui/slide-on-change";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -348,6 +349,7 @@ export default async function LeaderboardPage({
             )}
 
             {view === "event" && eventRows.length > 0 && (
+              <SlideOnChange index={events.findIndex((e) => e.id === selectedEvent.id)}>
               <EventCompareList
                 key={`board-${selectedEvent.id}`}
                 rows={eventRows.map((row, i) => {
@@ -359,6 +361,7 @@ export default async function LeaderboardPage({
                 currentUserId={currentUserId}
                 locked={eventLocked}
               />
+              </SlideOnChange>
             )}
 
             {view === "season" && seasonRows.length > 0 && (

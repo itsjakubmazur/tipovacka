@@ -30,7 +30,8 @@ function Pill({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "rounded-full px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60",
+        // the press is the whole feedback loop for tipping - let the pill give
+        "rounded-full px-3 py-1.5 text-sm font-medium transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100",
         active ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
       )}
     >
@@ -131,6 +132,7 @@ export function FightTipCard({
   initialIsBold,
   locked,
   consensus,
+  revealIndex = 0,
 }: {
   fight: Fight;
   userId: string;
@@ -139,6 +141,10 @@ export function FightTipCard({
   initialIsBold?: boolean;
   locked: boolean;
   consensus?: { fighterANames: string[]; fighterBNames: string[] };
+  /** position on the card - the graded result bars wipe in one after another
+   * down the page, so coming back mid-gala reads as a sequence of results
+   * rather than a wall of green and red */
+  revealIndex?: number;
 }) {
   const supabase = createClient();
 
@@ -306,6 +312,9 @@ export function FightTipCard({
       className={cn(
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
         flash && "animate-tip-saved",
+        // the ring outlasts the pulse, so "it's in" is still readable a second
+        // later when you look back up from the pills
+        saved && "ring-2 ring-green-500/40",
         voided
           ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
           : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
@@ -408,8 +417,9 @@ export function FightTipCard({
             fight.winner_fighter_id === fight.fighter_a.id ? fight.fighter_a.name : fight.fighter_b.name;
           return (
             <div
+              style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
               className={cn(
-                "flex items-center gap-2 border-t px-4 py-2.5 text-sm",
+                "animate-result-in flex items-center gap-2 border-t px-4 py-2.5 text-sm",
                 graded
                   ? hit
                     ? "border-green-600/30 bg-green-600/10 text-green-800 dark:text-green-400"
@@ -627,7 +637,7 @@ export function FightTipCard({
           <span className="text-neutral-500 dark:text-neutral-300">Ukládám…</span>
         ) : saved ? (
           <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
-            <Check className="size-3.5 shrink-0" />
+            <Check className="animate-tip-check size-3.5 shrink-0" strokeWidth={3} />
             Uloženo.
           </span>
         ) : null}

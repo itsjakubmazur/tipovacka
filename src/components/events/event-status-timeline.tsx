@@ -84,15 +84,18 @@ function Countdown({ targetIso }: { targetIso: string }) {
   units.push({ value: pad(seconds), label: "s" });
 
   return (
-    <div className="mt-2 flex gap-1">
+    <div className={cn("mt-2 flex gap-1", urgent && "animate-clock-urgent")}>
       {units.map((u, i) => (
         <div
           key={i}
-          className="min-w-[34px] rounded-md border border-black/10 bg-black/[0.03] px-1 py-1 text-center dark:border-white/10 dark:bg-white/[0.04]"
+          className="min-w-[34px] overflow-hidden rounded-md border border-black/10 bg-black/[0.03] px-1 py-1 text-center dark:border-white/10 dark:bg-white/[0.04]"
         >
           <div
+            // keyed by the value, so only the unit that actually changed
+            // re-mounts and rolls - the rest of the clock stays still
+            key={u.value}
             className={cn(
-              "text-sm font-bold leading-none tabular-nums",
+              "animate-digit-roll text-sm font-bold leading-none tabular-nums",
               urgent ? "text-red-600 dark:text-red-400" : "text-yellow-600 dark:text-accent"
             )}
           >

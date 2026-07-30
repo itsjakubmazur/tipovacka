@@ -9,6 +9,7 @@ import { PushPromptBanner } from "@/components/push/push-prompt-banner";
 import { BankAccountPromptBanner } from "@/components/profile/bank-account-prompt-banner";
 import { SplashScreen } from "@/components/splash-screen";
 import { ErrorReporter } from "@/components/error-reporter";
+import { PageTransition } from "@/components/page-transition";
 
 /** Static stand-in rendered while the real NavBar (which awaits the
  * auth/profile lookup) streams in - keeps the very first HTML flush
@@ -73,7 +74,9 @@ export default function RootLayout({
           </Suspense>
           <PushPromptBanner />
           <BankAccountPromptBanner />
-          <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0 lg:max-w-5xl xl:max-w-6xl">{children}</main>
+          <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0 lg:max-w-5xl xl:max-w-6xl">
+            <PageTransition>{children}</PageTransition>
+          </main>
         </ThemeProvider>
       </body>
     </html>
