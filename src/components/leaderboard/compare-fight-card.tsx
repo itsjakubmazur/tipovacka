@@ -112,7 +112,7 @@ export function CompareFightCard({
                     {nicknameB}
                   </span>
                 )}
-                {isActualWinner && <Badge variant="accent">Výherce</Badge>}
+                {isActualWinner && <Badge variant="accent">Vítěz</Badge>}
               </div>
             </div>
           );

@@ -451,12 +451,14 @@ export function FightTipCard({
                 isTba={fighter.is_tba}
                 grayedOut={grayedOut}
                 className={cn(winnerId === fighter.id && "ring-2 ring-inset ring-accent")}
+                badge={
+                  isActualWinner ? (
+                    <Badge variant="accent" className="shadow-lg shadow-black/40">
+                      Vítěz
+                    </Badge>
+                  ) : undefined
+                }
               />
-              {isActualWinner && (
-                <Badge variant="accent" className="mt-1">
-                  Výherce
-                </Badge>
-              )}
               <span className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold">
                 {fighter.flag_code && (
                   <Image

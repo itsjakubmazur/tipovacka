@@ -17,13 +17,21 @@ export function FighterPortrait({
   isTba,
   grayedOut,
   className,
+  badge,
 }: {
   name: string;
   photoUrl?: string | null;
   isTba?: boolean;
   grayedOut?: boolean;
   className?: string;
+  /** Sits *on* the photo's bottom edge rather than under it. In flow it
+   * pushed the winner's name, record and stats a badge-height lower than the
+   * loser's next to it, and the two columns stopped lining up. */
+  badge?: React.ReactNode;
 }) {
+  const overlay = badge ? (
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-2">{badge}</div>
+  ) : null;
   if (isTba) {
     return (
       <div className="relative w-full max-w-[180px] sm:max-w-[220px]">
@@ -66,6 +74,7 @@ export function FighterPortrait({
             className="object-cover object-top"
           />
         </div>
+        {overlay}
       </div>
     );
   }
@@ -81,6 +90,7 @@ export function FighterPortrait({
       >
         {initials(name)}
       </div>
+      {overlay}
     </div>
   );
 }

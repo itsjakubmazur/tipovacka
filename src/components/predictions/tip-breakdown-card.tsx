@@ -113,7 +113,7 @@ export function TipBreakdownCard({
               </span>
               <div className="flex flex-wrap items-center justify-center gap-1">
                 {isTip && <Badge variant="secondary">Tip</Badge>}
-                {isActualWinner && <Badge variant="accent">Výherce</Badge>}
+                {isActualWinner && <Badge variant="accent">Vítěz</Badge>}
               </div>
             </div>
           );
