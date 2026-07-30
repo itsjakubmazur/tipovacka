@@ -15,6 +15,7 @@ import { METHOD_LABELS } from "@/lib/method-labels";
 import type { Method } from "@/lib/types";
 import { Disclosure } from "@/components/ui/disclosure";
 import { SlideOnChange } from "@/components/ui/slide-on-change";
+import { RankJourney } from "@/components/leaderboard/rank-journey";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -85,6 +86,8 @@ export default async function LeaderboardPage({
   let eventRows: EventLeaderboardRow[] = [];
   let seasonRows: SeasonLeaderboardRow[] = [];
   let totalFights = 0;
+  // 0 = didn't play this gala, so there's no journey to tell
+  let myFinalRank = 0;
   const prevRankByUser = new Map<string, number>();
   // Fight-by-fight replay of a finished gala. Reconstructed from data we
   // already keep - points live on each prediction and fights carry their card
@@ -190,6 +193,7 @@ export default async function LeaderboardPage({
     (prevResult.data ?? []).forEach((row: { user_id: string }, i: number) => {
       prevRankByUser.set(row.user_id, i + 1);
     });
+    myFinalRank = eventRows.findIndex((r) => r.user_id === currentUserId) + 1;
   } else {
     const { data } = await supabase
       .from("season_leaderboard")
@@ -319,6 +323,16 @@ export default async function LeaderboardPage({
                   }))}
                   eventId={selectedEvent.id}
                   imageUrl={selectedEvent.image_url}
+                />
+              )}
+
+              {view === "event" && replaySteps.length > 0 && myFinalRank > 0 && (
+                <RankJourney
+                  key={`journey-${selectedEvent.id}`}
+                  steps={replaySteps}
+                  userIds={eventRows.map((r) => r.user_id)}
+                  currentUserId={currentUserId}
+                  finalRank={myFinalRank}
                 />
               )}
 

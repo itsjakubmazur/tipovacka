@@ -124,7 +124,7 @@ export default async function EventDetailPage({
     // fight's event_id (no fight-id list needed first)
     supabase
       .from("predictions")
-      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points, fights!inner(event_id)")
+      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points, updated_at, fights!inner(event_id)")
       .eq("fights.event_id", id)
       .eq("user_id", user.id),
     // everyone's picks, but only once the event is locked

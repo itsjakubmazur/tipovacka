@@ -67,3 +67,24 @@ Two independent layers:
 ```
 python -m pytest
 ```
+
+## Generálka před galavečerem
+
+`python rehearsal.py` projde celý večer na zahazovacím galavečeru: založí ho,
+naimportuje fiktivní kartu, natipuje za všechny profily, posune uzávěrku,
+odboduje zápas po zápasu, zapíše Fight of the Night, uzavře galavečer a po
+každém kroku zkontroluje, že se žebříček a body chovají, jak mají. Nakonec po
+sobě uklidí.
+
+```
+python rehearsal.py              # suchý běh, žádné notifikace neodejdou
+python rehearsal.py --with-push  # opravdu odešle push (jen na dev projektu!)
+python rehearsal.py --keep       # zkušební galavečer nechá v databázi
+```
+
+Startovné má vypnuté, takže zkouška nikdy nevyrobí dluh mezi skutečnými lidmi.
+Píše přes service-role klíč, takže RLS neplatí — **nikdy to nepouštěj proti
+produkci s `--with-push`.**
+
+Co to nezkontroluje: jak vypadají obrazovky. Po generálce projdi ručně
+`/events/<id>`, žebříček a admin detail.

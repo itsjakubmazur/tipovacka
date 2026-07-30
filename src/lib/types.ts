@@ -44,4 +44,7 @@ export type Prediction = {
   predicted_method: Method;
   predicted_round: number | null;
   points: number | null;
+  /** maintained by a trigger - "when did I last touch this tip", which is the
+   * question people ask themselves in the last hour before lock */
+  updated_at?: string | null;
 };

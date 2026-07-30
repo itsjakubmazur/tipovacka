@@ -163,6 +163,9 @@ export function FightTipCard({
   const [saving, setSaving] = useState(false);
   const [flash, setFlash] = useState(false);
   const [saved, setSaved] = useState(false);
+  // "when did I last touch this tip" - the question everyone asks themselves
+  // in the last hour before lock. Server value first, then whatever we just saved.
+  const [savedAt, setSavedAt] = useState<string | null>(initialPrediction?.updated_at ?? null);
   const [error, setError] = useState<string | null>(null);
 
   // only one bold pick per event - when another card takes it, this
@@ -238,6 +241,7 @@ export function FightTipCard({
     setFlash(true);
     setTimeout(() => setFlash(false), 700);
     setSaved(true);
+    setSavedAt(new Date().toISOString());
     setTimeout(() => setSaved(false), 1500);
     window.dispatchEvent(
       new CustomEvent("tip-state-changed", { detail: { fightId: fight.id, tipped: true } })
@@ -639,6 +643,17 @@ export function FightTipCard({
           <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
             <Check className="animate-tip-check size-3.5 shrink-0" strokeWidth={3} />
             Uloženo.
+          </span>
+        ) : savedAt && !effectiveLocked ? (
+          <span className="text-neutral-400 dark:text-neutral-500">
+            Tip uložen{" "}
+            {new Date(savedAt).toLocaleString("cs-CZ", {
+              day: "numeric",
+              month: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "Europe/Prague",
+            })}
           </span>
         ) : null}
       </div>

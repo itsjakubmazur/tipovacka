@@ -11,6 +11,7 @@ import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { dequeue, enqueue, queuedFor, type QueuedComment } from "@/lib/comment-queue";
 
 type Reaction = { id: string; user_id: string; emoji: string };
 
@@ -102,6 +103,8 @@ export function EventComments({
   const [reactingTo, setReactingTo] = useState<string | null>(null);
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [gifOpen, setGifOpen] = useState(false);
+  // messages typed with no signal - kept locally and flushed when it's back
+  const [queued, setQueued] = useState<QueuedComment[]>([]);
   const seenKey = `kecarna-seen-${eventId}`;
   // Docked in the sidebar from lg up; a bubble + slide-up sheet below that.
   const docked = useMediaQuery("(min-width: 1024px)");
@@ -193,6 +196,41 @@ export function EventComments({
     };
   }, [supabase, eventId]);
 
+  // Pick up anything left queued from a previous visit, then keep trying:
+  // once when the tab regains focus/connection, and once now in case the
+  // browser came back online while the page was closed.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function flush() {
+      const pending = queuedFor(eventId);
+      if (pending.length === 0) {
+        if (!cancelled) setQueued([]);
+        return;
+      }
+      for (const item of pending) {
+        const { error } = await supabase.from("event_comments").insert({
+          event_id: item.eventId,
+          user_id: userId,
+          body: item.body,
+          gif_url: item.gifUrl,
+        });
+        // still no connection - leave the rest for the next attempt
+        if (error) break;
+        dequeue(item.id);
+      }
+      if (!cancelled) setQueued(queuedFor(eventId));
+    }
+
+    const timer = setTimeout(flush, 0);
+    window.addEventListener("online", flush);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      window.removeEventListener("online", flush);
+    };
+  }, [supabase, eventId, userId]);
+
   // while the chat is on screen, everything that arrives counts as read
   useEffect(() => {
     if (!showing) return;
@@ -210,30 +248,35 @@ export function EventComments({
     markSeen();
   }
 
+  /** Sends, or parks the message locally if the send fails. Returns nothing:
+   * from the writer's point of view the message is away either way, which is
+   * the point - in a hall with no signal, "Odeslání se nepodařilo" plus a
+   * cleared input is the worst possible outcome. */
+  async function send(text: string, gifUrl: string | null) {
+    const { error } = await supabase
+      .from("event_comments")
+      .insert({ event_id: eventId, user_id: userId, body: text, gif_url: gifUrl });
+    if (!error) return;
+    const item = enqueue({ eventId, body: text, gifUrl });
+    setQueued((q) => [...q, item]);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = body.trim();
     if (!trimmed) return;
     setSending(true);
     setError(null);
-    const { error } = await supabase
-      .from("event_comments")
-      .insert({ event_id: eventId, user_id: userId, body: trimmed });
-    setSending(false);
-    if (error) {
-      setError("Odeslání se nepodařilo.");
-      return;
-    }
+    // cleared up front: the message is either sent or queued, never lost
     setBody("");
+    await send(trimmed, null);
+    setSending(false);
   }
 
   async function sendGif(gifUrl: string) {
     setGifOpen(false);
     setError(null);
-    const { error } = await supabase
-      .from("event_comments")
-      .insert({ event_id: eventId, user_id: userId, body: "", gif_url: gifUrl });
-    if (error) setError("Odeslání GIFu se nepodařilo.");
+    await send("", gifUrl);
   }
 
   async function remove(id: string) {
@@ -328,7 +371,22 @@ export function EventComments({
 
             {/* messages */}
             <div className="flex min-h-0 flex-1 flex-col-reverse gap-1 overflow-y-auto overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch]">
-              {comments.length === 0 && (
+              {/* column-reverse, so these render below everything else - which
+                  is where the message you just typed belongs */}
+              {queued.map((item) => (
+                <div key={item.id} className="flex flex-row-reverse items-end gap-2">
+                  <span className="w-7 shrink-0" />
+                  <div className="flex max-w-[80%] flex-col items-end">
+                    <div className="rounded-2xl rounded-br-md bg-accent/40 px-3 py-1.5 text-sm text-black">
+                      {item.gifUrl ? "GIF" : item.body}
+                    </div>
+                    <span className="mt-0.5 px-1 text-[10px] text-neutral-500 dark:text-neutral-400">
+                      Čeká na signál…
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {comments.length === 0 && queued.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-10 text-center">
                   <span className="flex size-12 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
                     <MessageCircle className="size-6" />
