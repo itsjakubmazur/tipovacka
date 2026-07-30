@@ -84,9 +84,20 @@ function ConsensusChip({ names, total }: { names: string[]; total: number }) {
   );
 }
 
-function FighterDetails({ fighter }: { fighter: Fighter }) {
-  const [bioOpen, setBioOpen] = useState(false);
-
+/** Stats line plus the "O zápasníkovi" toggle. The bio itself is rendered by
+ * the card, full width under both fighters - inside the column it was a
+ * three-words-per-line ribbon, and expanding one side stretched the card so
+ * the other column's tail (which is bottom-aligned so the two toggles line up)
+ * detached and floated at the bottom of the empty space. */
+function FighterDetails({
+  fighter,
+  open,
+  onToggle,
+}: {
+  fighter: Fighter;
+  open: boolean;
+  onToggle: () => void;
+}) {
   return (
     <div className="flex w-full flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
       {(fighter.weight_kg || fighter.height_cm || fighter.birth_date) && (
@@ -103,15 +114,13 @@ function FighterDetails({ fighter }: { fighter: Fighter }) {
       {fighter.bio && (
         <button
           type="button"
-          onClick={() => setBioOpen((v) => !v)}
+          onClick={onToggle}
+          aria-expanded={open}
           className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
         >
           O zápasníkovi
-          <ChevronDown className={cn("size-3 transition-transform", bioOpen && "rotate-180")} />
+          <ChevronDown className={cn("size-3 transition-transform", open && "rotate-180")} />
         </button>
-      )}
-      {bioOpen && fighter.bio && (
-        <p className="px-1 text-left text-xs text-neutral-600 dark:text-neutral-400">{fighter.bio}</p>
       )}
     </div>
   );
@@ -147,6 +156,8 @@ export function FightTipCard({
   );
   const [isBold, setIsBold] = useState(initialIsBold ?? false);
   const [boldHelpOpen, setBoldHelpOpen] = useState(false);
+  // which fighter's bio is open, if any - one at a time, rendered under both
+  const [bioFor, setBioFor] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [flash, setFlash] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -516,12 +527,29 @@ export function FightTipCard({
                   total={consensus.fighterANames.length + consensus.fighterBNames.length}
                 />
               )}
-              {!fighter.is_tba && <FighterDetails fighter={fighter} />}
+              {!fighter.is_tba && (
+                <FighterDetails
+                  fighter={fighter}
+                  open={bioFor === fighter.id}
+                  onToggle={() => setBioFor((id) => (id === fighter.id ? null : fighter.id))}
+                />
+              )}
             </div>
           </div>
           );
         })}
       </div>
+
+      {(() => {
+        const shown = [fight.fighter_a, fight.fighter_b].find((f) => f.id === bioFor);
+        if (!shown?.bio) return null;
+        return (
+          <div className="border-t border-neutral-200 px-4 py-3 dark:border-neutral-800">
+            <p className="mb-1 text-xs font-semibold">{shown.name}</p>
+            <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">{shown.bio}</p>
+          </div>
+        );
+      })()}
 
       <div className="flex flex-col gap-3 p-4 pt-4">
         <div>
