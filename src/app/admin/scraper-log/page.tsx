@@ -71,7 +71,7 @@ export default async function ScraperLogPage() {
 
   return (
     <div className="flex flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-bold">Log scraperu</h1>
+      <h1 className="text-xl font-bold lg:text-3xl">Log scraperu</h1>
 
       <div
         className={cn(

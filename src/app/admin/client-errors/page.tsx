@@ -53,7 +53,7 @@ export default async function ClientErrorsPage() {
     <div className="flex flex-col gap-4 px-4 py-8">
       <div>
         <BackLink href="/admin">Zpět do adminu</BackLink>
-        <h1 className="mt-1 text-xl font-bold">Chyby v prohlížečích</h1>
+        <h1 className="mt-1 text-xl font-bold lg:text-3xl">Chyby v prohlížečích</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Neodchycené chyby z appky tipérů, posledních 100.
         </p>

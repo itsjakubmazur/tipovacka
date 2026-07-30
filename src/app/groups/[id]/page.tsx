@@ -76,7 +76,7 @@ export default async function GroupDetailPage({
       <div className="flex flex-col gap-3">
         <div>
           <BackLink href="/groups">Zpět na skupiny</BackLink>
-          <h1 className="mt-1 text-xl font-bold">{group.name}</h1>
+          <h1 className="mt-1 text-xl font-bold lg:text-3xl">{group.name}</h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-300">
             Sezóna {season} · {members.length} {members.length === 1 ? "člen" : members.length <= 4 ? "členové" : "členů"}
           </p>

@@ -166,10 +166,13 @@ export default async function EventsPage() {
               href={`/events/${event.id}`}
               prefetch={prefetchIds.has(event.id) ? true : undefined}
               className={cn(
-                "relative flex min-h-[160px] justify-between overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
+                // items-end on every card, poster or not: side by side in a
+                // grid, a centred card and a bottom-aligned one read as two
+                // different components
+                "relative flex min-h-[168px] items-end justify-between gap-3 overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
                 event.image_url
-                  ? "items-end border-neutral-800 hover:border-neutral-600"
-                  : "items-center border-white/45 bg-white/35 backdrop-blur-lg hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500/80"
+                  ? "border-neutral-800 hover:border-neutral-600"
+                  : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500/80"
               )}
             >
               {event.image_url && (
