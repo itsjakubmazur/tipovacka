@@ -35,17 +35,14 @@ def _alert_admins_on_streak(db: SupabaseClient, mode: str, message: str) -> None
 
     # Imported here, not at module top - push.py requires VAPID env vars
     # at import time, which admin/debug scripts using log_run may not have.
-    from push import send_to_user
+    from push import log_push, send_to_user
 
     admins = db.select("profiles", {"is_admin": "eq.true", "select": "id"})
+    title = f"⚠️ Scraper selhává: {mode}"
+    body = f"Posledních {FAILURE_ALERT_STREAK} běhů skončilo chybou. {message}"[:180]
     for admin in admins:
-        send_to_user(
-            db,
-            admin["id"],
-            f"⚠️ Scraper selhává: {mode}",
-            f"Posledních {FAILURE_ALERT_STREAK} běhů skončilo chybou. {message}"[:180],
-            "/admin/scraper-log",
-        )
+        send_to_user(db, admin["id"], title, body, "/admin/scraper-log")
+    log_push(db, kind="ops_alert", title=title, body=body, recipients=len(admins))
 
 
 @contextmanager

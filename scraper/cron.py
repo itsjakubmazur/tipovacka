@@ -62,7 +62,7 @@ import requests
 from import_card import import_card, update_odds
 from import_results import import_results
 from oktagon import fetch_upcoming_tournaments
-from push import send_to_all, send_to_user
+from push import log_push, send_to_all, send_to_user
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
@@ -295,6 +295,8 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
                         f"{_publish_day_name(event_date)}."
                     ),
                     OKTAGON_YOUTUBE_URL,
+                    kind="hype",
+                    event_id=event["id"],
                 )
             print(f"{label}: upoutávka na YouTube odeslána.")
         db.update("events", {"hype_notified_at": now.isoformat()}, {"id": f"eq.{event['id']}"})
@@ -339,6 +341,8 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
                 "Zápasy byly zveřejněny, můžeš tipovat!",
                 f"/events/{event['id']}",
                 pref="notify_card_updates",
+                kind="card_online",
+                event_id=event["id"],
             )
             # Kick off the kecárna with a system message, so the chat isn't a
             # cold empty box when everyone lands to tip.
@@ -400,6 +404,8 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
                 "Na zápasové kartě nastala změna, zkontroluj a tipuj!",
                 f"/events/{event['id']}",
                 pref="notify_card_updates",
+                kind="card_changed",
+                event_id=event["id"],
             )
 
 
@@ -476,7 +482,8 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
                     )
                 }
 
-                for user_id in user_ids - opted_out:
+                targets = user_ids - opted_out
+                for user_id in targets:
                     have = tipped_counts.get(user_id, 0)
                     missing_fotn = user_id not in fotn_picked
                     if have >= total and not missing_fotn:
@@ -497,6 +504,16 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
                         body,
                         f"/events/{event['id']}",
                     )
+                # one row for the whole campaign - the body differs per user,
+                # so log the shape of it rather than one particular tally
+                log_push(
+                    db,
+                    kind="lock_reminder",
+                    title=f"⏰ {label} začíná za hodinu",
+                    body="Máš tipnuto X z Y zápasů (každému vlastní).",
+                    recipients=len(targets),
+                    event_id=event["id"],
+                )
 
             db.update(
                 "events",
@@ -523,6 +540,8 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
                 f"🔒 {label} začíná",
                 "Tipy jsou uzavřené, mrkni na žebříček, kdo na koho tipoval!",
                 f"/leaderboard?eventId={event['id']}",
+                kind="lock",
+                event_id=event["id"],
             )
             db.update(
                 "events",
@@ -594,6 +613,8 @@ def send_comment_notifications(db: SupabaseClient, now: datetime) -> None:
                 f"/events/{event_id}",
                 pref="notify_comments",
                 exclude_user_ids={c["user_id"] for c in group},
+                kind="comments",
+                event_id=event_id,
             )
 
         comment_ids = ",".join(c["id"] for c in group)
@@ -633,6 +654,8 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
                 f"🏆 {label}: výsledky jsou hotové",
                 body,
                 f"/leaderboard?eventId={event['id']}",
+                kind="results_done",
+                event_id=event["id"],
             )
 
 
@@ -673,6 +696,14 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
                 "Všechny zápasy jsou odbodované, ale eventu chybí Fight of the Night - bez něj se nedokončí.",
                 f"/admin/events/{event['id']}",
             )
+        log_push(
+            db,
+            kind="fotn_missing",
+            title=f"⚠️ {label}: chybí Fight of the Night",
+            body="Všechny zápasy jsou odbodované, ale eventu chybí Fight of the Night.",
+            recipients=len(admins),
+            event_id=event["id"],
+        )
         db.update(
             "events",
             {"fotn_reminder_sent_at": now.isoformat()},
@@ -721,6 +752,14 @@ def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None
             f"💰 {label}: startovné vyplaceno",
             "Všichni ti poslali startovné, máš vybráno!",
             f"/events/{event['id']}",
+        )
+        log_push(
+            db,
+            kind="payout_settled",
+            title=f"💰 {label}: startovné vyplaceno",
+            body="Všichni ti poslali startovné, máš vybráno!",
+            recipients=1,
+            event_id=event["id"],
         )
         db.update(
             "events",
@@ -793,6 +832,14 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
                         f"Mrkni, jak se dařilo ostatním v žebříčku. {next_event_text}",
                         f"/leaderboard?eventId={event['id']}",
                     )
+            log_push(
+                db,
+                kind="followup",
+                title=f"🙌 {label}: díky za tipy!",
+                body="Ohlédnutí za galavečerem a pozvánka na další.",
+                recipients=len(profiles),
+                event_id=event["id"],
+            )
             db.update(
                 "events",
                 {"followup_notified_at": now.isoformat()},
@@ -853,6 +900,13 @@ def send_season_wrap_warning(db: SupabaseClient, now: datetime) -> None:
                 )
             send_to_user(db, user_id, f"🏁 Sezóna {season} finišuje", body, "/leaderboard")
 
+        log_push(
+            db,
+            kind="season_wrap",
+            title=f"🏁 Sezóna {season} finišuje",
+            body="Pořadí, body a ztráta na místo výš (každému vlastní).",
+            recipients=len(subscribers - opted_out),
+        )
         db.insert("season_notifications", [{"season": season, "kind": "wrap_warning"}])
         print(f"Season wrap warning odeslán pro sezónu {season} ({total} hráčů).")
 
@@ -862,6 +916,7 @@ def _alert_all_admins(db: SupabaseClient, title: str, body: str, url: str) -> No
         "profiles",
         {"or": "(is_admin.eq.true,is_superadmin.eq.true)", "select": "id"},
     )
+    log_push(db, kind="ops_alert", title=title, body=body[:180], recipients=len(admins))
     for admin in admins:
         try:
             send_to_user(db, admin["id"], title, body[:180], url)

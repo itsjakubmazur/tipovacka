@@ -36,7 +36,7 @@ export default async function AdminEventPage({
     .select(
       `id, number, name, subtitle, subtitle_locked, location, event_date, status, lock_at,
        auto_lock, actual_fotn_fight_id, payouts_enabled,
-       hype_notified_at, card_notified_at, card_checked_at, reminder_sent_at, lock_notified_at,
+       hype_notified_at, card_notified_at, reminder_sent_at, lock_notified_at,
        followup_notified_at, fotn_reminder_sent_at, payout_all_paid_notified_at`
     )
     .eq("id", id)
@@ -55,6 +55,13 @@ export default async function AdminEventPage({
     )
     .eq("event_id", id)
     .order("card_order", { ascending: true });
+
+  // Newest first: the checklist wants "last time this kind went out".
+  const { data: pushLog } = await supabase
+    .from("push_log")
+    .select("kind, title, recipients, sent_at")
+    .eq("event_id", id)
+    .order("sent_at", { ascending: false });
 
   const { data: fighters } = await supabase
     .from("fighters")
@@ -187,7 +194,6 @@ export default async function AdminEventPage({
               payoutsEnabled={event.payouts_enabled}
               hypeNotifiedAt={event.hype_notified_at}
               cardNotifiedAt={event.card_notified_at}
-              cardCheckedAt={event.card_checked_at}
               reminderSentAt={event.reminder_sent_at}
               lockNotifiedAt={event.lock_notified_at}
               followupNotifiedAt={event.followup_notified_at}
@@ -195,6 +201,7 @@ export default async function AdminEventPage({
               payoutAllPaidNotifiedAt={event.payout_all_paid_notified_at}
               gradedFights={countableFights.filter((f) => f.status === "completed").length}
               countableFights={countableFights.length}
+              log={pushLog ?? []}
             />
 
             {sortedFights.length > 0 && (

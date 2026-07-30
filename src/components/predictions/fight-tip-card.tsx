@@ -304,11 +304,22 @@ export function FightTipCard({
           : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
       )}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Two fixed rows - chips, then actions. They used to share one wrapping
+          row, so a headline fight (weight class + title + main event) pushed
+          the actions onto a third line while its neighbour in the grid needed
+          one, and the two cards' photos started at different heights. Title +
+          main event collapse into a single chip for the same reason: three
+          full-width chips never fit on one line. */}
+      <div className="flex flex-col gap-2 p-4 pb-3">
+        <div className="flex min-h-[1.625rem] flex-wrap items-center gap-1.5">
           {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
-          {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
-          {fight.is_main_event && <Badge variant="default">Main event</Badge>}
+          {fight.is_main_event && fight.is_title_fight ? (
+            <Badge variant="accent">Main event · titul</Badge>
+          ) : fight.is_title_fight ? (
+            <Badge variant="accent">Titulový zápas</Badge>
+          ) : fight.is_main_event ? (
+            <Badge variant="default">Main event</Badge>
+          ) : null}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
           {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
           {effectiveLocked && isBold && (
@@ -318,7 +329,11 @@ export function FightTipCard({
             </Badge>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        {/* Reserved even with nothing in it: the jistotka/smazat buttons only
+            appear once you've tipped, and an untipped card must not sit higher
+            than the tipped one next to it. */}
+        {!effectiveLocked && (
+        <div className="flex min-h-5 items-center gap-3">
           {!effectiveLocked && eventId && winnerId && (
             <div className="relative flex items-center gap-1">
               <button
@@ -371,6 +386,7 @@ export function FightTipCard({
             </button>
           )}
         </div>
+        )}
       </div>
 
       {showResult &&
@@ -455,11 +471,12 @@ export function FightTipCard({
                 )}
                 {fighter.name}
               </span>
-              {fighter.nickname && (
-                <span className="-mt-1 text-xs italic text-neutral-400 dark:text-neutral-500">
-                  „{fighter.nickname}“
-                </span>
-              )}
+              {/* Always rendered, even empty: only some fighters have a
+                  nickname, and without the reserved line the two fighters'
+                  record rows sit at different heights side by side. */}
+              <span className="-mt-1 min-h-4 text-xs italic text-neutral-400 dark:text-neutral-500">
+                {fighter.nickname ? `„${fighter.nickname}“` : ""}
+              </span>
               {/* record · rank · odds on one row - vertical space is scarce
                   with 14 fights on the card */}
               {!fighter.is_tba ? (
@@ -487,13 +504,18 @@ export function FightTipCard({
                 )
               )}
             </button>
-            {!fighter.is_tba && consensus && (
-              <ConsensusChip
-                names={fighter.id === fight.fighter_a.id ? consensus.fighterANames : consensus.fighterBNames}
-                total={consensus.fighterANames.length + consensus.fighterBNames.length}
-              />
-            )}
-            {!fighter.is_tba && <FighterDetails fighter={fighter} />}
+            {/* mt-auto pins the tail to the bottom of the column, so the two
+                "O zápasníkovi" toggles line up however tall the names above
+                them turned out. */}
+            <div className="mt-auto flex w-full flex-col items-center gap-1.5">
+              {!fighter.is_tba && consensus && (
+                <ConsensusChip
+                  names={fighter.id === fight.fighter_a.id ? consensus.fighterANames : consensus.fighterBNames}
+                  total={consensus.fighterANames.length + consensus.fighterBNames.length}
+                />
+              )}
+              {!fighter.is_tba && <FighterDetails fighter={fighter} />}
+            </div>
           </div>
           );
         })}

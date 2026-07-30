@@ -18,7 +18,10 @@ def main() -> None:
     args = parser.parse_args()
 
     db = SupabaseClient()
-    send_to_all(db, args.title, args.body, args.url)
+    # kind="manual" is what makes these show up in the admin's push log - the
+    # one broadcast nobody can reconstruct from the events table.
+    recipients = send_to_all(db, args.title, args.body, args.url, kind="manual")
+    print(f"Upozornění odesláno {recipients} lidem.")
 
 
 if __name__ == "__main__":

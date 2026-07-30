@@ -69,6 +69,17 @@ export default async function AdminPage() {
     .select("id, number, name, event_date, status")
     .order("event_date", { ascending: false });
 
+  // The manual broadcast is the one push nobody can reconstruct from the
+  // events table - show the last few so it's clear what already went out.
+  const { data: sentBroadcasts } = isSuperadmin
+    ? await supabase
+        .from("push_log")
+        .select("title, recipients, sent_at")
+        .eq("kind", "manual")
+        .order("sent_at", { ascending: false })
+        .limit(5)
+    : { data: null };
+
   const { data: profiles, error: profilesError } = isSuperadmin
     ? ((await supabase.rpc("admin_list_profiles")) as {
         data:
@@ -115,6 +126,28 @@ export default async function AdminPage() {
               <section className="flex flex-col gap-3">
                 <h2 className="text-lg font-semibold">Poslat upozornění</h2>
                 <BroadcastPushForm />
+                {sentBroadcasts && sentBroadcasts.length > 0 && (
+                  <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+                    <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                      Naposled odeslané
+                    </p>
+                    {sentBroadcasts.map((b) => (
+                      <div key={b.sent_at} className="flex flex-col">
+                        <span className="truncate text-xs font-medium">{b.title}</span>
+                        <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                          {new Date(b.sent_at).toLocaleString("cs-CZ", {
+                            day: "numeric",
+                            month: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            timeZone: "Europe/Prague",
+                          })}{" "}
+                          · {b.recipients} lidem
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </section>
             )}
           </div>

@@ -11,7 +11,7 @@ import argparse
 import sys
 
 from oktagon import fetch_fightcard, resolve_event_id
-from push import send_to_user
+from push import log_push, send_to_user
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
@@ -95,6 +95,7 @@ def _notify_fight_result(
 
     title = f"🥊 {fighter_a_name} vs {fighter_b_name}"
     url = f"/events/{event_id}"
+    notified = 0
     for pred in predictions:
         if winner_name is None:
             body = "Zápas skončil bez výsledku (remíza/no contest), tvůj tip se nezapočítává."
@@ -111,6 +112,16 @@ def _notify_fight_result(
                 f"{points} b.{bold_suffix}{_standing_suffix(pred['user_id'])}"
             )
         send_to_user(db, pred["user_id"], title, body, url)
+        notified += 1
+
+    log_push(
+        db,
+        kind="fight_result",
+        title=title,
+        body=f"Výsledek zápasu {fighter_a_name} vs {fighter_b_name} a body každého tipéra.",
+        recipients=notified,
+        event_id=event_id,
+    )
 
 
 STARTOVNE_CZK = 50
@@ -166,6 +177,14 @@ def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> Non
             f"💰 {label}: vyhrál/a jsi startovné!",
             f"Bereš {pot} Kč. Nastav si v profilu číslo účtu, ať ti kamarádi mají kam poslat výhru.",
             "/profile",
+        )
+        log_push(
+            db,
+            kind="payout_win",
+            title=f"💰 {label}: vyhrál/a jsi startovné!",
+            body=f"Bereš {pot} Kč, nastav si v profilu číslo účtu.",
+            recipients=1,
+            event_id=event_id,
         )
 
 
