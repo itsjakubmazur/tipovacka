@@ -4,6 +4,7 @@ import { EventSettingsForm } from "@/components/admin/event-settings-form";
 import { AddFightForm } from "@/components/admin/add-fight-form";
 import { AdminFightRow } from "@/components/admin/admin-fight-row";
 import { AdminFotnForm } from "@/components/admin/admin-fotn-form";
+import { NotificationChecklist } from "@/components/admin/notification-checklist";
 import { ImportSherdogButton } from "@/components/admin/import-sherdog-button";
 
 export default async function AdminEventPage({
@@ -32,7 +33,12 @@ export default async function AdminEventPage({
 
   const { data: event } = await supabase
     .from("events")
-    .select("id, number, name, subtitle, subtitle_locked, location, event_date, status, lock_at, auto_lock, actual_fotn_fight_id, payouts_enabled")
+    .select(
+      `id, number, name, subtitle, subtitle_locked, location, event_date, status, lock_at,
+       auto_lock, actual_fotn_fight_id, payouts_enabled,
+       hype_notified_at, card_notified_at, card_checked_at, reminder_sent_at, lock_notified_at,
+       followup_notified_at, fotn_reminder_sent_at, payout_all_paid_notified_at`
+    )
     .eq("id", id)
     .single();
 
@@ -102,6 +108,12 @@ export default async function AdminEventPage({
     fighter_b: { id: string; name: string };
   }[];
 
+  // "cancelled"/"no_contest" fights are excluded from scoring, so they never
+  // produce a result push either.
+  const countableFights = sortedFights.filter(
+    (f) => f.status !== "cancelled" && f.status !== "no_contest"
+  );
+
   const nextCardOrder =
     sortedFights.length > 0 ? Math.max(...sortedFights.map((f) => f.card_order)) + 1 : 1;
 
@@ -167,6 +179,23 @@ export default async function AdminEventPage({
                 </div>
               </section>
             )}
+
+            <NotificationChecklist
+              eventDate={event.event_date}
+              lockAt={event.lock_at}
+              status={event.status}
+              payoutsEnabled={event.payouts_enabled}
+              hypeNotifiedAt={event.hype_notified_at}
+              cardNotifiedAt={event.card_notified_at}
+              cardCheckedAt={event.card_checked_at}
+              reminderSentAt={event.reminder_sent_at}
+              lockNotifiedAt={event.lock_notified_at}
+              followupNotifiedAt={event.followup_notified_at}
+              fotnReminderSentAt={event.fotn_reminder_sent_at}
+              payoutAllPaidNotifiedAt={event.payout_all_paid_notified_at}
+              gradedFights={countableFights.filter((f) => f.status === "completed").length}
+              countableFights={countableFights.length}
+            />
 
             {sortedFights.length > 0 && (
               <section className="flex flex-col gap-3">
