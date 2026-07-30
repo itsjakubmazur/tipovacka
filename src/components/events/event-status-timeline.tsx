@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Clock, Trophy } from "lucide-react";
 import { CountUp } from "@/components/count-up";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/reveal";
 
 /** The gala lifecycle as a vertical rail: Tipování → Galavečer živě →
  * Vyhodnoceno. Collapsed by default to just the current phase (+ live
@@ -321,11 +322,19 @@ export function EventStatusTimeline({
         aria-label={expanded ? "Sbalit průběh" : "Zobrazit celý průběh"}
         className="absolute right-2 top-2 rounded-full p-1.5 text-neutral-400 outline-none transition-colors hover:text-neutral-700 focus-visible:ring-2 focus-visible:ring-accent dark:hover:text-neutral-200"
       >
-        <ChevronDown className={cn("size-4 transition-transform", expanded && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "size-4 transition-transform duration-500 ease-out motion-reduce:transition-none",
+            expanded && "rotate-180"
+          )}
+        />
       </button>
 
-      {expanded ? (
-        <>
+      {/* Both states stay mounted so the swap can animate: the one going away
+          collapses while the other opens, instead of the card snapping to a
+          new height. */}
+      <Reveal open={expanded}>
+        <div>
           <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             <Clock className="size-3.5 text-yellow-600 dark:text-accent" />
             Stav galavečera
@@ -375,8 +384,10 @@ export function EventStatusTimeline({
           {completed && standings && standings.length > 0 && (
             <FinalStandings rows={standings} currentUserId={currentUserId} eventId={eventId} />
           )}
-        </>
-      ) : (
+        </div>
+      </Reveal>
+
+      <Reveal open={!expanded}>
         <div className="flex items-start gap-2.5 pr-6">
           <Dot state="current" />
           <div className="min-w-0 flex-1">
@@ -394,7 +405,7 @@ export function EventStatusTimeline({
             )}
           </div>
         </div>
-      )}
+      </Reveal>
 
       {actions}
     </div>

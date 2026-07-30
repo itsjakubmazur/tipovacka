@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Reveal } from "@/components/ui/reveal";
 
 export function ChangePasswordForm() {
   const supabase = createClient();
@@ -50,10 +51,12 @@ export function ChangePasswordForm() {
         className="flex items-center justify-between text-sm font-semibold"
       >
         Změnit heslo
-        <ChevronDown className={`size-4 text-neutral-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`size-4 text-neutral-400 transition-transform duration-500 ease-out motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
-      {open && (
+      <Reveal open={open}>
         <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="new-password">Nové heslo</Label>
@@ -89,7 +92,7 @@ export function ChangePasswordForm() {
             {saving ? "Ukládám…" : "Uložit heslo"}
           </Button>
         </form>
-      )}
+      </Reveal>
     </div>
   );
 }

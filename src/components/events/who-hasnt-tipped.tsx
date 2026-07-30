@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/reveal";
 
 /** Pre-lock nudge: which of the group still hasn't tipped this event.
  * Loads in the background after the page renders (so it never slows the
@@ -48,11 +49,16 @@ export function WhoHasntTipped({ eventId }: { eventId: string }) {
       >
         <Users className="size-4 text-neutral-500 dark:text-neutral-400" />
         Kdo ještě netipoval ({missing.length})
-        <ChevronDown className={cn("ml-auto size-4 transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "ml-auto size-4 transition-transform duration-500 ease-out motion-reduce:transition-none",
+            open && "rotate-180"
+          )}
+        />
       </button>
-      {open && (
+      <Reveal open={open}>
         <p className="px-3 pb-3 text-neutral-600 dark:text-neutral-300">{missing.join(", ")}</p>
-      )}
+      </Reveal>
     </div>
   );
 }

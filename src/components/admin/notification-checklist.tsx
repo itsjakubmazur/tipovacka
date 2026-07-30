@@ -1,4 +1,5 @@
 import { Check, Clock, AlertTriangle, Minus, Megaphone } from "lucide-react";
+import { Disclosure } from "@/components/ui/disclosure";
 import { Section } from "@/components/ui/section-heading";
 import { pragueDaysBeforeIso } from "@/lib/time";
 import { cn } from "@/lib/utils";
@@ -284,10 +285,11 @@ export function NotificationChecklist({
       <List rows={personal} />
 
       {log.length > 0 && (
-        <details className="rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-          <summary className="cursor-pointer select-none p-3 text-sm font-semibold marker:text-neutral-400">
-            Co přesně odešlo ({log.length})
-          </summary>
+        <Disclosure
+          className="rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+          summaryClassName="p-3 text-sm font-semibold"
+          summary={`Co přesně odešlo (${log.length})`}
+        >
           <ul className="flex flex-col gap-2 px-3 pb-3">
             {log.map((entry, i) => (
               <li key={`${entry.kind}-${entry.sent_at}-${i}`} className="flex flex-col">
@@ -298,7 +300,7 @@ export function NotificationChecklist({
               </li>
             ))}
           </ul>
-        </details>
+        </Disclosure>
       )}
 
       <p className="text-xs text-neutral-500 dark:text-neutral-400">

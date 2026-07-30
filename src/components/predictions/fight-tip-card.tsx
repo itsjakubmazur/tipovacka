@@ -7,6 +7,7 @@ import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
 import { ageFromBirthDate, cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
+import { Reveal } from "@/components/ui/reveal";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { X, ArrowUp, ArrowDown, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
@@ -73,13 +74,18 @@ function ConsensusChip({ names, total }: { names: string[]; total: number }) {
         className="flex items-center gap-0.5 text-[11px] font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
       >
         {Math.round((names.length / total) * 100)} % · {names.length} {tipsWord(names.length)}
-        <ChevronDown className={cn("size-3 transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "size-3 transition-transform duration-500 ease-out motion-reduce:transition-none",
+            open && "rotate-180"
+          )}
+        />
       </button>
-      {open && (
-        <span className="max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
+      <Reveal open={open}>
+        <span className="block max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500">
           {names.join(", ")}
         </span>
-      )}
+      </Reveal>
     </div>
   );
 }
@@ -538,9 +544,14 @@ export function FightTipCard({
               className="flex w-full items-center justify-center gap-1 px-4 py-2 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
             >
               {label}
-              <ChevronDown className={cn("size-3.5 transition-transform", biosOpen && "rotate-180")} />
+              <ChevronDown
+                className={cn(
+                  "size-3.5 transition-transform duration-500 ease-out motion-reduce:transition-none",
+                  biosOpen && "rotate-180"
+                )}
+              />
             </button>
-            {biosOpen && (
+            <Reveal open={biosOpen}>
               <div className="grid gap-4 px-4 pb-3 sm:grid-cols-2">
                 {withBio.map((f) => (
                   <div key={f.id}>
@@ -549,7 +560,7 @@ export function FightTipCard({
                   </div>
                 ))}
               </div>
-            )}
+            </Reveal>
           </div>
         );
       })()}

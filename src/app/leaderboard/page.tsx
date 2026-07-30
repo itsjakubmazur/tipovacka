@@ -13,6 +13,7 @@ import { EventCompareList } from "@/components/leaderboard/event-compare-list";
 import { GalaReplay } from "@/components/leaderboard/gala-replay";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import type { Method } from "@/lib/types";
+import { Disclosure } from "@/components/ui/disclosure";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -286,10 +287,11 @@ export default async function LeaderboardPage({
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] lg:gap-6">
           <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
             <div className="stagger-in flex flex-col gap-4 lg:sticky lg:top-20">
-              <details className="group rounded-xl border border-white/45 bg-white/35 text-xs text-neutral-600 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-neutral-400 dark:shadow-black/60">
-                <summary className="cursor-pointer select-none p-3 font-semibold text-neutral-700 marker:text-neutral-400 dark:text-neutral-300">
-                  Za co se dávají body
-                </summary>
+              <Disclosure
+                className="rounded-xl border border-white/45 bg-white/35 text-xs text-neutral-600 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-neutral-400 dark:shadow-black/60"
+                summaryClassName="p-3 font-semibold text-neutral-700 dark:text-neutral-300"
+                summary="Za co se dávají body"
+              >
                 <div className="flex flex-col gap-1 px-3 pb-3">
                   <p>Vítěz zápasu: +1 · způsob ukončení: +1 · kolo (nebo „na body”): +1 — tedy max 3 body za zápas.</p>
                   <p>Jistotka: jeden zápas na galavečer si můžeš označit hvězdičkou — body z něj se ti počítají dvakrát.</p>
@@ -299,7 +301,7 @@ export default async function LeaderboardPage({
                     Při shodě bodů rozhoduje: 1) víc uhodnutých vítězů, 2) perfektní karta, 3) kdo odeslal tipy dřív.
                   </p>
                 </div>
-              </details>
+              </Disclosure>
 
               {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
                 <PodiumCard
