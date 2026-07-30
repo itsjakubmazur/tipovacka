@@ -137,6 +137,19 @@ export default async function AdminEventPage({
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
           <div className="flex flex-col gap-6 lg:sticky lg:top-20 lg:-mx-3 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
+            {/* First thing in the rail (and first on the page on a phone,
+                where the rail is display:contents): everything else runs
+                itself, so entering the Fight of the Night is the one reason
+                anyone opens this screen. */}
+            {sortedFights.length > 0 && (
+              <Section title="Bonus tip">
+                <AdminFotnForm
+                  eventId={event.id}
+                  fights={sortedFights}
+                  initialFightId={event.actual_fotn_fight_id}
+                />
+              </Section>
+            )}
             {event.status === "draft" && (
               <p className="rounded-xl border border-yellow-600/60 dark:border-accent/40 bg-accent/10 p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60 text-neutral-700 dark:text-neutral-300">
                 Tohle je jen návrh, skrytý tipérům. Zápasová karta se naimportuje a galavečer se
@@ -203,15 +216,6 @@ export default async function AdminEventPage({
               log={pushLog ?? []}
             />
 
-            {sortedFights.length > 0 && (
-              <Section title="Bonus tip">
-                <AdminFotnForm
-                  eventId={event.id}
-                  fights={sortedFights}
-                  initialFightId={event.actual_fotn_fight_id}
-                />
-              </Section>
-            )}
           </div>
         </aside>
 

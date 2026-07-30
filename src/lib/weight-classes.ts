@@ -11,8 +11,15 @@ const WEIGHT_LIMITS_KG: Record<string, number> = {
   Heavyweight: 120.2,
 };
 
+// The API isn't consistent about casing ("Light heavyweight" vs "Light
+// Heavyweight"), and an exact-key lookup silently dropped the kg limit for
+// whichever spelling didn't match.
+const LIMIT_BY_NORMALIZED = new Map(
+  Object.entries(WEIGHT_LIMITS_KG).map(([name, kg]) => [name.toLowerCase(), kg])
+);
+
 export function weightClassLabel(weightClass: string | null) {
   if (!weightClass) return null;
-  const limit = WEIGHT_LIMITS_KG[weightClass];
+  const limit = LIMIT_BY_NORMALIZED.get(weightClass.trim().toLowerCase());
   return limit ? `${weightClass} · do ${limit.toString().replace(".", ",")} kg` : weightClass;
 }

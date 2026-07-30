@@ -84,20 +84,11 @@ function ConsensusChip({ names, total }: { names: string[]; total: number }) {
   );
 }
 
-/** Stats line plus the "O zápasníkovi" toggle. The bio itself is rendered by
- * the card, full width under both fighters - inside the column it was a
- * three-words-per-line ribbon, and expanding one side stretched the card so
- * the other column's tail (which is bottom-aligned so the two toggles line up)
- * detached and floated at the bottom of the empty space. */
-function FighterDetails({
-  fighter,
-  open,
-  onToggle,
-}: {
-  fighter: Fighter;
-  open: boolean;
-  onToggle: () => void;
-}) {
+/** Weight, height and age. The bios live in one shared, full-width section
+ * under both fighters - per-column they were a three-words-per-line ribbon,
+ * and expanding one side stretched the card so the other column's tail
+ * detached and floated in the empty space. */
+function FighterStats({ fighter }: { fighter: Fighter }) {
   return (
     <div className="flex w-full flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
       {(fighter.weight_kg || fighter.height_cm || fighter.birth_date) && (
@@ -111,19 +102,19 @@ function FighterDetails({
             .join(" · ")}
         </span>
       )}
-      {fighter.bio && (
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={open}
-          className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
-        >
-          O zápasníkovi
-          <ChevronDown className={cn("size-3 transition-transform", open && "rotate-180")} />
-        </button>
-      )}
     </div>
   );
+}
+
+// No gender on the fighters table (the OKTAGON API doesn't send one), so the
+// heading is inferred from the names. Czech/Slovak/Polish feminine surnames
+// are a reliable enough tell for this promotion's roster; anything else falls
+// back to the generic plural.
+const FEMININE_SUFFIXES = ["ová", "cká", "ská", "ná", "wska", "ska"];
+
+function looksFeminine(name: string): boolean {
+  const surname = name.trim().split(/\s+/).pop()?.toLowerCase() ?? "";
+  return FEMININE_SUFFIXES.some((suffix) => surname.endsWith(suffix));
 }
 
 export function FightTipCard({
@@ -156,8 +147,7 @@ export function FightTipCard({
   );
   const [isBold, setIsBold] = useState(initialIsBold ?? false);
   const [boldHelpOpen, setBoldHelpOpen] = useState(false);
-  // which fighter's bio is open, if any - one at a time, rendered under both
-  const [bioFor, setBioFor] = useState<string | null>(null);
+  const [biosOpen, setBiosOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [flash, setFlash] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -527,13 +517,7 @@ export function FightTipCard({
                   total={consensus.fighterANames.length + consensus.fighterBNames.length}
                 />
               )}
-              {!fighter.is_tba && (
-                <FighterDetails
-                  fighter={fighter}
-                  open={bioFor === fighter.id}
-                  onToggle={() => setBioFor((id) => (id === fighter.id ? null : fighter.id))}
-                />
-              )}
+              {!fighter.is_tba && <FighterStats fighter={fighter} />}
             </div>
           </div>
           );
@@ -541,12 +525,31 @@ export function FightTipCard({
       </div>
 
       {(() => {
-        const shown = [fight.fighter_a, fight.fighter_b].find((f) => f.id === bioFor);
-        if (!shown?.bio) return null;
+        const withBio = [fight.fighter_a, fight.fighter_b].filter((f) => !f.is_tba && f.bio);
+        if (withBio.length === 0) return null;
+        const women = [fight.fighter_a, fight.fighter_b].some((f) => looksFeminine(f.name));
+        const label = women ? "O zápasnicích" : "O zápasnících";
         return (
-          <div className="border-t border-neutral-200 px-4 py-3 dark:border-neutral-800">
-            <p className="mb-1 text-xs font-semibold">{shown.name}</p>
-            <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">{shown.bio}</p>
+          <div className="border-t border-neutral-200 dark:border-neutral-800">
+            <button
+              type="button"
+              onClick={() => setBiosOpen((v) => !v)}
+              aria-expanded={biosOpen}
+              className="flex w-full items-center justify-center gap-1 px-4 py-2 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
+            >
+              {label}
+              <ChevronDown className={cn("size-3.5 transition-transform", biosOpen && "rotate-180")} />
+            </button>
+            {biosOpen && (
+              <div className="grid gap-4 px-4 pb-3 sm:grid-cols-2">
+                {withBio.map((f) => (
+                  <div key={f.id}>
+                    <p className="mb-1 text-xs font-semibold">{f.name}</p>
+                    <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">{f.bio}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         );
       })()}
