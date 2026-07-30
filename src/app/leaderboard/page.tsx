@@ -53,7 +53,7 @@ export default async function LeaderboardPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, number, name, event_date, status, image_url")
+    .select("id, number, name, event_date, status, lock_at, image_url")
     .neq("status", "draft")
     .order("event_date", { ascending: false });
 
@@ -73,6 +73,12 @@ export default async function LeaderboardPage({
     events.find((e) => e.id === rawEventId) ?? defaultEvent;
 
   const season = new Date(selectedEvent.event_date).getFullYear();
+
+  // Picks stay secret until the deadline, so the board hides its compare
+  // affordance until then (the compare page refuses too, either way).
+  const eventLocked =
+    selectedEvent.status === "completed" ||
+    (selectedEvent.lock_at ? new Date(selectedEvent.lock_at) <= new Date() : false);
 
   let eventRows: EventLeaderboardRow[] = [];
   let seasonRows: SeasonLeaderboardRow[] = [];
@@ -349,6 +355,7 @@ export default async function LeaderboardPage({
                 eventId={selectedEvent.id}
                 totalFights={totalFights}
                 currentUserId={currentUserId}
+                locked={eventLocked}
               />
             )}
 

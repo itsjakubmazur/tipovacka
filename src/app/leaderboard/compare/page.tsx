@@ -42,12 +42,39 @@ export default async function ComparePage({
   if (eventId) {
     const { data: event } = await supabase
       .from("events")
-      .select("id, number, name, actual_fotn_fight_id")
+      .select("id, number, name, status, lock_at, actual_fotn_fight_id")
       .eq("id", eventId)
       .neq("status", "draft")
       .single();
 
     if (!event) notFound();
+
+    // Same rule as the single-tipper detail: nobody's picks are shown before
+    // the deadline, or you could just copy them. RLS already refuses to hand
+    // other people's predictions to a normal user, but admins can read them
+    // (they need "who hasn't tipped yet"), so without this check the compare
+    // view leaked the whole card to an admin - and showed everyone else two
+    // suspiciously empty columns.
+    const locked =
+      event.status === "completed" ||
+      (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
+
+    if (!locked) {
+      return (
+        <div className="flex flex-col gap-4 px-4 py-8">
+          <BackLink href={`/leaderboard?view=event&eventId=${eventId}`}>Zpět na žebříček</BackLink>
+          <h1 className="text-xl font-bold lg:text-3xl">
+            {nicknameA} vs {nicknameB}
+          </h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {event.number ? `OKTAGON ${event.number}` : event.name}
+          </p>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            Tipy se zobrazí až po uzávěrce galavečera.
+          </p>
+        </div>
+      );
+    }
 
     const { data: fights } = await supabase
       .from("fights")

@@ -30,11 +30,15 @@ export function EventCompareList({
   eventId,
   totalFights,
   currentUserId,
+  locked,
 }: {
   rows: EventCompareRow[];
   eventId: string;
   totalFights: number;
   currentUserId: string;
+  /** before the deadline nobody's picks are visible, so comparing two people
+   * would only lead to an empty page - don't offer it */
+  locked: boolean;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
@@ -189,19 +193,21 @@ export function EventCompareList({
                 : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
             )}
           >
-            <button
-              type="button"
-              onClick={() => toggle(row.user_id)}
-              aria-label="Vybrat k porovnání"
-              className={cn(
-                "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-                selected.includes(row.user_id)
-                  ? "border-accent bg-accent text-black"
-                  : "border-neutral-300 dark:border-neutral-700"
-              )}
-            >
-              {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
-            </button>
+            {locked && (
+              <button
+                type="button"
+                onClick={() => toggle(row.user_id)}
+                aria-label="Vybrat k porovnání"
+                className={cn(
+                  "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                  selected.includes(row.user_id)
+                    ? "border-accent bg-accent text-black"
+                    : "border-neutral-300 dark:border-neutral-700"
+                )}
+              >
+                {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}
+              </button>
+            )}
 
             <span className="flex w-7 shrink-0 justify-center">
               <RankMedal rank={rank} />
