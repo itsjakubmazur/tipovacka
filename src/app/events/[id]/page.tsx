@@ -358,9 +358,18 @@ export default async function EventDetailPage({
           a sticky rail on the right with the status timeline, the live strip
           and the kecárna. Below lg the rail is display:contents, so everything
           stacks in exactly the mobile order it always had. */}
+      <SegmentJump segments={segmentsOnCard} />
+
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
+          <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pb-2">
+            {/* Mirrors the "Hlavní karta" heading in the main column so both
+                columns' first card starts on the same line. Desktop only -
+                on a phone the rail is just the page, and a label there would
+                be noise. */}
+            <h2 className="hidden text-sm font-bold uppercase tracking-wide text-neutral-500 lg:block dark:text-neutral-400">
+              Přehled
+            </h2>
             {countableFights.length > 0 && (
               <EventStatusTimeline
                 locked={locked}
@@ -452,8 +461,6 @@ export default async function EventDetailPage({
         </aside>
 
         <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
-          <SegmentJump segments={segmentsOnCard} />
-
           {/* From xl the card pairs up - the column is wide enough that a
               single stack of fight cards would just be a lot of empty space
               either side of the fighter names. */}

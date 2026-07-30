@@ -63,53 +63,66 @@ export async function EventPayoutPool({
   const iban = bankAccount ? czAccountToIban(bankAccount) : null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-yellow-600/60 dark:border-accent/50 bg-accent/10 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:shadow-black/60">
-      <p className="flex items-center gap-1.5 text-sm font-semibold">
-        <Wallet className="size-4 text-yellow-600 dark:text-accent" />
-        Startovné · {STARTOVNE_CZK} Kč / tipér
-      </p>
-      <p className="text-sm">
-        Vyhrál/a <strong>{winnerName}</strong> a bere <strong>{pot} Kč</strong> ({others.length}×{" "}
-        {STARTOVNE_CZK} Kč).
-      </p>
-
-      {isWinner ? (
-        bankAccount ? (
-          <p className="text-xs text-neutral-600 dark:text-neutral-400">
-            Ostatní ti pošlou {STARTOVNE_CZK} Kč na účet <span className="font-mono">{bankAccount}</span>.
-          </p>
-        ) : (
-          <p className="text-xs text-neutral-600 dark:text-neutral-400">
-            <Link href="/profile" className="underline">
-              Nastav si číslo účtu v profilu
-            </Link>
-            , ať ti ostatní mají kam poslat výhru.
-          </p>
-        )
-      ) : bankAccount && iban ? (
-        <div className="flex items-center gap-3">
-          <QrPayment account={bankAccount} amountCzk={STARTOVNE_CZK} message={eventLabel} />
-          <div className="text-xs text-neutral-600 dark:text-neutral-400">
-            <p>
-              Naskenuj a pošli {STARTOVNE_CZK} Kč {winnerName}.
-            </p>
-            <p className="mt-1 font-mono">{bankAccount}</p>
-          </div>
-        </div>
-      ) : (
-        <p className="text-xs text-neutral-600 dark:text-neutral-400">
-          Čekáme, až si {winnerName} doplní číslo účtu v profilu.
+    // Compact on purpose: this card shares a sidebar with the timeline and the
+    // kecárna, and the old version - a headline, a duplicate "pošli 50 Kč
+    // <winner>" line, the QR on its own row, then the button and the debtors
+    // under a divider - was tall enough to push the whole column into its own
+    // scrollbar. Amount and recipient are each stated once, and the QR carries
+    // the account number, the button and the debtors alongside it.
+    <div className="flex flex-col gap-2.5 rounded-xl border border-yellow-600/60 bg-accent/10 p-3.5 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-accent/50 dark:shadow-black/60">
+      <div>
+        <p className="flex items-center gap-1.5 text-sm font-semibold">
+          <Wallet className="size-4 text-yellow-600 dark:text-accent" />
+          Startovné
         </p>
-      )}
-
-      <div className="flex flex-col gap-2 border-t border-black/10 pt-3 dark:border-white/10">
-        <PayoutStatus
-          eventId={eventId}
-          currentUserId={currentUserId}
-          isSuperadmin={isSuperadmin}
-          rows={payoutStatusRows}
-        />
+        <p className="text-sm">
+          Vyhrál/a <strong>{winnerName}</strong> a bere <strong>{pot} Kč</strong>
+          <span className="text-neutral-600 dark:text-neutral-400">
+            {" "}
+            · {STARTOVNE_CZK} Kč od {others.length} tipérů
+          </span>
+        </p>
       </div>
+
+      <PayoutStatus
+        eventId={eventId}
+        currentUserId={currentUserId}
+        isSuperadmin={isSuperadmin}
+        rows={payoutStatusRows}
+        aside={
+          !isWinner && bankAccount && iban ? (
+            <QrPayment
+              account={bankAccount}
+              amountCzk={STARTOVNE_CZK}
+              message={eventLabel}
+              size={112}
+            />
+          ) : undefined
+        }
+        note={
+          isWinner ? (
+            bankAccount ? (
+              <>
+                Ostatní ti pošlou {STARTOVNE_CZK} Kč na{" "}
+                <span className="font-mono">{bankAccount}</span>.
+              </>
+            ) : (
+              <>
+                <Link href="/profile" className="underline">
+                  Nastav si číslo účtu v profilu
+                </Link>
+                , ať ti ostatní mají kam poslat výhru.
+              </>
+            )
+          ) : bankAccount && iban ? (
+            // the QR next to it already says "scan me"; all that's left is the
+            // number, for anyone typing it in by hand
+            <span className="font-mono">{bankAccount}</span>
+          ) : (
+            <>Čekáme, až si {winnerName} doplní číslo účtu v profilu.</>
+          )
+        }
+      />
     </div>
   );
 }

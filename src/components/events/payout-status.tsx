@@ -19,11 +19,18 @@ export function PayoutStatus({
   currentUserId,
   isSuperadmin,
   rows: initialRows,
+  aside,
+  note,
 }: {
   eventId: string;
   currentUserId: string;
   isSuperadmin: boolean;
   rows: Row[];
+  /** the QR code, pinned to the left - everything else stacks beside it so
+   * the card doesn't grow a tall empty strip next to a 112px square */
+  aside?: React.ReactNode;
+  /** account number or whatever the viewer needs to know before paying */
+  note?: React.ReactNode;
 }) {
   const supabase = createClient();
   const [rows, setRows] = useState(initialRows);
@@ -42,7 +49,10 @@ export function PayoutStatus({
   const unpaid = rows.filter((r) => !r.paid && r.userId !== currentUserId);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex items-start gap-3">
+      {aside}
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
+      {note && <div className="text-xs text-neutral-600 dark:text-neutral-400">{note}</div>}
       {myRow && (
         <Button
           type="button"
@@ -56,12 +66,12 @@ export function PayoutStatus({
         </Button>
       )}
 
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="text-xs text-neutral-600 dark:text-neutral-400">
         {unpaid.length === 0 ? (
           "Všichni ostatní mají zaplaceno."
         ) : (
           <>
-            <span className="font-medium text-neutral-700 dark:text-neutral-300">Kdo dluží: </span>
+            <span className="font-medium text-neutral-700 dark:text-neutral-300">Dluží: </span>
             {unpaid.map((row, i) => (
               <span key={row.userId}>
                 {isSuperadmin ? (
@@ -81,6 +91,7 @@ export function PayoutStatus({
           </>
         )}
       </p>
+      </div>
     </div>
   );
 }

@@ -12,10 +12,14 @@ export function QrPayment({
   account,
   amountCzk,
   message,
+  size = 140,
 }: {
   account: string;
   amountCzk: number;
   message: string;
+  /** rendered pixel size - the code is always generated at 200px, so a
+   * smaller box just scans from a little closer */
+  size?: number;
 }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
@@ -52,9 +56,10 @@ export function QrPayment({
     <img
       src={dataUrl}
       alt="QR platba"
-      width={140}
-      height={140}
-      className="rounded-xl border border-black/10 bg-white p-1.5 dark:border-white/10"
+      width={size}
+      height={size}
+      style={{ width: size, height: size }}
+      className="shrink-0 rounded-xl border border-black/10 bg-white p-1.5 dark:border-white/10"
     />
   );
 }
