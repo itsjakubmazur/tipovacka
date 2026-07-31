@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Scale, TrendingUp, TrendingDown, Trophy, Check, RotateCcw } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Scale, TrendingUp, TrendingDown, Trophy, Check, RotateCcw, X } from "lucide-react";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { CountUp } from "@/components/count-up";
 import { useFlipList } from "@/lib/use-flip-list";
@@ -139,6 +140,10 @@ export function EventCompareList({
     });
   }
 
+  function nicknameOf(userId: string) {
+    return rows.find((r) => r.user_id === userId)?.nickname ?? "Bez přezdívky";
+  }
+
   function compare() {
     if (selected.length !== 2) return;
     router.push(`/leaderboard/compare?a=${selected[0]}&b=${selected[1]}&eventId=${eventId}`);
@@ -253,16 +258,40 @@ export function EventCompareList({
         );
       })}
 
-      {selected.length === 2 && (
-        <button
-          type="button"
-          onClick={compare}
-          className="sticky bottom-4 mt-2 flex items-center justify-center gap-2 self-center rounded-full border border-accent bg-accent px-4 py-2 text-sm font-semibold text-black shadow-lg"
-        >
-          <Scale className="size-4" />
-          Porovnat
-        </button>
-      )}
+      {/* Floating, not sticky. It used to be `sticky bottom-4` as the last
+          child of this list - and a sticky element with nothing after it
+          inside its own container has no room to slide, so it only ever
+          appeared where it naturally sat: at the very bottom of a board
+          nobody scrolls to. Now it rides above the bottom nav wherever you
+          are, names the pair, and can be dismissed. */}
+      {selected.length === 2 &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 md:bottom-6">
+            <div className="animate-row-in flex max-w-full items-center gap-2 rounded-full border border-accent bg-accent py-1.5 pl-4 pr-1.5 text-black shadow-xl shadow-black/30">
+              <span className="min-w-0 truncate text-sm font-semibold">
+                {nicknameOf(selected[0])} vs {nicknameOf(selected[1])}
+              </span>
+              <button
+                type="button"
+                onClick={compare}
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-black/85 px-3 py-1.5 text-sm font-semibold text-white transition-transform duration-150 active:scale-95 motion-reduce:transition-none"
+              >
+                <Scale className="size-4" />
+                Porovnat
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelected([])}
+                aria-label="Zrušit výběr"
+                className="flex shrink-0 items-center justify-center rounded-full p-1.5 text-black/60 transition-colors hover:bg-black/10 hover:text-black"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
