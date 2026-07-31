@@ -498,7 +498,13 @@ export default async function EventDetailPage({
           </div>
 
           {/* FOTN is a bonus meta-pick on top of the fights, so it sits after
-              the card - people tip the fights first, then crown the best one. */}
+              the card - you can't sensibly crown the best fight before you've
+              read them. It gets its own segment heading for the same reason
+              the fight groups do: without one it reads as a stray card that
+              happens to be last, rather than the closing step of the card. */}
+          <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            {locked ? "Bonus" : "Poslední tip"}
+          </h2>
           <div id="fotn" className="scroll-mt-16">
             <FotnPicker
               eventId={id}

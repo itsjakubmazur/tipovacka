@@ -52,11 +52,23 @@ export function TipActionBar({
     document.getElementById("fotn")?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  const total = tippableFightIds.length;
-  const remaining = tippableFightIds.filter((id) => untipped.has(id)).length;
-  const tipped = total - remaining;
+  // The Fight of the Night pick scores like anything else on the card, so it
+  // counts here too. It used to be fights-only: a full yellow bar reading
+  // "Natipováno 10/10" told people they were done while two points were still
+  // on the table, which is a far stronger signal than the nudge underneath it.
+  const fightTotal = tippableFightIds.length;
+  const fightsLeft = tippableFightIds.filter((id) => untipped.has(id)).length;
+  const total = fightTotal + (fotnAvailable ? 1 : 0);
+  const tipped = fightTotal - fightsLeft + (fotnAvailable && fotnPicked ? 1 : 0);
+  const fotnMissing = fotnAvailable && !fotnPicked;
 
   function goToFights() {
+    // Everything tipped but the bonus? Then "the next thing to do" is the
+    // bonus, not the top of a card you've already filled in.
+    if (fightsLeft === 0 && fotnMissing) {
+      goToFotn();
+      return;
+    }
     const target = tippableFightIds.find((id) => untipped.has(id)) ?? tippableFightIds[0];
     if (target) {
       document.getElementById(`fight-${target}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -78,7 +90,7 @@ export function TipActionBar({
           </span>
         </div>
       )}
-      {fotnAvailable && !fotnPicked && (
+      {fotnMissing && (
         // The picker sits below the card on purpose - fights first, then crown
         // the best one - but that made it easy to scroll past. This keeps it
         // on the radar without moving it back up.
@@ -99,11 +111,15 @@ export function TipActionBar({
           className="flex flex-[1.35] flex-col items-center justify-center gap-0.5 rounded-xl bg-accent px-3 py-2 text-black outline-none transition-transform hover:bg-[#e6bf00] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.98]"
         >
           <span className="flex items-center gap-1.5 text-sm font-bold leading-tight">
-            {remaining > 0 ? `Dotipovat (${remaining})` : "Upravit tipy"}
+            {fightsLeft > 0
+              ? `Dotipovat (${fightsLeft})`
+              : fotnMissing
+                ? "Zbývá zápas večera"
+                : "Upravit tipy"}
             <ArrowDown className="size-4" strokeWidth={2.6} />
           </span>
           <span className="text-[10.5px] font-medium leading-tight text-black/60">
-            s detaily o zápasnících níže
+            {fightsLeft === 0 && fotnMissing ? "poslední tip, +2 body" : "s detaily o zápasnících níže"}
           </span>
         </button>
         {children}
