@@ -305,7 +305,16 @@ export function EventStatusTimeline({
     {
       state: liveState,
       when: liveState === "current" ? "Právě teď" : shortDateTime(eventDateIso),
-      title: liveState === "done" ? "Galavečer skončil" : "Galavečer živě",
+      // While it's running the pulsing "Živě" badge sits right next to the
+      // title, so the title must not end in the same word - "Galavečer živě
+      // Živě" was the result. Before and after, when there's no badge, the
+      // phase needs the full name.
+      title:
+        liveState === "done"
+          ? "Galavečer skončil"
+          : liveState === "current"
+            ? "Galavečer"
+            : "Galavečer živě",
       desc:
         liveState === "current"
           ? `Odbodováno ${gradedCount} z ${totalCount} zápasů${points > 0 ? ` · zatím ${points} b.` : ""}.`
