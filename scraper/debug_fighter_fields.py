@@ -35,13 +35,26 @@ def main(number: int | None) -> None:
 
     for fight in raw_fights:
         for key in ("fighter1", "fighter2"):
-            f = fight[key]
+            f = fight.get(key)
+            if not f:
+                continue
             name = f"{f.get('firstName')} {f.get('lastName')}"
             print(
                 f"{name}: heightCm={f.get('heightCm')!r} "
                 f"birth={f.get('yearOfBirth')!r}-{f.get('monthOfBirth')!r}-{f.get('dayOfBirth')!r} "
                 f"weightKg={(f.get('weightClass') or {}).get('weightKg')!r}"
             )
+            # Every image the API offers for this fighter. The fight card wants
+            # a half-body cut-out and imageFightCard turns out not to be one for
+            # everybody - this says what else is on offer.
+            for field, value in sorted(f.items()):
+                if not field.lower().startswith("image"):
+                    continue
+                if isinstance(value, dict):
+                    print(f"    {field}: {value.get('url')!r} {{{', '.join(sorted(value))}}}")
+                else:
+                    print(f"    {field}: {value!r}")
+            print(f"    (všechny klíče: {', '.join(sorted(f))})")
 
 
 if __name__ == "__main__":
