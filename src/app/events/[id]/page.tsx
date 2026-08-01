@@ -239,6 +239,14 @@ export default async function EventDetailPage({
       label: CARD_SEGMENT_LABELS[fight.card_segment!],
     }));
 
+  // The cancelled block is a section of the card like any other, so it gets a
+  // pill too - otherwise the bar quietly stops working two thirds down the
+  // page, right where you'd most want it.
+  const jumpSegments =
+    cancelledFights.length > 0
+      ? [...segmentsOnCard, { key: "cancelled", label: "Zrušené zápasy" }]
+      : segmentsOnCard;
+
   // cancelled/no_contest fights don't count toward either side of "X z Y"
   // - matches event_leaderboard's own treatment of them as if they were
   // never on the card at all.
@@ -359,10 +367,11 @@ export default async function EventDetailPage({
 
       {/* Desktop keeps the jump row above both columns: inside the fights
           column it would push the first fight card below the first card in the
-          rail. On a phone it belongs after the status card - you reach for it
-          once you know what's on the card, not before. */}
-      <SegmentJump segments={segmentsOnCard} className="hidden lg:flex" />
-      <SegmentJump segments={segmentsOnCard} className="lg:hidden" floating watchId="fights" />
+          rail. On a phone the same row floats instead - it takes no layout at
+          the top of the page, where you don't need it, and arrives as soon as
+          you start scrolling the card. */}
+      <SegmentJump segments={jumpSegments} className="hidden lg:flex" />
+      <SegmentJump segments={jumpSegments} className="lg:hidden" floating />
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
@@ -488,27 +497,19 @@ export default async function EventDetailPage({
               const total = fighterANames.length + fighterBNames.length;
               return (
                 <Fragment key={fight.id}>
-                  {/* The pill row already names the segment you're in, so the
-                      first group doesn't repeat it. Its anchor moves inside the
-                      card below: as a child of this gap-5 column even a
-                      zero-height element still collected a 20px gap, which is
-                      the empty strip left where the heading used to be. */}
-                  {showSegmentHeader && cardIndex > 0 && (
+                  {/* Every group prints its own heading, the first one
+                      included: the pill row says where you are, it isn't a
+                      replacement for the label. "Hlavní karta" is also what
+                      lines this column up with "Přehled" in the rail. */}
+                  {showSegmentHeader && (
                     <h2
                       id={`segment-${fight.card_segment!}`}
-                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
+                      className="-mb-1 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 lg:scroll-mt-24 dark:text-neutral-400"
                     >
                       {CARD_SEGMENT_LABELS[fight.card_segment!]}
                     </h2>
                   )}
-                  <div id={`fight-${fight.id}`} className="relative scroll-mt-16 xl:min-w-0">
-                    {showSegmentHeader && cardIndex === 0 && (
-                      <span
-                        id={`segment-${fight.card_segment!}`}
-                        aria-hidden
-                        className="absolute -top-24 left-0"
-                      />
-                    )}
+                  <div id={`fight-${fight.id}`} className="scroll-mt-16 xl:min-w-0">
                     <FightTipCard
                       fight={fight}
                       userId={user.id}
@@ -554,7 +555,10 @@ export default async function EventDetailPage({
 
           {cancelledFights.length > 0 && (
             <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
-              <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400">
+              <h2
+                id="segment-cancelled"
+                className="-mb-1 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 lg:scroll-mt-24 dark:text-neutral-400"
+              >
                 Zrušené zápasy
               </h2>
               {cancelledFights.map((fight) => (
