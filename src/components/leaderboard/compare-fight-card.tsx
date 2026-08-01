@@ -1,39 +1,13 @@
-import Image from "next/image";
-import { FighterPortrait } from "@/components/fighter-portrait";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import type { Fight, Fighter, Prediction } from "@/lib/types";
+import { FightMatchup } from "@/components/predictions/fight-matchup";
+import { pointsLabel } from "@/lib/score-breakdown";
+import type { Fight, Prediction } from "@/lib/types";
 
-function FighterLabel({ fighter }: { fighter: Fighter }) {
-  return (
-    <span className="flex items-center gap-1.5 text-sm font-semibold">
-      {fighter.flag_code && (
-        <Image
-          src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
-          alt={fighter.nationality ?? ""}
-          title={fighter.nationality ?? undefined}
-          width={16}
-          height={11}
-          unoptimized
-          className="h-auto w-4"
-        />
-      )}
-      {fighter.name}
-    </span>
-  );
-}
-
-/** Jistotka doubles a fight's points on the board, so it has to double here
- * too - otherwise comparing two tippers silently understates whoever staked
- * their jistotka on this fight. */
-function pointsLabel(points: number | null | undefined, isBold?: boolean) {
-  if (points == null) return "—";
-  if (points <= 0) return `${points} b.`;
-  return isBold ? `+${points * 2} b. ★` : `+${points} b.`;
-}
-
+/** Two tippers on the same fight. Same matchup as everywhere else - the
+ * difference is that both picks are marked, each in its own colour, so you
+ * can see at a glance where they split. */
 export function CompareFightCard({
   fight,
   predictionA,
@@ -55,93 +29,100 @@ export function CompareFightCard({
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
   const showResult = fight.status === "completed";
 
+  function tipLine(nickname: string, prediction: Prediction | null) {
+    if (!prediction) return `${nickname}: bez tipu`;
+    const round = prediction.predicted_round ? `${prediction.predicted_round}. kolo` : "na body";
+    return `${nickname}: ${METHOD_LABELS[prediction.predicted_method]} · ${round}`;
+  }
+
   return (
     <div
       className={cn(
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 dark:shadow-black/60",
-        voided ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40" : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
+        voided
+          ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
+          : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
       )}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 p-4 pb-3">
-        <div className="flex flex-wrap items-center gap-2">
-          {fight.weight_class && <Badge variant="secondary">{weightClassLabel(fight.weight_class)}</Badge>}
-          {fight.is_title_fight && <Badge variant="accent">Titulový zápas</Badge>}
-          {fight.is_main_event && <Badge variant="default">Main event</Badge>}
+      <div className="flex min-h-[2.75rem] flex-wrap items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {fight.is_main_event && fight.is_title_fight ? (
+            <Badge variant="accent">Main event · titul</Badge>
+          ) : fight.is_title_fight ? (
+            <Badge variant="accent">Titulový zápas</Badge>
+          ) : fight.is_main_event ? (
+            <Badge variant="default">Main event</Badge>
+          ) : null}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
         </div>
-        <div className="flex items-center gap-3 text-sm font-bold">
+        <div className="flex items-center gap-3 text-xs font-bold tabular-nums">
           <span className="text-yellow-600 dark:text-accent">
-            {nicknameA}: {pointsLabel(predictionA?.points, boldA)}
+            {nicknameA} {pointsLabel(predictionA?.points, boldA)}
           </span>
           <span className="text-blue-500">
-            {nicknameB}: {pointsLabel(predictionB?.points, boldB)}
+            {nicknameB} {pointsLabel(predictionB?.points, boldB)}
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 divide-x divide-neutral-200 border-t border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
-        {[fight.fighter_a, fight.fighter_b].map((fighter) => {
-          const tipA = predictionA?.predicted_winner_id === fighter.id;
-          const tipB = predictionB?.predicted_winner_id === fighter.id;
-          const isActualWinner = showResult && fight.winner_fighter_id === fighter.id;
-          const isActualLoser = showResult && fight.winner_fighter_id !== fighter.id;
-          const grayedOut = isActualLoser || fight.status === "no_contest";
-          return (
+      {showResult && (
+        <div className="grid grid-cols-3 border-b border-black/5 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]">
+          {[
+            { k: "Čas", v: fight.result_time ?? "—" },
+            { k: "Kolo", v: fight.result_round ? String(fight.result_round) : "—" },
+            { k: "Ukončení", v: fight.method ? METHOD_LABELS[fight.method] : "—" },
+          ].map((cell, i) => (
             <div
-              key={fighter.id}
-              className={cn(
-                "flex flex-col items-center gap-1.5 px-2 pb-3 text-center",
-                (tipA || tipB) && "bg-neutral-50 dark:bg-neutral-900/50"
-              )}
+              key={cell.k}
+              className={cn("px-2 py-2 text-center", i > 0 && "border-l border-black/5 dark:border-white/10")}
             >
-              <FighterPortrait
-                name={fighter.name}
-                photoUrl={fighter.photo_url ?? fighter.fight_card_photo_url}
-                grayedOut={grayedOut}
-                className={cn(
-                  tipA && tipB && "ring-2 ring-inset ring-accent",
-                  tipA && !tipB && "ring-2 ring-inset ring-accent",
-                  !tipA && tipB && "ring-2 ring-inset ring-blue-500"
-                )}
-              />
-              <div className="mt-1.5">
-                <FighterLabel fighter={fighter} />
-              </div>
-              {fighter.oktagon_rank && (
-                <span className="text-xs text-neutral-500 dark:text-neutral-300">{fighter.oktagon_rank}</span>
-              )}
-              <div className="flex flex-wrap items-center justify-center gap-1">
-                {tipA && (
-                  <span className="rounded-full border border-accent bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:text-accent">
-                    {nicknameA}
-                  </span>
-                )}
-                {tipB && (
-                  <span className="rounded-full border border-blue-500 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-500">
-                    {nicknameB}
-                  </span>
-                )}
-                {isActualWinner && <Badge variant="accent">Vítěz</Badge>}
-              </div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                {cell.k}
+              </p>
+              <p className="text-sm font-bold tabular-nums">{cell.v}</p>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
 
-      <div className="flex flex-col gap-1 p-4 pt-3 text-sm">
-        <p className="text-neutral-700 dark:text-neutral-300">
-          {nicknameA} tip: {predictionA ? `${METHOD_LABELS[predictionA.predicted_method]}${predictionA.predicted_round ? ` · ${predictionA.predicted_round}. kolo` : ""}` : "bez tipu"}
-        </p>
-        <p className="text-neutral-700 dark:text-neutral-300">
-          {nicknameB} tip: {predictionB ? `${METHOD_LABELS[predictionB.predicted_method]}${predictionB.predicted_round ? ` · ${predictionB.predicted_round}. kolo` : ""}` : "bez tipu"}
-        </p>
-        {showResult && (
-          <p className="text-neutral-700 dark:text-neutral-300">
-            Výsledek: {fight.method ? METHOD_LABELS[fight.method] : ""}
-            {fight.result_round ? ` · ${fight.result_round}. kolo` : ""}
-            {fight.result_time ? ` · ${fight.result_time}` : ""}
-          </p>
-        )}
+      <FightMatchup
+        fight={fight}
+        highlight={[
+          ...(predictionA
+            ? [{ fighterId: predictionA.predicted_winner_id, tone: "accent" as const }]
+            : []),
+          ...(predictionB
+            ? [{ fighterId: predictionB.predicted_winner_id, tone: "blue" as const }]
+            : []),
+        ]}
+        tags={[
+          ...(showResult && fight.winner_fighter_id
+            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
+            : []),
+          ...(predictionA
+            ? [
+                {
+                  fighterId: predictionA.predicted_winner_id,
+                  label: boldA ? `★ ${nicknameA}` : nicknameA,
+                  tone: "accent" as const,
+                },
+              ]
+            : []),
+          ...(predictionB
+            ? [
+                {
+                  fighterId: predictionB.predicted_winner_id,
+                  label: boldB ? `★ ${nicknameB}` : nicknameB,
+                  tone: "blue" as const,
+                },
+              ]
+            : []),
+        ]}
+      />
+
+      <div className="flex flex-col gap-0.5 border-t border-black/5 px-4 py-2 text-xs text-neutral-600 dark:border-white/10 dark:text-neutral-300">
+        <p>{tipLine(nicknameA, predictionA)}</p>
+        <p>{tipLine(nicknameB, predictionB)}</p>
       </div>
     </div>
   );

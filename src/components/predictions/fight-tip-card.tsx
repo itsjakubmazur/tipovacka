@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { ageFromBirthDate, cn } from "@/lib/utils";
+import { FightMatchup } from "@/components/predictions/fight-matchup";
+import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { Reveal } from "@/components/ui/reveal";
-import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { X, ArrowUp, ArrowDown, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
-import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
+import { pointsLabel, scoreBreakdown } from "@/lib/score-breakdown";
+import { X, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
+import type { Fight, Method, Prediction } from "@/lib/types";
 
 function Pill({
   active,
@@ -36,20 +36,6 @@ function Pill({
     >
       {children}
     </button>
-  );
-}
-
-function RankBadge({ fighter }: { fighter: Fighter }) {
-  if (!fighter.oktagon_rank) return null;
-  return (
-    <span className="flex items-center gap-0.5 text-xs text-neutral-500 dark:text-neutral-300">
-      {fighter.oktagon_rank}
-      {fighter.oktagon_rank_change != null && fighter.oktagon_rank_change !== 0 && (
-        <span className={cn("flex items-center", fighter.oktagon_rank_change > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")}>
-          {fighter.oktagon_rank_change > 0 ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
-        </span>
-      )}
-    </span>
   );
 }
 
@@ -315,157 +301,6 @@ export function FightTipCard({
 
   const fighterA = fight.fighter_a;
   const fighterB = fight.fighter_b;
-  // No photos (TBA, or a fighter OKTAGON hasn't shot yet) means no reason to
-  // hold open a fighter-sized band of empty card.
-  const hasPhotos = Boolean(
-    (!fighterA.is_tba && (fighterA.photo_url ?? fighterA.fight_card_photo_url)) ||
-      (!fighterB.is_tba && (fighterB.photo_url ?? fighterB.fight_card_photo_url))
-  );
-
-  /** The one line that used to be six: weight, height, age. Sits under its own
-   * fighter's photo, so the column reads name → photo → body top to bottom. */
-  function physical(fighter: Fighter): string | null {
-    const parts = [
-      fighter.weight_kg && `${fighter.weight_kg} kg`,
-      fighter.height_cm && `${fighter.height_cm} cm`,
-      fighter.birth_date && `${ageFromBirthDate(fighter.birth_date)} let`,
-    ].filter(Boolean);
-    return parts.length ? parts.join(" · ") : null;
-  }
-
-  /** What the points are actually for. "Trefa" told you nothing you couldn't
-   * see from the number next to it; this says which of the three parts of the
-   * tip landed, and on a miss, who won instead.
-   *
-   * Mirrors calculate_points exactly - including that the round counts as
-   * correct on a decision only when nothing was picked, and that the *actual*
-   * method decides which rule applies. */
-  function scoreBreakdown(): string {
-    if (!initialPrediction) return hit ? "Trefa" : "Netrefeno";
-
-    const winner =
-      fight.winner_fighter_id === fighterA.id
-        ? fighterA
-        : fight.winner_fighter_id === fighterB.id
-          ? fighterB
-          : null;
-
-    if (initialPrediction.predicted_winner_id !== fight.winner_fighter_id) {
-      const surname = winner?.name.split(" ").pop();
-      const how = fight.method ? METHOD_LABELS[fight.method] : null;
-      if (!surname) return "Netrefeno";
-      return how ? `Netrefeno · vyhrál ${surname} (${how})` : `Netrefeno · vyhrál ${surname}`;
-    }
-
-    const decision = fight.method === "DECISION";
-    const methodOk = initialPrediction.predicted_method === fight.method;
-    const roundOk = decision
-      ? initialPrediction.predicted_round == null
-      : initialPrediction.predicted_round === fight.result_round;
-    // On a decision the third point is for leaving the round empty, so
-    // "způsob i kolo" would be nonsense - it reads as "na body" instead.
-    if (decision) {
-      if (methodOk && roundOk) return "Vítěz i způsob · na body";
-      if (methodOk) return "Vítěz a způsob";
-      if (roundOk) return "Vítěz · na body";
-      return "Jen vítěz";
-    }
-    if (methodOk && roundOk) return "Vítěz, způsob i kolo";
-    if (methodOk) return "Vítěz a způsob";
-    if (roundOk) return "Vítěz a kolo";
-    return "Jen vítěz";
-  }
-
-  /** One fighter's side of the tale of the tape: rank, record, odds. */
-  function tapeRow(left: React.ReactNode, right: React.ReactNode) {
-    return (
-      <>
-        <span className="flex items-center justify-center pr-1 text-center leading-tight">{left}</span>
-        <span className="flex items-center justify-center pl-1 text-center leading-tight">{right}</span>
-      </>
-    );
-  }
-
-  /** Name, flag and nickname, leaning toward the fighter it belongs to.
-   * Centring both names made you check which photo each one meant; a name
-   * that hangs over its own side never raises the question. */
-  function nameLine(fighter: Fighter, side: "a" | "b") {
-    const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
-    return (
-      <div className={cn("flex flex-col px-1", side === "a" ? "items-start" : "items-end")}>
-        <p
-          className={cn(
-            "flex items-center gap-2 text-xl font-extrabold uppercase leading-tight tracking-tight sm:text-2xl",
-            isLoser ? "text-neutral-400 dark:text-neutral-500" : "text-black dark:text-white",
-            winnerId === fighter.id && !showResult && "underline decoration-accent decoration-4 underline-offset-4"
-          )}
-        >
-          {side === "b" && fighter.name}
-          {fighter.flag_code && (
-            <Image
-              src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
-              alt={fighter.nationality ?? ""}
-              title={fighter.nationality ?? undefined}
-              width={20}
-              height={14}
-              unoptimized
-              className="h-auto w-5 shrink-0"
-            />
-          )}
-          {side === "a" && fighter.name}
-        </p>
-        {/* No reserved empty line any more: with the names stacked instead of
-            side by side, a missing nickname costs nothing. */}
-        {fighter.nickname && (
-          <p className="text-xs italic text-neutral-500 dark:text-neutral-400">
-            {`„${fighter.nickname}“`}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  function fighterCutout(fighter: Fighter, side: "a" | "b") {
-    const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
-    const grayedOut = isLoser || fight.status === "no_contest";
-    // imageProfile (photo_url) is the half-body cut-out on a transparent
-    // background - the one this layout wants. imageFightCard, despite the
-    // name, is the tight head crop OKTAGON uses in its own fight *list*, and
-    // only some fighters have one. Preferring it put a floating head next to
-    // a full torso on the same card.
-    const src = fighter.photo_url ?? fighter.fight_card_photo_url;
-    return (
-      <div
-        className={cn(
-          "absolute bottom-0 h-full w-[29%]",
-          side === "a" ? "left-0" : "right-0"
-        )}
-      >
-        {src && !fighter.is_tba ? (
-          <Image
-            src={src}
-            alt={fighter.name}
-            fill
-            sizes="200px"
-            className={cn(
-              "object-contain object-bottom transition-[filter,opacity] duration-500 motion-reduce:transition-none",
-              // softens the edge of any photo that turns out to have a
-              // background baked in rather than a clean cut-out
-              side === "a"
-                ? "[mask-image:linear-gradient(to_right,transparent,black_10%)]"
-                : "[mask-image:linear-gradient(to_left,transparent,black_10%)]",
-              grayedOut && "opacity-60 grayscale"
-            )}
-          />
-        ) : (
-          <div className="flex h-full items-end justify-center pb-6 text-xs text-neutral-400 dark:text-neutral-500">
-            {fighter.is_tba ? "?" : ""}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div
       className={cn(
@@ -574,134 +409,25 @@ export function FightTipCard({
         </div>
       )}
 
-      {/* Everything from here to the pills is one big pick target: tap the half
-          the fighter is on. The display inside it is pointer-events-none so the
-          taps reach the two buttons underneath. */}
-      <div className="relative">
-        {!effectiveLocked && (
-          <>
-            <button
-              type="button"
-              onClick={() => selectWinner(fighterA.id)}
-              aria-label={`Tipnout ${fighterA.name}`}
-              className={cn(
-                "absolute inset-y-0 left-0 z-0 w-1/2 transition-colors",
-                winnerId === fighterA.id && "bg-gradient-to-t from-accent/25 to-transparent"
-              )}
-            />
-            <button
-              type="button"
-              onClick={() => selectWinner(fighterB.id)}
-              aria-label={`Tipnout ${fighterB.name}`}
-              className={cn(
-                "absolute inset-y-0 right-0 z-0 w-1/2 transition-colors",
-                winnerId === fighterB.id && "bg-gradient-to-t from-accent/25 to-transparent"
-              )}
-            />
-          </>
-        )}
-        {effectiveLocked && winnerId && (
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-y-0 z-0 w-1/2 bg-gradient-to-t from-accent/20 to-transparent",
-              winnerId === fighterA.id ? "left-0" : "right-0"
-            )}
-          />
-        )}
-
-        <div className="pointer-events-none relative z-10 px-3 pb-2 pt-2.5">
-          {fight.weight_class && (
-            <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-              {weightClassLabel(fight.weight_class)}
-            </p>
-          )}
-
-          <div className="mt-1 flex flex-col">
-            {nameLine(fighterA, "a")}
-            <p className="-my-0.5 text-center text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
-              vs
-            </p>
-            {nameLine(fighterB, "b")}
-          </div>
-
-          {/* The two fighters face each other across an empty middle. Nothing
-              is allowed in there any more - it is what lets the photos be this
-              big, and they are the reason to look at the card at all. */}
-          <div className={cn("relative mt-1.5", hasPhotos && "min-h-[13rem]")}>
-            {fighterCutout(fighterA, "a")}
-            {fighterCutout(fighterB, "b")}
-
-            {/* The tale of the tape, laid out the way the fighters are: the
-                left half of it belongs to the fighter on the left, the right
-                half to the one on the right. A grid rather than two stacks,
-                so the rows stay level even when one man's title wraps and the
-                other's does not. */}
-            <div className="absolute inset-y-0 left-1/2 flex w-[42%] -translate-x-1/2 items-center">
-              <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-1 text-center">
-                <span
-                  aria-hidden
-                  className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
-                />
-                {tapeRow(
-                  <RankBadge fighter={fighterA} />,
-                  <RankBadge fighter={fighterB} />
-                )}
-                {tapeRow(
-                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
-                    {fighterA.record ?? "—"}
-                  </span>,
-                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
-                    {fighterB.record ?? "—"}
-                  </span>
-                )}
-                {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) &&
-                  tapeRow(
-                    <span className="text-[11px] tabular-nums">
-                      {fight.odds_fighter_a != null ? `kurz ${fight.odds_fighter_a.toFixed(2)}` : "—"}
-                    </span>,
-                    <span className="text-[11px] tabular-nums">
-                      {fight.odds_fighter_b != null ? `kurz ${fight.odds_fighter_b.toFixed(2)}` : "—"}
-                    </span>
-                  )}
-              </div>
-            </div>
-
-            {/* Both tags can land on the same fighter - you tipped the one who
-                won - so they stack instead of sharing a corner. */}
-            {([fighterA, fighterB] as const).map((fighter, i) => {
-              const isPick = winnerId === fighter.id;
-              const isWinner = showResult && fight.winner_fighter_id === fighter.id;
-              if (!isPick && !isWinner) return null;
-              return (
-                <span
-                  key={fighter.id}
-                  className={cn(
-                    "absolute bottom-7 z-20 flex flex-col gap-1",
-                    i === 0 ? "left-0 items-start" : "right-0 items-end"
-                  )}
-                >
-                  {isWinner && (
-                    <span className="rounded-full bg-green-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg shadow-black/30">
-                      Vítěz
-                    </span>
-                  )}
-                  {isPick && (
-                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black shadow-lg shadow-black/30">
-                      {isBold ? "★ Jistotka ×2" : "Tvůj tip"}
-                    </span>
-                  )}
-                </span>
-              );
-            })}
-
-          </div>
-
-          <div className="mt-1.5 flex items-start justify-between gap-2 text-[11px] leading-tight text-neutral-500 dark:text-neutral-400">
-            <span className="text-left tabular-nums">{physical(fighterA)}</span>
-            <span className="text-right tabular-nums">{physical(fighterB)}</span>
-          </div>
-        </div>
-      </div>
+      <FightMatchup
+        fight={fight}
+        onPick={effectiveLocked ? undefined : selectWinner}
+        highlight={winnerId ? [{ fighterId: winnerId, tone: "accent" }] : undefined}
+        tags={[
+          ...(showResult && fight.winner_fighter_id
+            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
+            : []),
+          ...(winnerId
+            ? [
+                {
+                  fighterId: winnerId,
+                  label: isBold ? "★ Jistotka ×2" : "Tvůj tip",
+                  tone: "accent" as const,
+                },
+              ]
+            : []),
+        ]}
+      />
 
       {!effectiveLocked && !winnerId && (
         <p className="px-4 pb-1 text-center text-xs text-neutral-500 dark:text-neutral-400">
@@ -719,11 +445,9 @@ export function FightTipCard({
               : "border-red-600/30 bg-red-600/10 text-red-800 dark:text-red-400"
           )}
         >
-          <span className="min-w-0 flex-1 truncate">{scoreBreakdown()}</span>
+          <span className="min-w-0 flex-1 truncate">{scoreBreakdown(fight, initialPrediction)}</span>
           <span className="shrink-0 tabular-nums">
-            {hit
-              ? `+${initialPrediction!.points! * (isBold ? 2 : 1)} b.${isBold ? " (×2)" : ""}`
-              : "0 b."}
+            {pointsLabel(initialPrediction?.points, isBold)}
           </span>
         </div>
       )}
