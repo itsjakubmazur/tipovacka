@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import Image from "next/image";
-import { Wallet, MapPin, CalendarClock } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +22,7 @@ import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { Confetti } from "@/components/confetti";
 import { perfStart, perfLogParts } from "@/lib/perf";
 import type { Fight, Prediction } from "@/lib/types";
+import { PageHeading } from "@/components/ui/page-heading";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
   main_card: "Hlavní karta",
@@ -319,30 +320,29 @@ export default async function EventDetailPage({
         </div>
       )}
       <div>
-        <h1 className="text-xl font-bold lg:text-3xl">
-          {event.number ? `OKTAGON ${event.number}` : event.name}
-        </h1>
-        {event.subtitle && (
-          <p className="text-sm font-semibold text-yellow-600 dark:text-accent">{event.subtitle}</p>
-        )}
-        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
-          {event.location && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="size-3.5 shrink-0" />
-              {event.location}
-            </span>
-          )}
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarClock className="size-3.5 shrink-0" />
-            {new Date(event.event_date).toLocaleString("cs-CZ", {
+        {/* When and where, above the name instead of in a row of icons below
+            it - it frames the gala before you read which one it is, and it's
+            one row of the header rather than two. */}
+        <PageHeading
+          eyebrow={[
+            new Date(event.event_date).toLocaleString("cs-CZ", {
+              weekday: "long",
               day: "numeric",
               month: "long",
               hour: "2-digit",
               minute: "2-digit",
               timeZone: "Europe/Prague",
-            })}
-          </span>
-        </div>
+            }),
+            event.location,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        >
+          {event.number ? `OKTAGON ${event.number}` : event.name}
+        </PageHeading>
+        {event.subtitle && (
+          <p className="text-sm font-semibold text-yellow-600 dark:text-accent">{event.subtitle}</p>
+        )}
         {event.payouts_enabled && (
           <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
             <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />

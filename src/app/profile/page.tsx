@@ -11,6 +11,8 @@ import { NotificationPreferences } from "@/components/profile/notification-prefe
 import { ChangePasswordForm } from "@/components/profile/change-password-form";
 import { PushNotificationToggle } from "@/components/push/push-notification-toggle";
 import { Badge } from "@/components/ui/badge";
+import { TipperPathCard } from "@/components/profile/tipper-path-card";
+import { PageHeading } from "@/components/ui/page-heading";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -32,7 +34,7 @@ export default async function ProfilePage() {
   return (
     <div className="stagger-in flex flex-col gap-6 px-4 py-8">
       <div>
-        <h1 className="text-xl font-bold lg:text-3xl">Profil</h1>
+        <PageHeading eyebrow={profile?.nickname ?? user.email}>Profil</PageHeading>
         <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{user.email}</p>
         {profile?.is_admin && <Badge variant="accent" className="mt-2">Admin</Badge>}
       </div>
@@ -41,6 +43,7 @@ export default async function ProfilePage() {
           order they always did. */}
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
         <div className="stagger-in flex flex-col gap-6">
+          <TipperPathCard userId={user.id} />
           <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
           <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
           <StartovneStats userId={user.id} />

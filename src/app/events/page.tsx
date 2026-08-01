@@ -9,6 +9,7 @@ import { TippingStatus } from "@/components/events/tipping-status";
 import { cn } from "@/lib/utils";
 import { cardOpensAtIso } from "@/lib/time";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
+import { PageHeading } from "@/components/ui/page-heading";
 
 // Deliberately about the *tipping* state, not the gala's - matching the
 // status timeline on the event detail ("Tipování otevřené" -> "Tipování
@@ -110,7 +111,13 @@ export default async function EventsPage() {
 
   return (
     <div className="stagger-in flex flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-bold lg:text-3xl">Galavečery</h1>
+      <PageHeading
+        eyebrow={`Sezóna ${now.getFullYear()} · ${published.length} ${
+          published.length === 1 ? "galavečer" : published.length <= 4 ? "galavečery" : "galavečerů"
+        }`}
+      >
+        Galavečery
+      </PageHeading>
 
       {user && <WelcomeCard />}
 

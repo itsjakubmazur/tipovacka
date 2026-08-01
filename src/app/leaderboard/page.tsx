@@ -16,6 +16,7 @@ import type { Method } from "@/lib/types";
 import { Disclosure } from "@/components/ui/disclosure";
 import { SlideOnChange } from "@/components/ui/slide-on-change";
 import { RankJourney } from "@/components/leaderboard/rank-journey";
+import { PageHeading } from "@/components/ui/page-heading";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -214,7 +215,25 @@ export default async function LeaderboardPage({
       {view === "event" &&
         selectedEvent.status === "completed" &&
         eventRows[0]?.user_id === currentUserId && <Confetti />}
-      <h1 className="text-xl font-bold lg:text-3xl">Žebříček</h1>
+      <PageHeading
+        eyebrow={
+          view === "history"
+            ? "Napříč sezónami"
+            : `Sezóna ${season}${
+                view === "event" && eventRows.length > 0
+                  ? ` · ${eventRows.length} ${
+                      eventRows.length === 1
+                        ? "tipér"
+                        : eventRows.length <= 4
+                          ? "tipéři"
+                          : "tipérů"
+                    }`
+                  : ""
+              }`
+        }
+      >
+        Žebříček
+      </PageHeading>
 
       <div className="flex gap-2">
         <Link
