@@ -376,23 +376,19 @@ export function FightTipCard({
     return "Jen vítěz";
   }
 
-  /** Rank, record, odds and body under the fighter they describe. Three short
-   * lines beat one wide one here: the column is half the card and the eye is
-   * already on that side. */
-  function statBlock(fighter: Fighter, odds: number | null, side: "a" | "b") {
+  /** One fighter's side of the tale of the tape: rank, record, odds. */
+  function tapeSide(fighter: Fighter, odds: number | null) {
     return (
-      <span
-        className={cn(
-          "flex min-w-0 flex-col gap-0.5",
-          side === "a" ? "items-start text-left" : "items-end text-right"
-        )}
-      >
+      <span className="flex flex-col items-center gap-px leading-tight">
         <RankBadge fighter={fighter} />
-        <span className="tabular-nums">
+        <span className="text-xs font-bold tabular-nums text-black dark:text-white">
           {fighter.record ?? "—"}
-          {odds != null && ` · kurz ${odds.toFixed(2)}`}
         </span>
-        {physical(fighter) && <span className="tabular-nums">{physical(fighter)}</span>}
+        {odds != null && (
+          <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+            kurz {odds.toFixed(2)}
+          </span>
+        )}
       </span>
     );
   }
@@ -448,7 +444,7 @@ export function FightTipCard({
     return (
       <div
         className={cn(
-          "absolute bottom-0 h-full w-[42%]",
+          "absolute bottom-0 h-full w-[33%]",
           side === "a" ? "left-0" : "right-0"
         )}
       >
@@ -642,6 +638,16 @@ export function FightTipCard({
             {fighterCutout(fighterA, "a")}
             {fighterCutout(fighterB, "b")}
 
+            {/* The numbers that compare the two, back between them - but
+                stacked rather than spread, in the order the names are: A on
+                top, B underneath. Read across a narrow column it needs almost
+                no width, which is what lets the photos stay big. */}
+            <div className="absolute inset-y-0 left-1/2 flex w-[32%] -translate-x-1/2 flex-col items-center justify-center gap-px text-center">
+              {tapeSide(fighterA, fight.odds_fighter_a)}
+              <span className="my-1 h-px w-6 bg-black/15 dark:bg-white/20" />
+              {tapeSide(fighterB, fight.odds_fighter_b)}
+            </div>
+
             {/* Both tags can land on the same fighter - you tipped the one who
                 won - so they stack instead of sharing a corner. */}
             {([fighterA, fighterB] as const).map((fighter, i) => {
@@ -672,13 +678,9 @@ export function FightTipCard({
 
           </div>
 
-          {/* Everything that used to sit in a narrow column between the two
-              fighters now sits under the fighter it describes. The middle is
-              theirs: nothing crosses it, and the photos get the width and the
-              height that make this layout worth having. */}
           <div className="mt-1.5 flex items-start justify-between gap-2 text-[11px] leading-tight text-neutral-500 dark:text-neutral-400">
-            {statBlock(fighterA, fight.odds_fighter_a, "a")}
-            {statBlock(fighterB, fight.odds_fighter_b, "b")}
+            <span className="text-left tabular-nums">{physical(fighterA)}</span>
+            <span className="text-right tabular-nums">{physical(fighterB)}</span>
           </div>
         </div>
       </div>
