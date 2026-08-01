@@ -330,9 +330,15 @@ export default async function EventDetailPage({
       {/* you won the night - celebrate every time it's opened, it's a
           few seconds and never takes a tap */}
       {event.status === "completed" && finalRank === 1 && <Confetti />}
-      <RealtimeRefresh table="fights" />
-      <RealtimeRefresh table="predictions" />
-      <RealtimeRefresh table="event_payouts" />
+      {/* One watcher for all three tables, so a burst of changes costs one
+          refresh. While the gala is running it also polls: results arrive in
+          exactly the minutes when a phone is most likely to have been asleep,
+          backgrounded or on arena wifi, and none of those deliver a socket
+          event. Outside that window there's nothing to poll for. */}
+      <RealtimeRefresh
+        tables={["fights", "predictions", "event_payouts"]}
+        pollMs={locked && event.status !== "completed" ? 45_000 : undefined}
+      />
       {/* The poster stays untouched. Laying the title over it cost more than
           it saved: OKTAGON prints the date, the venue, its own logo and the
           sponsor row into the bottom third of the artwork, which is exactly
