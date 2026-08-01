@@ -556,16 +556,16 @@ export function FightTipCard({
           />
         )}
 
-        <div className="pointer-events-none relative z-10 px-3 pb-2 pt-3">
+        <div className="pointer-events-none relative z-10 px-3 pb-2 pt-2.5">
           {fight.weight_class && (
             <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               {weightClassLabel(fight.weight_class)}
             </p>
           )}
 
-          <div className="mt-1.5 flex flex-col gap-1">
+          <div className="mt-1 flex flex-col">
             {nameLine(fighterA, "a")}
-            <p className="text-center text-[11px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+            <p className="-my-0.5 text-center text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
               vs
             </p>
             {nameLine(fighterB, "b")}
@@ -573,7 +573,7 @@ export function FightTipCard({
 
           {/* The two fighters face each other across the middle, with the
               numbers that compare them sitting between the photos. */}
-          <div className={cn("relative mt-2", hasPhotos && "min-h-[11.5rem]")}>
+          <div className={cn("relative mt-1.5", hasPhotos && "min-h-[9.5rem]")}>
             {fighterCutout(fighterA, "a")}
             {fighterCutout(fighterB, "b")}
 
@@ -606,17 +606,16 @@ export function FightTipCard({
             })}
 
             <div className={cn("relative z-10 text-center", hasPhotos && "px-[31%]")}>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                Skóre (V-P-R)
-              </p>
-              <div className="mt-1 flex items-center justify-center gap-1.5">
-                <RankBadge fighter={fighterA} />
+              {/* The rank used to sit either side of this box. "Interim
+                  šampion" is two words wide, so it spilled out of the middle
+                  column and landed on top of a fighter - it belongs on that
+                  fighter's own line at the bottom. */}
+              <div className="flex items-center justify-center">
                 <span className="flex items-center rounded-lg border border-black/10 bg-white/70 text-xs font-bold tabular-nums dark:border-white/15 dark:bg-neutral-900/70">
                   <span className="whitespace-nowrap px-2 py-1">{fighterA.record ?? "—"}</span>
                   <span className="text-neutral-300 dark:text-neutral-600">\</span>
                   <span className="whitespace-nowrap px-2 py-1">{fighterB.record ?? "—"}</span>
                 </span>
-                <RankBadge fighter={fighterB} />
               </div>
               {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) && (
                 <p className="mt-1.5 flex justify-center gap-3 whitespace-nowrap text-[11px] text-neutral-500 dark:text-neutral-400">
@@ -635,9 +634,15 @@ export function FightTipCard({
             </div>
           </div>
 
-          <div className="mt-1 flex items-start justify-between gap-3 text-[11px] text-neutral-500 dark:text-neutral-400">
-            <span className="text-left">{physical(fighterA)}</span>
-            <span className="text-right">{physical(fighterB)}</span>
+          <div className="mt-1 flex items-start justify-between gap-2 text-[11px] text-neutral-500 dark:text-neutral-400">
+            <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 text-left">
+              <RankBadge fighter={fighterA} />
+              <span>{physical(fighterA)}</span>
+            </span>
+            <span className="flex min-w-0 flex-wrap items-center justify-end gap-x-1.5 text-right">
+              <RankBadge fighter={fighterB} />
+              <span>{physical(fighterB)}</span>
+            </span>
           </div>
         </div>
       </div>
