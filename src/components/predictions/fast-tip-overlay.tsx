@@ -51,18 +51,19 @@ export function FastTipOverlay({
 
   return (
     <>
+      {/* An icon, not a second full-width button. Side by side with "Upravit
+          tipy" the two read as equal routes to the same place, and the swipe
+          carousel is the shortcut - the one you take when you already know the
+          card. The title carries the explanation on hover and for screen
+          readers. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl border border-white/45 bg-white/35 px-3 py-2 text-black outline-none backdrop-blur-lg transition-colors hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-accent dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-white dark:hover:border-neutral-500"
+        title="Rychlá tipovačka — swipe bez detailů"
+        aria-label="Rychlá tipovačka, swipe bez detailů"
+        className="flex w-12 shrink-0 items-center justify-center rounded-xl border border-white/45 bg-white/35 text-yellow-600 outline-none backdrop-blur-lg transition-colors hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-accent dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-accent dark:hover:border-neutral-500"
       >
-        <span className="flex items-center gap-1.5 text-sm font-bold leading-tight">
-          <Zap className="size-4 text-yellow-600 dark:text-accent" />
-          Rychlá tipovačka
-        </span>
-        <span className="text-[10.5px] font-medium leading-tight text-neutral-500 dark:text-neutral-400">
-          bez detailů
-        </span>
+        <Zap className="size-5" />
       </button>
       {open &&
         createPortal(

@@ -41,23 +41,24 @@ export function WhoHasntTipped({ eventId }: { eventId: string }) {
   if (!missing || missing.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-white/45 bg-white/35 text-sm shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+    <div>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 p-3 text-left font-medium"
+        className="flex w-full items-center gap-1.5 text-left"
       >
-        <Users className="size-4 text-neutral-500 dark:text-neutral-400" />
-        Kdo ještě netipoval ({missing.length})
+        <Users className="size-3.5 shrink-0" />
+        Netipovalo ještě {missing.length}{" "}
+        {missing.length === 1 ? "člověk" : missing.length <= 4 ? "lidi" : "lidí"}
         <ChevronDown
           className={cn(
-            "ml-auto size-4 transition-transform duration-500 ease-out motion-reduce:transition-none",
+            "ml-auto size-3.5 shrink-0 transition-transform duration-500 ease-out motion-reduce:transition-none",
             open && "rotate-180"
           )}
         />
       </button>
       <Reveal open={open}>
-        <p className="px-3 pb-3 text-neutral-600 dark:text-neutral-300">{missing.join(", ")}</p>
+        <p className="pt-1 text-neutral-600 dark:text-neutral-300">{missing.join(", ")}</p>
       </Reveal>
     </div>
   );

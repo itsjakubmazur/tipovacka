@@ -325,10 +325,14 @@ export default async function EventDetailPage({
       <RealtimeRefresh table="fights" />
       <RealtimeRefresh table="predictions" />
       <RealtimeRefresh table="event_payouts" />
-      {/* the poster is 16:9, which at desktop widths would be a 600px-tall wall
-          of image before a single fight - crop it to a banner instead */}
-      {event.image_url && (
-        <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl lg:aspect-[21/8]">
+      {/* The poster carries the title instead of being a slab with the same
+          facts repeated underneath it - OKTAGON already prints the date and
+          venue into the artwork, so a header block below it said everything a
+          third time. 16:9 as the artwork is drawn; cropped to a banner at
+          desktop widths, where it would otherwise be a 600px wall of image
+          before a single fight. */}
+      {event.image_url ? (
+        <div className="relative -mx-4 -mt-8 flex aspect-[16/9] items-end overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl lg:aspect-[21/8]">
           <Image
             src={event.image_url}
             alt={event.number ? `OKTAGON ${event.number}` : event.name}
@@ -336,41 +340,30 @@ export default async function EventDetailPage({
             className="object-cover"
             priority
           />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-background" />
+          {/* a scrim, not a fade-out: white type has to hold over the brightest
+              part of the artwork */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85" />
+          <div className="relative w-full p-4">
+            <PageHeading eyebrow={posterLine} className="[&_h1]:text-white [&_p]:text-white/70">
+              {event.number ? `OKTAGON ${event.number}` : event.name}
+              {event.subtitle && (
+                <span className="ml-2 text-sm font-semibold text-accent lg:text-base">
+                  {event.subtitle}
+                </span>
+              )}
+            </PageHeading>
+          </div>
         </div>
-      )}
-      <div>
-        {/* Set the way OKTAGON sets it on the poster itself: date, city,
-            venue, separated by bars. The poster is right above this line, so
-            matching it makes the header read as a continuation of the artwork
-            rather than as the app's own take on the same facts.
-            (Our location is stored venue-first - "Lanxess Arena, Köln" - so
-            the parts get reversed to match the poster's city-first order.) */}
+      ) : (
         <PageHeading eyebrow={posterLine}>
           {event.number ? `OKTAGON ${event.number}` : event.name}
-          {/* The matchup rides along on the title's line rather than taking a
-              row of its own - it's part of the gala's name, not a second fact
-              about it. Wraps underneath on a narrow screen. */}
           {event.subtitle && (
             <span className="ml-2 text-sm font-semibold text-yellow-600 lg:text-base dark:text-accent">
               {event.subtitle}
             </span>
           )}
         </PageHeading>
-        {/* A fact about the gala, not a button - and one flat line of it. It
-            had a bold "Startovné 50 Kč" leading a lighter tail, which gave a
-            three-line header its own fourth and fifth type treatment. Same
-            size, weight and colour as the eyebrow above; only the case
-            differs, which is enough to read one as a label and one as a
-            sentence. */}
-        {event.payouts_enabled && (
-          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-            <Wallet className="size-3.5 shrink-0" />
-            <span>Startovné 50 Kč · vítěz bere vše · QR po turnaji</span>
-          </p>
-        )}
-      </div>
-
+      )}
       {/* From lg up the page splits in two: the card of fights on the left and
           a sticky rail on the right with the status timeline, the live strip
           and the kecárna. Below lg the rail is display:contents, so everything
@@ -426,11 +419,20 @@ export default async function EventDetailPage({
                     </TipActionBar>
                   ) : undefined
                 }
+                footer={
+                  <>
+                    {event.payouts_enabled && (
+                      <span className="flex items-center gap-1.5">
+                        <Wallet className="size-3.5 shrink-0" />
+                        Startovné 50 Kč · vítěz bere vše · QR po turnaji
+                      </span>
+                    )}
+                    {!locked && <WhoHasntTipped eventId={id} />}
+                  </>
+                }
               />
             )}
             {!locked && countableFights.length > 0 && <BoldPickIntro />}
-
-            {!locked && countableFights.length > 0 && <WhoHasntTipped eventId={id} />}
 
             {locked && event.status !== "completed" && (
               <FightNightLive
@@ -495,14 +497,25 @@ export default async function EventDetailPage({
               const total = fighterANames.length + fighterBNames.length;
               return (
                 <Fragment key={fight.id}>
-                  {showSegmentHeader && (
-                    <h2
-                      id={`segment-${fight.card_segment!}`}
-                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
-                    >
-                      {CARD_SEGMENT_LABELS[fight.card_segment!]}
-                    </h2>
-                  )}
+                  {/* The pill row above already names the segment you're in,
+                      so the first group doesn't repeat it - it only keeps the
+                      scroll anchor. Later groups still need a visible divider
+                      between them. */}
+                  {showSegmentHeader &&
+                    (cardIndex === 0 ? (
+                      <span
+                        id={`segment-${fight.card_segment!}`}
+                        aria-hidden
+                        className="block h-0 scroll-mt-24 xl:col-span-2"
+                      />
+                    ) : (
+                      <h2
+                        id={`segment-${fight.card_segment!}`}
+                        className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
+                      >
+                        {CARD_SEGMENT_LABELS[fight.card_segment!]}
+                      </h2>
+                    ))}
                   <div id={`fight-${fight.id}`} className="scroll-mt-16 xl:min-w-0">
                     <FightTipCard
                       fight={fight}

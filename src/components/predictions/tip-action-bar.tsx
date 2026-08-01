@@ -108,7 +108,7 @@ export function TipActionBar({
         <button
           type="button"
           onClick={goToFights}
-          className="flex flex-[1.35] flex-col items-center justify-center gap-0.5 rounded-xl bg-accent px-3 py-2 text-black outline-none transition-transform hover:bg-[#e6bf00] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.98]"
+          className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl bg-accent px-3 py-2 text-black outline-none transition-transform hover:bg-[#e6bf00] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.98]"
         >
           <span className="flex items-center gap-1.5 text-sm font-bold leading-tight">
             {fightsLeft > 0

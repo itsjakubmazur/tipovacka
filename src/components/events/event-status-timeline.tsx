@@ -83,6 +83,18 @@ function Countdown({ targetIso }: { targetIso: string }) {
   units.push({ value: pad(minutes), label: "min" });
   units.push({ value: pad(seconds), label: "s" });
 
+  // Three boxed digits are a lot of furniture for a number nobody watches when
+  // the deadline is still days away. It stays a line of text until the last
+  // hour, and only then becomes the thing that takes up room.
+  if (!urgent) {
+    const inline = days > 0 ? `${days} ${days === 1 ? "den" : "dní"} ${pad(hours)}:${pad(minutes)}` : `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return (
+      <span className="text-[11px] font-bold tabular-nums tracking-wide text-yellow-600 dark:text-accent">
+        zbývá {inline}
+      </span>
+    );
+  }
+
   return (
     <div className={cn("mt-2 flex gap-1", urgent && "animate-clock-urgent")}>
       {units.map((u, i) => (
@@ -242,6 +254,7 @@ export function EventStatusTimeline({
   currentUserId,
   eventId,
   actions,
+  footer,
 }: {
   locked: boolean;
   completed: boolean;
@@ -258,6 +271,10 @@ export function EventStatusTimeline({
   currentUserId?: string;
   eventId?: string;
   actions?: React.ReactNode;
+  /** quiet facts that belong to the gala but not to the timeline - startovné,
+   * who hasn't tipped. Their own cards each cost a border and 24px of padding
+   * for one line of text. */
+  footer?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -394,15 +411,23 @@ export function EventStatusTimeline({
         <div className="flex items-start gap-2.5 pr-6">
           <Dot state="current" />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 text-[11px] font-bold tracking-wide text-yellow-600 dark:text-accent">
-              <span>{current.when}</span>
+            {/* One line, not three. "Teď · uzavře se so 1. 8. 18:30" above
+                "Tipování otevřené" above a countdown said the same thing in
+                three different ways; the countdown IS the when. */}
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="text-sm font-semibold">{current.title}</span>
               {current.live && <LiveBadge />}
+              {current.countdownTo ? (
+                <Countdown targetIso={current.countdownTo} />
+              ) : (
+                <span className="text-[11px] font-bold tracking-wide text-yellow-600 dark:text-accent">
+                  {current.when}
+                </span>
+              )}
             </div>
-            <div className="text-sm font-semibold">{current.title}</div>
             {current.desc && (
               <div className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">{current.desc}</div>
             )}
-            {current.countdownTo && <Countdown targetIso={current.countdownTo} />}
             {current.points != null && (
               <ResultPills points={current.points} rank={current.rank} participants={current.participants} />
             )}
@@ -411,6 +436,12 @@ export function EventStatusTimeline({
       </Reveal>
 
       {actions}
+
+      {footer && (
+        <div className="mt-3 flex flex-col gap-1.5 border-t border-black/10 pt-2.5 text-xs text-neutral-500 dark:border-white/10 dark:text-neutral-400">
+          {footer}
+        </div>
+      )}
     </div>
   );
 }
