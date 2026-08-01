@@ -333,6 +333,27 @@ export function FightTipCard({
     return parts.length ? parts.join(" · ") : null;
   }
 
+  /** Rank, record, odds and body under the fighter they describe. Three short
+   * lines beat one wide one here: the column is half the card and the eye is
+   * already on that side. */
+  function statBlock(fighter: Fighter, odds: number | null, side: "a" | "b") {
+    return (
+      <span
+        className={cn(
+          "flex min-w-0 flex-col gap-0.5",
+          side === "a" ? "items-start text-left" : "items-end text-right"
+        )}
+      >
+        <RankBadge fighter={fighter} />
+        <span className="tabular-nums">
+          {fighter.record ?? "—"}
+          {odds != null && ` · kurz ${odds.toFixed(2)}`}
+        </span>
+        {physical(fighter) && <span className="tabular-nums">{physical(fighter)}</span>}
+      </span>
+    );
+  }
+
   /** Name, flag and nickname, leaning toward the fighter it belongs to.
    * Centring both names made you check which photo each one meant; a name
    * that hangs over its own side never raises the question. */
@@ -384,7 +405,7 @@ export function FightTipCard({
     return (
       <div
         className={cn(
-          "absolute bottom-0 h-full w-[30%]",
+          "absolute bottom-0 h-full w-[42%]",
           side === "a" ? "left-0" : "right-0"
         )}
       >
@@ -393,7 +414,7 @@ export function FightTipCard({
             src={src}
             alt={fighter.name}
             fill
-            sizes="140px"
+            sizes="200px"
             className={cn(
               "object-contain object-bottom transition-[filter,opacity] duration-500 motion-reduce:transition-none",
               // softens the edge of any photo that turns out to have a
@@ -571,9 +592,10 @@ export function FightTipCard({
             {nameLine(fighterB, "b")}
           </div>
 
-          {/* The two fighters face each other across the middle, with the
-              numbers that compare them sitting between the photos. */}
-          <div className={cn("relative mt-1.5", hasPhotos && "min-h-[9.5rem]")}>
+          {/* The two fighters face each other across an empty middle. Nothing
+              is allowed in there any more - it is what lets the photos be this
+              big, and they are the reason to look at the card at all. */}
+          <div className={cn("relative mt-1.5", hasPhotos && "min-h-[13rem]")}>
             {fighterCutout(fighterA, "a")}
             {fighterCutout(fighterB, "b")}
 
@@ -605,44 +627,15 @@ export function FightTipCard({
               );
             })}
 
-            <div className={cn("relative z-10 text-center", hasPhotos && "px-[31%]")}>
-              {/* The rank used to sit either side of this box. "Interim
-                  šampion" is two words wide, so it spilled out of the middle
-                  column and landed on top of a fighter - it belongs on that
-                  fighter's own line at the bottom. */}
-              <div className="flex items-center justify-center">
-                <span className="flex items-center rounded-lg border border-black/10 bg-white/70 text-xs font-bold tabular-nums dark:border-white/15 dark:bg-neutral-900/70">
-                  <span className="whitespace-nowrap px-2 py-1">{fighterA.record ?? "—"}</span>
-                  <span className="text-neutral-300 dark:text-neutral-600">\</span>
-                  <span className="whitespace-nowrap px-2 py-1">{fighterB.record ?? "—"}</span>
-                </span>
-              </div>
-              {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) && (
-                <p className="mt-1.5 flex justify-center gap-3 whitespace-nowrap text-[11px] text-neutral-500 dark:text-neutral-400">
-                  <span>
-                    Kurz <b className="font-semibold text-black dark:text-white">
-                      {fight.odds_fighter_a?.toFixed(2) ?? "—"}
-                    </b>
-                  </span>
-                  <span>
-                    Kurz <b className="font-semibold text-black dark:text-white">
-                      {fight.odds_fighter_b?.toFixed(2) ?? "—"}
-                    </b>
-                  </span>
-                </p>
-              )}
-            </div>
           </div>
 
-          <div className="mt-1 flex items-start justify-between gap-2 text-[11px] text-neutral-500 dark:text-neutral-400">
-            <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 text-left">
-              <RankBadge fighter={fighterA} />
-              <span>{physical(fighterA)}</span>
-            </span>
-            <span className="flex min-w-0 flex-wrap items-center justify-end gap-x-1.5 text-right">
-              <RankBadge fighter={fighterB} />
-              <span>{physical(fighterB)}</span>
-            </span>
+          {/* Everything that used to sit in a narrow column between the two
+              fighters now sits under the fighter it describes. The middle is
+              theirs: nothing crosses it, and the photos get the width and the
+              height that make this layout worth having. */}
+          <div className="mt-1.5 flex items-start justify-between gap-2 text-[11px] leading-tight text-neutral-500 dark:text-neutral-400">
+            {statBlock(fighterA, fight.odds_fighter_a, "a")}
+            {statBlock(fighterB, fight.odds_fighter_b, "b")}
           </div>
         </div>
       </div>
@@ -693,9 +686,13 @@ export function FightTipCard({
           </div>
         </div>
 
+        {/* The round block only appears once a method is picked. You cannot
+            choose a round before a method anyway, and on an untipped card it
+            was five pills of dead weight - which is most cards before lock.
+            That space now belongs to the photos. */}
         {method === "DECISION" ? (
           <p className="text-sm text-neutral-600 dark:text-neutral-400">Tip: zápas dojde do konce, na body.</p>
-        ) : (
+        ) : method ? (
           <div>
             <p
               className={cn(
@@ -715,7 +712,7 @@ export function FightTipCard({
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
         {!effectiveLocked && winnerId && (
           <button
