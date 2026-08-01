@@ -29,6 +29,7 @@ type FightRowData = {
   winner_fighter_id: string | null;
   method: Method | null;
   result_round: number | null;
+  result_locked: boolean;
 };
 
 export function AdminFightRow({
@@ -51,6 +52,7 @@ export function AdminFightRow({
   const [round, setRound] = useState(fight.result_round?.toString() ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locked, setLocked] = useState(fight.result_locked);
 
   async function move(neighbor: { id: string; card_order: number } | null) {
     if (!neighbor) return;
@@ -83,6 +85,10 @@ export function AdminFightRow({
         winner_fighter_id: status === "completed" ? winnerId || null : null,
         method: status === "completed" ? method || null : null,
         result_round: status === "completed" && !isDecision && round ? Number(round) : null,
+        // A human decided this. The scraper re-reads finished cards for a few
+        // days looking for corrections, and without this it would cheerfully
+        // put OKTAGON's version back on the next tick.
+        result_locked: true,
       })
       .eq("id", fight.id);
 
@@ -96,6 +102,7 @@ export function AdminFightRow({
       p_event_id: eventId,
     });
     setSaving(false);
+    setLocked(true);
     if (recalcError) {
       setError("Výsledek uložen, ale přepočet bodů se nepodařil.");
       return;
@@ -203,6 +210,11 @@ export function AdminFightRow({
           {saving ? "Ukládám…" : "Uložit výsledek"}
         </Button>
       </form>
+      {locked && (
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          Výsledek zadaný ručně — scraper ho už nepřepíše, ani kdyby ho OKTAGON později změnil.
+        </p>
+      )}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

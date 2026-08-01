@@ -39,13 +39,17 @@ Does eight things, in order:
    the post-event press conference - see admin event detail page), the
    event flips to completed and everyone gets notified that points are
    in.
-10. send_fotn_reminders - once every fight on a started event is graded
+10. recheck_completed_results - for 3 days after a gala, re-reads its card
+   every ~3h and corrects any result OKTAGON changed after the fact,
+   recalculating points, telling the affected tippers and saying so in the
+   kecárna. Also runs once more right before the follow-up push.
+11. send_fotn_reminders - once every fight on a started event is graded
    but nobody's entered Fight of the Night yet, nudges admins that this
    one manual step is all that's blocking the event from completing.
-11. send_payout_settled_notifications - once every tipper besides the
+12. send_payout_settled_notifications - once every tipper besides the
    startovné winner has checked themselves off as paid, tells the
    winner instead of leaving them to notice on their own.
-12. send_followup_notifications - at 14:00 Prague time the day after an
+13. send_followup_notifications - at 14:00 Prague time the day after an
    event, everyone who tipped gets a "thanks, go see how you did" push
    and everyone who didn't gets a "here's how everyone else did" push,
    both mentioning when the next gala is and that its card opens
@@ -72,6 +76,11 @@ CARD_RECHECK_INTERVAL = timedelta(hours=3)
 # recorded run is older than this, the scheduler was down and something may
 # have been missed - tell the admins.
 HEARTBEAT_OUTAGE_THRESHOLD = timedelta(minutes=30)
+# OKTAGON sometimes corrects a result hours after the gala. Completed events
+# are re-read for a few days afterwards, throttled so this isn't an API call
+# every five minutes.
+RESULT_RECHECK_WINDOW = timedelta(days=3)
+RESULT_RECHECK_INTERVAL = timedelta(hours=3)
 FOLLOWUP_DAYS_AFTER = 1
 FOLLOWUP_HOUR_PRAGUE = 14
 HYPE_DAYS_BEFORE = 6
@@ -677,6 +686,51 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
             )
 
 
+def recheck_completed_results(db: SupabaseClient, now: datetime) -> None:
+    """Re-reads a finished gala's card looking for corrected results.
+
+    check_results only ever looks at events that aren't completed yet, and
+    import_results used to skip any fight it had already graded - so a winner
+    OKTAGON fixed after the fact never reached us. This closes both ends:
+    every few hours for RESULT_RECHECK_WINDOW after the gala, the card is
+    compared against what we stored, and anything that moved is corrected,
+    recalculated and announced."""
+    events = db.select(
+        "events",
+        {
+            "status": "eq.completed",
+            "number": "not.is.null",
+            "select": "id,number,name,subtitle,event_date,results_rechecked_at",
+        },
+    )
+    for event in events:
+        if not event["event_date"]:
+            continue
+        event_date = _parse_dt(event["event_date"])
+        if now - event_date > RESULT_RECHECK_WINDOW:
+            continue
+        last = event.get("results_rechecked_at")
+        if last and now - _parse_dt(last) < RESULT_RECHECK_INTERVAL:
+            continue
+
+        recheck_event_results(db, now, event)
+
+
+def recheck_event_results(db: SupabaseClient, now: datetime, event: dict) -> None:
+    """One re-check pass, also used right before the follow-up push so the
+    numbers people are being sent to look at are the final ones."""
+    with log_run("cron_results_recheck", event["id"]):
+        try:
+            import_results(event["id"])
+        except SystemExit:
+            print(f"Rekontrola výsledků pro {event_label(event)} selhala, pokračuji.")
+    db.update(
+        "events",
+        {"results_rechecked_at": now.isoformat()},
+        {"id": f"eq.{event['id']}"},
+    )
+
+
 def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
     """Fight of the Night is the one manual step blocking an event from
     ever completing (no leaderboard bonus, no payout, no "results done"
@@ -837,6 +891,11 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
     for event in events:
         if not event["event_date"] or now < _followup_at(_parse_dt(event["event_date"])):
             continue
+
+        # The last word on this gala goes out now, so make sure it's the right
+        # one: one final pass over the results before anyone is sent to look
+        # at the standings.
+        recheck_event_results(db, now, event)
 
         label = event_label(event)
         fights = db.select("fights", {"event_id": f"eq.{event['id']}", "select": "id"})
@@ -1015,6 +1074,7 @@ def main() -> None:
     send_lock_notifications(db, now)
     send_comment_notifications(db, now)
     check_results(db, now)
+    recheck_completed_results(db, now)
     send_fotn_reminders(db, now)
     send_payout_settled_notifications(db, now)
     send_followup_notifications(db, now)

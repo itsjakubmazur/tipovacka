@@ -50,7 +50,7 @@ export default async function AdminEventPage({
   const { data: fights } = await supabase
     .from("fights")
     .select(
-      `id, card_order, rounds, status, winner_fighter_id, method, result_round,
+      `id, card_order, rounds, status, winner_fighter_id, method, result_round, result_locked,
        fighter_a:fighters!fights_fighter_a_id_fkey(id, name),
        fighter_b:fighters!fights_fighter_b_id_fkey(id, name)`
     )
@@ -112,6 +112,7 @@ export default async function AdminEventPage({
     winner_fighter_id: string | null;
     method: "KO/TKO" | "SUBMISSION" | "DECISION" | null;
     result_round: number | null;
+    result_locked: boolean;
     fighter_a: { id: string; name: string };
     fighter_b: { id: string; name: string };
   }[];

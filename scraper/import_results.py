@@ -124,6 +124,70 @@ def _notify_fight_result(
     )
 
 
+def _notify_result_correction_safely(*args, **kwargs) -> None:
+    try:
+        _notify_result_correction(*args, **kwargs)
+    except Exception as exc:
+        print(f"Upozornění na opravu výsledku se nepodařilo odeslat: {exc}")
+
+
+def _notify_result_correction(
+    db: SupabaseClient,
+    event_id: str,
+    db_fight: dict,
+    fighter_a_name: str,
+    fighter_b_name: str,
+    winner_name: str | None,
+    result_desc: str,
+) -> None:
+    """Tells everyone who tipped this fight that the result changed.
+
+    Without this the first, wrong push is the only thing anyone remembers -
+    their points quietly move overnight and nobody knows why."""
+    predictions = db.select(
+        "predictions",
+        {"fight_id": f"eq.{db_fight['id']}", "select": "user_id,predicted_winner_id,points"},
+    )
+    opted_out = {
+        p["id"] for p in db.select("profiles", {"notify_fight_results": "eq.false", "select": "id"})
+    }
+    predictions = [p for p in predictions if p["user_id"] not in opted_out]
+    bold_user_ids = {
+        b["user_id"]
+        for b in db.select("bold_picks", {"fight_id": f"eq.{db_fight['id']}", "select": "user_id"})
+    }
+
+    title = f"✏️ Oprava: {fighter_a_name} vs {fighter_b_name}"
+    url = f"/events/{event_id}"
+    notified = 0
+    for pred in predictions:
+        if winner_name is None:
+            body = "Zápas je nově veden bez výsledku (remíza/no contest), tvůj tip se nezapočítává."
+        else:
+            predicted_name = (
+                fighter_a_name if pred["predicted_winner_id"] == db_fight["fighter_a_id"] else fighter_b_name
+            )
+            points = pred.get("points") or 0
+            bold_suffix = ""
+            if pred["user_id"] in bold_user_ids and points > 0:
+                bold_suffix = f" (jistotka ×2 = {points * 2} b.)"
+            body = (
+                f"OKTAGON výsledek upravil: vyhrál {winner_name} ({result_desc}). "
+                f"Tvůj tip: {predicted_name} → nově {points} b.{bold_suffix}"
+            )
+        send_to_user(db, pred["user_id"], title, body, url)
+        notified += 1
+
+    log_push(
+        db,
+        kind="fight_result_correction",
+        title=title,
+        body=f"Opravený výsledek zápasu {fighter_a_name} vs {fighter_b_name} a přepočítané body.",
+        recipients=notified,
+        event_id=event_id,
+    )
+
+
 STARTOVNE_CZK = 50
 
 
@@ -188,11 +252,60 @@ def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> Non
         )
 
 
+def _announce_corrections(
+    db: SupabaseClient,
+    event_id: str,
+    event: dict,
+    corrected: list[str],
+    leader_before: tuple[str, str] | None,
+) -> None:
+    """Says out loud in the kecárna that a result moved.
+
+    Points changing under people's feet with no explanation is worse than the
+    wrong result was - especially once startovné has been announced, where a
+    correction can hand the pot to somebody else."""
+    label = f"OKTAGON {event['number']}" if event.get("number") else event["name"]
+    fights = ", ".join(corrected)
+    body = (
+        f"✏️ {label}: OKTAGON opravil výsledek – {fights}. Body jsou přepočítané."
+    )
+
+    leader_after = _leader(db, event_id)
+    if leader_before and leader_after and leader_before[0] != leader_after[0]:
+        body += f" Tím se mění i pořadí: nově vede {leader_after[1]}."
+        if event.get("payouts_enabled", True):
+            body += " Startovné patří jemu/jí."
+
+    db.insert(
+        "event_comments",
+        [{"event_id": event_id, "user_id": None, "is_system": True, "body": body}],
+    )
+    print(body)
+
+
+def _leader(db: SupabaseClient, event_id: str) -> tuple[str, str] | None:
+    rows = db.select(
+        "event_leaderboard",
+        {
+            "event_id": f"eq.{event_id}",
+            "select": "user_id,nickname",
+            "order": "points.desc,fights_correct_winner.desc,perfect_card.desc,earliest_prediction_at.asc",
+        },
+    )
+    if len(rows) < 2:
+        return None
+    return rows[0]["user_id"], rows[0].get("nickname") or "Bez přezdívky"
+
+
 def import_results(event_id: str) -> None:
     db = SupabaseClient()
 
     events = db.select(
-        "events", {"id": f"eq.{event_id}", "select": "id,number,name,oktagon_event_id,actual_fotn_fight_id,payouts_enabled"}
+        "events",
+        {
+            "id": f"eq.{event_id}",
+            "select": "id,number,name,status,oktagon_event_id,actual_fotn_fight_id,payouts_enabled",
+        },
     )
     if not events:
         print(f"Event {event_id} nenalezen.")
@@ -206,13 +319,23 @@ def import_results(event_id: str) -> None:
 
     fights_data = fetch_fightcard(oktagon_event_id)
 
+    was_completed = event.get("status") == "completed"
+    leader_before = _leader(db, event_id)
+
     fights_in_db = db.select(
         "fights",
-        {"event_id": f"eq.{event_id}", "select": "id,oktagon_fight_id,fighter_a_id,fighter_b_id,status"},
+        {
+            "event_id": f"eq.{event_id}",
+            "select": (
+                "id,oktagon_fight_id,fighter_a_id,fighter_b_id,status,result_locked,"
+                "winner_fighter_id,method,result_round,result_time"
+            ),
+        },
     )
     by_oktagon_id = {f["oktagon_fight_id"]: f for f in fights_in_db if f.get("oktagon_fight_id")}
 
     updated = 0
+    corrected: list[str] = []
     for fight in fights_data:
         if fight["status"] == "scheduled":
             continue
@@ -224,51 +347,82 @@ def import_results(event_id: str) -> None:
                 f"{fight['fighter_b']['name']}, přeskakuji."
             )
             continue
-        if db_fight["status"] != "scheduled":
-            continue
 
         fighter_a_name, fighter_b_name = fight["fighter_a"]["name"], fight["fighter_b"]["name"]
+        matchup = f"{fighter_a_name} vs {fighter_b_name}"
 
-        if fight["status"] == "no_contest":
-            db.update("fights", {"status": "no_contest"}, {"id": f"eq.{db_fight['id']}"})
-            db.rpc("recalculate_fight_points", {"p_fight_id": db_fight["id"]})
-            updated += 1
-            print(f"Zápas {fighter_a_name} vs {fighter_b_name} -> remíza / no contest.")
-            _notify_fight_result_safely(db, event_id, db_fight, fighter_a_name, fighter_b_name, None, "")
+        # An admin who corrected this result outranks the feed. Without this
+        # guard the re-check would undo their fix on the very next tick.
+        if db_fight.get("result_locked"):
             continue
 
-        winner_id = db_fight["fighter_a_id"] if fight["winner_side"] == "a" else db_fight["fighter_b_id"]
-        winner_name = fighter_a_name if fight["winner_side"] == "a" else fighter_b_name
-        db.update(
-            "fights",
-            {
+        if fight["status"] == "no_contest":
+            desired = {
+                "status": "no_contest",
+                "winner_fighter_id": None,
+                "method": None,
+                "result_round": None,
+                "result_time": None,
+            }
+            winner_id, winner_name = None, None
+        else:
+            winner_id = db_fight["fighter_a_id"] if fight["winner_side"] == "a" else db_fight["fighter_b_id"]
+            winner_name = fighter_a_name if fight["winner_side"] == "a" else fighter_b_name
+            desired = {
                 "status": "completed",
                 "winner_fighter_id": winner_id,
                 "method": fight["method"],
                 "result_round": fight["result_round"],
                 "result_time": fight["result_time"],
-            },
-            {"id": f"eq.{db_fight['id']}"},
-        )
+            }
+
+        # A fight is graded once and then only ever revisited if the feed
+        # disagrees with what we stored - which is the whole point of the
+        # re-check, and also why an unchanged result costs nothing.
+        first_time = db_fight["status"] == "scheduled"
+        if not first_time and all(db_fight.get(k) == v for k, v in desired.items()):
+            continue
+
+        db.update("fights", desired, {"id": f"eq.{db_fight['id']}"})
         db.rpc("recalculate_fight_points", {"p_fight_id": db_fight["id"]})
         updated += 1
-        print(f"Uložen výsledek: {fighter_a_name} vs {fighter_b_name} -> {fight['method']}")
 
-        result_desc = _result_description(fight["method"], fight["result_round"], fight["result_time"])
-        _notify_fight_result_safely(
-            db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc
+        result_desc = _result_description(
+            desired["method"], desired["result_round"], desired["result_time"]
         )
+        if first_time:
+            if winner_name is None:
+                print(f"Zápas {matchup} -> remíza / no contest.")
+            else:
+                print(f"Uložen výsledek: {matchup} -> {desired['method']}")
+            _notify_fight_result_safely(
+                db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc
+            )
+        else:
+            corrected.append(matchup)
+            print(f"OPRAVA výsledku: {matchup} -> {winner_name or 'bez výsledku'}")
+            _notify_result_correction_safely(
+                db, event_id, db_fight, fighter_a_name, fighter_b_name, winner_name, result_desc
+            )
 
     if updated:
         print(f"Přepočítány body pro {updated} zápasů.")
     else:
         print("Žádné nové výsledky k uložení (OKTAGON je možná ještě nemá zveřejněné).")
 
+    if corrected:
+        _announce_corrections(db, event_id, event, corrected, leader_before)
+
     remaining = db.select(
         "fights",
         {"event_id": f"eq.{event_id}", "status": "eq.scheduled", "select": "id"},
     )
     if remaining:
+        return
+
+    if was_completed:
+        # already closed - a re-check only ever corrects results, it must not
+        # announce the payout a second time
         return
 
     if not event["actual_fotn_fight_id"]:
