@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -53,14 +54,23 @@ export function FightMatchup({
       (!fighterB.is_tba && (fighterB.photo_url ?? fighterB.fight_card_photo_url))
   );
 
-  function physical(fighter: Fighter): string | null {
-    const parts = [
-      fighter.weight_kg && `${fighter.weight_kg} kg`,
-      fighter.height_cm && `${fighter.height_cm} cm`,
-      fighter.birth_date && `${ageFromBirthDate(fighter.birth_date)} let`,
-    ].filter(Boolean);
-    return parts.length ? parts.join(" · ") : null;
-  }
+  /** The rows of the tape below the odds. Weight against weight, height
+   * against height - which is the whole point of a tale of the tape, and what
+   * a single run-on line under each photo could never do. */
+  const measures: { a: string | null; b: string | null }[] = [
+    {
+      a: fighterA.weight_kg ? `${fighterA.weight_kg} kg` : null,
+      b: fighterB.weight_kg ? `${fighterB.weight_kg} kg` : null,
+    },
+    {
+      a: fighterA.height_cm ? `${fighterA.height_cm} cm` : null,
+      b: fighterB.height_cm ? `${fighterB.height_cm} cm` : null,
+    },
+    {
+      a: fighterA.birth_date ? `${ageFromBirthDate(fighterA.birth_date)} let` : null,
+      b: fighterB.birth_date ? `${ageFromBirthDate(fighterB.birth_date)} let` : null,
+    },
+  ].filter((row) => row.a || row.b);
 
   function rank(fighter: Fighter) {
     if (!fighter.oktagon_rank) return null;
@@ -135,7 +145,7 @@ export function FightMatchup({
     const src = fighter.photo_url ?? fighter.fight_card_photo_url;
     if (!src || fighter.is_tba) return null;
     return (
-      <div className={cn("absolute bottom-0 h-full w-[29%]", side === "a" ? "left-0" : "right-0")}>
+      <div className={cn("absolute bottom-0 h-full w-[27%]", side === "a" ? "left-0" : "right-0")}>
         <Image
           src={src}
           alt={fighter.name}
@@ -217,8 +227,8 @@ export function FightMatchup({
               belongs to the fighter on the left. A grid rather than two
               stacks, so the rows stay level even when one man's title wraps
               and the other's does not. */}
-          <div className="absolute inset-y-0 left-1/2 flex w-[42%] -translate-x-1/2 items-center">
-            <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-1 text-center text-[11px] text-neutral-500 dark:text-neutral-400">
+          <div className="absolute inset-y-0 left-1/2 flex w-[44%] -translate-x-1/2 items-center">
+            <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-0.5 text-center text-[11px] text-neutral-500 dark:text-neutral-400">
               <span
                 aria-hidden
                 className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
@@ -241,6 +251,18 @@ export function FightMatchup({
                     {fight.odds_fighter_b != null ? `kurz ${fight.odds_fighter_b.toFixed(2)}` : "—"}
                   </span>
                 )}
+              {measures.map((row, i) => (
+                <Fragment key={i}>
+                  {tapeRow(
+                    <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
+                      {row.a ?? "—"}
+                    </span>,
+                    <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
+                      {row.b ?? "—"}
+                    </span>
+                  )}
+                </Fragment>
+              ))}
             </div>
           </div>
 
@@ -271,11 +293,6 @@ export function FightMatchup({
               </span>
             );
           })}
-        </div>
-
-        <div className="mt-1.5 flex items-start justify-between gap-2 text-[11px] leading-tight text-neutral-500 dark:text-neutral-400">
-          <span className="text-left tabular-nums">{physical(fighterA)}</span>
-          <span className="text-right tabular-nums">{physical(fighterB)}</span>
         </div>
       </div>
     </div>
