@@ -287,21 +287,22 @@ export default async function LeaderboardPage({
         </div>
       )}
 
-      {view === "history" && (
-        <>
-          <Link
-            href="/wrapped"
-            className={cn(
-              GLASS_PILL,
-              "flex items-center justify-between px-4 py-3 text-sm font-semibold"
-            )}
-          >
-            Tvoje sezóna v číslech (Wrapped)
-            <ArrowRight className="size-4 text-neutral-400" />
-          </Link>
-          <HallOfFame />
-        </>
+      {/* Wrapped belongs to the season you're looking at, not to the hall of
+          fame - it recaps one year, and the year is picked right above. */}
+      {view === "season" && (
+        <Link
+          href={`/wrapped?season=${season}`}
+          className={cn(
+            GLASS_PILL,
+            "flex items-center justify-between px-4 py-3 text-sm font-semibold"
+          )}
+        >
+          Tvoje sezóna {season} v číslech (Wrapped)
+          <ArrowRight className="size-4 text-neutral-400" />
+        </Link>
       )}
+
+      {view === "history" && <HallOfFame />}
 
       {view !== "history" && (
         // From lg the board gets the wide column and everything around it -

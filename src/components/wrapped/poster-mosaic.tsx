@@ -9,12 +9,9 @@ import { cn } from "@/lib/utils";
  * so a three-gala season still covers the screen. */
 export function PosterMosaic({
   posters,
-  intensity = "heavy",
   className,
 }: {
   posters: string[];
-  /** heavy = ambient backdrop behind text, light = the mosaic *is* the scene */
-  intensity?: "heavy" | "light";
   className?: string;
 }) {
   if (posters.length === 0) return null;
@@ -33,14 +30,12 @@ export function PosterMosaic({
           </div>
         ))}
       </div>
-      <div
-        className={cn(
-          "absolute inset-0",
-          intensity === "heavy"
-            ? "bg-black/75 backdrop-blur-2xl backdrop-saturate-150"
-            : "bg-black/45 backdrop-blur-[3px] backdrop-saturate-150"
-        )}
-      />
+      {/* Just enough to read white type over, and no more. Blurring the
+          posters into a smooth field made the backdrop generic - the whole
+          point is that these are the galas this tipper sat through, and you
+          have to be able to recognise them. Legibility is bought back with a
+          text shadow on the type instead of by drowning the artwork. */}
+      <div className="absolute inset-0 bg-black/45 backdrop-blur-[3px] backdrop-saturate-150" />
     </div>
   );
 }

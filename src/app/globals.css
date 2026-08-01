@@ -508,3 +508,22 @@ body::before {
     animation: none;
   }
 }
+
+/* Wrapped's own display face. Anton is condensed, single-weight and reads as
+   a fight poster rather than as UI - which is the whole point: the recap is
+   an event, the rest of the app is a tool. Loaded only on /wrapped, and only
+   used on the type that carries a scene (numbers, headlines), never on body
+   copy, where a condensed face at small sizes would just be harder to read. */
+.wrapped-display {
+  font-family: var(--font-wrapped), var(--font-geist-sans), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+/* The posters behind the scenes stay recognisable, so the type earns its
+   contrast locally instead of by dimming the artwork. */
+.wrapped-shadow {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 4px 24px rgba(0, 0, 0, 0.7);
+}

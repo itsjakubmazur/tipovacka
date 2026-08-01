@@ -105,7 +105,7 @@ export function WrappedPlayer({ scenes, posters }: { scenes: Scene[]; posters: s
       }}
       onPointerCancel={() => setHeld(false)}
     >
-      <PosterMosaic posters={posters} intensity={scene.kind === "intro" ? "light" : "heavy"} />
+      <PosterMosaic posters={posters} />
 
       {/* story progress - one segment per scene, the current one filling */}
       <div className="relative z-20 flex gap-1 px-3 pt-3">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Anton } from "next/font/google";
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
@@ -6,6 +7,15 @@ import { loadSeasonStats, seasonBadges } from "@/lib/season-stats";
 import { tipperArchetype } from "@/lib/tipper-archetype";
 import { buildScenes } from "@/lib/wrapped-scenes";
 import { WrappedPlayer } from "@/components/wrapped/wrapped-player";
+
+/** Wrapped's display face - a condensed poster type, self-hosted by next/font
+ * and pulled in only on this route. latin-ext carries the Czech diacritics. */
+const wrappedDisplay = Anton({
+  subsets: ["latin-ext"],
+  weight: "400",
+  variable: "--font-wrapped",
+  display: "swap",
+});
 
 /** Personal season recap ("Wrapped") - a sequence of full-screen scenes you
  * tap through, backed by the season's own gala posters, ending in a share
@@ -76,7 +86,7 @@ export default async function WrappedPage({
     .filter((url): url is string => Boolean(url));
 
   return (
-    <div className="animate-page-in md:px-4 md:pt-2">
+    <div className={`${wrappedDisplay.variable} animate-page-in md:px-4 md:pt-2`}>
       <WrappedPlayer scenes={scenes} posters={posters} />
       <div className="flex justify-center px-4 py-3">
         <Link

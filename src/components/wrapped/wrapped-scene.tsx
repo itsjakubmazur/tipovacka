@@ -20,7 +20,7 @@ export function WrappedScene({ scene }: { scene: Scene }) {
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
             OKTAGON GARÁŽ Tipovačka
           </p>
-          <h2 className="text-5xl font-black leading-none tracking-tight sm:text-7xl">
+          <h2 className="wrapped-display text-6xl leading-[0.9] tracking-tight sm:text-8xl">
             Sezóna
             <br />
             <span className="text-accent">{scene.season}</span>
@@ -69,13 +69,13 @@ export function WrappedScene({ scene }: { scene: Scene }) {
             </div>
           )}
           <div className="flex flex-col gap-1">
-            <p className="text-2xl font-bold">{scene.title}</p>
+            <p className="wrapped-display text-3xl">{scene.title}</p>
             {scene.subtitle && <p className="text-sm text-white/60">{scene.subtitle}</p>}
           </div>
           <p className="flex items-baseline justify-center gap-2">
             <span
               className={cn(
-                "text-6xl font-black tabular-nums sm:text-7xl",
+                "wrapped-display text-7xl tabular-nums sm:text-8xl",
                 scene.tone === "best" ? "text-accent" : "text-white/70"
               )}
             >
@@ -95,7 +95,7 @@ export function WrappedScene({ scene }: { scene: Scene }) {
       return (
         <Frame>
           <Eyebrow>{scene.eyebrow}</Eyebrow>
-          <h2 className="max-w-sm text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+          <h2 className="wrapped-display max-w-sm text-4xl leading-[1.05] tracking-tight sm:text-5xl">
             {scene.title}
           </h2>
           <div className="flex w-full max-w-sm flex-col gap-3 pt-2">
@@ -131,7 +131,7 @@ export function WrappedScene({ scene }: { scene: Scene }) {
         <Frame>
           <Eyebrow>Tvůj tipérský typ</Eyebrow>
           <p className="text-sm font-bold tracking-[0.4em] text-accent">{scene.archetype.code}</p>
-          <h2 className="text-5xl font-black leading-none tracking-tight sm:text-6xl">
+          <h2 className="wrapped-display text-6xl leading-[0.95] tracking-tight sm:text-7xl">
             {scene.archetype.name}
           </h2>
           <p className="max-w-sm text-lg text-white/80">{scene.archetype.tagline}</p>
@@ -176,7 +176,7 @@ export function WrappedScene({ scene }: { scene: Scene }) {
         <Frame>
           <Eyebrow>Sám proti všem</Eyebrow>
           <Ghost className="size-12 text-accent" />
-          <h2 className="max-w-sm text-4xl font-black leading-tight tracking-tight">
+          <h2 className="wrapped-display max-w-sm text-5xl leading-[1.05] tracking-tight">
             {scene.fighterName}
           </h2>
           <p className="max-w-sm text-lg text-white/80">
@@ -194,8 +194,8 @@ export function WrappedScene({ scene }: { scene: Scene }) {
         <Frame>
           <Eyebrow>Tvůj rival</Eyebrow>
           <Swords className="size-12 text-accent" />
-          <h2 className="text-4xl font-black tracking-tight">{scene.nickname}</h2>
-          <p className="flex items-center gap-4 text-6xl font-black tabular-nums">
+          <h2 className="wrapped-display text-5xl tracking-tight">{scene.nickname}</h2>
+          <p className="wrapped-display flex items-center gap-4 text-7xl tabular-nums">
             <span className={scene.wins >= scene.losses ? "text-accent" : "text-white/50"}>
               {scene.wins}
             </span>
@@ -270,7 +270,7 @@ export function WrappedScene({ scene }: { scene: Scene }) {
 
 function Frame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="stagger-in flex h-full flex-col items-center justify-center gap-4 px-6 text-center text-white">
+    <div className="wrapped-shadow stagger-in flex h-full flex-col items-center justify-center gap-4 px-6 text-center text-white">
       {children}
     </div>
   );
@@ -305,7 +305,7 @@ function CountUpNumber({ value }: { value: string }) {
 
   const display = shown == null ? value : reduce ? target : shown;
   return (
-    <span className="text-7xl font-black leading-none tabular-nums text-accent sm:text-8xl">
+    <span className="wrapped-display text-8xl leading-none tabular-nums text-accent sm:text-9xl">
       {display}
     </span>
   );
@@ -343,7 +343,7 @@ function AccuracyRing({ percent }: { percent: number }) {
           className="transition-[stroke-dashoffset] duration-[1200ms] ease-out motion-reduce:transition-none"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-5xl font-black tabular-nums">
+      <span className="wrapped-display absolute inset-0 flex items-center justify-center text-6xl tabular-nums">
         {percent}
         <span className="text-2xl">%</span>
       </span>
@@ -381,7 +381,7 @@ function Finale({ scene }: { scene: Extract<Scene, { kind: "finale" }> }) {
   }
 
   return (
-    <div className="stagger-in flex h-full flex-col items-center justify-center gap-4 px-6 text-center text-white">
+    <div className="wrapped-shadow stagger-in flex h-full flex-col items-center justify-center gap-4 px-6 text-center text-white">
       <Eyebrow>Sezóna {scene.season}</Eyebrow>
       <div className="w-full max-w-[280px]">
         <GeneratedCardImage
