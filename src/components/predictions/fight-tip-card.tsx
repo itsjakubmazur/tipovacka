@@ -333,6 +333,49 @@ export function FightTipCard({
     return parts.length ? parts.join(" · ") : null;
   }
 
+  /** What the points are actually for. "Trefa" told you nothing you couldn't
+   * see from the number next to it; this says which of the three parts of the
+   * tip landed, and on a miss, who won instead.
+   *
+   * Mirrors calculate_points exactly - including that the round counts as
+   * correct on a decision only when nothing was picked, and that the *actual*
+   * method decides which rule applies. */
+  function scoreBreakdown(): string {
+    if (!initialPrediction) return hit ? "Trefa" : "Netrefeno";
+
+    const winner =
+      fight.winner_fighter_id === fighterA.id
+        ? fighterA
+        : fight.winner_fighter_id === fighterB.id
+          ? fighterB
+          : null;
+
+    if (initialPrediction.predicted_winner_id !== fight.winner_fighter_id) {
+      const surname = winner?.name.split(" ").pop();
+      const how = fight.method ? METHOD_LABELS[fight.method] : null;
+      if (!surname) return "Netrefeno";
+      return how ? `Netrefeno · vyhrál ${surname} (${how})` : `Netrefeno · vyhrál ${surname}`;
+    }
+
+    const decision = fight.method === "DECISION";
+    const methodOk = initialPrediction.predicted_method === fight.method;
+    const roundOk = decision
+      ? initialPrediction.predicted_round == null
+      : initialPrediction.predicted_round === fight.result_round;
+    // On a decision the third point is for leaving the round empty, so
+    // "způsob i kolo" would be nonsense - it reads as "na body" instead.
+    if (decision) {
+      if (methodOk && roundOk) return "Vítěz i způsob · na body";
+      if (methodOk) return "Vítěz a způsob";
+      if (roundOk) return "Vítěz · na body";
+      return "Jen vítěz";
+    }
+    if (methodOk && roundOk) return "Vítěz, způsob i kolo";
+    if (methodOk) return "Vítěz a způsob";
+    if (roundOk) return "Vítěz a kolo";
+    return "Jen vítěz";
+  }
+
   /** Rank, record, odds and body under the fighter they describe. Three short
    * lines beat one wide one here: the column is half the card and the eye is
    * already on that side. */
@@ -656,9 +699,7 @@ export function FightTipCard({
               : "border-red-600/30 bg-red-600/10 text-red-800 dark:text-red-400"
           )}
         >
-          <span className="min-w-0 flex-1 truncate">
-            {hit ? "Trefa" : "Netrefeno"}
-          </span>
+          <span className="min-w-0 flex-1 truncate">{scoreBreakdown()}</span>
           <span className="shrink-0 tabular-nums">
             {hit ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.` : "0 b."}
           </span>
