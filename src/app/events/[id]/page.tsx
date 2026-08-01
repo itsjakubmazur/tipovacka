@@ -343,12 +343,12 @@ export default async function EventDetailPage({
         </div>
       )}
 
-      {/* With a poster there's no context line: the artwork already says
-          "01.08.2026 | PRAHA | ŠTVANICE" in its own type, and repeating it
-          underneath was the duplication the overlay was trying to hide. One
-          line instead of three. Galas without a poster keep the eyebrow -
-          there's nothing else to carry it. */}
-      <PageHeading eyebrow={event.image_url ? undefined : posterLine}>
+      {/* The poster prints the same date and venue into the artwork, so this
+          line does repeat it - kept anyway: it's one row, it reads far better
+          than 8pt type inside a photo, and it's the only version that's there
+          for a gala without a poster, in a screen reader, or when the image
+          hasn't loaded. */}
+      <PageHeading eyebrow={posterLine}>
         {event.number ? `OKTAGON ${event.number}` : event.name}
         {event.subtitle && (
           <span className="ml-2 text-sm font-semibold text-yellow-600 lg:text-base dark:text-accent">
