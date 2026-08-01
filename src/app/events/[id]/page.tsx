@@ -346,14 +346,17 @@ export default async function EventDetailPage({
             rather than as the app's own take on the same facts.
             (Our location is stored venue-first - "Lanxess Arena, Köln" - so
             the parts get reversed to match the poster's city-first order.) */}
-        <PageHeading
-          eyebrow={posterLine}
-        >
+        <PageHeading eyebrow={posterLine}>
           {event.number ? `OKTAGON ${event.number}` : event.name}
+          {/* The matchup rides along on the title's line rather than taking a
+              row of its own - it's part of the gala's name, not a second fact
+              about it. Wraps underneath on a narrow screen. */}
+          {event.subtitle && (
+            <span className="ml-2 text-sm font-semibold text-yellow-600 lg:text-base dark:text-accent">
+              {event.subtitle}
+            </span>
+          )}
         </PageHeading>
-        {event.subtitle && (
-          <p className="text-sm font-semibold text-yellow-600 dark:text-accent">{event.subtitle}</p>
-        )}
         {event.payouts_enabled && (
           <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
             <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
