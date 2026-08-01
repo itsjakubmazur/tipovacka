@@ -362,6 +362,7 @@ export default async function EventDetailPage({
           rail. On a phone it belongs after the status card - you reach for it
           once you know what's on the card, not before. */}
       <SegmentJump segments={segmentsOnCard} className="hidden lg:flex" />
+      <SegmentJump segments={segmentsOnCard} className="lg:hidden" floating watchId="fights" />
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
@@ -475,12 +476,11 @@ export default async function EventDetailPage({
         </aside>
 
         <div className="stagger-in flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
-          <SegmentJump segments={segmentsOnCard} className="lg:hidden" />
 
           {/* From xl the card pairs up - the column is wide enough that a
               single stack of fight cards would just be a lot of empty space
               either side of the fighter names. */}
-          <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
+          <div id="fights" className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
             {fightsWithHeaders.map(({ fight, showSegmentHeader }, cardIndex) => {
               const names = picksByFight.get(fight.id);
               const fighterANames = names?.get(fight.fighter_a.id) ?? [];
@@ -488,26 +488,27 @@ export default async function EventDetailPage({
               const total = fighterANames.length + fighterBNames.length;
               return (
                 <Fragment key={fight.id}>
-                  {/* The pill row above already names the segment you're in,
-                      so the first group doesn't repeat it - it only keeps the
-                      scroll anchor. Later groups still need a visible divider
-                      between them. */}
-                  {showSegmentHeader &&
-                    (cardIndex === 0 ? (
+                  {/* The pill row already names the segment you're in, so the
+                      first group doesn't repeat it. Its anchor moves inside the
+                      card below: as a child of this gap-5 column even a
+                      zero-height element still collected a 20px gap, which is
+                      the empty strip left where the heading used to be. */}
+                  {showSegmentHeader && cardIndex > 0 && (
+                    <h2
+                      id={`segment-${fight.card_segment!}`}
+                      className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
+                    >
+                      {CARD_SEGMENT_LABELS[fight.card_segment!]}
+                    </h2>
+                  )}
+                  <div id={`fight-${fight.id}`} className="relative scroll-mt-16 xl:min-w-0">
+                    {showSegmentHeader && cardIndex === 0 && (
                       <span
                         id={`segment-${fight.card_segment!}`}
                         aria-hidden
-                        className="block h-0 scroll-mt-24 xl:col-span-2"
+                        className="absolute -top-24 left-0"
                       />
-                    ) : (
-                      <h2
-                        id={`segment-${fight.card_segment!}`}
-                        className="-mb-1 scroll-mt-24 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
-                      >
-                        {CARD_SEGMENT_LABELS[fight.card_segment!]}
-                      </h2>
-                    ))}
-                  <div id={`fight-${fight.id}`} className="scroll-mt-16 xl:min-w-0">
+                    )}
                     <FightTipCard
                       fight={fight}
                       userId={user.id}
