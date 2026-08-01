@@ -89,7 +89,12 @@ export default async function ComparePage({
 
     const fightIds = (fights ?? []).map((f) => f.id);
 
-    const [{ data: predictions }, { data: bonusPredictions }, { data: leaderboardRows }] = await Promise.all([
+    const [
+      { data: predictions },
+      { data: bonusPredictions },
+      { data: leaderboardRows },
+      { data: boldPicks },
+    ] = await Promise.all([
       supabase
         .from("predictions")
         .select("fight_id, user_id, predicted_winner_id, predicted_method, predicted_round, points")
@@ -105,7 +110,16 @@ export default async function ComparePage({
         .select("user_id, points")
         .eq("event_id", eventId)
         .in("user_id", [a, b]),
+      // jistotka doubles a fight's points on the board - without this the
+      // comparison quietly understates whoever staked theirs here
+      supabase
+        .from("bold_picks")
+        .select("user_id, fight_id")
+        .eq("event_id", eventId)
+        .in("user_id", [a, b]),
     ]);
+
+    const boldByUser = new Map((boldPicks ?? []).map((p) => [p.user_id, p.fight_id]));
 
     const predictionByFight = new Map<string, { a: Prediction | null; b: Prediction | null }>();
     for (const fightId of fightIds) {
@@ -209,6 +223,8 @@ export default async function ComparePage({
                 predictionB={entry?.b ?? null}
                 nicknameA={nicknameA}
                 nicknameB={nicknameB}
+                boldA={boldByUser.get(a) === fight.id}
+                boldB={boldByUser.get(b) === fight.id}
               />
             );
           })}

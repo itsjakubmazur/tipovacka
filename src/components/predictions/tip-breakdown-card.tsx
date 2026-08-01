@@ -29,9 +29,12 @@ function FighterLabel({ fighter }: { fighter: Fighter }) {
 export function TipBreakdownCard({
   fight,
   prediction,
+  isBold,
 }: {
   fight: Fight;
   prediction: Prediction | null;
+  /** this fight carried the tipper's jistotka, so its points count twice */
+  isBold?: boolean;
 }) {
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
   const showResult = fight.status === "completed";
@@ -61,7 +64,12 @@ export function TipBreakdownCard({
                   : "text-neutral-500 dark:text-neutral-300"
             )}
           >
-            {prediction.points == null ? "—" : `+${prediction.points} b.`}
+            {/* The leaderboard counts a jistotka twice, so this has to as
+                well - showing the raw 3 next to a board that added 6 reads
+                as the doubling not working. */}
+            {prediction.points == null
+              ? "—"
+              : `+${prediction.points * (isBold ? 2 : 1)} b.${isBold && prediction.points > 0 ? " (jistotka ×2)" : ""}`}
           </span>
         )}
       </div>

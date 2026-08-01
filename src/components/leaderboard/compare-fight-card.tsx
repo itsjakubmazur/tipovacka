@@ -25,9 +25,13 @@ function FighterLabel({ fighter }: { fighter: Fighter }) {
   );
 }
 
-function pointsLabel(points: number | null | undefined) {
+/** Jistotka doubles a fight's points on the board, so it has to double here
+ * too - otherwise comparing two tippers silently understates whoever staked
+ * their jistotka on this fight. */
+function pointsLabel(points: number | null | undefined, isBold?: boolean) {
   if (points == null) return "—";
-  return points > 0 ? `+${points} b.` : `${points} b.`;
+  if (points <= 0) return `${points} b.`;
+  return isBold ? `+${points * 2} b. ★` : `+${points} b.`;
 }
 
 export function CompareFightCard({
@@ -36,12 +40,17 @@ export function CompareFightCard({
   predictionB,
   nicknameA,
   nicknameB,
+  boldA,
+  boldB,
 }: {
   fight: Fight;
   predictionA: Prediction | null;
   predictionB: Prediction | null;
   nicknameA: string;
   nicknameB: string;
+  /** whether this fight is that tipper's jistotka */
+  boldA?: boolean;
+  boldB?: boolean;
 }) {
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
   const showResult = fight.status === "completed";
@@ -62,10 +71,10 @@ export function CompareFightCard({
         </div>
         <div className="flex items-center gap-3 text-sm font-bold">
           <span className="text-yellow-600 dark:text-accent">
-            {nicknameA}: {pointsLabel(predictionA?.points)}
+            {nicknameA}: {pointsLabel(predictionA?.points, boldA)}
           </span>
           <span className="text-blue-500">
-            {nicknameB}: {pointsLabel(predictionB?.points)}
+            {nicknameB}: {pointsLabel(predictionB?.points, boldB)}
           </span>
         </div>
       </div>

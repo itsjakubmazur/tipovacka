@@ -377,19 +377,12 @@ export function FightTipCard({
   }
 
   /** One fighter's side of the tale of the tape: rank, record, odds. */
-  function tapeSide(fighter: Fighter, odds: number | null) {
+  function tapeRow(left: React.ReactNode, right: React.ReactNode) {
     return (
-      <span className="flex flex-col items-center gap-px leading-tight">
-        <RankBadge fighter={fighter} />
-        <span className="text-xs font-bold tabular-nums text-black dark:text-white">
-          {fighter.record ?? "—"}
-        </span>
-        {odds != null && (
-          <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
-            kurz {odds.toFixed(2)}
-          </span>
-        )}
-      </span>
+      <>
+        <span className="flex items-center justify-center pr-1 text-center leading-tight">{left}</span>
+        <span className="flex items-center justify-center pl-1 text-center leading-tight">{right}</span>
+      </>
     );
   }
 
@@ -444,7 +437,7 @@ export function FightTipCard({
     return (
       <div
         className={cn(
-          "absolute bottom-0 h-full w-[33%]",
+          "absolute bottom-0 h-full w-[29%]",
           side === "a" ? "left-0" : "right-0"
         )}
       >
@@ -638,14 +631,39 @@ export function FightTipCard({
             {fighterCutout(fighterA, "a")}
             {fighterCutout(fighterB, "b")}
 
-            {/* The numbers that compare the two, back between them - but
-                stacked rather than spread, in the order the names are: A on
-                top, B underneath. Read across a narrow column it needs almost
-                no width, which is what lets the photos stay big. */}
-            <div className="absolute inset-y-0 left-1/2 flex w-[32%] -translate-x-1/2 flex-col items-center justify-center gap-px text-center">
-              {tapeSide(fighterA, fight.odds_fighter_a)}
-              <span className="my-1 h-px w-6 bg-black/15 dark:bg-white/20" />
-              {tapeSide(fighterB, fight.odds_fighter_b)}
+            {/* The tale of the tape, laid out the way the fighters are: the
+                left half of it belongs to the fighter on the left, the right
+                half to the one on the right. A grid rather than two stacks,
+                so the rows stay level even when one man's title wraps and the
+                other's does not. */}
+            <div className="absolute inset-y-0 left-1/2 flex w-[42%] -translate-x-1/2 items-center">
+              <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-1 text-center">
+                <span
+                  aria-hidden
+                  className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
+                />
+                {tapeRow(
+                  <RankBadge fighter={fighterA} />,
+                  <RankBadge fighter={fighterB} />
+                )}
+                {tapeRow(
+                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
+                    {fighterA.record ?? "—"}
+                  </span>,
+                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
+                    {fighterB.record ?? "—"}
+                  </span>
+                )}
+                {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) &&
+                  tapeRow(
+                    <span className="text-[11px] tabular-nums">
+                      {fight.odds_fighter_a != null ? `kurz ${fight.odds_fighter_a.toFixed(2)}` : "—"}
+                    </span>,
+                    <span className="text-[11px] tabular-nums">
+                      {fight.odds_fighter_b != null ? `kurz ${fight.odds_fighter_b.toFixed(2)}` : "—"}
+                    </span>
+                  )}
+              </div>
             </div>
 
             {/* Both tags can land on the same fighter - you tipped the one who
@@ -703,7 +721,9 @@ export function FightTipCard({
         >
           <span className="min-w-0 flex-1 truncate">{scoreBreakdown()}</span>
           <span className="shrink-0 tabular-nums">
-            {hit ? `+${initialPrediction!.points}${isBold ? "×2" : ""} b.` : "0 b."}
+            {hit
+              ? `+${initialPrediction!.points! * (isBold ? 2 : 1)} b.${isBold ? " (×2)" : ""}`
+              : "0 b."}
           </span>
         </div>
       )}

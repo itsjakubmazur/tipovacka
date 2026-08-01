@@ -46,7 +46,8 @@ export async function TipperDetail({
 
   if (eventId) {
     // event, its card, and this user's bonus pick are all independent
-    const [{ data: event }, { data: fights }, { data: bonusPrediction }] = await Promise.all([
+    const [{ data: event }, { data: fights }, { data: bonusPrediction }, { data: boldPick }] =
+      await Promise.all([
       supabase
         .from("events")
         .select("id, number, name, subtitle, event_date, status, lock_at, actual_fotn_fight_id, image_url")
@@ -65,6 +66,14 @@ export async function TipperDetail({
       supabase
         .from("bonus_predictions")
         .select("predicted_fotn_fight_id, points")
+        .eq("user_id", userId)
+        .eq("event_id", eventId)
+        .maybeSingle(),
+      // which fight carried the jistotka - its points count twice, and the
+      // per-fight breakdown has to say the same number as the board
+      supabase
+        .from("bold_picks")
+        .select("fight_id")
         .eq("user_id", userId)
         .eq("event_id", eventId)
         .maybeSingle(),
@@ -201,6 +210,7 @@ export async function TipperDetail({
                     key={fight.id}
                     fight={fight as unknown as Fight}
                     prediction={predictionByFight.get(fight.id) ?? null}
+                    isBold={boldPick?.fight_id === fight.id}
                   />
                 ))}
             </div>
@@ -216,6 +226,7 @@ export async function TipperDetail({
                       key={fight.id}
                       fight={fight as unknown as Fight}
                       prediction={predictionByFight.get(fight.id) ?? null}
+                      isBold={boldPick?.fight_id === fight.id}
                     />
                   ))}
               </div>
