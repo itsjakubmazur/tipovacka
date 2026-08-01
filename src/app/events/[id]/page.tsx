@@ -325,14 +325,13 @@ export default async function EventDetailPage({
       <RealtimeRefresh table="fights" />
       <RealtimeRefresh table="predictions" />
       <RealtimeRefresh table="event_payouts" />
-      {/* The poster carries the title instead of being a slab with the same
-          facts repeated underneath it - OKTAGON already prints the date and
-          venue into the artwork, so a header block below it said everything a
-          third time. 16:9 as the artwork is drawn; cropped to a banner at
-          desktop widths, where it would otherwise be a 600px wall of image
-          before a single fight. */}
-      {event.image_url ? (
-        <div className="relative -mx-4 -mt-8 flex aspect-[16/9] items-end overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl lg:aspect-[21/8]">
+      {/* The poster stays untouched. Laying the title over it cost more than
+          it saved: OKTAGON prints the date, the venue, its own logo and the
+          sponsor row into the bottom third of the artwork, which is exactly
+          where the type had to go, and the scrim needed to carry white text
+          drowned all of it. */}
+      {event.image_url && (
+        <div className="relative -mx-4 -mt-8 aspect-[16/9] overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-xl lg:aspect-[21/8]">
           <Image
             src={event.image_url}
             alt={event.number ? `OKTAGON ${event.number}` : event.name}
@@ -340,34 +339,24 @@ export default async function EventDetailPage({
             className="object-cover"
             priority
           />
-          {/* a scrim, not a fade-out: white type has to hold over the brightest
-              part of the artwork */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85" />
-          <div className="relative w-full p-4">
-            <PageHeading eyebrow={posterLine} className="[&_h1]:text-white [&_p]:text-white/70">
-              {event.number ? `OKTAGON ${event.number}` : event.name}
-              {event.subtitle && (
-                <span className="ml-2 text-sm font-semibold text-accent lg:text-base">
-                  {event.subtitle}
-                </span>
-              )}
-            </PageHeading>
-          </div>
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-background" />
         </div>
-      ) : (
-        <PageHeading eyebrow={posterLine}>
-          {event.number ? `OKTAGON ${event.number}` : event.name}
-          {event.subtitle && (
-            <span className="ml-2 text-sm font-semibold text-yellow-600 lg:text-base dark:text-accent">
-              {event.subtitle}
-            </span>
-          )}
-        </PageHeading>
       )}
-      {/* From lg up the page splits in two: the card of fights on the left and
-          a sticky rail on the right with the status timeline, the live strip
-          and the kecárna. Below lg the rail is display:contents, so everything
-          stacks in exactly the mobile order it always had. */}
+
+      {/* With a poster there's no context line: the artwork already says
+          "01.08.2026 | PRAHA | ŠTVANICE" in its own type, and repeating it
+          underneath was the duplication the overlay was trying to hide. One
+          line instead of three. Galas without a poster keep the eyebrow -
+          there's nothing else to carry it. */}
+      <PageHeading eyebrow={event.image_url ? undefined : posterLine}>
+        {event.number ? `OKTAGON ${event.number}` : event.name}
+        {event.subtitle && (
+          <span className="ml-2 text-sm font-semibold text-yellow-600 lg:text-base dark:text-accent">
+            {event.subtitle}
+          </span>
+        )}
+      </PageHeading>
+
       {/* Desktop keeps the jump row above both columns: inside the fights
           column it would push the first fight card below the first card in the
           rail. On a phone it belongs after the status card - you reach for it
