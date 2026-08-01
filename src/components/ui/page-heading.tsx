@@ -18,8 +18,10 @@ export function PageHeading({
 }) {
   return (
     <div className={className}>
+      {/* medium, not semibold: the eyebrow already stands apart through case
+          and colour, and a third weight in the header is one too many */}
       {eyebrow && (
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
           {eyebrow}
         </p>
       )}

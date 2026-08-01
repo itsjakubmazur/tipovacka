@@ -357,19 +357,16 @@ export default async function EventDetailPage({
             </span>
           )}
         </PageHeading>
-        {/* A fact about the gala, not a button. Framed in a yellow pill it read
-            as something to tap, and on a touch screen that's a promise the app
-            doesn't keep. The accent stays for the things that want something
-            from you. */}
+        {/* A fact about the gala, not a button - and one flat line of it. It
+            had a bold "Startovné 50 Kč" leading a lighter tail, which gave a
+            three-line header its own fourth and fifth type treatment. Same
+            size, weight and colour as the eyebrow above; only the case
+            differs, which is enough to read one as a label and one as a
+            sentence. */}
         {event.payouts_enabled && (
           <p className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
             <Wallet className="size-3.5 shrink-0" />
-            <span>
-              <span className="font-semibold text-neutral-700 dark:text-neutral-200">
-                Startovné 50 Kč
-              </span>{" "}
-              · vítěz bere vše · QR po turnaji
-            </span>
+            <span>Startovné 50 Kč · vítěz bere vše · QR po turnaji</span>
           </p>
         )}
       </div>
