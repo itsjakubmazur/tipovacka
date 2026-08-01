@@ -357,12 +357,18 @@ export default async function EventDetailPage({
             </span>
           )}
         </PageHeading>
+        {/* A fact about the gala, not a button. Framed in a yellow pill it read
+            as something to tap, and on a touch screen that's a promise the app
+            doesn't keep. The accent stays for the things that want something
+            from you. */}
         {event.payouts_enabled && (
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-yellow-600/60 dark:border-accent/40 bg-accent/[0.08] px-3 py-1 text-xs text-neutral-600 dark:text-neutral-300">
-            <Wallet className="size-3.5 shrink-0 text-yellow-600 dark:text-accent" />
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+            <Wallet className="size-3.5 shrink-0" />
             <span>
-              <span className="font-semibold text-black dark:text-white">Startovné 50 Kč</span> · vítěz bere
-              vše · QR po turnaji
+              <span className="font-semibold text-neutral-700 dark:text-neutral-200">
+                Startovné 50 Kč
+              </span>{" "}
+              · vítěz bere vše · QR po turnaji
             </span>
           </p>
         )}
@@ -372,7 +378,11 @@ export default async function EventDetailPage({
           a sticky rail on the right with the status timeline, the live strip
           and the kecárna. Below lg the rail is display:contents, so everything
           stacks in exactly the mobile order it always had. */}
-      <SegmentJump segments={segmentsOnCard} />
+      {/* Desktop keeps the jump row above both columns: inside the fights
+          column it would push the first fight card below the first card in the
+          rail. On a phone it belongs after the status card - you reach for it
+          once you know what's on the card, not before. */}
+      <SegmentJump segments={segmentsOnCard} className="hidden lg:flex" />
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
@@ -475,6 +485,8 @@ export default async function EventDetailPage({
         </aside>
 
         <div className="stagger-in flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
+          <SegmentJump segments={segmentsOnCard} className="lg:hidden" />
+
           {/* From xl the card pairs up - the column is wide enough that a
               single stack of fight cards would just be a lot of empty space
               either side of the fighter names. */}

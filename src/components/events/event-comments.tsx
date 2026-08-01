@@ -303,12 +303,15 @@ export function EventComments({
           type="button"
           onClick={openPanel}
           aria-label="Otevřít kecárnu"
-          className="fixed bottom-24 left-4 z-30 flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-2.5 text-sm font-semibold text-neutral-800 shadow-lg shadow-black/25 backdrop-blur-lg transition-colors hover:border-neutral-400 dark:border-neutral-600/60 dark:bg-neutral-800/95 dark:text-neutral-100 md:bottom-6"
+          // Icon only. With the word "Kecárna" spelled out it was wide enough
+          // to sit on top of whatever card happened to be at the bottom of the
+          // screen - covering text, which is the one thing a floating button
+          // must not do. A speech bubble needs no caption.
+          className="fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full border border-white/60 bg-white/90 text-neutral-800 shadow-lg shadow-black/25 backdrop-blur-lg transition-colors hover:border-neutral-400 md:bottom-6 dark:border-neutral-600/60 dark:bg-neutral-800/95 dark:text-neutral-100"
         >
-          <MessageCircle className="size-4" />
-          Kecárna
+          <MessageCircle className="size-5" />
           {unread > 0 && (
-            <span className="flex size-5 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-black">
+            <span className="absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-black">
               {unread > 9 ? "9+" : unread}
             </span>
           )}

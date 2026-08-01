@@ -8,15 +8,21 @@ import { GLASS_PILL } from "@/lib/pills";
  * rendered when the card actually has more than one segment. */
 export function SegmentJump({
   segments,
+  className,
 }: {
   segments: { key: string; label: string }[];
+  /** Rendered in two places (see the event detail): above the columns on
+   * desktop, under the status card on a phone. Must not be wrapped in a plain
+   * div to hide it - the row is sticky, and a wrapper with no height of its
+   * own leaves it nowhere to stick. */
+  className?: string;
 }) {
   if (segments.length < 2) return null;
 
   return (
     // Floating glass pills - no full-width band behind them, each chip is
     // opaque enough on its own to stay readable over scrolling cards.
-    <div className="sticky top-16 z-30 -mx-4 flex gap-2 overflow-x-auto px-4 py-1">
+    <div className={cn("sticky top-16 z-30 -mx-4 flex gap-2 overflow-x-auto px-4 py-1", className)}>
       {segments.map((segment) => (
         <button
           key={segment.key}
