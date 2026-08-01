@@ -7,11 +7,25 @@ import { cn } from "@/lib/utils";
  * podium). Rendering them takes a couple of seconds server-side, so a
  * brand shimmer fills the reserved space until the image arrives -
  * otherwise the card area just sits blank and looks broken. */
-export function GeneratedCardImage({ src, alt }: { src: string; alt: string }) {
+export function GeneratedCardImage({
+  src,
+  alt,
+  aspect = "aspect-[1200/630]",
+}: {
+  src: string;
+  alt: string;
+  /** the generated PNG's own ratio - Wrapped's card is a portrait story */
+  aspect?: string;
+}) {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60">
+    <div
+      className={cn(
+        "relative w-full overflow-hidden rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60",
+        aspect
+      )}
+    >
       {!loaded && (
         // The placeholder backdrop is always near-black (matching the card
         // being generated), so pin the shimmer's base color to light - the

@@ -18,15 +18,8 @@ import { TipBreakdownCard } from "@/components/predictions/tip-breakdown-card";
 import { ShareResultCard } from "@/components/leaderboard/share-result-button";
 import { cn } from "@/lib/utils";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import type { Fight, Method, Prediction } from "@/lib/types";
-
-type EventLeaderboardRow = {
-  event_id: string;
-  points: number;
-  fights_scored: number;
-  fights_completed: number;
-  perfect_card: boolean;
-};
+import { loadSeasonStats, seasonBadges } from "@/lib/season-stats";
+import type { Fight, Prediction } from "@/lib/types";
 
 export async function TipperDetail({
   userId,
@@ -235,265 +228,42 @@ export async function TipperDetail({
 
   const season = rawSeason ? Number(rawSeason) : new Date().getFullYear();
 
-  const { data: seasonEvents } = await supabase
-    .from("events")
-    .select("id, number, name, subtitle, event_date")
-    .neq("status", "draft")
-    .order("event_date", { ascending: false });
+  // Every number below comes from the shared season engine - Wrapped reads
+  // the same one, so the two screens can no longer disagree about the same
+  // season.
+  const stats = await loadSeasonStats(supabase, userId, season);
+  const {
+    accuracy,
+    favoriteStats,
+    hits,
+    methodStats,
+    oddsClassified,
+    segmentStats,
+    streak,
+    totalGraded,
+    totalPoints,
+    underdogStats,
+  } = stats;
+  const nightByEvent = new Map(stats.nights.map((night) => [night.event.id, night]));
 
-  const eventsInSeason = (seasonEvents ?? []).filter(
-    (e) => new Date(e.event_date).getFullYear() === season
-  );
-  const eventIds = eventsInSeason.map((e) => e.id);
-  const eventIdFilter = eventIds.length ? eventIds : ["00000000-0000-0000-0000-000000000000"];
-
-  // All three only need the season's event ids - fetch together.
-  const [{ data: rows }, { data: completedFights }, { data: allEventRows }] = await Promise.all([
-    supabase
-      .from("event_leaderboard")
-      .select("event_id, points, fights_scored, fights_completed, perfect_card")
-      .eq("user_id", userId)
-      .in("event_id", eventIdFilter),
-    supabase
-      .from("fights")
-      .select(
-        "id, event_id, card_order, card_segment, is_main_event, fighter_a_id, fighter_b_id, odds_fighter_a, odds_fighter_b"
-      )
-      .in("event_id", eventIdFilter)
-      .eq("status", "completed"),
-    // Who actually won each event - all users' rows, ranked per event
-    // client-side with the same tiebreak chain the leaderboard uses.
-    supabase
-      .from("event_leaderboard")
-      .select("event_id, user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
-      .in("event_id", eventIdFilter),
-  ]);
-
-  const rowByEvent = new Map<string, EventLeaderboardRow>(
-    (rows ?? []).map((r) => [r.event_id, r])
-  );
-  const totalPoints = (rows ?? []).reduce((sum, r) => sum + r.points, 0);
-
-  const rowsByEventAll = new Map<string, NonNullable<typeof allEventRows>>();
-  for (const r of allEventRows ?? []) {
-    const list = rowsByEventAll.get(r.event_id) ?? [];
-    list.push(r);
-    rowsByEventAll.set(r.event_id, list);
-  }
-  let eventWins = 0;
-  for (const list of rowsByEventAll.values()) {
-    if (list.length < 2) continue;
-    list.sort(
-      (a, b) =>
-        b.points - a.points ||
-        b.fights_correct_winner - a.fights_correct_winner ||
-        Number(b.perfect_card) - Number(a.perfect_card) ||
-        (a.earliest_prediction_at ?? "").localeCompare(b.earliest_prediction_at ?? "")
-    );
-    if (list[0].user_id === userId) eventWins += 1;
-  }
-
-  const eventDateById = new Map(eventsInSeason.map((e) => [e.id, e.event_date]));
-  const fightMeta = new Map(
-    (completedFights ?? []).map((f) => [
-      f.id,
-      {
-        eventDate: eventDateById.get(f.event_id) ?? "",
-        cardOrder: f.card_order,
-        cardSegment: f.card_segment as string | null,
-        isMainEvent: Boolean(f.is_main_event),
-      },
-    ])
-  );
-  const oddsMetaByFight = new Map(
-    (completedFights ?? []).map((f) => [
-      f.id,
-      {
-        fighterAId: f.fighter_a_id,
-        fighterBId: f.fighter_b_id,
-        oddsA: f.odds_fighter_a,
-        oddsB: f.odds_fighter_b,
-      },
-    ])
-  );
-  const completedFightIds = (completedFights ?? []).map((f) => f.id);
-  const fightIdFilter = completedFightIds.length
-    ? completedFightIds
-    : ["00000000-0000-0000-0000-000000000000"];
-
-  const [{ data: gradedPredictions }, { data: boldPicks }, { data: allPicks }] = await Promise.all([
-    supabase
-      .from("predictions")
-      .select("fight_id, predicted_winner_id, predicted_method, points")
-      .eq("user_id", userId)
-      .in("fight_id", fightIdFilter),
-    // The user's jistotka fight per season event (for the underdog badge).
-    supabase.from("bold_picks").select("fight_id").eq("user_id", userId).in("event_id", eventIdFilter),
-    // Everyone's winner picks on the graded fights, to work out which of the
-    // user's correct calls went against the crowd (the "Solitér" badge).
-    supabase.from("predictions").select("fight_id, predicted_winner_id").in("fight_id", fightIdFilter),
-  ]);
-
-  const boldFightIds = new Set((boldPicks ?? []).map((b) => b.fight_id));
-
-  // Per fight: how many people picked each fighter, and the total.
-  const pickCounts = new Map<string, { total: number; byFighter: Map<string, number> }>();
-  for (const p of allPicks ?? []) {
-    const entry = pickCounts.get(p.fight_id) ?? { total: 0, byFighter: new Map<string, number>() };
-    entry.total += 1;
-    entry.byFighter.set(p.predicted_winner_id, (entry.byFighter.get(p.predicted_winner_id) ?? 0) + 1);
-    pickCounts.set(p.fight_id, entry);
-  }
-
-  const ordered = (gradedPredictions ?? [])
-    .filter((p) => fightMeta.has(p.fight_id))
-    .sort((a, b) => {
-      const metaA = fightMeta.get(a.fight_id)!;
-      const metaB = fightMeta.get(b.fight_id)!;
-      const dateDiff = new Date(metaA.eventDate).getTime() - new Date(metaB.eventDate).getTime();
-      return dateDiff !== 0 ? dateDiff : metaA.cardOrder - metaB.cardOrder;
-    });
-
-  const totalGraded = ordered.length;
-  const hits = ordered.filter((p) => (p.points ?? 0) > 0).length;
-  const accuracy = totalGraded > 0 ? Math.round((hits / totalGraded) * 100) : 0;
-
-  let streak = 0;
-  for (let i = ordered.length - 1; i >= 0; i--) {
-    if ((ordered[i].points ?? 0) > 0) streak++;
-    else break;
-  }
-
-  const methodStats = new Map<Method, { total: number; hits: number }>();
-  for (const p of ordered) {
-    const key = p.predicted_method as Method;
-    const entry = methodStats.get(key) ?? { total: 0, hits: 0 };
-    entry.total += 1;
-    if ((p.points ?? 0) > 0) entry.hits += 1;
-    methodStats.set(key, entry);
-  }
-
-  // Favorite vs. underdog tendency - based on which side had the lower
-  // (more likely) decimal odds at the time the fight was graded. Only
-  // counts picks where both odds were captured; a tie in odds isn't
-  // classified either way.
-  const favoriteStats = { total: 0, hits: 0 };
-  const underdogStats = { total: 0, hits: 0 };
-  for (const p of ordered) {
-    const meta = oddsMetaByFight.get(p.fight_id);
-    if (!meta || meta.oddsA == null || meta.oddsB == null || meta.oddsA === meta.oddsB) continue;
-    const pickedFighterAId = p.predicted_winner_id === meta.fighterAId;
-    const pickedOdds = pickedFighterAId ? meta.oddsA : meta.oddsB;
-    const otherOdds = pickedFighterAId ? meta.oddsB : meta.oddsA;
-    const bucket = pickedOdds < otherOdds ? favoriteStats : underdogStats;
-    bucket.total += 1;
-    if ((p.points ?? 0) > 0) bucket.hits += 1;
-  }
-  const oddsClassified = favoriteStats.total + underdogStats.total;
-  const underdogShare = oddsClassified > 0 ? underdogStats.total / oddsClassified : 0;
-
-  // Main card vs prelims accuracy - some people nail the headliners
-  // and whiff the undercard, worth surfacing.
-  const segmentStats = new Map<string, { total: number; hits: number }>();
-  for (const p of ordered) {
-    const segment = fightMeta.get(p.fight_id)?.cardSegment;
-    if (!segment) continue;
-    const key = segment === "main_card" ? "Hlavní karta" : "Prelims";
-    const entry = segmentStats.get(key) ?? { total: 0, hits: 0 };
-    entry.total += 1;
-    if ((p.points ?? 0) > 0) entry.hits += 1;
-    segmentStats.set(key, entry);
-  }
-
-  // Exact hits: winner + method + round/decision all right (3 points).
-  const exactHits = ordered.filter((p) => (p.points ?? 0) >= 3).length;
-
-  // Longest run of consecutive correctly-called main events, in chronological
-  // order - rewards nailing the headliners gala after gala.
-  let mainEventStreak = 0;
-  let mainEventRun = 0;
-  for (const p of ordered) {
-    if (!fightMeta.get(p.fight_id)?.isMainEvent) continue;
-    if ((p.points ?? 0) > 0) {
-      mainEventRun += 1;
-      mainEventStreak = Math.max(mainEventStreak, mainEventRun);
-    } else {
-      mainEventRun = 0;
-    }
-  }
-
-  // Jistotka staked on the underdog (higher odds) that actually landed - the
-  // gutsiest possible call.
-  let boldUnderdogHits = 0;
-  for (const p of ordered) {
-    if (!boldFightIds.has(p.fight_id) || (p.points ?? 0) <= 0) continue;
-    const meta = oddsMetaByFight.get(p.fight_id);
-    if (!meta || meta.oddsA == null || meta.oddsB == null || meta.oddsA === meta.oddsB) continue;
-    const pickedA = p.predicted_winner_id === meta.fighterAId;
-    const pickedOdds = pickedA ? meta.oddsA : meta.oddsB;
-    const otherOdds = pickedA ? meta.oddsB : meta.oddsA;
-    if (pickedOdds > otherOdds) boldUnderdogHits += 1;
-  }
-
-  // Contrarian hits: correct calls that went against the crowd - at most a
-  // third of tippers picked that fighter, and it came in.
-  let soloHits = 0;
-  for (const p of ordered) {
-    if ((p.points ?? 0) <= 0) continue;
-    const counts = pickCounts.get(p.fight_id);
-    if (!counts || counts.total < 3) continue;
-    const share = (counts.byFighter.get(p.predicted_winner_id) ?? 0) / counts.total;
-    if (share <= 1 / 3) soloHits += 1;
-  }
-
-  const perfectCardCount = (rows ?? []).filter((r) => r.perfect_card).length;
   const badgeIconClass = "size-3.5 text-yellow-600 dark:text-accent";
-  const badges: { icon: React.ReactNode; label: string }[] = [];
-  if (eventWins > 0) {
-    badges.push({
-      icon: <Crown className={badgeIconClass} />,
-      label: eventWins > 1 ? `Král večera ×${eventWins}` : "Král večera",
-    });
-  }
-  if (perfectCardCount > 0) {
-    badges.push({
-      icon: <Trophy className={badgeIconClass} />,
-      label: perfectCardCount > 1 ? `Perfektní karta ×${perfectCardCount}` : "Perfektní karta",
-    });
-  }
-  if (streak >= 3)
-    badges.push({ icon: <Flame className={badgeIconClass} />, label: `Na vlně (${streak} v řadě)` });
-  if (totalGraded >= 5 && accuracy >= 70)
-    badges.push({ icon: <Target className={badgeIconClass} />, label: "Ostrostřelec" });
-  if (exactHits >= 3)
-    badges.push({
-      icon: <Crosshair className={badgeIconClass} />,
-      label: `Sniper (přesný tip ×${exactHits})`,
-    });
-  if (eventsInSeason.length >= 3 && rows && rows.length === eventsInSeason.length) {
-    badges.push({ icon: <CalendarCheck className={badgeIconClass} />, label: "Věrný fanda" });
-  }
-  if (oddsClassified >= 5 && underdogShare >= 0.3) {
-    badges.push({ icon: <Dices className={badgeIconClass} />, label: "Odvážlivec" });
-  }
-  if (boldUnderdogHits > 0) {
-    badges.push({
-      icon: <Rocket className={badgeIconClass} />,
-      label: boldUnderdogHits > 1 ? `Odvážlivec večera ×${boldUnderdogHits}` : "Odvážlivec večera",
-    });
-  }
-  if (mainEventStreak >= 3) {
-    badges.push({
-      icon: <Swords className={badgeIconClass} />,
-      label: `Pán hlavního zápasu (${mainEventStreak} v řadě)`,
-    });
-  }
-  if (soloHits >= 3) {
-    badges.push({
-      icon: <Ghost className={badgeIconClass} />,
-      label: `Solitér (proti davu ×${soloHits})`,
-    });
-  }
+  const BADGE_ICONS: Record<string, React.ReactNode> = {
+    king: <Crown className={badgeIconClass} />,
+    perfect: <Trophy className={badgeIconClass} />,
+    streak: <Flame className={badgeIconClass} />,
+    sharp: <Target className={badgeIconClass} />,
+    sniper: <Crosshair className={badgeIconClass} />,
+    loyal: <CalendarCheck className={badgeIconClass} />,
+    brave: <Dices className={badgeIconClass} />,
+    "bold-underdog": <Rocket className={badgeIconClass} />,
+    "main-event": <Swords className={badgeIconClass} />,
+    solo: <Ghost className={badgeIconClass} />,
+  };
+  const badges = seasonBadges(stats).map((badge) => ({
+    label: badge.label,
+    icon: BADGE_ICONS[badge.key] ?? null,
+  }));
+
 
   return (
     <>
@@ -624,8 +394,8 @@ export async function TipperDetail({
       )}
 
       <div className="flex flex-col gap-2">
-        {eventsInSeason.map((event) => {
-          const row = rowByEvent.get(event.id);
+        {stats.events.map((event) => {
+          const night = nightByEvent.get(event.id);
           return (
             <Link
               key={event.id}
@@ -636,16 +406,18 @@ export async function TipperDetail({
             >
               <span className="flex min-w-0 flex-col">
                 <span className="flex items-center gap-1.5 font-semibold">
-                  {event.number ? `OKTAGON ${event.number}` : event.name}
-                  {row?.perfect_card && <Trophy className="size-4 shrink-0 text-yellow-600 dark:text-accent" />}
+                  {event.label}
+                  {night?.perfectCard && (
+                    <Trophy className="size-4 shrink-0 text-yellow-600 dark:text-accent" />
+                  )}
                 </span>
                 {event.subtitle && (
                   <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">{event.subtitle}</span>
                 )}
               </span>
               <span className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-300">
-                {row ? `po ${row.fights_scored} z ${row.fights_completed} zápasů` : "bez tipů"}
-                <span className="text-lg font-bold text-black dark:text-white">{row?.points ?? 0}</span>
+                {night ? `po ${night.fightsScored} z ${night.fightsCompleted} zápasů` : "bez tipů"}
+                <span className="text-lg font-bold text-black dark:text-white">{night?.points ?? 0}</span>
               </span>
             </Link>
           );

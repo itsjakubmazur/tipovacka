@@ -425,3 +425,86 @@ body::before {
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Wrapped. Its own small motion set - the season recap is the one place in
+   the app that gets to be showy, and none of it belongs in the shared
+   vocabulary above.
+   --------------------------------------------------------------------------- */
+
+/* The poster mosaic never sits still. Slow enough that you notice it only
+   when you stop reading, which is the point. */
+@keyframes wrapped-drift {
+  from {
+    transform: rotate(-8deg) translate3d(-2%, -1%, 0) scale(1.05);
+  }
+  to {
+    transform: rotate(-8deg) translate3d(2%, 1%, 0) scale(1.12);
+  }
+}
+
+.wrapped-drift {
+  animation: wrapped-drift 26s ease-in-out infinite alternate;
+}
+
+/* Bars grow from nothing to their share of the row. */
+@keyframes wrapped-bar {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--bar-width, 100%);
+  }
+}
+
+.wrapped-bar {
+  width: var(--bar-width, 100%);
+  animation: wrapped-bar 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* The archetype dot slides to its position on the axis instead of appearing
+   at it - where it settles is the whole message. */
+@keyframes wrapped-dot {
+  from {
+    left: 50%;
+    opacity: 0;
+  }
+  to {
+    left: var(--dot-left, 50%);
+    opacity: 1;
+  }
+}
+
+.wrapped-dot {
+  left: var(--dot-left, 50%);
+  animation: wrapped-dot 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Badges land one after another with a little overshoot. */
+@keyframes wrapped-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.wrapped-pop {
+  animation: wrapped-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapped-drift,
+  .wrapped-bar,
+  .wrapped-dot,
+  .wrapped-pop {
+    animation: none;
+  }
+}
