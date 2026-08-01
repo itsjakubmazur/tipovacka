@@ -36,6 +36,8 @@ export function FastTipOverlay({
   fights,
   initialPredictions,
   initialBoldFightId,
+  fotnFights,
+  initialFotnFightId,
   tippedCountable,
   totalCountable,
 }: {
@@ -44,6 +46,10 @@ export function FastTipOverlay({
   fights: Fight[];
   initialPredictions: Record<string, Prediction>;
   initialBoldFightId: string | null;
+  /** the Fight of the Night shortlist - the swipe flow ends on it, otherwise
+   * you finish the carousel at "hotovo" with two points still unclaimed */
+  fotnFights: { id: string; fighterAName: string; fighterBName: string }[];
+  initialFotnFightId: string | null;
   tippedCountable: number;
   totalCountable: number;
 }) {
@@ -73,6 +79,8 @@ export function FastTipOverlay({
             fights={fights}
             initialPredictions={initialPredictions}
             initialBoldFightId={initialBoldFightId}
+            fotnFights={fotnFights}
+            initialFotnFightId={initialFotnFightId}
             onClose={() => setOpen(false)}
           />,
           document.body
@@ -85,12 +93,67 @@ export function FastTipOverlay({
   );
 }
 
+/** The last slide: the Fight of the Night bonus. Same shape as a fight slide -
+ * one question, big tap targets - so finishing the swipe run actually finishes
+ * the card instead of leaving two points on the table. */
+function FotnSlide({
+  width,
+  fights,
+  pickedId,
+  onPick,
+}: {
+  width: string;
+  fights: { id: string; fighterAName: string; fighterBName: string }[];
+  pickedId: string | null;
+  onPick: (fightId: string) => void;
+}) {
+  return (
+    <div style={{ width }} className="flex h-full shrink-0 flex-col overflow-y-auto px-4 pb-4">
+      <div className="pb-3 pt-1 text-center">
+        <p className="flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wide text-yellow-600 dark:text-accent">
+          <Star className="size-3.5" fill="currentColor" />
+          Bonus · +2 body
+        </p>
+        <p className="mt-1 text-lg font-bold">Zápas večera</p>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          Který zápas bude podle tebe nejlepší?
+        </p>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        {fights.map((fight) => {
+          const picked = fight.id === pickedId;
+          return (
+            <button
+              key={fight.id}
+              type="button"
+              onClick={() => onPick(fight.id)}
+              className={cn(
+                "flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors",
+                picked
+                  ? "border-accent bg-accent/15 font-semibold"
+                  : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
+              )}
+            >
+              <span className="min-w-0 truncate">
+                {fight.fighterAName} vs {fight.fighterBName}
+              </span>
+              {picked && <Check className="size-4 shrink-0 text-yellow-600 dark:text-accent" strokeWidth={3} />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function FastTipCarousel({
   eventId,
   userId,
   fights,
   initialPredictions,
   initialBoldFightId,
+  fotnFights,
+  initialFotnFightId,
   onClose,
 }: {
   eventId: string;
@@ -98,12 +161,22 @@ function FastTipCarousel({
   fights: Fight[];
   initialPredictions: Record<string, Prediction>;
   initialBoldFightId: string | null;
+  fotnFights: { id: string; fighterAName: string; fighterBName: string }[];
+  initialFotnFightId: string | null;
   onClose: () => void;
 }) {
   const router = useRouter();
   const supabase = createClient();
 
   const [boldFightId, setBoldFightId] = useState<string | null>(initialBoldFightId);
+  const [fotnId, setFotnId] = useState<string | null>(initialFotnFightId);
+
+  // The bonus rides along as one extra slide at the end. Everything below
+  // counts in slides, not fights, so the progress bar and the swipe bounds
+  // don't need to know which kind of slide they're on.
+  const hasFotn = fotnFights.length > 0;
+  const slideCount = fights.length + (hasFotn ? 1 : 0);
+  const fotnIndex = fights.length;
 
   const [index, setIndex] = useState(() => {
     const firstUntipped = fights.findIndex((f) => !initialPredictions[f.id]);
@@ -138,11 +211,12 @@ function FastTipCarousel({
     return () => clearTimeout(t);
   }, []);
 
-  const tippedCount = useMemo(
+  const tippedFights = useMemo(
     () => fights.filter((f) => tipComplete(tips[f.id])).length,
     [fights, tips]
   );
-  const done = tippedCount === fights.length;
+  const tippedCount = tippedFights + (hasFotn && fotnId ? 1 : 0);
+  const done = tippedCount === slideCount;
 
   function persist(fightId: string, next: LocalTip) {
     if (!tipComplete(next)) return;
@@ -174,7 +248,7 @@ function FastTipCarousel({
       persist(fightId, next);
       if (tipComplete(next)) {
         const i = fights.findIndex((f) => f.id === fightId);
-        if (i >= 0 && i < fights.length - 1) {
+        if (i >= 0 && i < slideCount - 1) {
           setTimeout(() => setIndex((cur) => (cur === i ? cur + 1 : cur)), AUTO_ADVANCE_MS);
         }
       }
@@ -202,6 +276,28 @@ function FastTipCarousel({
     p.finally(() => pending.current.delete(p));
   }
 
+  function pickFotn(fightId: string) {
+    const willBe = fotnId !== fightId; // tapping the current pick clears it
+    setFotnId(willBe ? fightId : null);
+    setError(null);
+    window.dispatchEvent(new CustomEvent("fotn-state-changed", { detail: { picked: willBe } }));
+    const p = (async () => {
+      const { error } = willBe
+        ? await supabase.from("bonus_predictions").upsert(
+            { user_id: userId, event_id: eventId, predicted_fotn_fight_id: fightId },
+            { onConflict: "user_id,event_id" }
+          )
+        : await supabase
+            .from("bonus_predictions")
+            .delete()
+            .eq("event_id", eventId)
+            .eq("user_id", userId);
+      if (error) setError("Uložení zápasu večera se nepodařilo.");
+    })();
+    pending.current.add(p);
+    p.finally(() => pending.current.delete(p));
+  }
+
   async function close() {
     // wait for in-flight saves so the page below reflects them on refresh
     await Promise.allSettled([...pending.current]);
@@ -221,7 +317,7 @@ function FastTipCarousel({
     if (Math.abs(delta) > TAP_SLOP) drag.current.moved = true;
     // rubber-band at the ends
     const atStart = index === 0 && delta > 0;
-    const atEnd = index === fights.length - 1 && delta < 0;
+    const atEnd = index === slideCount - 1 && delta < 0;
     setDragX(atStart || atEnd ? delta / 3 : delta);
   }
   function onPointerUp() {
@@ -229,7 +325,7 @@ function FastTipCarousel({
     const delta = dragX;
     setDragging(false);
     setDragX(0);
-    if (delta <= -SWIPE_THRESHOLD && index < fights.length - 1) setIndex((i) => i + 1);
+    if (delta <= -SWIPE_THRESHOLD && index < slideCount - 1) setIndex((i) => i + 1);
     else if (delta >= SWIPE_THRESHOLD && index > 0) setIndex((i) => i - 1);
     // reset moved flag on next tick so the click that follows is judged correctly
     setTimeout(() => {
@@ -260,11 +356,11 @@ function FastTipCarousel({
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
           <div
             className="h-full rounded-full bg-accent transition-all duration-300"
-            style={{ width: `${(tippedCount / fights.length) * 100}%` }}
+            style={{ width: `${(tippedCount / slideCount) * 100}%` }}
           />
         </div>
         <span className="text-sm font-semibold tabular-nums">
-          {tippedCount}/{fights.length}
+          {tippedCount}/{slideCount}
         </span>
       </div>
 
@@ -279,8 +375,8 @@ function FastTipCarousel({
         <div
           className={cn("flex h-full", !dragging && "transition-transform duration-300 ease-out")}
           style={{
-            width: `${fights.length * 100}%`,
-            transform: `translateX(calc(${(-index * 100) / fights.length}% + ${dragX}px))`,
+            width: `${slideCount * 100}%`,
+            transform: `translateX(calc(${(-index * 100) / slideCount}% + ${dragX}px))`,
           }}
         >
           {fights.map((fight) => (
@@ -289,13 +385,21 @@ function FastTipCarousel({
               fight={fight}
               tip={tips[fight.id]}
               isBold={boldFightId === fight.id}
-              width={`${100 / fights.length}%`}
+              width={`${100 / slideCount}%`}
               onPickWinner={(id) => pick(fight.id, () => update(fight.id, { winnerId: id }))}
               onPickMethod={(m) => pick(fight.id, () => update(fight.id, { method: m }))}
               onPickRound={(r) => pick(fight.id, () => update(fight.id, { round: r }))}
               onToggleBold={() => pick(fight.id, () => toggleBold(fight.id))}
             />
           ))}
+          {hasFotn && (
+            <FotnSlide
+              width={`${100 / slideCount}%`}
+              fights={fotnFights}
+              pickedId={fotnId}
+              onPick={(fightId: string) => pick(fightId, () => pickFotn(fightId))}
+            />
+          )}
         </div>
       </div>
 
@@ -317,6 +421,21 @@ function FastTipCarousel({
             )}
           />
         ))}
+        {hasFotn && (
+          <button
+            type="button"
+            aria-label="Zápas večera"
+            onClick={() => setIndex(fotnIndex)}
+            className={cn(
+              "flex size-2 items-center justify-center rounded-full transition-colors",
+              index === fotnIndex
+                ? "bg-accent"
+                : fotnId
+                  ? "bg-neutral-400 dark:bg-neutral-500"
+                  : "bg-neutral-200 dark:bg-neutral-700"
+            )}
+          />
+        )}
       </div>
 
       {error && <p className="px-4 pb-1 text-center text-sm text-red-600">{error}</p>}

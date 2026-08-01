@@ -413,6 +413,8 @@ export default async function EventDetailPage({
                         fights={tippableFightsAsc}
                         initialPredictions={fastTipPredictions}
                         initialBoldFightId={boldFightId}
+                        fotnFights={fotnOptions}
+                        initialFotnFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
                         tippedCountable={countablePredictions.length}
                         totalCountable={countableFights.length}
                       />
