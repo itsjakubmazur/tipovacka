@@ -504,7 +504,7 @@ export default async function EventDetailPage({
                   {showSegmentHeader && (
                     <h2
                       id={`segment-${fight.card_segment!}`}
-                      className="-mb-1 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 lg:scroll-mt-24 dark:text-neutral-400"
+                      className="-mb-1 scroll-mt-[calc(env(safe-area-inset-top)+7rem)] text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
                     >
                       {CARD_SEGMENT_LABELS[fight.card_segment!]}
                     </h2>
@@ -557,7 +557,7 @@ export default async function EventDetailPage({
             <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
               <h2
                 id="segment-cancelled"
-                className="-mb-1 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 lg:scroll-mt-24 dark:text-neutral-400"
+                className="-mb-1 scroll-mt-[calc(env(safe-area-inset-top)+7rem)] text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
               >
                 Zrušené zápasy
               </h2>
