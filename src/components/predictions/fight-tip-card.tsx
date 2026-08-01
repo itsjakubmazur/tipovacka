@@ -318,8 +318,8 @@ export function FightTipCard({
   // No photos (TBA, or a fighter OKTAGON hasn't shot yet) means no reason to
   // hold open a fighter-sized band of empty card.
   const hasPhotos = Boolean(
-    (!fighterA.is_tba && (fighterA.fight_card_photo_url ?? fighterA.photo_url)) ||
-      (!fighterB.is_tba && (fighterB.fight_card_photo_url ?? fighterB.photo_url))
+    (!fighterA.is_tba && (fighterA.photo_url ?? fighterA.fight_card_photo_url)) ||
+      (!fighterB.is_tba && (fighterB.photo_url ?? fighterB.fight_card_photo_url))
   );
 
   /** The one line that used to be six: weight, height, age. Sits under its own
@@ -375,9 +375,12 @@ export function FightTipCard({
   function fighterCutout(fighter: Fighter, side: "a" | "b") {
     const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
     const grayedOut = isLoser || fight.status === "no_contest";
-    // The fight-card image is OKTAGON's own cut-out of the fighter, made for
-    // exactly this treatment; the profile photo is the fallback.
-    const src = fighter.fight_card_photo_url ?? fighter.photo_url;
+    // imageProfile (photo_url) is the half-body cut-out on a transparent
+    // background - the one this layout wants. imageFightCard, despite the
+    // name, is the tight head crop OKTAGON uses in its own fight *list*, and
+    // only some fighters have one. Preferring it put a floating head next to
+    // a full torso on the same card.
+    const src = fighter.photo_url ?? fighter.fight_card_photo_url;
     return (
       <div
         className={cn(
@@ -396,8 +399,8 @@ export function FightTipCard({
               // softens the edge of any photo that turns out to have a
               // background baked in rather than a clean cut-out
               side === "a"
-                ? "[mask-image:linear-gradient(to_right,transparent,black_18%)]"
-                : "[mask-image:linear-gradient(to_left,transparent,black_18%)]",
+                ? "[mask-image:linear-gradient(to_right,transparent,black_10%)]"
+                : "[mask-image:linear-gradient(to_left,transparent,black_10%)]",
               grayedOut && "opacity-60 grayscale"
             )}
           />
