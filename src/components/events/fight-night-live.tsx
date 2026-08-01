@@ -41,7 +41,6 @@ export async function FightNightLive({
     .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
     .sort((a, b) => a.card_order - b.card_order);
   const nextUp = remaining[0] ?? null;
-  const gradedCount = fights.filter((f) => f.status === "completed").length;
 
   const [{ data: rows }, { data: myBold }] = await Promise.all([
     supabase
@@ -157,19 +156,11 @@ export async function FightNightLive({
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="flex items-center gap-2 text-sm font-semibold">
-          <span className="relative flex size-2.5">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
-          </span>
-          Galavečer živě
-          {gradedCount > 0 && (
-            <span className="font-normal text-neutral-500 dark:text-neutral-400">
-              · {gradedCount} {gradedCount === 1 ? "zápas" : gradedCount <= 4 ? "zápasy" : "zápasů"} odbodováno
-            </span>
-          )}
-        </p>
+      {/* No "Galavečer živě" heading and no graded count here: the status card
+          directly above already carries both, and stacked on top of each other
+          they read as the page stuttering. This card leads with the thing only
+          it knows - which fight is up next. */}
+      <div className="flex justify-end">
         <WatchingNow
           eventId={eventId}
           userId={currentUserId}

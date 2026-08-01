@@ -420,9 +420,13 @@ export function EventStatusTimeline({
               {current.countdownTo ? (
                 <Countdown targetIso={current.countdownTo} />
               ) : (
-                <span className="text-[11px] font-bold tracking-wide text-yellow-600 dark:text-accent">
-                  {current.when}
-                </span>
+                /* the pulsing "Živě" already says it's happening now, so
+                   "Právě teď" next to it was the same fact a third time */
+                !current.live && (
+                  <span className="text-[11px] font-bold tracking-wide text-yellow-600 dark:text-accent">
+                    {current.when}
+                  </span>
+                )
               )}
             </div>
             {current.desc && (
