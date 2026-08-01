@@ -291,6 +291,26 @@ export default async function EventDetailPage({
     reactions: c.event_comment_reactions,
   }));
 
+  // "11.07.2026 | KÖLN | LANXESS ARENA" - the poster's own line, in the
+  // poster's own order. Our location is stored venue-first ("Lanxess Arena,
+  // Köln"), so the parts get reversed; OKTAGON's API also calls Prague
+  // "Hlavní město Praha", where the poster just says PRAHA.
+  const posterLine = [
+    new Date(event.event_date)
+      .toLocaleDateString("cs-CZ", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: "Europe/Prague",
+      })
+      .replace(/\s/g, ""),
+    ...String(event.location ?? "")
+      .split(",")
+      .map((part: string) => part.trim().replace(/^Hlavní město\s+/i, ""))
+      .filter(Boolean)
+      .reverse(),
+  ].join(" | ");
+
   perfLogParts(`event/${id}`, {
     w1_auth: perfW1 - perf,
     w2_batch: perfW2 - perfW1,
@@ -320,23 +340,14 @@ export default async function EventDetailPage({
         </div>
       )}
       <div>
-        {/* When and where, above the name instead of in a row of icons below
-            it - it frames the gala before you read which one it is, and it's
-            one row of the header rather than two. */}
+        {/* Set the way OKTAGON sets it on the poster itself: date, city,
+            venue, separated by bars. The poster is right above this line, so
+            matching it makes the header read as a continuation of the artwork
+            rather than as the app's own take on the same facts.
+            (Our location is stored venue-first - "Lanxess Arena, Köln" - so
+            the parts get reversed to match the poster's city-first order.) */}
         <PageHeading
-          eyebrow={[
-            new Date(event.event_date).toLocaleString("cs-CZ", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              hour: "2-digit",
-              minute: "2-digit",
-              timeZone: "Europe/Prague",
-            }),
-            event.location,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
+          eyebrow={posterLine}
         >
           {event.number ? `OKTAGON ${event.number}` : event.name}
         </PageHeading>
