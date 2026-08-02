@@ -143,12 +143,18 @@ export function FightMatchup({
           )}
           {side === "a" && fighter.name}
         </p>
-        {/* No reserved empty line: with the names stacked instead of side by
-            side, a missing nickname costs nothing. */}
-        {fighter.nickname && (
-          <p className="text-xs italic text-neutral-500 dark:text-neutral-400">
+        {/* One card per row on a phone, so a missing nickname genuinely costs
+            nothing there and no empty line is reserved. From xl up the cards
+            sit two abreast, and then it costs alignment: a fighter without a
+            nickname pulls his card's whole photo band a line higher than the
+            neighbouring card's, and the two columns stop lining up. So the
+            line is held open at that breakpoint and only there. */}
+        {fighter.nickname ? (
+          <p className="text-xs italic leading-4 text-neutral-500 dark:text-neutral-400">
             {`„${fighter.nickname}“`}
           </p>
+        ) : (
+          <p aria-hidden className="hidden h-4 xl:block" />
         )}
       </div>
     );
