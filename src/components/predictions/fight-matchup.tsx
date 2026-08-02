@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { METHOD_LABELS } from "@/lib/method-labels";
 import { ageFromBirthDate } from "@/lib/utils";
 import type { Fight, Fighter } from "@/lib/types";
 
@@ -36,6 +37,7 @@ export function FightMatchup({
   onPick,
   disabled,
   eager,
+  revealIndex = 0,
 }: {
   fight: Fight;
   /** chips pinned to a fighter's photo - stacked when several land on one */
@@ -53,6 +55,9 @@ export function FightMatchup({
    * one fighter and a blank half. On the event page, where ten cards are on
    * one page and the window does the scrolling, lazy loading works and stays. */
   eager?: boolean;
+  /** position on the card - graded results wipe in one after another down the
+   * page, so coming back mid-gala reads as a sequence rather than a wall */
+  revealIndex?: number;
 }) {
   const fighterA = fight.fighter_a;
   const fighterB = fight.fighter_b;
@@ -229,14 +234,17 @@ export function FightMatchup({
           key={`${h.fighterId}-${h.tone}`}
           aria-hidden
           className={cn(
-            "pointer-events-none absolute inset-y-0 z-0 w-1/2 bg-gradient-to-t to-transparent",
+            // Stops where the photo stops. It used to run to the bottom of the
+            // padded block, so under a cut-out that ends at the thigh there was
+            // a bare strip of colour carrying on below the body.
+            "pointer-events-none absolute inset-y-0 bottom-0 z-0 w-1/2 bg-gradient-to-t to-transparent",
             WASH_TONES[h.tone],
             h.fighterId === fighterA.id ? "left-0" : "right-0"
           )}
         />
       ))}
 
-      <div className="pointer-events-none relative z-10 px-3 pb-2 pt-2.5">
+      <div className="pointer-events-none relative z-10 px-3 pb-0 pt-2.5">
         {/* The weight class used to have a line of its own here. OKTAGON puts
             it in the band at the top of the card, together with what kind of
             fight it is, and they are right: it is a label for the bout, not
@@ -263,6 +271,29 @@ export function FightMatchup({
                 aria-hidden
                 className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
               />
+              {/* How the fight ended, in the gap between the fighters. It used
+                  to be three labelled columns in a band of their own above the
+                  matchup - a whole row of card for four words, on every graded
+                  fight of a fourteen-fight night. Here it costs nothing: the
+                  space between two cut-outs was already empty. */}
+              {showResult && (
+                <span
+                  style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
+                  className="animate-result-in col-span-2 mb-1 flex flex-col items-center leading-tight"
+                >
+                  <span className="text-[13px] font-bold uppercase tracking-tight text-black dark:text-white">
+                    {fight.method ? METHOD_LABELS[fight.method] : "—"}
+                  </span>
+                  <span className="tabular-nums">
+                    {[
+                      fight.result_round ? `${fight.result_round}. kolo` : null,
+                      fight.result_time,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || "—"}
+                  </span>
+                </span>
+              )}
               {tapeRow(rank(fighterA), rank(fighterB))}
               {tapeRow(
                 <span className="text-xs font-bold tabular-nums text-black dark:text-white">

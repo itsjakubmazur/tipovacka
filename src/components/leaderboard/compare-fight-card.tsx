@@ -71,26 +71,6 @@ export function CompareFightCard({
         </div>
       </div>
 
-      {showResult && (
-        <div className="grid grid-cols-3 border-b border-black/5 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]">
-          {[
-            { k: "Čas", v: fight.result_time ?? "—" },
-            { k: "Kolo", v: fight.result_round ? String(fight.result_round) : "—" },
-            { k: "Ukončení", v: fight.method ? METHOD_LABELS[fight.method] : "—" },
-          ].map((cell, i) => (
-            <div
-              key={cell.k}
-              className={cn("px-2 py-2 text-center", i > 0 && "border-l border-black/5 dark:border-white/10")}
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {cell.k}
-              </p>
-              <p className="text-sm font-bold tabular-nums">{cell.v}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
       <FightMatchup
         fight={fight}
         eager

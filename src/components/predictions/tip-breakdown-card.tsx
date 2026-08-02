@@ -74,10 +74,10 @@ export function TipBreakdownCard({
         {graded ? (
           <span
             className={cn(
-              "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums",
+              "shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold tabular-nums",
               hit
-                ? "bg-green-600/15 text-green-800 dark:text-green-400"
-                : "bg-red-600/10 text-red-700 dark:text-red-400"
+                ? "glass-success text-green-800 dark:text-green-300"
+                : "glass-danger text-red-700 dark:text-red-300"
             )}
           >
             {pointsLabel(prediction?.points, isBold)}
@@ -86,26 +86,6 @@ export function TipBreakdownCard({
           isBold && <Badge variant="accent">★ Jistotka ×2</Badge>
         )}
       </div>
-
-      {showResult && (
-        <div className="grid grid-cols-3 border-b border-black/5 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]">
-          {[
-            { k: "Čas", v: fight.result_time ?? "—" },
-            { k: "Kolo", v: fight.result_round ? String(fight.result_round) : "—" },
-            { k: "Ukončení", v: fight.method ? METHOD_LABELS[fight.method] : "—" },
-          ].map((cell, i) => (
-            <div
-              key={cell.k}
-              className={cn("px-2 py-2 text-center", i > 0 && "border-l border-black/5 dark:border-white/10")}
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {cell.k}
-              </p>
-              <p className="text-sm font-bold tabular-nums">{cell.v}</p>
-            </div>
-          ))}
-        </div>
-      )}
 
       <FightMatchup
         fight={fight}

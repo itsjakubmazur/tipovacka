@@ -367,10 +367,10 @@ export function FightTipCard({
         {graded ? (
           <span
             className={cn(
-              "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums",
+              "shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold tabular-nums",
               hit
-                ? "bg-green-600/15 text-green-800 dark:text-green-400"
-                : "bg-red-600/10 text-red-700 dark:text-red-400"
+                ? "glass-success text-green-800 dark:text-green-300"
+                : "glass-danger text-red-700 dark:text-red-300"
             )}
           >
             {pointsLabel(initialPrediction?.points, isBold)}
@@ -425,37 +425,9 @@ export function FightTipCard({
         ) : null}
       </div>
 
-      {/* The result as three labelled columns. As one run-on line - "Mudroch ·
-          Rozhodnutí · 3. kolo · 05:00" - it was a sentence you had to read;
-          this you take in at a glance. */}
-      {showResult && (
-        <div
-          style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
-          className="animate-result-in grid grid-cols-3 border-b border-black/5 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.03]"
-        >
-          {[
-            { k: "Čas", v: fight.result_time ?? "—" },
-            { k: "Kolo", v: fight.result_round ? String(fight.result_round) : "—" },
-            { k: "Ukončení", v: fight.method ? METHOD_LABELS[fight.method] : "—" },
-          ].map((cell, i) => (
-            <div
-              key={cell.k}
-              className={cn(
-                "px-2 py-2 text-center",
-                i > 0 && "border-l border-black/5 dark:border-white/10"
-              )}
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {cell.k}
-              </p>
-              <p className="text-sm font-bold tabular-nums">{cell.v}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
       <FightMatchup
         fight={fight}
+        revealIndex={revealIndex}
         onPick={effectiveLocked ? undefined : selectWinner}
         highlight={winnerId ? [{ fighterId: winnerId, tone: "accent" }] : undefined}
         tags={[
@@ -575,7 +547,7 @@ export function FightTipCard({
         if (withBio.length === 0 && total === 0) return null;
         return (
           <div className="border-t border-black/5 dark:border-white/10">
-            <div className="flex items-start justify-between gap-2 px-4 py-2">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2 px-4 py-2">
               {consensus ? (
                 <ConsensusChip names={consensus.fighterANames} total={total} label={fighterA.name} />
               ) : (
@@ -591,7 +563,7 @@ export function FightTipCard({
                       ? "O zápasnicích"
                       : "O zápasnících"
                   }
-                  className="flex shrink-0 items-center gap-0.5 self-start text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
+                  className="flex shrink-0 items-center gap-0.5 justify-self-center self-start text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
                 >
                   Bio
                   <ChevronDown
