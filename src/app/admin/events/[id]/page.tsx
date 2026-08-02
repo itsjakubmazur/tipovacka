@@ -166,7 +166,7 @@ export default async function AdminEventPage({
               <Section title="Kdo má natipováno">
                 {/* One card, one row per person - twelve separate cards for
                     "Jméno · FOTN · 4/10" was a wall of padding. */}
-                <div className="divide-y divide-black/5 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:divide-white/5 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+                <div className="glass-surface divide-y divide-black/5 rounded-xl border dark:divide-white/5">
                   {tipProgress.map((p) => {
                     const fightsDone = p.tipped >= sortedFights.length;
                     return (

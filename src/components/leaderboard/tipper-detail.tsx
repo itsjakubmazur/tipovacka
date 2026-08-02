@@ -172,7 +172,7 @@ export async function TipperDetail({
               />
             )}
             {(bonusFight || actualFotnFight) && (
-              <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+              <div className="glass-surface rounded-xl border p-4 text-sm">
                 <p className="flex items-center gap-1.5 font-semibold">
                   <Target className="size-4 text-yellow-600 dark:text-accent" />
                   Bonus tip: Fight of the Night
@@ -301,7 +301,7 @@ export async function TipperDetail({
       )}
 
       {totalGraded > 0 && (
-        <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+        <div className="glass-surface flex flex-col gap-2 rounded-xl border p-4">
           <p className="text-sm font-semibold">Statistiky sezóny</p>
 
           <div className="grid grid-cols-2 gap-2">
@@ -412,7 +412,7 @@ export async function TipperDetail({
               key={event.id}
               href={`/leaderboard/u/${userId}?eventId=${event.id}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+                "glass-surface glass-surface-interactive flex items-center justify-between rounded-xl border p-3"
               )}
             >
               <span className="flex min-w-0 flex-col">

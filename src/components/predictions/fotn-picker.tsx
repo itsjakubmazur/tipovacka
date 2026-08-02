@@ -63,12 +63,12 @@ export function FotnPicker({
   return (
     <div
       className={cn(
-        "rounded-xl border p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:shadow-black/60",
+        "rounded-xl border p-4",
         // an outstanding action looks like one - same accent treatment the
         // startovné card uses when it needs something from you
         !locked && !pickedId
           ? "border-yellow-600/60 bg-accent/10 dark:border-accent/50"
-          : "border-white/45 bg-white/35 dark:border-neutral-700/45 dark:bg-neutral-800/35"
+          : "glass-surface border"
       )}
     >
       <button
@@ -105,7 +105,7 @@ export function FotnPicker({
                   "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
                   pickedId === fight.id
                     ? "border-accent bg-accent/10 font-semibold"
-                    : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-neutral-300 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500"
+                    : "glass-surface border hover:border-neutral-300 dark:hover:border-neutral-500"
                 )}
               >
                 {fight.fighterAName} vs {fight.fighterBName}

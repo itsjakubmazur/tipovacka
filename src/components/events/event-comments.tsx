@@ -307,7 +307,7 @@ export function EventComments({
           // to sit on top of whatever card happened to be at the bottom of the
           // screen - covering text, which is the one thing a floating button
           // must not do. A speech bubble needs no caption.
-          className="fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full border border-white/60 bg-white/90 text-neutral-800 shadow-lg shadow-black/25 backdrop-blur-lg transition-colors hover:border-neutral-400 md:bottom-6 dark:border-neutral-600/60 dark:bg-neutral-800/95 dark:text-neutral-100"
+          className="glass-floating fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full text-neutral-800 transition-transform active:scale-95 md:bottom-6 dark:text-neutral-100"
         >
           <MessageCircle className="size-5" />
           {unread > 0 && (
@@ -332,8 +332,8 @@ export function EventComments({
             className={cn(
               "relative flex flex-col overflow-hidden",
               docked
-                ? "min-h-[14rem] flex-1 rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
-                : "animate-modal-panel rounded-t-2xl border-t border-white/45 bg-white/35 shadow-2xl shadow-black/40 backdrop-blur-2xl dark:border-neutral-700/45 dark:bg-neutral-900/55"
+                ? "glass-surface min-h-[14rem] flex-1 rounded-xl border"
+                : "glass-surface border animate-modal-panel rounded-t-2xl border-t"
             )}
           >
             {/* grab handle */}

@@ -56,7 +56,7 @@ export function RankJourney({
   const flat = best.rank === worst.rank;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+    <div className="glass-surface flex flex-col gap-2 rounded-xl border p-3">
       <p className="flex items-center gap-1.5 text-sm font-semibold">
         <Route className="size-4 text-yellow-600 dark:text-accent" />
         Tvoje cesta večerem

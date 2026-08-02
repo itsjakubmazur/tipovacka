@@ -26,7 +26,7 @@ export async function NavBar() {
 
   if (!user) {
     return (
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl backdrop-saturate-150 pt-[env(safe-area-inset-top)]">
+      <header className="glass-floating glass-chrome sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 lg:max-w-5xl xl:max-w-6xl">
           <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
             OKTAGON <span className="text-accent">GARÁŽ</span>
@@ -48,7 +48,7 @@ export async function NavBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl backdrop-saturate-150 pt-[env(safe-area-inset-top)]">
+      <header className="glass-floating glass-chrome sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 lg:max-w-5xl xl:max-w-6xl">
           <Link href="/events" className="whitespace-nowrap font-bold tracking-tight text-white">
             OKTAGON <span className="text-accent">GARÁŽ</span>

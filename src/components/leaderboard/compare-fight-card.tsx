@@ -41,7 +41,7 @@ export function CompareFightCard({
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 dark:shadow-black/60",
         voided
           ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
-          : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
+          : "glass-surface border"
       )}
     >
       <div className="flex min-h-[2.75rem] flex-wrap items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">

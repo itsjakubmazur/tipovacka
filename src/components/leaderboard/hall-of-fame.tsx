@@ -52,7 +52,7 @@ export async function HallOfFame() {
         return (
           <div
             key={season}
-            className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+            className="glass-surface flex flex-col gap-3 rounded-xl border p-4"
           >
             <div className="flex items-baseline justify-between">
               <p className="font-bold">Sezóna {season}</p>

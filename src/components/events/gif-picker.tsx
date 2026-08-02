@@ -76,7 +76,7 @@ export function GifPicker({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{ maxHeight: keyboardInset > 0 ? "100%" : "70vh" }}
-        className="animate-modal-panel relative flex flex-col overflow-hidden rounded-t-2xl border-t border-white/45 bg-white/40 shadow-2xl shadow-black/40 backdrop-blur-2xl lg:w-full lg:max-w-xl lg:rounded-2xl lg:border dark:border-neutral-700/45 dark:bg-neutral-900/55"
+        className="glass-surface border animate-modal-panel relative flex flex-col overflow-hidden rounded-t-2xl border-t bg-white/40 lg:w-full lg:max-w-xl lg:rounded-2xl lg:border"
       >
         <div className="flex shrink-0 items-center gap-2 px-3 py-2.5">
           <div className="flex flex-1 items-center gap-2 rounded-full border border-white/50 bg-white/60 px-3 py-1.5 backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/60">

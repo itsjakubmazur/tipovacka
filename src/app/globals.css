@@ -540,7 +540,7 @@ body::before {
    3. inset highlights: a bright specular line along the top inside edge, a
       dimmer one along the bottom, and a rim all the way round
    --------------------------------------------------------------------------- */
-.liquid-glass {
+.glass-floating {
   background-image: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.6) 0%,
@@ -558,7 +558,7 @@ body::before {
 }
 
 @media (prefers-color-scheme: dark) {
-  .liquid-glass {
+  .glass-floating {
     background-image: linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.16) 0%,
@@ -574,7 +574,7 @@ body::before {
   }
 }
 
-.dark .liquid-glass {
+.dark .glass-floating {
   background-image: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.16) 0%,
@@ -591,7 +591,7 @@ body::before {
 
 /* The pill riding inside the capsule. Lighter glass again, so the active
    segment looks like a lens sitting on the bar rather than a painted block. */
-.liquid-glass-thumb {
+.glass-thumb {
   background-image: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.95) 0%,
@@ -604,7 +604,7 @@ body::before {
 }
 
 @media (prefers-color-scheme: dark) {
-  .liquid-glass-thumb {
+  .glass-thumb {
     background-image: linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.3) 0%,
@@ -617,7 +617,7 @@ body::before {
   }
 }
 
-.dark .liquid-glass-thumb {
+.dark .glass-thumb {
   background-image: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.3) 0%,
@@ -627,4 +627,131 @@ body::before {
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.55),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.22),
     0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------------------------------------------------------------------------
+   Glass, part two: the surfaces that do NOT float.
+
+   A card sits on body::before - a yellow glow already blurred by 70px. There
+   is no detail back there to bend, so a backdrop-filter on a card costs a
+   compositing layer and returns nothing you can see. The event page had ~90 of
+   them (a card plus eight pills, ten fights over), which is exactly the kind
+   of thing that makes an iPhone stutter while scrolling.
+
+   So these two keep the *look* of glass - the vertical gradient, the specular
+   line along the top edge, the hairline rim - and drop the blur. Only the
+   floating layer above, which really does have content underneath, pays for a
+   backdrop-filter.
+   --------------------------------------------------------------------------- */
+.glass-surface {
+  border-color: rgba(255, 255, 255, 0.5);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.32) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 10px 24px -12px rgba(0, 0, 0, 0.3);
+}
+
+.glass-surface-interactive:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 16px 32px -14px rgba(0, 0, 0, 0.38);
+}
+
+.glass-pill {
+  border-color: rgba(255, 255, 255, 0.6);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.68) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-surface {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.13),
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 24px -12px rgba(0, 0, 0, 0.7);
+}
+
+.dark .glass-surface-interactive:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 16px 32px -14px rgba(0, 0, 0, 0.8);
+}
+
+.dark .glass-pill {
+  border-color: rgba(255, 255, 255, 0.16);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* iOS has "Reduce Transparency" in Accessibility and the browsers expose it.
+   Translucency is the whole point of the effect, so when it's turned off the
+   surfaces go solid rather than half-hearted - and the text contrast that the
+   setting exists to protect comes back with them. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-floating,
+  .glass-surface,
+  .glass-pill,
+  .glass-thumb {
+    background-image: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: #ffffff;
+  }
+  .dark .glass-floating,
+  .dark .glass-surface,
+  .dark .glass-pill,
+  .dark .glass-thumb {
+    background-color: #1f1f1f;
+  }
+}
+
+/* The app header carries white type in both themes, so its glass has to be
+   dark in both - a light pane under white letters is just a blank strip.
+   Apple's own chrome does the same thing: dark glass over the content, with
+   the specular edge left bright so it still reads as a surface. */
+.glass-chrome,
+.dark .glass-chrome {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(20, 20, 22, 0.82) 0%,
+    rgba(10, 10, 12, 0.72) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -0.5px 0 0 rgba(255, 255, 255, 0.08),
+    0 1px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-chrome,
+  .dark .glass-chrome {
+    background-image: none;
+    background-color: #0b0b0c;
+  }
 }

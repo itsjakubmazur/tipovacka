@@ -155,7 +155,7 @@ export async function FightNightLive({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+    <div className="glass-surface flex flex-col gap-3 rounded-xl border p-4">
       {/* No "Galavečer živě" heading and no graded count here: the status card
           directly above already carries both, and stacked on top of each other
           they read as the page stuttering. This card leads with the thing only

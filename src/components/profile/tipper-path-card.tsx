@@ -24,7 +24,7 @@ export async function TipperPathCard({ userId }: { userId: string }) {
 
   return (
     <Section title="Cesta tipéra" icon={<Trophy className="size-4" />}>
-      <div className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-4 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+      <div className="glass-surface flex flex-col gap-3 rounded-xl border p-4">
         <p className="text-sm">
           Jsi <strong className="text-yellow-700 dark:text-accent">{tier.name}</strong>
           {next ? (

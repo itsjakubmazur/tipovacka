@@ -22,7 +22,7 @@ export function GeneratedCardImage({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border border-white/45 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:shadow-black/60",
+        "glass-surface relative w-full overflow-hidden rounded-xl border",
         aspect
       )}
     >

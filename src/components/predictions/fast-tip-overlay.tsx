@@ -67,7 +67,7 @@ export function FastTipOverlay({
         onClick={() => setOpen(true)}
         title="Rychlá tipovačka — swipe bez detailů"
         aria-label="Rychlá tipovačka, swipe bez detailů"
-        className="flex w-12 shrink-0 items-center justify-center rounded-xl border border-white/45 bg-white/35 text-yellow-600 outline-none backdrop-blur-lg transition-colors hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-accent dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:text-accent dark:hover:border-neutral-500"
+        className="glass-surface flex w-12 shrink-0 items-center justify-center rounded-xl border text-yellow-600 outline-none transition-colors hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-accent dark:text-accent dark:hover:border-neutral-500"
       >
         <Zap className="size-5" />
       </button>
@@ -131,7 +131,7 @@ function FotnSlide({
                 "flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors",
                 picked
                   ? "border-accent bg-accent/15 font-semibold"
-                  : "border-white/45 bg-white/35 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35"
+                  : "glass-surface border"
               )}
             >
               <span className="min-w-0 truncate">
@@ -526,7 +526,7 @@ function FightSlide({
                 "flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors",
                 tip.winnerId === fighter.id
                   ? "border-accent bg-accent/10"
-                  : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-neutral-400 dark:border-neutral-700/45 dark:bg-neutral-800/35"
+                  : "glass-surface border hover:border-neutral-400"
               )}
             >
               <FighterPortrait
@@ -557,7 +557,7 @@ function FightSlide({
           ))}
         </div>
 
-        <div className="flex flex-col gap-1 rounded-xl border border-white/45 bg-white/35 p-3 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35">
+        <div className="glass-surface flex flex-col gap-1 rounded-xl border p-3">
           <TapeRow label="Rekord" a={fight.fighter_a.record} b={fight.fighter_b.record} />
           <TapeRow
             label="Kurz"

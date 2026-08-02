@@ -175,7 +175,7 @@ export default async function EventsPage() {
                 "relative flex min-h-[168px] items-end justify-between gap-3 overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
                 event.image_url
                   ? "border-neutral-800 hover:border-neutral-600"
-                  : "border-white/45 bg-white/35 backdrop-blur-lg hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:hover:border-neutral-500/80"
+                  : "glass-surface border glass-surface-interactive"
               )}
             >
               {event.image_url && (

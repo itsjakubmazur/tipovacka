@@ -129,7 +129,7 @@ export function SegmentJump({
       >
         <div
           className={cn(
-            "liquid-glass max-w-full rounded-full p-1 transition-all duration-300 ease-out motion-reduce:transition-none",
+            "glass-floating max-w-full rounded-full p-1 transition-all duration-300 ease-out motion-reduce:transition-none",
             visible
               ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
               : "-translate-y-3 scale-95 opacity-0"
@@ -146,7 +146,7 @@ export function SegmentJump({
     <div className={cn("sticky z-30 -mx-4 px-4 py-1", BAR_TOP, className)}>
       {/* the same glass capsule as the floating shape - it sticks over the
           cards as you scroll, so it needs a backdrop of its own */}
-      <div className="liquid-glass inline-block max-w-full rounded-full p-1">
+      <div className="glass-floating inline-block max-w-full rounded-full p-1">
         {bar}
       </div>
     </div>
@@ -200,7 +200,7 @@ function Bar({
       {thumb && (
         <div
           aria-hidden
-          className="liquid-glass-thumb pointer-events-none absolute inset-y-0 overflow-hidden rounded-full transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
+          className="glass-thumb pointer-events-none absolute inset-y-0 overflow-hidden rounded-full transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
           style={{
             width: thumb.width,
             transform: `translateX(${thumb.left}px)`,

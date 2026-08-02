@@ -127,7 +127,7 @@ export default async function AdminPage() {
               <Section title="Poslat upozornění" className="gap-3">
                 <BroadcastPushForm />
                 {sentBroadcasts && sentBroadcasts.length > 0 && (
-                  <div className="flex flex-col gap-2 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+                  <div className="glass-surface flex flex-col gap-2 rounded-xl border p-3">
                     <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                       Naposled odeslané
                     </p>
@@ -160,7 +160,7 @@ export default async function AdminPage() {
                 <Link
                   key={event.id}
                   href={`/admin/events/${event.id}`}
-                  className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:border-white/80 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60 dark:hover:border-neutral-500/80"
+                  className="glass-surface glass-surface-interactive flex items-center justify-between rounded-xl border p-3"
                 >
                   <span className="font-medium">
                     {event.number ? `OKTAGON ${event.number}` : event.name}
@@ -189,7 +189,7 @@ export default async function AdminPage() {
                   return (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between gap-2 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+                      className="glass-surface flex items-center justify-between gap-2 rounded-xl border p-3"
                     >
                       <span className="flex min-w-0 flex-col">
                         <span>

@@ -69,7 +69,7 @@ export async function EventPayoutPool({
     // under a divider - was tall enough to push the whole column into its own
     // scrollbar. Amount and recipient are each stated once, and the QR carries
     // the account number, the button and the debtors alongside it.
-    <div className="flex flex-col gap-2.5 rounded-xl border border-yellow-600/60 bg-accent/10 p-3.5 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-accent/50 dark:shadow-black/60">
+    <div className="flex flex-col gap-2.5 rounded-xl border border-yellow-600/60 bg-accent/10 p-3.5 dark:border-accent/50">
       <div>
         <p className="flex items-center gap-1.5 text-sm font-semibold">
           <Wallet className="size-4 text-yellow-600 dark:text-accent" />

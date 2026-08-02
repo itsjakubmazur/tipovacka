@@ -98,7 +98,7 @@ function StatusRow({ row }: { row: Row }) {
 
 function List({ rows }: { rows: Row[] }) {
   return (
-    <ul className="flex flex-col gap-3 rounded-xl border border-white/45 bg-white/35 p-3 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+    <ul className="glass-surface flex flex-col gap-3 rounded-xl border p-3">
       {rows.map((row) => (
         <StatusRow key={row.key} row={row} />
       ))}
@@ -286,7 +286,7 @@ export function NotificationChecklist({
 
       {log.length > 0 && (
         <Disclosure
-          className="rounded-xl border border-white/45 bg-white/35 shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+          className="glass-surface rounded-xl border"
           summaryClassName="p-3 text-sm font-semibold"
           summary={`Co přesně odešlo (${log.length})`}
         >

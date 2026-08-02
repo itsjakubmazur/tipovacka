@@ -16,7 +16,7 @@ import { PageTransition } from "@/components/page-transition";
  * instant so the splash/loader shows as early as possible. */
 function NavBarFallback() {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl backdrop-saturate-150">
+    <header className="glass-floating glass-chrome sticky top-0 z-40">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 lg:max-w-5xl xl:max-w-6xl">
         <Link href="/" className="whitespace-nowrap font-bold tracking-tight text-white">
           OKTAGON <span className="text-accent">GARÁŽ</span>

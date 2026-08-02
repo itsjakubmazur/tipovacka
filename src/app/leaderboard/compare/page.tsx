@@ -154,18 +154,18 @@ export default async function ComparePage({
         </p>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+          <div className="glass-surface flex flex-col items-center gap-1 rounded-xl border p-4">
             <span className="font-semibold text-yellow-600 dark:text-accent">{nicknameA}</span>
             <span className="text-2xl font-bold">{totalA}</span>
           </div>
-          <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+          <div className="glass-surface flex flex-col items-center gap-1 rounded-xl border p-4">
             <span className="font-semibold text-blue-500">{nicknameB}</span>
             <span className="text-2xl font-bold">{totalB}</span>
           </div>
         </div>
 
         {(bonusFightA || bonusFightB || actualFotnFight) && (
-          <div className="rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+          <div className="glass-surface rounded-xl border p-4 text-sm">
             <p className="flex items-center gap-1.5 font-semibold">
               <Swords className="size-4 text-yellow-600 dark:text-accent" />
               Bonus tip: Fight of the Night
@@ -297,7 +297,7 @@ export default async function ComparePage({
       <p className="text-sm text-neutral-600 dark:text-neutral-400">Sezóna {season}</p>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+        <div className="glass-surface flex flex-col items-center gap-1 rounded-xl border p-4">
           <span className="font-semibold">{nicknameA}</span>
           <span className="text-2xl font-bold">{totalA}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsA}× lepší večer</span>
@@ -308,7 +308,7 @@ export default async function ComparePage({
             </span>
           )}
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-4 shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60">
+        <div className="glass-surface flex flex-col items-center gap-1 rounded-xl border p-4">
           <span className="font-semibold">{nicknameB}</span>
           <span className="text-2xl font-bold">{totalB}</span>
           <span className="text-xs text-neutral-500 dark:text-neutral-300">{winsB}× lepší večer</span>
@@ -334,7 +334,7 @@ export default async function ComparePage({
           return (
             <div
               key={event.id}
-              className="flex items-center justify-between rounded-xl border border-white/45 bg-white/35 backdrop-blur-lg p-3 text-sm shadow-lg shadow-black/20 dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+              className="glass-surface flex items-center justify-between rounded-xl border p-3 text-sm"
             >
               <span className={cn("w-12 text-right font-bold", pa > pb && "text-yellow-600 dark:text-accent")}>{pa}</span>
               <span className="flex-1 px-3 text-center text-neutral-600 dark:text-neutral-400">

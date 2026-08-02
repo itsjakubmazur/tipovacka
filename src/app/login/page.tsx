@@ -20,7 +20,7 @@ export default async function LoginPage({
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-4 py-12">
       <Wordmark className="text-2xl" />
-      <div className="w-full max-w-sm rounded-2xl border border-white/45 bg-white/60 p-6 shadow-lg shadow-black/10 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/40 dark:shadow-black/40">
+      <div className="glass-surface w-full max-w-sm rounded-2xl border bg-white/60 p-6 shadow-black/10 dark:bg-neutral-800/40 dark:shadow-black/40">
         <LoginForm initialMode={initialMode} />
       </div>
     </div>

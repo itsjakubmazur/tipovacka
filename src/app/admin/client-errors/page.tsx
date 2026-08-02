@@ -67,7 +67,7 @@ export default async function ClientErrorsPage() {
         {rows.map((row) => (
           <details
             key={row.id}
-            className="rounded-xl border border-white/45 bg-white/35 p-3 text-sm shadow-lg shadow-black/20 backdrop-blur-lg dark:border-neutral-700/45 dark:bg-neutral-800/35 dark:shadow-black/60"
+            className="glass-surface rounded-xl border p-3 text-sm"
           >
             <summary className="cursor-pointer select-none">
               <span className="font-medium text-red-700 dark:text-red-400">{row.message}</span>
