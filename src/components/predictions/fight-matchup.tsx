@@ -35,6 +35,7 @@ export function FightMatchup({
   highlight,
   onPick,
   disabled,
+  eager,
 }: {
   fight: Fight;
   /** chips pinned to a fighter's photo - stacked when several land on one */
@@ -44,6 +45,14 @@ export function FightMatchup({
   /** makes each half a pick target */
   onPick?: (fighterId: string) => void;
   disabled?: boolean;
+  /** Load the cut-outs immediately instead of lazily.
+   *
+   * Needed inside the tipper-detail modal: it is its own scroll container, and
+   * WebKit's native lazy loading is unreliable in a nested scroller - photos
+   * below the fold there simply never started loading, so a graded card showed
+   * one fighter and a blank half. On the event page, where ten cards are on
+   * one page and the window does the scrolling, lazy loading works and stays. */
+  eager?: boolean;
 }) {
   const fighterA = fight.fighter_a;
   const fighterB = fight.fighter_b;
@@ -156,6 +165,7 @@ export function FightMatchup({
           alt={fighter.name}
           fill
           sizes="200px"
+          loading={eager ? "eager" : undefined}
           className={cn(
             "object-contain object-bottom transition-[filter,opacity] duration-500 motion-reduce:transition-none",
             // softens the edge of any photo that turns out to have a

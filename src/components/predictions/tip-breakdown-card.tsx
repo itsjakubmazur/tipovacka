@@ -109,6 +109,7 @@ export function TipBreakdownCard({
 
       <FightMatchup
         fight={fight}
+        eager
         highlight={
           prediction ? [{ fighterId: prediction.predicted_winner_id, tone: "accent" }] : undefined
         }

@@ -93,6 +93,7 @@ export function CompareFightCard({
 
       <FightMatchup
         fight={fight}
+        eager
         highlight={[
           ...(predictionA
             ? [{ fighterId: predictionA.predicted_winner_id, tone: "accent" as const }]
