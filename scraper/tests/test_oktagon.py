@@ -51,7 +51,8 @@ class TestNormalizeFighter:
         assert result["photo_url"] == "https://img.example/profile.jpg"
         assert result["fight_card_photo_url"] == "https://img.example/card.jpg"
         assert result["bio"] == "Bio & text"
-        assert result["record"] == "35-7-0 (1 NC)"
+        # no-contests are deliberately not part of the label
+        assert result["record"] == "35-7-0"
         assert result["nationality"] == "Česko"
         assert result["flag_code"] == "cz"
         assert result["height_cm"] == 180

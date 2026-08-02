@@ -220,11 +220,11 @@ def _record_label(fighter: dict) -> str | None:
     wins, losses, draws = scores.get("wins"), scores.get("losses"), scores.get("draws")
     if wins is None and losses is None and draws is None:
         return None
-    record = f"{wins or 0}-{losses or 0}-{draws or 0}"
-    no_contests = scores.get("noContests") or 0
-    if no_contests:
-        record += f" ({no_contests} NC)"
-    return record
+    # No-contests are left out on purpose. They are a statistical curiosity,
+    # not something anyone weighs up when tipping, and the suffix pushed the
+    # record onto a second line in the tale of the tape between the fighters -
+    # which knocked every row under it out of alignment.
+    return f"{wins or 0}-{losses or 0}-{draws or 0}"
 
 
 def _localized(value: dict | None) -> str | None:
