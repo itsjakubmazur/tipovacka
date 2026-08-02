@@ -286,7 +286,13 @@ export function FightMatchup({
           <div
             className={cn(
               "flex justify-center",
-              hasPhotos && "absolute inset-x-0 top-0"
+              // Offsets are a share of the band, so they hold at any card
+              // width. At the very top both blocks sat level with the crown of
+              // the head; the result drops to about jaw height, where it reads
+              // as belonging to the fight rather than floating above it, and
+              // the tape moves down just enough to stop touching the hair.
+              hasPhotos && "absolute inset-x-0",
+              hasPhotos && (showResult ? "top-[22%]" : "top-[7%]")
             )}
           >
             {showResult ? (
