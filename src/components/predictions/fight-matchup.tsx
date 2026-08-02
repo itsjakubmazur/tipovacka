@@ -214,11 +214,11 @@ export function FightMatchup({
             it in the band at the top of the card, together with what kind of
             fight it is, and they are right: it is a label for the bout, not
             part of the matchup. It now rides in the card header. */}
+        {/* No "vs" between the names. One leans left and one leans right, which
+            already reads as a matchup - the word was a line of card spent
+            confirming something the layout says on its own. */}
         <div className="flex flex-col">
           {nameLine(fighterA, "a")}
-          <p className="-my-0.5 text-center text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
-            vs
-          </p>
           {nameLine(fighterB, "b")}
         </div>
 

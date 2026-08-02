@@ -85,10 +85,7 @@ function ConsensusChip({
         className="flex items-center gap-0.5 text-[11px] font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
       >
         <span className="truncate">{label.split(" ").pop()}</span>
-        <span className="whitespace-nowrap">
-          {" "}
-          {Math.round((names.length / total) * 100)} % · {names.length} {tipsWord(names.length)}
-        </span>
+        <span className="whitespace-nowrap"> {Math.round((names.length / total) * 100)} %</span>
         <ChevronDown
           className={cn(
             "size-3 shrink-0 transition-transform duration-500 ease-out motion-reduce:transition-none",
@@ -103,7 +100,7 @@ function ConsensusChip({
             align === "right" && "text-right"
           )}
         >
-          {names.join(", ")}
+          {names.length} {tipsWord(names.length)}: {names.join(", ")}
         </span>
       </Reveal>
     </div>
@@ -347,18 +344,18 @@ export function FightTipCard({
           the weight class moved down to sit over the names, where it labels
           the matchup instead of floating among unrelated chips. */}
       <div className="flex min-h-[2.75rem] items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+        <div className="flex min-w-0 items-center gap-x-2">
           {fight.is_main_event && fight.is_title_fight ? (
-            <Badge variant="accent">Main event · titul</Badge>
+            <Badge variant="accent" className="shrink-0">Main event · titul</Badge>
           ) : fight.is_title_fight ? (
-            <Badge variant="accent">Titulový zápas</Badge>
+            <Badge variant="accent" className="shrink-0">Titulový zápas</Badge>
           ) : fight.is_main_event ? (
-            <Badge variant="default">Main event</Badge>
+            <Badge variant="default" className="shrink-0">Main event</Badge>
           ) : null}
-          {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
-          {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
+          {voided && <Badge variant="outline" className="shrink-0">Zrušeno / NC</Badge>}
+          {!voided && hasTba && <Badge variant="outline" className="shrink-0">Soupeři ještě nejsou známí</Badge>}
           {fight.weight_class && (
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               {weightClassLabel(fight.weight_class)}
             </span>
           )}
@@ -567,43 +564,57 @@ export function FightTipCard({
         )}
       </div>
 
-      {consensus && (consensus.fighterANames.length > 0 || consensus.fighterBNames.length > 0) && (
-        <div className="flex items-start justify-between gap-3 border-t border-black/5 px-4 py-2 dark:border-white/10">
-          <ConsensusChip
-            names={consensus.fighterANames}
-            total={consensus.fighterANames.length + consensus.fighterBNames.length}
-            label={fighterA.name}
-          />
-          <ConsensusChip
-            names={consensus.fighterBNames}
-            total={consensus.fighterANames.length + consensus.fighterBNames.length}
-            label={fighterB.name}
-            align="right"
-          />
-        </div>
-      )}
-
+      {/* One footer row, not two: each fighter's share on its own side and the
+          medallions on a button between them. Both were a whole row of card
+          for a handful of words. */}
       {(() => {
         const withBio = [fighterA, fighterB].filter((f) => !f.is_tba && f.bio);
-        if (withBio.length === 0) return null;
-        const women = [fighterA, fighterB].some((f) => looksFeminine(f.name));
-        const label = women ? "O zápasnicích" : "O zápasnících";
+        const total = consensus
+          ? consensus.fighterANames.length + consensus.fighterBNames.length
+          : 0;
+        if (withBio.length === 0 && total === 0) return null;
         return (
           <div className="border-t border-black/5 dark:border-white/10">
-            <button
-              type="button"
-              onClick={() => setBiosOpen((v) => !v)}
-              aria-expanded={biosOpen}
-              className="flex w-full items-center justify-center gap-1 px-4 py-2 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
-            >
-              {label}
-              <ChevronDown
-                className={cn(
-                  "size-3.5 transition-transform duration-500 ease-out motion-reduce:transition-none",
-                  biosOpen && "rotate-180"
-                )}
-              />
-            </button>
+            <div className="flex items-start justify-between gap-2 px-4 py-2">
+              {consensus ? (
+                <ConsensusChip names={consensus.fighterANames} total={total} label={fighterA.name} />
+              ) : (
+                <span />
+              )}
+              {withBio.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setBiosOpen((v) => !v)}
+                  aria-expanded={biosOpen}
+                  aria-label={
+                    looksFeminine(fighterA.name) || looksFeminine(fighterB.name)
+                      ? "O zápasnicích"
+                      : "O zápasnících"
+                  }
+                  className="flex shrink-0 items-center gap-0.5 self-start text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
+                >
+                  Bio
+                  <ChevronDown
+                    className={cn(
+                      "size-3 transition-transform duration-500 ease-out motion-reduce:transition-none",
+                      biosOpen && "rotate-180"
+                    )}
+                  />
+                </button>
+              ) : (
+                <span />
+              )}
+              {consensus ? (
+                <ConsensusChip
+                  names={consensus.fighterBNames}
+                  total={total}
+                  label={fighterB.name}
+                  align="right"
+                />
+              ) : (
+                <span />
+              )}
+            </div>
             <Reveal open={biosOpen}>
               <div className="grid gap-4 px-4 pb-3 sm:grid-cols-2">
                 {withBio.map((f) => (

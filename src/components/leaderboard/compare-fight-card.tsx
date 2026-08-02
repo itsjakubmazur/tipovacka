@@ -45,18 +45,18 @@ export function CompareFightCard({
           : "glass-surface border"
       )}
     >
-      <div className="flex min-h-[2.75rem] flex-wrap items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+      <div className="flex min-h-[2.75rem] items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
+        <div className="flex min-w-0 items-center gap-x-2">
           {fight.is_main_event && fight.is_title_fight ? (
-            <Badge variant="accent">Main event · titul</Badge>
+            <Badge variant="accent" className="shrink-0">Main event · titul</Badge>
           ) : fight.is_title_fight ? (
-            <Badge variant="accent">Titulový zápas</Badge>
+            <Badge variant="accent" className="shrink-0">Titulový zápas</Badge>
           ) : fight.is_main_event ? (
-            <Badge variant="default">Main event</Badge>
+            <Badge variant="default" className="shrink-0">Main event</Badge>
           ) : null}
-          {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
+          {voided && <Badge variant="outline" className="shrink-0">Zrušeno / NC</Badge>}
           {fight.weight_class && (
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               {weightClassLabel(fight.weight_class)}
             </span>
           )}
