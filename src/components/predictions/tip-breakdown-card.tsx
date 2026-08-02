@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { FightMatchup } from "@/components/predictions/fight-matchup";
 import { pointsLabel } from "@/lib/score-breakdown";
@@ -55,7 +56,7 @@ export function TipBreakdownCard({
       )}
     >
       <div className="flex min-h-[2.75rem] items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           {fight.is_main_event && fight.is_title_fight ? (
             <Badge variant="accent">Main event · titul</Badge>
           ) : fight.is_title_fight ? (
@@ -64,6 +65,11 @@ export function TipBreakdownCard({
             <Badge variant="default">Main event</Badge>
           ) : null}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
+          {fight.weight_class && (
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+              {weightClassLabel(fight.weight_class)}
+            </span>
+          )}
         </div>
         {graded ? (
           <span

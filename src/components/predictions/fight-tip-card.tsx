@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { FightMatchup } from "@/components/predictions/fight-matchup";
 import { cn } from "@/lib/utils";
+import { weightClassLabel } from "@/lib/weight-classes";
 import { GLASS_PILL } from "@/lib/pills";
 import { Reveal } from "@/components/ui/reveal";
 import { METHOD_LABELS } from "@/lib/method-labels";
@@ -346,7 +347,7 @@ export function FightTipCard({
           the weight class moved down to sit over the names, where it labels
           the matchup instead of floating among unrelated chips. */}
       <div className="flex min-h-[2.75rem] items-center justify-between gap-2 border-b border-black/5 px-3 py-2 dark:border-white/10">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           {fight.is_main_event && fight.is_title_fight ? (
             <Badge variant="accent">Main event · titul</Badge>
           ) : fight.is_title_fight ? (
@@ -356,6 +357,11 @@ export function FightTipCard({
           ) : null}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
           {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
+          {fight.weight_class && (
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+              {weightClassLabel(fight.weight_class)}
+            </span>
+          )}
         </div>
 
         {/* Graded: the points live here rather than in a full-width bar of

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ageFromBirthDate } from "@/lib/utils";
-import { weightClassLabel } from "@/lib/weight-classes";
 import type { Fight, Fighter } from "@/lib/types";
 
 export type MatchupTone = "accent" | "green" | "blue";
@@ -211,13 +210,11 @@ export function FightMatchup({
       ))}
 
       <div className="pointer-events-none relative z-10 px-3 pb-2 pt-2.5">
-        {fight.weight_class && (
-          <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            {weightClassLabel(fight.weight_class)}
-          </p>
-        )}
-
-        <div className="mt-1 flex flex-col">
+        {/* The weight class used to have a line of its own here. OKTAGON puts
+            it in the band at the top of the card, together with what kind of
+            fight it is, and they are right: it is a label for the bout, not
+            part of the matchup. It now rides in the card header. */}
+        <div className="flex flex-col">
           {nameLine(fighterA, "a")}
           <p className="-my-0.5 text-center text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
             vs
