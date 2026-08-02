@@ -453,7 +453,11 @@ export default async function EventDetailPage({
               />
             )}
 
-            {locked && (
+            {/* Only while the gala is running. Who staked their jistotka on
+                what is a question you ask before the fights, not after - once
+                it's graded the answer is in the points and this is just a
+                long list in the way. */}
+            {locked && event.status !== "completed" && (
               <BraveryReveal eventId={id} fights={(fights ?? []).map((f) => f as unknown as Fight)} />
             )}
 
