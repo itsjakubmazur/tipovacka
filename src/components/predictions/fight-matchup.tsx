@@ -159,14 +159,21 @@ export function FightMatchup({
     const src = fighter.photo_url ?? fighter.fight_card_photo_url;
     if (!src || fighter.is_tba) return null;
     return (
-      // The grey-out lives here and the mask lives on the image, deliberately
-      // one element apart. WebKit fails to paint a layer that carries a
-      // mask-image *and* a filter at once - which is why the loser's photo, the
-      // only one with a filter, came up blank on iPhones while the winner next
-      // to it was fine and both rendered on a desktop.
+      // translate3d is load-bearing, not a leftover. iOS Safari sometimes
+      // never paints a photo inside the leaderboard modal - the image is
+      // there, and rotating the phone shakes it loose, because that forces
+      // the relayout Safari was waiting for. FighterPortrait hit this and
+      // fixed it the same way; the fix got lost when this layout was rewritten
+      // around FightMatchup. Promoting the box to its own GPU layer up front
+      // makes Safari composite it immediately.
+      //
+      // The grey-out also sits here rather than on the image: WebKit is
+      // unreliable about a layer carrying mask-image and a filter at once, and
+      // the loser's photo is the only one with a filter - which is why the
+      // grey halves were the ones that stayed blank.
       <div
         className={cn(
-          "absolute bottom-0 h-full w-[34%] transition-[filter,opacity] duration-500 motion-reduce:transition-none",
+          "absolute bottom-0 h-full w-[34%] [transform:translate3d(0,0,0)] transition-[filter,opacity] duration-500 motion-reduce:transition-none",
           side === "a" ? "left-0" : "right-0",
           grayedOut && "opacity-60 grayscale"
         )}
