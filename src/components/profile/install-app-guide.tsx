@@ -19,7 +19,7 @@ export function InstallAppGuide() {
 
   return (
     <Section title="Přidej si tipovačku na plochu" icon={<Smartphone className="size-4" />}>
-    <div className="flex flex-col gap-2 rounded-xl border border-yellow-600/60 bg-accent/10 p-4 dark:border-accent/50">
+    <div className="flex flex-col gap-2 rounded-xl glass-accent-soft border p-4">
       <p className="text-sm text-neutral-700 dark:text-neutral-300">
         {platform === "ios"
           ? "Na iPhonu/iPadu bez toho nepůjdou zapnout upozornění na uzávěrky."

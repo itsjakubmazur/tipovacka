@@ -67,7 +67,7 @@ export function FotnPicker({
         // an outstanding action looks like one - same accent treatment the
         // startovné card uses when it needs something from you
         !locked && !pickedId
-          ? "border-yellow-600/60 bg-accent/10 dark:border-accent/50"
+          ? "glass-accent-soft"
           : "glass-surface border"
       )}
     >
@@ -104,7 +104,7 @@ export function FotnPicker({
                 className={cn(
                   "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed",
                   pickedId === fight.id
-                    ? "border-accent bg-accent/10 font-semibold"
+                    ? "glass-accent-soft border font-semibold"
                     : "glass-surface border hover:border-neutral-300 dark:hover:border-neutral-500"
                 )}
               >

@@ -32,7 +32,7 @@ export function LiveMiniBoard({ rows }: { rows: LiveBoardRow[] }) {
             ref={rowRef(row.userId)}
             className={cn(
               "flex items-center justify-between gap-2 rounded-md px-1.5 py-0.5 text-sm",
-              row.isMe && "bg-accent/15 font-semibold"
+              row.isMe && "glass-accent-soft font-semibold"
             )}
           >
             <span className="flex min-w-0 items-center gap-2">

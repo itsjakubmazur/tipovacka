@@ -67,7 +67,7 @@ export async function HallOfFame() {
                   href={`/leaderboard/u/${row.user_id}?season=${season}`}
                   className={cn(
                     "flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5",
-                    i === 0 && !running && "bg-accent/15"
+                    i === 0 && !running && "glass-accent-soft"
                   )}
                 >
                   <span className="flex items-center gap-2 font-semibold">

@@ -93,7 +93,7 @@ export function GalaReplay({
           setOpen(true);
           start();
         }}
-        className="flex items-center gap-2 self-start rounded-full border border-yellow-600/60 bg-accent/10 px-3.5 py-1.5 text-sm font-semibold transition-colors hover:bg-accent/20 dark:border-accent/40"
+        className="flex items-center gap-2 self-start rounded-full glass-accent-soft border px-3.5 py-1.5 text-sm font-semibold transition-colors"
       >
         <Play className="size-4 text-yellow-700 dark:text-accent" />
         Přehrát večer

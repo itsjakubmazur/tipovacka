@@ -336,7 +336,7 @@ export function FightTipCard({
         // later when you look back up from the pills
         saved && "ring-2 ring-green-500/40",
         voided
-          ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
+          ? "glass-danger"
           : "glass-surface border"
       )}
     >

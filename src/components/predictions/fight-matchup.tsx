@@ -11,8 +11,8 @@ export type MatchupTone = "accent" | "green" | "blue";
 
 const TAG_TONES: Record<MatchupTone, string> = {
   accent: "glass-accent",
-  green: "bg-green-600 text-white",
-  blue: "bg-blue-500 text-white",
+  green: "glass-green",
+  blue: "glass-blue",
 };
 
 const WASH_TONES: Record<MatchupTone, string> = {

@@ -91,7 +91,7 @@ export default async function GroupDetailPage({
 
       <div className="flex flex-col gap-2">
         {leaderboardRows.length === 0 && unscoredMembers.length === 0 && (
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-neutral-300 py-10 text-center dark:border-neutral-700">
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-black/15 py-10 text-center dark:border-white/15">
             <Users className="size-8 text-neutral-400 dark:text-neutral-500" />
             <p className="font-medium">Zatím tu nikdo není</p>
             <p className="max-w-xs text-sm text-neutral-500 dark:text-neutral-400">
@@ -137,7 +137,7 @@ export default async function GroupDetailPage({
                     "rounded-full border px-3 py-1 text-sm transition-colors",
                     m.userId === currentUserId
                       ? "border-accent bg-accent/15 font-medium"
-                      : "border-neutral-300 hover:border-accent dark:border-neutral-700"
+                      : "glass-pill border hover:border-accent"
                   )}
                 >
                   {m.nickname}

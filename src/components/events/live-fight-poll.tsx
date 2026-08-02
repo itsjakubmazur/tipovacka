@@ -74,7 +74,7 @@ export function LiveFightPoll({
   const aPct = total > 0 ? Math.round((aVotes / total) * 100) : 50;
 
   return (
-    <div className="border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
+    <div className="border-b border-black/5 px-4 py-3 dark:border-white/10">
       <p className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
         Kdo vezme další zápas?
       </p>
@@ -90,8 +90,8 @@ export function LiveFightPoll({
             className={cn(
               "flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
               myVote === side.id
-                ? "border-accent bg-accent/15"
-                : "border-neutral-200 hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-500"
+                ? "glass-accent-soft border-accent"
+                : "glass-pill border hover:border-neutral-400"
             )}
           >
             <span className="truncate">{side.name}</span>
@@ -104,7 +104,7 @@ export function LiveFightPoll({
         ))}
       </div>
       {total > 0 && (
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
           <div
             className="h-full rounded-full bg-accent transition-all duration-500"
             style={{ width: `${aPct}%` }}

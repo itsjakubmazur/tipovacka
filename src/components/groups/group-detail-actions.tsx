@@ -68,7 +68,7 @@ export function GroupDetailActions({
         <button
           type="button"
           onClick={copyCode}
-          className="flex items-center gap-1 rounded-full border border-neutral-300 px-2.5 py-1 text-xs font-medium transition-colors hover:border-accent hover:text-yellow-700 dark:border-neutral-600 dark:hover:text-accent"
+          className="flex items-center gap-1 rounded-full glass-pill border px-2.5 py-1 text-xs font-medium transition-colors hover:border-accent hover:text-yellow-700 dark:hover:text-accent"
         >
           {copied ? (
             <>

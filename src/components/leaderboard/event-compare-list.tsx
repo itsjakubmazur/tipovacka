@@ -155,7 +155,7 @@ export function EventCompareList({
         <button
           type="button"
           onClick={replayAgain}
-          className="flex items-center gap-2 self-start rounded-full border border-yellow-600/60 bg-accent/10 px-3 py-1 text-xs font-medium dark:border-accent/40"
+          className="flex items-center gap-2 self-start rounded-full glass-accent-soft border px-3 py-1 text-xs font-medium"
         >
           <RotateCcw className="size-3.5 text-yellow-700 dark:text-accent" />
           <span>
@@ -194,7 +194,7 @@ export function EventCompareList({
               // truncates, so names never shove the numbers out of line.
               "flex items-center gap-3 rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
               row.user_id === currentUserId
-                ? "border-accent bg-accent/15"
+                ? "glass-accent-soft"
                 : "glass-surface border"
             )}
           >
@@ -207,7 +207,7 @@ export function EventCompareList({
                   "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                   selected.includes(row.user_id)
                     ? "glass-accent"
-                    : "border-neutral-300 dark:border-neutral-700"
+                    : "glass-field"
                 )}
               >
                 {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}

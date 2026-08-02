@@ -39,7 +39,7 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
       {pill && (
         <span
           aria-hidden
-          className="absolute inset-y-0 rounded-full bg-white/10 ring-1 ring-inset ring-white/15 transition-all duration-300 ease-out motion-reduce:transition-none"
+          className="glass-thumb-chrome absolute inset-y-0 rounded-full transition-all duration-300 ease-out motion-reduce:transition-none"
           style={{ left: pill.left, width: pill.width }}
         />
       )}
@@ -66,10 +66,27 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
 
 export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
+
+  // The desktop nav has always slid a pill between its tabs; down here the
+  // active tab just turned yellow in place. Same measurement, same movement -
+  // the two navs are the same control at two sizes.
+  useLayoutEffect(() => {
+    const active = listRef.current?.querySelector<HTMLElement>('[data-active="true"]');
+    setPill(active ? { left: active.offsetLeft, width: active.offsetWidth } : null);
+  }, [pathname, isAdmin]);
 
   return (
     <nav className="glass-bar fixed inset-x-0 bottom-0 z-40 md:hidden">
-      <div className="mx-auto flex max-w-3xl px-6 pb-3">
+      <div ref={listRef} className="relative mx-auto flex max-w-3xl px-6 pb-3">
+        {pill && (
+          <span
+            aria-hidden
+            className="glass-accent-soft absolute bottom-3 top-0 rounded-xl border transition-all duration-300 ease-out motion-reduce:transition-none"
+            style={{ left: pill.left, width: pill.width }}
+          />
+        )}
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
@@ -77,13 +94,14 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
             <Link
               key={item.href}
               href={item.href}
+              data-active={active}
               aria-current={active ? "page" : undefined}
               className={cn(
                 // the bottom bar is white in light mode, so the active item
                 // can't use the raw accent - yellow on white is unreadable
-                "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
+                "relative z-10 mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
                 active
-                  ? "bg-accent/10 font-semibold text-yellow-700 dark:font-normal dark:text-accent"
+                  ? "font-semibold text-yellow-700 dark:font-normal dark:text-accent"
                   : "text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white"
               )}
             >
@@ -95,11 +113,12 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
         {isAdmin && (
           <Link
             href="/admin"
+            data-active={isActive(pathname, "/admin")}
             aria-current={isActive(pathname, "/admin") ? "page" : undefined}
             className={cn(
-              "mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
+              "relative z-10 mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
               isActive(pathname, "/admin")
-                ? "bg-accent/10 font-semibold text-yellow-700 dark:font-normal dark:text-accent"
+                ? "font-semibold text-yellow-700 dark:font-normal dark:text-accent"
                 : "text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white"
             )}
           >

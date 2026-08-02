@@ -130,7 +130,7 @@ function FotnSlide({
               className={cn(
                 "flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors",
                 picked
-                  ? "border-accent bg-accent/15 font-semibold"
+                  ? "glass-accent-soft border font-semibold"
                   : "glass-surface border"
               )}
             >
@@ -353,7 +353,7 @@ function FastTipCarousel({
         >
           <X className="size-5" />
         </button>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
           <div
             className="h-full rounded-full bg-accent transition-all duration-300"
             style={{ width: `${(tippedCount / slideCount) * 100}%` }}
@@ -417,7 +417,7 @@ function FastTipCarousel({
                 ? "bg-accent"
                 : tipComplete(tips[f.id])
                   ? "bg-neutral-400 dark:bg-neutral-500"
-                  : "bg-neutral-200 dark:bg-neutral-700"
+                  : "bg-black/10 dark:bg-white/10"
             )}
           />
         ))}
@@ -432,7 +432,7 @@ function FastTipCarousel({
                 ? "bg-accent"
                 : fotnId
                   ? "bg-neutral-400 dark:bg-neutral-500"
-                  : "bg-neutral-200 dark:bg-neutral-700"
+                  : "bg-black/10 dark:bg-white/10"
             )}
           />
         )}
@@ -525,7 +525,7 @@ function FightSlide({
               className={cn(
                 "flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors",
                 tip.winnerId === fighter.id
-                  ? "border-accent bg-accent/10"
+                  ? "glass-accent-soft border"
                   : "glass-surface border hover:border-neutral-400"
               )}
             >
@@ -619,8 +619,8 @@ function FightSlide({
             className={cn(
               "flex items-center justify-center gap-2 rounded-full border py-2.5 text-sm font-semibold transition-colors",
               isBold
-                ? "border-accent bg-accent/15 text-yellow-700 dark:text-accent"
-                : "border-neutral-300 text-neutral-600 hover:border-accent dark:border-neutral-600 dark:text-neutral-300"
+                ? "glass-accent-soft border text-yellow-700 dark:text-accent"
+                : "glass-pill border text-neutral-600 hover:border-accent dark:text-neutral-300"
             )}
           >
             <Star className="size-4" fill={isBold ? "currentColor" : "none"} />

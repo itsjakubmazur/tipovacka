@@ -99,7 +99,7 @@ export function BroadcastPushForm() {
           Poslat upozornění všem
         </Button>
       ) : (
-        <div className="flex flex-col gap-2 rounded-lg border border-yellow-500/40 bg-accent/10 p-3">
+        <div className="flex flex-col gap-2 rounded-lg glass-accent-soft border p-3">
           <p className="text-sm font-medium">
             Opravdu poslat všem{reach ? ` (${reach.people} ${peopleWord(reach.people)})` : ""}? Tohle se
             nedá vzít zpět.

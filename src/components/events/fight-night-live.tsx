@@ -170,7 +170,7 @@ export async function FightNightLive({
       </div>
 
       {nextUp ? (
-        <div className="flex flex-col gap-2 rounded-lg border border-yellow-600/40 bg-accent/[0.07] p-3 dark:border-accent/30">
+        <div className="flex flex-col gap-2 rounded-lg glass-accent-soft border p-3">
           <a
             href={`#fight-${nextUp.id}`}
             className="flex items-center gap-2 text-sm hover:underline"
@@ -221,7 +221,7 @@ export async function FightNightLive({
 
           {pickedFighter && (
             <div className="flex flex-wrap gap-1.5">
-              <span className="rounded-full border border-yellow-600/50 bg-accent/15 px-2.5 py-0.5 text-[11px] font-semibold dark:border-accent/40">
+              <span className="glass-accent-soft rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">
                 Ve hře až {stakeMax} b.
                 {boldOnNext && " (jistotka ×2)"}
               </span>

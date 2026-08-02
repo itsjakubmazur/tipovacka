@@ -380,7 +380,7 @@ export function EventComments({
                 <div key={item.id} className="flex flex-row-reverse items-end gap-2">
                   <span className="w-7 shrink-0" />
                   <div className="flex max-w-[80%] flex-col items-end">
-                    <div className="rounded-2xl rounded-br-md bg-accent/40 px-3 py-1.5 text-sm text-black">
+                    <div className="glass-accent rounded-2xl rounded-br-md px-3 py-1.5 text-sm opacity-60">
                       {item.gifUrl ? "GIF" : item.body}
                     </div>
                     <span className="mt-0.5 px-1 text-[10px] text-neutral-500 dark:text-neutral-400">
@@ -548,7 +548,7 @@ export function EventComments({
                                 className={cn(
                                   "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none transition-colors",
                                   mine
-                                    ? "border-accent bg-accent/15 text-yellow-800 dark:text-accent"
+                                    ? "glass-accent-soft border text-yellow-800 dark:text-accent"
                                     : "glass-surface text-neutral-600 dark:text-neutral-300"
                                 )}
                               >
@@ -585,7 +585,7 @@ export function EventComments({
                   type="button"
                   onClick={() => setGifOpen(true)}
                   aria-label="Přidat GIF"
-                  className="flex h-9 shrink-0 items-center gap-1 rounded-full border border-neutral-300 px-2.5 text-xs font-bold text-neutral-500 transition-colors hover:border-accent hover:text-yellow-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:text-accent"
+                  className="flex h-9 shrink-0 items-center gap-1 rounded-full glass-field border px-2.5 text-xs font-bold text-neutral-500 transition-colors hover:border-accent hover:text-yellow-600 dark:text-neutral-300 dark:hover:text-accent"
                 >
                   <Film className="size-4" />
                   GIF

@@ -62,7 +62,7 @@ export function SeasonCompareList({
             // (flexible, truncating) · points
             "flex items-center gap-3 rounded-xl border p-3 shadow-lg shadow-black/20 dark:shadow-black/60",
             row.user_id === currentUserId
-              ? "border-accent bg-accent/15"
+              ? "glass-accent-soft"
               : "glass-surface border"
           )}
         >
@@ -74,7 +74,7 @@ export function SeasonCompareList({
               "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
               selected.includes(row.user_id)
                 ? "glass-accent"
-                : "border-neutral-300 dark:border-neutral-700"
+                : "glass-field"
             )}
           >
             {selected.includes(row.user_id) && <Check className="size-3.5" strokeWidth={3} />}

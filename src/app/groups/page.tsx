@@ -31,7 +31,7 @@ export default async function GroupsPage() {
 
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-3">
         {groups.length === 0 && (
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-neutral-300 py-10 text-center lg:col-span-2 dark:border-neutral-700">
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-black/15 py-10 text-center lg:col-span-2 dark:border-white/15">
             <span className="flex size-11 items-center justify-center rounded-full bg-accent/15 text-yellow-600 dark:text-accent">
               <Users className="size-5" />
             </span>

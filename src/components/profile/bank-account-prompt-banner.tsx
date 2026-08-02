@@ -48,7 +48,7 @@ export function BankAccountPromptBanner() {
   if (!visible) return null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-800">
+    <div className="glass-chrome flex flex-wrap items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-white">
       <Link href="/profile" className="flex items-center gap-2 text-left" onClick={dismiss}>
         <Wallet className="size-4 shrink-0 text-accent" />
         Nastav si číslo účtu v profilu, ať můžeš vybírat výhry ze startovného.

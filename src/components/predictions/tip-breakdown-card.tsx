@@ -51,7 +51,7 @@ export function TipBreakdownCard({
       className={cn(
         "overflow-hidden rounded-xl border shadow-lg shadow-black/20 dark:shadow-black/60",
         voided
-          ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
+          ? "glass-danger"
           : "glass-surface border"
       )}
     >

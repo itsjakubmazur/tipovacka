@@ -97,7 +97,7 @@ export function TipActionBar({
         <button
           type="button"
           onClick={goToFotn}
-          className="mb-2.5 flex w-full items-center gap-1.5 rounded-lg border border-yellow-600/50 bg-accent/10 px-2.5 py-1.5 text-left text-xs font-medium dark:border-accent/40"
+          className="mb-2.5 flex w-full items-center gap-1.5 rounded-lg glass-accent-soft border px-2.5 py-1.5 text-left text-xs font-medium"
         >
           <Star className="size-3.5 shrink-0 text-yellow-700 dark:text-accent" />
           <span className="flex-1">Ještě ti chybí tip na zápas večera (+2 b.)</span>

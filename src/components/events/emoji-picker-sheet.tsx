@@ -55,7 +55,7 @@ export function EmojiPickerSheet({
         onClick={(e) => e.stopPropagation()}
         className="glass-panel border relative flex max-h-[75vh] flex-col rounded-t-2xl border-t lg:w-full lg:max-w-sm lg:rounded-2xl lg:border"
       >
-        <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
+        <div className="flex items-center justify-between border-b border-black/5 px-4 py-3 dark:border-white/10">
           <p className="text-sm font-semibold">Vyber reakci</p>
           <button
             type="button"

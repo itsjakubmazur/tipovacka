@@ -77,8 +77,8 @@ export default async function ScraperLogPage() {
         className={cn(
           "flex items-center gap-2 overflow-hidden rounded-xl border px-3 py-2 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
           lastRun == null || stale
-            ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
-            : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30"
+            ? "glass-danger"
+            : "glass-success"
         )}
       >
         <span
@@ -104,7 +104,7 @@ export default async function ScraperLogPage() {
       </div>
 
       {cardIssues.length > 0 && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm dark:border-red-900 dark:bg-red-950/40">
+        <div className="rounded-xl glass-danger border p-3 text-sm">
           <span className="font-semibold text-red-700 dark:text-red-400">
             Pozor: duplicitní pořadí zápasů
           </span>
@@ -126,7 +126,7 @@ export default async function ScraperLogPage() {
               className={cn(
                 "flex flex-col gap-1 rounded-xl border p-3 text-sm shadow-lg shadow-black/20 dark:shadow-black/60",
                 run.status === "error"
-                  ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
+                  ? "glass-danger"
                   : "glass-surface border"
               )}
             >

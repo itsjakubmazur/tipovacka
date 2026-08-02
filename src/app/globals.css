@@ -838,6 +838,142 @@ body::before {
   }
 }
 
+/* The thumb again, but for a pill riding on .glass-chrome. The light thumb is
+   a near-white lens, which on dark chrome is a spotlight rather than a pane -
+   so this is the same construction inverted. */
+.glass-thumb-chrome {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.35),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.16),
+    0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-thumb-chrome {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+}
+
+/* The quiet half of the accent: panels that want attention without shouting -
+   the payout pool, the jistotka intro, the install guide, "tipni si". They
+   were a flat bg-accent/10 wash with a yellow rim, which is a whole tier of
+   surface that the glass vocabulary skipped. Same tint, now with the gradient
+   and the specular edge every other surface carries. */
+.glass-accent-soft {
+  border-color: rgba(190, 158, 0, 0.45);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 212, 0, 0.22) 0%,
+    rgba(255, 212, 0, 0.1) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.7),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-accent-soft {
+  border-color: rgba(255, 212, 0, 0.35);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 212, 0, 0.14) 0%,
+    rgba(255, 212, 0, 0.06) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.14),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* The other two tones a tag can carry. Flat green and blue next to a lit
+   yellow made one lookup table where a third of the rows were a different
+   material. */
+.glass-green {
+  border-color: rgba(21, 128, 61, 0.5);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(34, 168, 83, 0.98) 0%,
+    rgba(21, 128, 61, 0.96) 100%
+  );
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.45),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 6px 16px -8px rgba(22, 163, 74, 0.6);
+}
+
+.glass-blue {
+  border-color: rgba(29, 78, 216, 0.5);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(80, 150, 255, 0.98) 0%,
+    rgba(37, 99, 235, 0.96) 100%
+  );
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.45),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 6px 16px -8px rgba(59, 130, 246, 0.6);
+}
+
+/* Voided fights and failed rows: red, but translucent in both themes. The old
+   pair was bg-red-50 in light and red-950/40 in dark, so the light page got an
+   opaque slab where the dark one got glass - in the *other* branch of the same
+   ternary from .glass-surface. */
+.glass-danger {
+  border-color: rgba(185, 28, 28, 0.35);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(239, 68, 68, 0.16) 0%,
+    rgba(239, 68, 68, 0.07) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-danger {
+  border-color: rgba(248, 113, 113, 0.3);
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.glass-success {
+  border-color: rgba(21, 128, 61, 0.35);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(34, 197, 94, 0.16) 0%,
+    rgba(34, 197, 94, 0.07) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-success {
+  border-color: rgba(74, 222, 128, 0.3);
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-accent-soft,
+  .glass-danger,
+  .glass-success,
+  .glass-green,
+  .glass-blue {
+    background-image: none;
+  }
+}
+
 /* A field is the one surface that should look pressed *into* the page rather
    than laid on it, so the specular runs the other way: a soft shadow along the
    inside top edge instead of a highlight, and no drop shadow at all. */

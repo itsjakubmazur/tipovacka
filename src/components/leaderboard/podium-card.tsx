@@ -14,8 +14,8 @@ const PODIUM_ORDER = [2, 1, 3];
 
 const BLOCK = {
   1: "glass-accent h-16",
-  2: "h-12 bg-neutral-300 text-black dark:bg-neutral-600 dark:text-white",
-  3: "h-9 bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white",
+  2: "glass-surface h-12 border",
+  3: "glass-surface h-9 border",
 } as const;
 
 /** The top three of a finished gala, as an actual podium.
