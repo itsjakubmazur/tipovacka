@@ -57,8 +57,8 @@ export function FightMatchup({
    * one page and the window does the scrolling, lazy loading works and stays. */
   eager?: boolean;
   /** A line that belongs *inside* the band rather than under it - "Ťukni na
-   * svého favorita". Pinned to the bottom of the gap between the cut-outs,
-   * where it costs no height at all and leaves the photos the whole row. */
+   * svého favorita". Pinned to the bottom of the band, where it costs no
+   * height at all and leaves the photos the whole row. */
   hint?: React.ReactNode;
   /** position on the card - graded results wipe in one after another down the
    * page, so coming back mid-gala reads as a sequence rather than a wall */
@@ -159,8 +159,7 @@ export function FightMatchup({
    * it. At 42% wide against a 14rem band the box is wider than any of
    * OKTAGON's portrait cut-outs, so height is what constrains them and they
    * fill the band - which is why making the band taller makes the photos
-   * bigger, rather than just adding air above them. The inner edges overlap the tape by a few percent, which
-   * the mask makes invisible. */
+   * bigger, rather than just adding air above them. */
   function cutout(fighter: Fighter, side: "a" | "b") {
     const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
     const grayedOut = isLoser || fight.status === "no_contest";
@@ -200,16 +199,12 @@ export function FightMatchup({
             // the image in its box, so widening the box - which is what lets a
             // photo fill a taller band - pushed it inward over the tape. Pinned
             // outward it grows only as far in as its own aspect ratio needs.
+            // No mask any more: the fade only ever existed to hide the cut-out
+            // running into the tale of the tape, and with the tape moved up
+            // between the heads there is nothing to hide. A photo that
+            // dissolves down one side was never the intention.
             "object-contain",
-            side === "a" ? "object-left-bottom" : "object-right-bottom",
-            // The fade belongs on the *inner* edge, the one facing the tape.
-            // It used to be on the outer edge, which softened the photo against
-            // the card border and left the inner edge hard - fine while the
-            // photos were narrow, but now that they are wide enough to reach
-            // the tape it is the overlap with the numbers that has to vanish.
-            side === "a"
-              ? "[mask-image:linear-gradient(to_left,transparent,black_28%)]"
-              : "[mask-image:linear-gradient(to_right,transparent,black_28%)]"
+            side === "a" ? "object-left-bottom" : "object-right-bottom"
           )}
         />
       </div>
@@ -279,70 +274,84 @@ export function FightMatchup({
           {cutout(fighterA, "a")}
           {cutout(fighterB, "b")}
 
-          {/* The tale of the tape, split the way the fighters are: left half
-              belongs to the fighter on the left. A grid rather than two
-              stacks, so the rows stay level even when one man's title wraps
-              and the other's does not. */}
-          <div className="absolute inset-y-0 left-1/2 flex w-[32%] -translate-x-1/2 items-center">
-            <div className="relative grid w-full grid-cols-2 gap-y-0.5 text-[11px] text-neutral-500 dark:text-neutral-400">
+          {/* Between the heads, not between the bodies.
+           *
+           * The cut-outs stand on the bottom edge, so they are widest at the
+           * shoulders and narrowest at the head - and the gap between them is
+           * the exact opposite: roomy at the top, pinched at the bottom. This
+           * block used to sit vertically centred, in the pinch, which is why
+           * the photos needed a fade masking their inner edge to stop them
+           * eating the numbers. Up here there is room for both, so the
+           * cut-outs are whole. */}
+          <div
+            className={cn(
+              "flex justify-center",
+              hasPhotos && "absolute inset-x-0 top-0"
+            )}
+          >
+            {showResult ? (
+              /* Once the fight is over, the tape is answering a question
+                 nobody is asking any more. Odds and reach are for guessing
+                 what will happen; this card now says what did. */
               <span
-                aria-hidden
-                className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
-              />
-              {/* How the fight ended, in the gap between the fighters. It used
-                  to be three labelled columns in a band of their own above the
-                  matchup - a whole row of card for four words, on every graded
-                  fight of a fourteen-fight night. Here it costs nothing: the
-                  space between two cut-outs was already empty. */}
-              {showResult && (
+                style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
+                className="animate-result-in flex flex-col items-center leading-tight"
+              >
+                <span className="text-sm font-bold uppercase tracking-tight text-black dark:text-white">
+                  {fight.method ? METHOD_LABELS[fight.method] : "—"}
+                </span>
+                <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+                  {[fight.result_round ? `${fight.result_round}. kolo` : null, fight.result_time]
+                    .filter(Boolean)
+                    .join(" · ") || "—"}
+                </span>
+              </span>
+            ) : (
+              /* Split the way the fighters are: left half belongs to the
+                 fighter on the left. A grid rather than two stacks, so the
+                 rows stay level even when one man's title wraps and the
+                 other's does not. */
+              <div className="relative grid w-[36%] grid-cols-2 gap-y-0.5 text-[11px] text-neutral-500 dark:text-neutral-400">
                 <span
-                  style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
-                  className="animate-result-in col-span-2 mb-1 flex flex-col items-center leading-tight"
-                >
-                  <span className="text-[13px] font-bold uppercase tracking-tight text-black dark:text-white">
-                    {fight.method ? METHOD_LABELS[fight.method] : "—"}
-                  </span>
-                  <span className="tabular-nums">
-                    {[
-                      fight.result_round ? `${fight.result_round}. kolo` : null,
-                      fight.result_time,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ") || "—"}
-                  </span>
-                </span>
-              )}
-              {tapeRow(rank(fighterA), rank(fighterB))}
-              {tapeRow(
-                <span className="text-xs font-bold tabular-nums text-black dark:text-white">
-                  {fighterA.record ?? "—"}
-                </span>,
-                <span className="text-xs font-bold tabular-nums text-black dark:text-white">
-                  {fighterB.record ?? "—"}
-                </span>
-              )}
-              {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) &&
-                tapeRow(
-                  <span className="tabular-nums">
-                    {fight.odds_fighter_a != null ? `kurz ${fight.odds_fighter_a.toFixed(2)}` : "—"}
+                  aria-hidden
+                  className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
+                />
+                {tapeRow(rank(fighterA), rank(fighterB))}
+                {tapeRow(
+                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
+                    {fighterA.record ?? "—"}
                   </span>,
-                  <span className="tabular-nums">
-                    {fight.odds_fighter_b != null ? `kurz ${fight.odds_fighter_b.toFixed(2)}` : "—"}
+                  <span className="text-xs font-bold tabular-nums text-black dark:text-white">
+                    {fighterB.record ?? "—"}
                   </span>
                 )}
-              {measures.map((row, i) => (
-                <Fragment key={i}>
-                  {tapeRow(
-                    <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
-                      {row.a ?? "—"}
+                {(fight.odds_fighter_a != null || fight.odds_fighter_b != null) &&
+                  tapeRow(
+                    <span className="tabular-nums">
+                      {fight.odds_fighter_a != null
+                        ? `kurz ${fight.odds_fighter_a.toFixed(2)}`
+                        : "—"}
                     </span>,
-                    <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
-                      {row.b ?? "—"}
+                    <span className="tabular-nums">
+                      {fight.odds_fighter_b != null
+                        ? `kurz ${fight.odds_fighter_b.toFixed(2)}`
+                        : "—"}
                     </span>
                   )}
-                </Fragment>
-              ))}
-            </div>
+                {measures.map((row, i) => (
+                  <Fragment key={i}>
+                    {tapeRow(
+                      <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
+                        {row.a ?? "—"}
+                      </span>,
+                      <span className="tabular-nums text-neutral-400 dark:text-neutral-500">
+                        {row.b ?? "—"}
+                      </span>
+                    )}
+                  </Fragment>
+                ))}
+              </div>
+            )}
           </div>
 
           {hint && (
