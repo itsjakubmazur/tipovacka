@@ -476,7 +476,7 @@ export function FightTipCard({
 
       {!effectiveLocked && !winnerId && (
         <p className="px-4 pb-1 text-center text-xs text-neutral-500 dark:text-neutral-400">
-          Ťukni na zápasníka, na kterého sázíš
+          Ťukni na svého favorita
         </p>
       )}
 
