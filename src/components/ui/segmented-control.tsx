@@ -73,7 +73,7 @@ export function SegmentedControl({
   return (
     <div
       ref={scrollRef}
-      role="tablist"
+      role="group"
       aria-label={ariaLabel}
       className={cn(
         "relative flex gap-1.5 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
@@ -101,9 +101,10 @@ export function SegmentedControl({
           if (el) segmentRefs.current.set(segment.key, el);
           else segmentRefs.current.delete(segment.key);
         };
+        // Not role="tab": a tablist promises tabpanels, and these switch a
+        // route or a form mode, not panels. A link that is the page you are on
+        // says aria-current; a button that is stuck on says aria-pressed.
         const shared = {
-          role: "tab" as const,
-          "aria-selected": active,
           title: segment.title,
           className: cn(
             "relative z-10 flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-semibold outline-none transition-[color,transform] duration-300 ease-out active:scale-95 focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none",
@@ -118,12 +119,19 @@ export function SegmentedControl({
         };
 
         return segment.href ? (
-          <Link key={segment.key} ref={ref} href={segment.href} {...shared} />
+          <Link
+            key={segment.key}
+            ref={ref}
+            href={segment.href}
+            aria-current={active ? "page" : undefined}
+            {...shared}
+          />
         ) : (
           <button
             key={segment.key}
             ref={ref}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange?.(segment.key)}
             {...shared}
           />
