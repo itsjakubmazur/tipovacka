@@ -21,5 +21,7 @@ const LIMIT_BY_NORMALIZED = new Map(
 export function weightClassLabel(weightClass: string | null) {
   if (!weightClass) return null;
   const limit = LIMIT_BY_NORMALIZED.get(weightClass.trim().toLowerCase());
-  return limit ? `${weightClass} · do ${limit.toString().replace(".", ",")} kg` : weightClass;
+  // Just the number in brackets - the header row is one line and "do ... kg"
+  // spent three words saying what a weight in brackets already says.
+  return limit ? `${weightClass} (${limit.toString().replace(".", ",")} kg)` : weightClass;
 }
