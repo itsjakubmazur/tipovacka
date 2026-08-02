@@ -37,6 +37,7 @@ export function FightMatchup({
   onPick,
   disabled,
   eager,
+  hint,
   revealIndex = 0,
 }: {
   fight: Fight;
@@ -55,6 +56,10 @@ export function FightMatchup({
    * one fighter and a blank half. On the event page, where ten cards are on
    * one page and the window does the scrolling, lazy loading works and stays. */
   eager?: boolean;
+  /** A line that belongs *inside* the band rather than under it - "Ťukni na
+   * svého favorita". Pinned to the bottom of the gap between the cut-outs,
+   * where it costs no height at all and leaves the photos the whole row. */
+  hint?: React.ReactNode;
   /** position on the card - graded results wipe in one after another down the
    * page, so coming back mid-gala reads as a sequence rather than a wall */
   revealIndex?: number;
@@ -151,9 +156,10 @@ export function FightMatchup({
 
   /** The photo has to be wider than its own aspect ratio needs, otherwise
    * object-contain sizes it by width and leaves a band of empty card above
-   * it. At 34% wide against an 11rem band the box is wider than any of
+   * it. At 42% wide against a 14rem band the box is wider than any of
    * OKTAGON's portrait cut-outs, so height is what constrains them and they
-   * fill the band. The inner edges overlap the tape by a few percent, which
+   * fill the band - which is why making the band taller makes the photos
+   * bigger, rather than just adding air above them. The inner edges overlap the tape by a few percent, which
    * the mask makes invisible. */
   function cutout(fighter: Fighter, side: "a" | "b") {
     const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
@@ -178,7 +184,7 @@ export function FightMatchup({
       // grey halves were the ones that stayed blank.
       <div
         className={cn(
-          "absolute bottom-0 h-full w-[34%] [transform:translate3d(0,0,0)] transition-[filter,opacity] duration-500 motion-reduce:transition-none",
+          "absolute bottom-0 h-full w-[42%] [transform:translate3d(0,0,0)] transition-[filter,opacity] duration-500 motion-reduce:transition-none",
           side === "a" ? "left-0" : "right-0",
           grayedOut && "opacity-60 grayscale"
         )}
@@ -190,12 +196,20 @@ export function FightMatchup({
           sizes="200px"
           loading={eager ? "eager" : undefined}
           className={cn(
-            "object-contain object-bottom",
-            // softens the edge of any photo that turns out to have a
-            // background baked in rather than a clean cut-out
+            // Anchored to the *outer* edge, not centred. object-contain centres
+            // the image in its box, so widening the box - which is what lets a
+            // photo fill a taller band - pushed it inward over the tape. Pinned
+            // outward it grows only as far in as its own aspect ratio needs.
+            "object-contain",
+            side === "a" ? "object-left-bottom" : "object-right-bottom",
+            // The fade belongs on the *inner* edge, the one facing the tape.
+            // It used to be on the outer edge, which softened the photo against
+            // the card border and left the inner edge hard - fine while the
+            // photos were narrow, but now that they are wide enough to reach
+            // the tape it is the overlap with the numbers that has to vanish.
             side === "a"
-              ? "[mask-image:linear-gradient(to_right,transparent,black_10%)]"
-              : "[mask-image:linear-gradient(to_left,transparent,black_10%)]"
+              ? "[mask-image:linear-gradient(to_left,transparent,black_28%)]"
+              : "[mask-image:linear-gradient(to_right,transparent,black_28%)]"
           )}
         />
       </div>
@@ -261,7 +275,7 @@ export function FightMatchup({
           {nameLine(fighterB, "b")}
         </div>
 
-        <div className={cn("relative mt-1.5", hasPhotos && "min-h-[11rem]")}>
+        <div className={cn("relative mt-1.5", hasPhotos && "min-h-[14rem]")}>
           {cutout(fighterA, "a")}
           {cutout(fighterB, "b")}
 
@@ -330,6 +344,17 @@ export function FightMatchup({
               ))}
             </div>
           </div>
+
+          {hint && (
+            <p className="absolute inset-x-0 bottom-0 z-20 flex justify-center">
+              {/* on a pill, because it now sits over the photos rather than in
+                  a row of its own, and a bare grey line vanishes against a
+                  fighter's shorts */}
+              <span className="glass-pill rounded-full border px-2.5 py-0.5 text-xs text-neutral-600 dark:text-neutral-300">
+                {hint}
+              </span>
+            </p>
+          )}
 
           {/* Several tags can land on one fighter - you tipped the one who won
               - so they stack instead of sharing a corner. */}

@@ -428,6 +428,7 @@ export function FightTipCard({
       <FightMatchup
         fight={fight}
         revealIndex={revealIndex}
+        hint={!effectiveLocked && !winnerId ? "Ťukni na svého favorita" : undefined}
         onPick={effectiveLocked ? undefined : selectWinner}
         highlight={winnerId ? [{ fighterId: winnerId, tone: "accent" }] : undefined}
         tags={[
@@ -446,24 +447,8 @@ export function FightTipCard({
         ]}
       />
 
-      {!effectiveLocked && !winnerId && (
-        <p className="px-4 pb-1 text-center text-xs text-neutral-500 dark:text-neutral-400">
-          Ťukni na svého favorita
-        </p>
-      )}
-
       <div className="flex flex-col gap-3 px-4 pb-3 pt-3">
         <div>
-          <p
-            className={cn(
-              "mb-1.5 text-xs font-medium uppercase",
-              tipInProgress && !method
-                ? "text-yellow-700 dark:text-accent"
-                : "text-neutral-500 dark:text-neutral-300"
-            )}
-          >
-            Způsob
-          </p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(METHOD_LABELS) as Method[]).map((m) => (
               <Pill
