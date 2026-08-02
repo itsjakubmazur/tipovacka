@@ -136,6 +136,12 @@ export function FightMatchup({
     );
   }
 
+  /** The photo has to be wider than its own aspect ratio needs, otherwise
+   * object-contain sizes it by width and leaves a band of empty card above
+   * it. At 34% wide against an 11rem band the box is wider than any of
+   * OKTAGON's portrait cut-outs, so height is what constrains them and they
+   * fill the band. The inner edges overlap the tape by a few percent, which
+   * the mask makes invisible. */
   function cutout(fighter: Fighter, side: "a" | "b") {
     const isLoser = showResult && fight.winner_fighter_id !== fighter.id;
     const grayedOut = isLoser || fight.status === "no_contest";
@@ -145,7 +151,7 @@ export function FightMatchup({
     const src = fighter.photo_url ?? fighter.fight_card_photo_url;
     if (!src || fighter.is_tba) return null;
     return (
-      <div className={cn("absolute bottom-0 h-full w-[27%]", side === "a" ? "left-0" : "right-0")}>
+      <div className={cn("absolute bottom-0 h-full w-[34%]", side === "a" ? "left-0" : "right-0")}>
         <Image
           src={src}
           alt={fighter.name}
@@ -219,7 +225,7 @@ export function FightMatchup({
           {nameLine(fighterB, "b")}
         </div>
 
-        <div className={cn("relative mt-1.5", hasPhotos && "min-h-[13rem]")}>
+        <div className={cn("relative mt-1.5", hasPhotos && "min-h-[11rem]")}>
           {cutout(fighterA, "a")}
           {cutout(fighterB, "b")}
 
@@ -227,7 +233,7 @@ export function FightMatchup({
               belongs to the fighter on the left. A grid rather than two
               stacks, so the rows stay level even when one man's title wraps
               and the other's does not. */}
-          <div className="absolute inset-y-0 left-1/2 flex w-[44%] -translate-x-1/2 items-center">
+          <div className="absolute inset-y-0 left-1/2 flex w-[40%] -translate-x-1/2 items-center">
             <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-0.5 text-center text-[11px] text-neutral-500 dark:text-neutral-400">
               <span
                 aria-hidden
