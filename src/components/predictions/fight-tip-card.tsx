@@ -42,7 +42,7 @@ function Pill({
             ? "border border-green-600 bg-green-600/20 font-semibold text-green-800 dark:border-green-500 dark:text-green-300"
             : outcome === "miss"
               ? "border border-red-500/70 bg-red-500/15 font-semibold text-red-700 dark:text-red-300"
-              : "border border-accent bg-accent text-black transition-colors"
+              : "glass-accent border"
       )}
     >
       {children}

@@ -88,20 +88,48 @@ body::before {
   }
 }
 
+/* The splash lettering, cut out of glass rather than painted flat.
+
+   Two background layers clipped to the glyphs, and only the top one moves:
+   1. the sweep - a narrow accent band with a white specular running through
+      its middle, which is the light travelling across the letters
+   2. the body of the glass underneath, brighter along the top edge and
+      falling off toward the baseline, exactly the vertical gradient every
+      other glass surface in the app carries
+
+   The lift comes from drop-shadow on the element rather than text-shadow: the
+   glyphs are filled with transparent + background-clip, so a text-shadow
+   would be painted *behind* them and show straight through. */
 .brand-loader {
-  background-image: linear-gradient(
-    100deg,
-    var(--foreground) 0%,
-    var(--foreground) 38%,
-    var(--accent) 50%,
-    var(--foreground) 62%,
-    var(--foreground) 100%
-  );
-  background-size: 200% 100%;
+  background-image:
+    linear-gradient(
+      100deg,
+      transparent 34%,
+      color-mix(in srgb, var(--accent) 70%, transparent) 43%,
+      rgba(255, 255, 255, 0.95) 50%,
+      color-mix(in srgb, var(--accent) 70%, transparent) 57%,
+      transparent 66%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--foreground) 72%, transparent) 0%,
+      var(--foreground) 45%,
+      color-mix(in srgb, var(--foreground) 88%, transparent) 100%
+    );
+  background-size:
+    200% 100%,
+    100% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35))
+    drop-shadow(0 6px 18px rgba(0, 0, 0, 0.28));
   animation: brand-shimmer 1.6s linear infinite;
+}
+
+.dark .brand-loader {
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.14))
+    drop-shadow(0 6px 22px rgba(255, 212, 0, 0.22));
 }
 
 /* Failsafe for the splash overlay: even if the JS bundle never loads
@@ -153,6 +181,7 @@ body::before {
     background-clip: initial;
     -webkit-background-clip: initial;
     color: var(--foreground);
+    filter: none;
   }
   .animate-ping {
     animation: none;
@@ -764,6 +793,49 @@ body::before {
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.08),
     0 2px 6px rgba(0, 0, 0, 0.5),
     0 24px 60px -20px rgba(0, 0, 0, 0.85);
+}
+
+/* The accent, as glass. Everything you have actively chosen - the method, the
+   round, the jump-to-untipped button - used to be a flat slab of #ffd400. Same
+   yellow, but lit: brighter along the top where the light catches it, a rim to
+   give it an edge, and a soft accent-coloured glow underneath so it lifts off
+   the card. The type stays black, so it survives at any brightness.
+
+   The gradient stays near-opaque on purpose. A chosen pill is the loudest
+   thing on a fight card and has to keep reading as chosen from arm's length -
+   this is glass for the sake of the light on it, not for what shows through. */
+.glass-accent {
+  border-color: rgba(190, 158, 0, 0.55);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 226, 77, 0.98) 0%,
+    rgba(255, 212, 0, 0.94) 55%,
+    rgba(232, 190, 0, 0.96) 100%
+  );
+  color: #000;
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0.5px 0 rgba(140, 115, 0, 0.25),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 6px 16px -8px rgba(255, 212, 0, 0.75);
+}
+
+.dark .glass-accent {
+  border-color: rgba(255, 212, 0, 0.5);
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0.5px 0 rgba(140, 115, 0, 0.3),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 6px 20px -8px rgba(255, 212, 0, 0.55);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-accent {
+    background-image: none;
+    background-color: var(--accent);
+  }
 }
 
 /* A field is the one surface that should look pressed *into* the page rather

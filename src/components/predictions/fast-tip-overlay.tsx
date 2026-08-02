@@ -586,7 +586,7 @@ function FightSlide({
                 onClick={() => onPickMethod(m)}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium",
-                  tip.method === m ? "border border-accent bg-accent text-black" : GLASS_PILL
+                  tip.method === m ? "glass-accent border" : GLASS_PILL
                 )}
               >
                 {METHOD_LABELS[m]}
@@ -602,7 +602,7 @@ function FightSlide({
                   onClick={() => onPickRound(r)}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium",
-                    tip.round === r ? "border border-accent bg-accent text-black" : GLASS_PILL
+                    tip.round === r ? "glass-accent border" : GLASS_PILL
                   )}
                 >
                   {r}. kolo

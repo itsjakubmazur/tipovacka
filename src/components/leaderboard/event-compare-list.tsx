@@ -206,7 +206,7 @@ export function EventCompareList({
                 className={cn(
                   "flex size-5 shrink-0 items-center justify-center rounded-md border outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                   selected.includes(row.user_id)
-                    ? "border-accent bg-accent text-black"
+                    ? "glass-accent"
                     : "border-neutral-300 dark:border-neutral-700"
                 )}
               >
