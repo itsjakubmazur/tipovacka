@@ -159,7 +159,18 @@ export function FightMatchup({
     const src = fighter.photo_url ?? fighter.fight_card_photo_url;
     if (!src || fighter.is_tba) return null;
     return (
-      <div className={cn("absolute bottom-0 h-full w-[34%]", side === "a" ? "left-0" : "right-0")}>
+      // The grey-out lives here and the mask lives on the image, deliberately
+      // one element apart. WebKit fails to paint a layer that carries a
+      // mask-image *and* a filter at once - which is why the loser's photo, the
+      // only one with a filter, came up blank on iPhones while the winner next
+      // to it was fine and both rendered on a desktop.
+      <div
+        className={cn(
+          "absolute bottom-0 h-full w-[34%] transition-[filter,opacity] duration-500 motion-reduce:transition-none",
+          side === "a" ? "left-0" : "right-0",
+          grayedOut && "opacity-60 grayscale"
+        )}
+      >
         <Image
           src={src}
           alt={fighter.name}
@@ -167,13 +178,12 @@ export function FightMatchup({
           sizes="200px"
           loading={eager ? "eager" : undefined}
           className={cn(
-            "object-contain object-bottom transition-[filter,opacity] duration-500 motion-reduce:transition-none",
+            "object-contain object-bottom",
             // softens the edge of any photo that turns out to have a
             // background baked in rather than a clean cut-out
             side === "a"
               ? "[mask-image:linear-gradient(to_right,transparent,black_10%)]"
-              : "[mask-image:linear-gradient(to_left,transparent,black_10%)]",
-            grayedOut && "opacity-60 grayscale"
+              : "[mask-image:linear-gradient(to_left,transparent,black_10%)]"
           )}
         />
       </div>
