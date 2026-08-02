@@ -202,11 +202,15 @@ export function FightMatchup({
     );
   }
 
+  /** Each value hugs the divider rather than centring in its own half. Centred,
+   * the outer ends of the longest lines - "kurz 1.20", "Šampion" - reached out
+   * over the cut-outs; against the divider they grow inward, into the gap
+   * that is empty anyway. */
   function tapeRow(left: React.ReactNode, right: React.ReactNode) {
     return (
       <>
-        <span className="flex items-center justify-center pr-1 text-center leading-tight">{left}</span>
-        <span className="flex items-center justify-center pl-1 text-center leading-tight">{right}</span>
+        <span className="flex items-center justify-end pr-1.5 text-right leading-tight">{left}</span>
+        <span className="flex items-center justify-start pl-1.5 text-left leading-tight">{right}</span>
       </>
     );
   }
@@ -265,8 +269,8 @@ export function FightMatchup({
               belongs to the fighter on the left. A grid rather than two
               stacks, so the rows stay level even when one man's title wraps
               and the other's does not. */}
-          <div className="absolute inset-y-0 left-1/2 flex w-[40%] -translate-x-1/2 items-center">
-            <div className="relative grid w-full grid-cols-2 gap-x-2 gap-y-0.5 text-center text-[11px] text-neutral-500 dark:text-neutral-400">
+          <div className="absolute inset-y-0 left-1/2 flex w-[32%] -translate-x-1/2 items-center">
+            <div className="relative grid w-full grid-cols-2 gap-y-0.5 text-[11px] text-neutral-500 dark:text-neutral-400">
               <span
                 aria-hidden
                 className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/10 dark:bg-white/15"
