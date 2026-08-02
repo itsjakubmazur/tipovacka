@@ -163,7 +163,7 @@ export function EventSettingsForm({
             id="status"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="h-10 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 text-sm"
+            className="h-10 glass-field rounded-md border px-3 text-sm"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

@@ -76,7 +76,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        className="glass-surface animate-modal-panel relative flex max-h-[85vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl border bg-white/95 p-5 outline-none dark:bg-neutral-900/95 [-webkit-overflow-scrolling:touch]"
+        className="glass-panel animate-modal-panel relative flex max-h-[85vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl border p-5 outline-none [-webkit-overflow-scrolling:touch]"
         onClick={(e) => e.stopPropagation()}
       >
         <button

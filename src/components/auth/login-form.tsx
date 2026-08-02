@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 type Mode = "login" | "register" | "reset";
 
@@ -151,29 +152,17 @@ export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-      <div className="flex rounded-md border border-neutral-300 dark:border-neutral-700 p-1 text-sm">
-        <button
-          type="button"
-          onClick={() => setMode("login")}
-          className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
-            mode === "login"
-              ? "bg-accent text-black"
-              : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
-          }`}
-        >
-          Přihlášení
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("register")}
-          className={`flex-1 rounded-md py-1.5 font-medium transition-colors ${
-            mode === "register"
-              ? "bg-accent text-black"
-              : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
-          }`}
-        >
-          Registrace
-        </button>
+      <div className="glass-floating rounded-full p-1">
+        <SegmentedControl
+          value={mode}
+          onChange={(key) => setMode(key as "login" | "register")}
+          ariaLabel="Přihlášení nebo registrace"
+          className="[&>*]:flex-1"
+          segments={[
+            { key: "login", label: "Přihlášení" },
+            { key: "register", label: "Registrace" },
+          ]}
+        />
       </div>
 
       {mode === "register" && (

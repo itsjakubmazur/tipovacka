@@ -17,6 +17,7 @@ import { Disclosure } from "@/components/ui/disclosure";
 import { SlideOnChange } from "@/components/ui/slide-on-change";
 import { RankJourney } from "@/components/leaderboard/rank-journey";
 import { PageHeading } from "@/components/ui/page-heading";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 type EventLeaderboardRow = {
   user_id: string;
@@ -235,35 +236,36 @@ export default async function LeaderboardPage({
         Žebříček
       </PageHeading>
 
-      <div className="flex gap-2">
-        <Link
-          href={`/leaderboard?view=event&eventId=${selectedEvent.id}`}
-          className={cn(
-            "rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "event" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
-          )}
-        >
-          Galavečer
-        </Link>
-        <Link
-          href={`/leaderboard?view=season&eventId=${selectedEvent.id}`}
-          className={cn(
-            "rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "season" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
-          )}
-        >
-          Sezóna {season}
-        </Link>
-        <Link
-          href="/leaderboard?view=history"
-          className={cn(
-            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
-            view === "history" ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
-          )}
-        >
-          <Landmark className="size-4" />
-          Síň slávy
-        </Link>
+      {/* One capsule with a piece of glass sliding between the three views,
+          the same control the fight card's section jumper uses - rather than
+          three loose pills where the active one turns yellow. */}
+      <div className="glass-floating inline-flex max-w-full rounded-full p-1">
+        <SegmentedControl
+          value={view}
+          ariaLabel="Zobrazení žebříčku"
+          segments={[
+            {
+              key: "event",
+              label: "Galavečer",
+              href: `/leaderboard?view=event&eventId=${selectedEvent.id}`,
+            },
+            {
+              key: "season",
+              label: `Sezóna ${season}`,
+              href: `/leaderboard?view=season&eventId=${selectedEvent.id}`,
+            },
+            {
+              key: "history",
+              label: (
+                <>
+                  <Landmark className="size-4" />
+                  Síň slávy
+                </>
+              ),
+              href: "/leaderboard?view=history",
+            },
+          ]}
+        />
       </div>
 
       {/* the gala switcher belongs right under the Galavečer tab that turns it

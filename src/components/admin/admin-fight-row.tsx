@@ -147,7 +147,7 @@ export function AdminFightRow({
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
+            className="h-9 glass-field rounded-md border px-2 text-sm"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -164,7 +164,7 @@ export function AdminFightRow({
               <select
                 value={winnerId}
                 onChange={(e) => setWinnerId(e.target.value)}
-                className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
+                className="h-9 glass-field rounded-md border px-2 text-sm"
               >
                 <option value="">—</option>
                 <option value={fight.fighter_a.id}>{fight.fighter_a.name}</option>
@@ -176,7 +176,7 @@ export function AdminFightRow({
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value as Method)}
-                className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
+                className="h-9 glass-field rounded-md border px-2 text-sm"
               >
                 <option value="">—</option>
                 {METHOD_OPTIONS.map((opt) => (
@@ -192,7 +192,7 @@ export function AdminFightRow({
                 <select
                   value={round}
                   onChange={(e) => setRound(e.target.value)}
-                  className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
+                  className="h-9 glass-field rounded-md border px-2 text-sm"
                 >
                   <option value="">—</option>
                   {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (

@@ -333,7 +333,7 @@ export function EventComments({
               "relative flex flex-col overflow-hidden",
               docked
                 ? "glass-surface min-h-[14rem] flex-1 rounded-xl border"
-                : "glass-surface border animate-modal-panel rounded-t-2xl border-t"
+                : "glass-panel border animate-modal-panel rounded-t-2xl border-t"
             )}
           >
             {/* grab handle */}
@@ -473,7 +473,7 @@ export function EventComments({
                               "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
                               isOwn
                                 ? "rounded-2xl rounded-br-md bg-accent text-black"
-                                : "rounded-2xl rounded-bl-md border border-white/50 bg-white/60 text-neutral-800 backdrop-blur-sm dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:text-neutral-100"
+                                : "glass-surface rounded-2xl rounded-bl-md border text-neutral-800 dark:text-neutral-100"
                             )}
                           >
                             {comment.body}
@@ -597,7 +597,7 @@ export function EventComments({
                 placeholder="Napiš něco ostatním…"
                 // 16px minimum: anything smaller makes iOS Safari zoom the
                 // whole page in when the field takes focus
-                className="min-w-0 flex-1 rounded-full border border-white/50 bg-white/60 px-4 py-2 text-base outline-none backdrop-blur-sm transition-colors placeholder:text-neutral-400 focus-visible:border-accent focus-visible:bg-white/90 dark:border-neutral-700/50 dark:bg-neutral-800/60 dark:focus-visible:bg-neutral-950/80"
+                className="glass-field min-w-0 flex-1 rounded-full border px-4 py-2 text-base outline-none transition-colors placeholder:text-neutral-400 focus-visible:border-accent"
               />
               <button
                 type="submit"

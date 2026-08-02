@@ -61,7 +61,7 @@ export function AdminFotnForm({
         <select
           value={fightId}
           onChange={(e) => setFightId(e.target.value)}
-          className="h-9 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 text-sm"
+          className="h-9 glass-field rounded-md border px-2 text-sm"
         >
           <option value="">—</option>
           {fights.map((fight) => (

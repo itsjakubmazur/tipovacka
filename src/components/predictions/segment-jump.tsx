@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 /** how far under the app header a heading has to travel before that segment
  * counts as the one you're reading */
@@ -109,7 +110,18 @@ export function SegmentJump({
 
   if (segments.length < 2) return null;
 
-  const bar = <Bar segments={segments} progress={progress} />;
+  const bar = (
+    <SegmentedControl
+      segments={segments}
+      value={progress.key}
+      fill={progress.ratio}
+      size="sm"
+      ariaLabel="Sekce karty"
+      onChange={(key) =>
+        document.getElementById(`segment-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+    />
+  );
 
   if (floating) {
     // Through a portal on purpose: in the page it would be a child of
@@ -149,101 +161,6 @@ export function SegmentJump({
       <div className="glass-floating inline-block max-w-full rounded-full p-1">
         {bar}
       </div>
-    </div>
-  );
-}
-
-/** The pills themselves, plus the thumb that slides between them. The thumb
- * is one element that moves rather than a colour swapped on each pill: you
- * see the jump happen, and it carries a fill showing how far through the
- * section you've read. */
-function Bar({
-  segments,
-  progress,
-}: {
-  segments: { key: string; label: string }[];
-  progress: Progress;
-}) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const pillRefs = useRef(new Map<string, HTMLButtonElement>());
-  const [thumb, setThumb] = useState<{ left: number; width: number } | null>(null);
-
-  const activeKey = progress.key;
-
-  const place = useCallback(() => {
-    const el = activeKey ? pillRefs.current.get(activeKey) : null;
-    const scroller = scrollRef.current;
-    if (!el || !scroller) return;
-    setThumb((prev) =>
-      prev && prev.left === el.offsetLeft && prev.width === el.offsetWidth
-        ? prev
-        : { left: el.offsetLeft, width: el.offsetWidth }
-    );
-    // keep the active pill in view when the row is wider than the screen
-    const overflowLeft = el.offsetLeft - scroller.scrollLeft;
-    const overflowRight = overflowLeft + el.offsetWidth - scroller.clientWidth;
-    if (overflowLeft < 0) scroller.scrollBy({ left: overflowLeft - 8, behavior: "smooth" });
-    else if (overflowRight > 0) scroller.scrollBy({ left: overflowRight + 8, behavior: "smooth" });
-  }, [activeKey]);
-
-  useEffect(() => {
-    place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, [place]);
-
-  return (
-    <div
-      ref={scrollRef}
-      className="relative flex gap-1.5 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {thumb && (
-        <div
-          aria-hidden
-          className="glass-thumb pointer-events-none absolute inset-y-0 overflow-hidden rounded-full transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
-          style={{
-            width: thumb.width,
-            transform: `translateX(${thumb.left}px)`,
-          }}
-        >
-          {/* fills left to right as you read through the section - the bar
-              stops being just a label and starts being a progress meter */}
-          <div
-            className="h-full rounded-full bg-black/[0.06] transition-[width] duration-150 ease-linear motion-reduce:transition-none dark:bg-white/15"
-            style={{ width: `${Math.round(progress.ratio * 100)}%` }}
-          />
-        </div>
-      )}
-
-      {segments.map((segment) => {
-        const active = segment.key === activeKey;
-        return (
-          <button
-            key={segment.key}
-            ref={(el) => {
-              if (el) pillRefs.current.set(segment.key, el);
-              else pillRefs.current.delete(segment.key);
-            }}
-            type="button"
-            aria-current={active ? "true" : undefined}
-            onClick={() =>
-              document
-                .getElementById(`segment-${segment.key}`)
-                ?.scrollIntoView({ behavior: "smooth", block: "start" })
-            }
-            className={cn(
-              "relative z-10 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold outline-none transition-[color,transform] duration-300 ease-out active:scale-95 focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none",
-              // the thumb is light glass now, not a black fill - white type on
-              // it was invisible
-              active
-                ? "text-neutral-900 dark:text-white"
-                : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
-            )}
-          >
-            {segment.label}
-          </button>
-        );
-      })}
     </div>
   );
 }
