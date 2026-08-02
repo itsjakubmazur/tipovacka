@@ -87,7 +87,7 @@ export function InviteCodeCard() {
 
       {!editing ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md border border-neutral-300 bg-white px-3 py-1.5 font-mono text-sm dark:border-neutral-600 dark:bg-neutral-950">
+          <span className="glass-field rounded-md border px-3 py-1.5 font-mono text-sm">
             {code ?? "…"}
           </span>
           <Button type="button" variant="accent" size="sm" onClick={shareInvite} disabled={!code}>

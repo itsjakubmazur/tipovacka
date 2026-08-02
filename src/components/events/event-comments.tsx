@@ -506,7 +506,7 @@ export function EventComments({
                         {reactingTo === comment.id && (
                           <div
                             className={cn(
-                              "absolute bottom-full z-10 mb-1 flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900",
+                              "glass-panel absolute bottom-full z-10 mb-1 flex items-center gap-1 rounded-full border px-2 py-1",
                               isOwn ? "right-0" : "left-0"
                             )}
                           >
@@ -549,7 +549,7 @@ export function EventComments({
                                   "flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs leading-none transition-colors",
                                   mine
                                     ? "border-accent bg-accent/15 text-yellow-800 dark:text-accent"
-                                    : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300"
+                                    : "glass-surface text-neutral-600 dark:text-neutral-300"
                                 )}
                               >
                                 <EmojiGlyph native={emoji} size={13} />

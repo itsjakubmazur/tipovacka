@@ -38,7 +38,7 @@ export function FighterPortrait({
         <div className="pb-[133.33%]" />
         <div
           className={cn(
-            "absolute inset-0 flex items-center justify-center rounded-xl bg-neutral-100 text-neutral-400 dark:bg-neutral-800/50 dark:text-neutral-500",
+            "glass-surface absolute inset-0 flex items-center justify-center rounded-xl border text-neutral-400 dark:text-neutral-500",
             className
           )}
         >
@@ -84,7 +84,7 @@ export function FighterPortrait({
       <div className="pb-[133.33%]" />
       <div
         className={cn(
-          "absolute inset-0 flex items-center justify-center rounded-xl bg-neutral-100 text-2xl font-semibold text-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-300",
+          "glass-surface absolute inset-0 flex items-center justify-center rounded-xl border text-2xl font-semibold text-neutral-700 dark:text-neutral-300",
           className
         )}
       >

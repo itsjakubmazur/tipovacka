@@ -79,7 +79,7 @@ export function BroadcastPushForm() {
         onChange={(e) => setBody(e.target.value)}
         maxLength={250}
         rows={3}
-        className="rounded-md border border-neutral-300 bg-white p-2 text-sm outline-none placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-black dark:border-neutral-700 dark:bg-neutral-900 dark:focus-visible:ring-white"
+        className="glass-field rounded-md border p-2 text-sm outline-none placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white"
       />
       <Input
         placeholder="Odkaz po kliknutí (volitelné, např. /events)"
