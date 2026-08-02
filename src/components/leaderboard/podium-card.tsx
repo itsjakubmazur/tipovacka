@@ -13,7 +13,7 @@ type Place = { rank: number; userId: string; nick: string; points: number };
 const PODIUM_ORDER = [2, 1, 3];
 
 const BLOCK = {
-  1: "h-16 bg-accent text-black",
+  1: "glass-accent h-16",
   2: "h-12 bg-neutral-300 text-black dark:bg-neutral-600 dark:text-white",
   3: "h-9 bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white",
 } as const;

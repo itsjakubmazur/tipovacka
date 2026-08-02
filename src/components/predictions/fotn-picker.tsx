@@ -81,7 +81,7 @@ export function FotnPicker({
           <Swords className="size-4 text-yellow-600 dark:text-accent" />
           Bonus tip: Fight of the Night
           {!locked && !pickedId && (
-            <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-black">
+            <span className="glass-accent rounded-full px-1.5 py-0.5 text-[10px] font-bold">
               +2 b.
             </span>
           )}

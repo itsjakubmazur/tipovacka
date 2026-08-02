@@ -311,7 +311,7 @@ export function EventComments({
         >
           <MessageCircle className="size-5" />
           {unread > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-black">
+            <span className="glass-accent absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
@@ -472,7 +472,7 @@ export function EventComments({
                             className={cn(
                               "whitespace-pre-wrap break-words px-3 py-1.5 text-sm shadow-sm",
                               isOwn
-                                ? "rounded-2xl rounded-br-md bg-accent text-black"
+                                ? "glass-accent rounded-2xl rounded-br-md"
                                 : "glass-surface rounded-2xl rounded-bl-md border text-neutral-800 dark:text-neutral-100"
                             )}
                           >
@@ -603,7 +603,7 @@ export function EventComments({
                 type="submit"
                 disabled={sending || !body.trim()}
                 aria-label="Odeslat"
-                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-black transition-transform hover:bg-[#e6bf00] active:scale-90 disabled:opacity-40"
+                className="glass-accent flex size-9 shrink-0 items-center justify-center rounded-full transition-transform active:scale-90 disabled:opacity-40"
               >
                 <Send className="size-4" />
               </button>

@@ -54,7 +54,7 @@ export function WelcomeCard() {
         <Link
           href="/pravidla"
           onClick={dismiss}
-          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-sm font-semibold text-black transition-colors hover:brightness-95"
+          className="glass-accent inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold"
         >
           <BookOpen className="size-4" />
           Jak se hraje

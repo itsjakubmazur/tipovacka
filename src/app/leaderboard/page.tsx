@@ -271,21 +271,17 @@ export default async function LeaderboardPage({
       {/* the gala switcher belongs right under the Galavečer tab that turns it
           on, not off in the side rail */}
       {view === "event" && (
-        <div className="flex flex-wrap gap-2">
-          {events.map((event) => (
-            <Link
-              key={event.id}
-              href={`/leaderboard?view=event&eventId=${event.id}`}
-              className={cn(
-                "rounded-full px-3 py-1 text-xs font-medium",
-                event.id === selectedEvent.id
-                  ? "border border-neutral-700 bg-neutral-900 text-white transition-colors"
-                  : GLASS_PILL
-              )}
-            >
-              {event.number ? `OKTAGON ${event.number}` : event.name}
-            </Link>
-          ))}
+        <div className="glass-floating inline-flex max-w-full rounded-full p-1">
+          <SegmentedControl
+            value={selectedEvent.id}
+            size="sm"
+            ariaLabel="Galavečer"
+            segments={events.map((event) => ({
+              key: event.id,
+              label: event.number ? `OKTAGON ${event.number}` : event.name,
+              href: `/leaderboard?view=event&eventId=${event.id}`,
+            }))}
+          />
         </div>
       )}
 

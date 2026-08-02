@@ -109,7 +109,7 @@ export function SeasonCompareList({
         <button
           type="button"
           onClick={compare}
-          className="sticky bottom-4 mt-2 flex items-center justify-center gap-2 self-center rounded-full border border-accent bg-accent px-4 py-2 text-sm font-semibold text-black shadow-lg"
+          className="glass-accent sticky bottom-4 mt-2 flex items-center justify-center gap-2 self-center rounded-full border px-4 py-2 text-sm font-semibold"
         >
           <Scale className="size-4" />
           Porovnat

@@ -35,7 +35,7 @@ export async function NavBar() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-black hover:bg-[#e6bf00]"
+              className="glass-accent rounded-md px-3 py-1.5 text-sm font-semibold"
             >
               Přihlásit se
             </Link>

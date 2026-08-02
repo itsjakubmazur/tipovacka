@@ -10,7 +10,7 @@ import type { Fight, Fighter } from "@/lib/types";
 export type MatchupTone = "accent" | "green" | "blue";
 
 const TAG_TONES: Record<MatchupTone, string> = {
-  accent: "bg-accent text-black",
+  accent: "glass-accent",
   green: "bg-green-600 text-white",
   blue: "bg-blue-500 text-white",
 };

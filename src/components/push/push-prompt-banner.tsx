@@ -59,7 +59,7 @@ export function PushPromptBanner() {
   if (!visible) return null;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 bg-accent px-4 py-2 text-sm font-medium text-black">
+    <div className="glass-accent flex flex-wrap items-center justify-between gap-3 px-4 py-2 text-sm font-medium">
       <button
         type="button"
         onClick={enable}

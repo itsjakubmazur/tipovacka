@@ -138,7 +138,7 @@ function ResultPills({ points, rank, participants }: { points: number; rank?: nu
   return (
     <div className="mt-2 flex flex-wrap items-center gap-2">
       {rank && participants && (
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent px-3 py-1 text-black">
+        <div className="glass-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1">
           <Trophy className="size-3.5" />
           <span className="text-sm font-bold tabular-nums">{rank}. místo</span>
           <span className="text-[11px] font-medium opacity-70">z {participants}</span>

@@ -445,7 +445,7 @@ function FastTipCarousel({
           <button
             type="button"
             onClick={close}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-accent bg-accent py-3 text-sm font-semibold text-black"
+            className="glass-accent flex w-full items-center justify-center gap-2 rounded-full border py-3 text-sm font-semibold"
           >
             <Check className="size-4" strokeWidth={3} />
             Hotovo, máš tipnuto vše

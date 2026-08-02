@@ -268,7 +268,7 @@ export function EventCompareList({
         typeof document !== "undefined" &&
         createPortal(
           <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 md:bottom-6">
-            <div className="animate-row-in flex max-w-full items-center gap-2 rounded-full border border-accent bg-accent py-1.5 pl-4 pr-1.5 text-black shadow-xl shadow-black/30">
+            <div className="glass-accent animate-row-in flex max-w-full items-center gap-2 rounded-full border py-1.5 pl-4 pr-1.5">
               <span className="min-w-0 truncate text-sm font-semibold">
                 {nicknameOf(selected[0])} vs {nicknameOf(selected[1])}
               </span>

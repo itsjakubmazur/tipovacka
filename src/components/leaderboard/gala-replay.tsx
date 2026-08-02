@@ -126,7 +126,7 @@ export function GalaReplay({
           type="button"
           onClick={() => (step >= lastStep ? start() : setPlaying((p) => !p))}
           aria-label={playing ? "Pozastavit" : "Přehrát"}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-black transition-transform active:scale-90"
+          className="glass-accent flex size-9 shrink-0 items-center justify-center rounded-full transition-transform active:scale-90"
         >
           {step >= lastStep ? (
             <RotateCcw className="size-4" />
