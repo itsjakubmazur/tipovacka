@@ -129,7 +129,7 @@ export function SegmentJump({
       >
         <div
           className={cn(
-            "max-w-full rounded-full border border-black/10 bg-background/85 p-1 shadow-lg shadow-black/20 backdrop-blur-xl transition-all duration-300 ease-out motion-reduce:transition-none dark:border-white/15",
+            "liquid-glass max-w-full rounded-full p-1 transition-all duration-300 ease-out motion-reduce:transition-none",
             visible
               ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
               : "-translate-y-3 scale-95 opacity-0"
@@ -146,7 +146,7 @@ export function SegmentJump({
     <div className={cn("sticky z-30 -mx-4 px-4 py-1", BAR_TOP, className)}>
       {/* the same glass capsule as the floating shape - it sticks over the
           cards as you scroll, so it needs a backdrop of its own */}
-      <div className="inline-block max-w-full rounded-full border border-black/10 bg-background/85 p-1 shadow-lg shadow-black/20 backdrop-blur-xl dark:border-white/15">
+      <div className="liquid-glass inline-block max-w-full rounded-full p-1">
         {bar}
       </div>
     </div>
@@ -200,7 +200,7 @@ function Bar({
       {thumb && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 overflow-hidden rounded-full bg-neutral-900 transition-[transform,width] duration-300 ease-out motion-reduce:transition-none dark:bg-white/20"
+          className="liquid-glass-thumb pointer-events-none absolute inset-y-0 overflow-hidden rounded-full transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
           style={{
             width: thumb.width,
             transform: `translateX(${thumb.left}px)`,
@@ -209,7 +209,7 @@ function Bar({
           {/* fills left to right as you read through the section - the bar
               stops being just a label and starts being a progress meter */}
           <div
-            className="h-full rounded-full bg-white/15 transition-[width] duration-150 ease-linear motion-reduce:transition-none dark:bg-white/25"
+            className="h-full rounded-full bg-black/[0.06] transition-[width] duration-150 ease-linear motion-reduce:transition-none dark:bg-white/15"
             style={{ width: `${Math.round(progress.ratio * 100)}%` }}
           />
         </div>
@@ -233,8 +233,10 @@ function Bar({
             }
             className={cn(
               "relative z-10 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold outline-none transition-[color,transform] duration-300 ease-out active:scale-95 focus-visible:ring-2 focus-visible:ring-accent motion-reduce:transition-none",
+              // the thumb is light glass now, not a black fill - white type on
+              // it was invisible
               active
-                ? "text-white"
+                ? "text-neutral-900 dark:text-white"
                 : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
             )}
           >

@@ -8,18 +8,22 @@ import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { Reveal } from "@/components/ui/reveal";
 import { METHOD_LABELS } from "@/lib/method-labels";
-import { pointsLabel, scoreBreakdown } from "@/lib/score-breakdown";
+import { pointsLabel } from "@/lib/score-breakdown";
 import { X, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
 import type { Fight, Method, Prediction } from "@/lib/types";
 
 function Pill({
   active,
   disabled,
+  outcome,
   onClick,
   children,
 }: {
   active: boolean;
   disabled?: boolean;
+  /** on a graded fight, whether this part of the tip landed - said here, on
+   * the choice itself, instead of in a sentence further down the card */
+  outcome?: "hit" | "miss";
   onClick?: () => void;
   children: React.ReactNode;
 }) {
@@ -31,7 +35,13 @@ function Pill({
       className={cn(
         // the press is the whole feedback loop for tipping - let the pill give
         "rounded-full px-3 py-1.5 text-sm font-medium transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100",
-        active ? "border border-accent bg-accent text-black transition-colors" : GLASS_PILL
+        !active
+          ? GLASS_PILL
+          : outcome === "hit"
+            ? "border border-green-600 bg-green-600/20 font-semibold text-green-800 dark:border-green-500 dark:text-green-300"
+            : outcome === "miss"
+              ? "border border-red-500/70 bg-red-500/15 font-semibold text-red-700 dark:text-red-300"
+              : "border border-accent bg-accent text-black transition-colors"
       )}
     >
       {children}
@@ -299,6 +309,24 @@ export function FightTipCard({
   const graded = initialPrediction?.points != null;
   const hit = graded && initialPrediction!.points! > 0;
 
+  // Which third of the tip landed. Mirrors calculate_points: on a decision the
+  // round point is for having left the round empty, and it is the actual
+  // method that decides which rule applies.
+  const winnerOk = graded && initialPrediction!.predicted_winner_id === fight.winner_fighter_id;
+  const methodOutcome: "hit" | "miss" | undefined = graded
+    ? winnerOk && initialPrediction!.predicted_method === fight.method
+      ? "hit"
+      : "miss"
+    : undefined;
+  const roundOutcome: "hit" | "miss" | undefined = graded
+    ? winnerOk &&
+      (fight.method === "DECISION"
+        ? initialPrediction!.predicted_round == null
+        : initialPrediction!.predicted_round === fight.result_round)
+      ? "hit"
+      : "miss"
+    : undefined;
+
   const fighterA = fight.fighter_a;
   const fighterB = fight.fighter_b;
   return (
@@ -330,7 +358,21 @@ export function FightTipCard({
           {!voided && hasTba && <Badge variant="outline">Soupeři ještě nejsou známí</Badge>}
         </div>
 
-        {effectiveLocked ? (
+        {/* Graded: the points live here rather than in a full-width bar of
+            their own. The jistotka badge is not repeated - the tag on the
+            photo already says it. */}
+        {graded ? (
+          <span
+            className={cn(
+              "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums",
+              hit
+                ? "bg-green-600/15 text-green-800 dark:text-green-400"
+                : "bg-red-600/10 text-red-700 dark:text-red-400"
+            )}
+          >
+            {pointsLabel(initialPrediction?.points, isBold)}
+          </span>
+        ) : effectiveLocked ? (
           isBold ? (
             <Badge variant="accent" className="gap-1">
               <Star className="size-3" fill="currentColor" />
@@ -435,23 +477,6 @@ export function FightTipCard({
         </p>
       )}
 
-      {graded && (
-        <div
-          style={{ animationDelay: `${Math.min(revealIndex, 8) * 90}ms` }}
-          className={cn(
-            "animate-result-in flex items-center gap-2 border-y px-4 py-2 text-sm font-semibold",
-            hit
-              ? "border-green-600/30 bg-green-600/10 text-green-800 dark:text-green-400"
-              : "border-red-600/30 bg-red-600/10 text-red-800 dark:text-red-400"
-          )}
-        >
-          <span className="min-w-0 flex-1 truncate">{scoreBreakdown(fight, initialPrediction)}</span>
-          <span className="shrink-0 tabular-nums">
-            {pointsLabel(initialPrediction?.points, isBold)}
-          </span>
-        </div>
-      )}
-
       <div className="flex flex-col gap-3 px-4 pb-3 pt-3">
         <div>
           <p
@@ -466,7 +491,13 @@ export function FightTipCard({
           </p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(METHOD_LABELS) as Method[]).map((m) => (
-              <Pill key={m} active={method === m} disabled={effectiveLocked} onClick={() => selectMethod(m)}>
+              <Pill
+                key={m}
+                active={method === m}
+                disabled={effectiveLocked}
+                outcome={method === m ? methodOutcome : undefined}
+                onClick={() => selectMethod(m)}
+              >
                 {METHOD_LABELS[m]}
               </Pill>
             ))}
@@ -478,7 +509,18 @@ export function FightTipCard({
             was five pills of dead weight - which is most cards before lock.
             That space now belongs to the photos. */}
         {method === "DECISION" ? (
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">Tip: zápas dojde do konce, na body.</p>
+          <p
+            className={cn(
+              "text-sm",
+              roundOutcome === "hit"
+                ? "font-semibold text-green-800 dark:text-green-400"
+                : roundOutcome === "miss"
+                  ? "font-semibold text-red-700 dark:text-red-400"
+                  : "text-neutral-600 dark:text-neutral-400"
+            )}
+          >
+            Tip: zápas dojde do konce, na body.
+          </p>
         ) : method ? (
           <div>
             <p
@@ -493,7 +535,13 @@ export function FightTipCard({
             </p>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (
-                <Pill key={r} active={round === r} disabled={effectiveLocked} onClick={() => selectRound(r)}>
+                <Pill
+                  key={r}
+                  active={round === r}
+                  disabled={effectiveLocked}
+                  outcome={round === r ? roundOutcome : undefined}
+                  onClick={() => selectRound(r)}
+                >
                   {r}.
                 </Pill>
               ))}

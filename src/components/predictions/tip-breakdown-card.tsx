@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { FightMatchup } from "@/components/predictions/fight-matchup";
-import { pointsLabel, scoreBreakdown } from "@/lib/score-breakdown";
+import { pointsLabel } from "@/lib/score-breakdown";
 import type { Fight, Prediction } from "@/lib/types";
 
 /** A tipper's read-only view of one fight: the same matchup the tipping card
@@ -21,6 +21,29 @@ export function TipBreakdownCard({
   const showResult = fight.status === "completed";
   const graded = prediction?.points != null;
   const hit = graded && prediction!.points! > 0;
+  const winnerOk = graded && prediction!.predicted_winner_id === fight.winner_fighter_id;
+  const methodOk = winnerOk && prediction!.predicted_method === fight.method;
+  const roundOk =
+    winnerOk &&
+    (fight.method === "DECISION"
+      ? prediction!.predicted_round == null
+      : prediction!.predicted_round === fight.result_round);
+
+  /** Green when that part of the tip landed, red when it didn't - the same
+   * thing the tipping card says by colouring the pills you chose. */
+  function part(ok: boolean, text: string) {
+    if (!graded) return <span>{text}</span>;
+    return (
+      <span
+        className={cn(
+          "font-semibold",
+          ok ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"
+        )}
+      >
+        {text}
+      </span>
+    );
+  }
 
   return (
     <div
@@ -42,7 +65,20 @@ export function TipBreakdownCard({
           ) : null}
           {voided && <Badge variant="outline">Zrušeno / NC</Badge>}
         </div>
-        {isBold && <Badge variant="accent">★ Jistotka ×2</Badge>}
+        {graded ? (
+          <span
+            className={cn(
+              "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold tabular-nums",
+              hit
+                ? "bg-green-600/15 text-green-800 dark:text-green-400"
+                : "bg-red-600/10 text-red-700 dark:text-red-400"
+            )}
+          >
+            {pointsLabel(prediction?.points, isBold)}
+          </span>
+        ) : (
+          isBold && <Badge variant="accent">★ Jistotka ×2</Badge>
+        )}
       </div>
 
       {showResult && (
@@ -86,25 +122,15 @@ export function TipBreakdownCard({
         ]}
       />
 
-      {graded && (
-        <div
-          className={cn(
-            "flex items-center gap-2 border-t px-4 py-2 text-sm font-semibold",
-            hit
-              ? "border-green-600/30 bg-green-600/10 text-green-800 dark:text-green-400"
-              : "border-red-600/30 bg-red-600/10 text-red-800 dark:text-red-400"
-          )}
-        >
-          <span className="min-w-0 flex-1 truncate">{scoreBreakdown(fight, prediction)}</span>
-          <span className="shrink-0 tabular-nums">{pointsLabel(prediction?.points, isBold)}</span>
-        </div>
-      )}
-
       <div className="border-t border-black/5 px-4 py-2 text-xs text-neutral-600 dark:border-white/10 dark:text-neutral-300">
         {prediction ? (
           <>
-            Tvůj tip: {METHOD_LABELS[prediction.predicted_method]}
-            {prediction.predicted_round ? ` · ${prediction.predicted_round}. kolo` : " · na body"}
+            Tvůj tip: {part(methodOk, METHOD_LABELS[prediction.predicted_method])}
+            {" · "}
+            {part(
+              roundOk,
+              prediction.predicted_round ? `${prediction.predicted_round}. kolo` : "na body"
+            )}
           </>
         ) : (
           "Bez tipu"
