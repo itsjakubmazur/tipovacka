@@ -94,7 +94,7 @@ export function TeaserEventCard({
             })}
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white/70 px-2.5 py-0.5 text-xs font-medium text-neutral-500 backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-800/70 dark:text-neutral-300">
+        <span className="glass-pill inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium text-neutral-500 dark:text-neutral-300">
           <Lock className="size-3" />
           Brzy
         </span>

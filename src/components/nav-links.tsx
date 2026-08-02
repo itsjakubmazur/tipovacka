@@ -68,7 +68,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="glass-floating fixed inset-x-0 bottom-0 z-40 md:hidden">
+    <nav className="glass-bar fixed inset-x-0 bottom-0 z-40 md:hidden">
       <div className="mx-auto flex max-w-3xl px-6 pb-3">
         {navItems.map((item) => {
           const Icon = item.icon;
