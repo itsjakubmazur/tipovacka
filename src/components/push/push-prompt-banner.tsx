@@ -58,6 +58,12 @@ export function PushPromptBanner() {
 
   if (!visible) return null;
 
+  // Only about notifications now. The install half of this sentence moved to
+  // the install card, which detects the actual platform and gives it real
+  // steps - this strip was telling iOS and Android the same thing and could
+  // not act on either. (It never showed on a non-installed iPhone anyway:
+  // iOS exposes PushManager only inside an installed web app, so the advice
+  // was addressed to people who could not see it.)
   return (
     <div className="glass-accent flex flex-wrap items-center justify-between gap-3 px-4 py-2 text-sm font-medium">
       <button
@@ -69,7 +75,7 @@ export function PushPromptBanner() {
         <Bell className="size-4 shrink-0" />
         {loading
           ? "Zapínám upozornění…"
-          : "Ulož si web na plochu (iOS/Android) a zapni si upozornění na uzávěrky a novinky kolem karty!"}
+          : "Zapni si upozornění na uzávěrky tipů a novinky kolem karty!"}
       </button>
       <div className="flex items-center gap-3">
         {error && <span className="text-red-900">{error}</span>}
