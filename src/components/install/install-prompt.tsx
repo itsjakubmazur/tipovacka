@@ -12,14 +12,16 @@ import {
   type InstallGuide,
 } from "@/lib/install-platform";
 
-const DISMISSED_KEY = "install-prompt-dismissed-until";
+/** Deliberately sessionStorage, not localStorage: closing the card silences it
+ * for this visit and no longer. Come back to the site and it asks again. */
+const DISMISSED_KEY = "install-prompt-dismissed";
+/** This one is localStorage and permanent - once the app is actually
+ * installed there is nothing left to ask for. */
+const INSTALLED_KEY = "install-prompt-installed";
 const VISITS_KEY = "install-prompt-visits";
 /** Nobody wants this on their first look around, so it waits until someone
  * has come back. */
 const SHOW_AFTER_VISITS = 2;
-/** Dismissing puts it away for a couple of months rather than for ever - the
- * profile keeps a permanent copy of the same instructions either way. */
-const SNOOZE_DAYS = 60;
 /** Long enough that the card arrives after the page has settled, rather than
  * on top of it loading. */
 const DELAY_MS = 2500;
@@ -59,8 +61,7 @@ export function InstallPrompt() {
   );
 
   const dismiss = useCallback(() => {
-    const until = Date.now() + SNOOZE_DAYS * 24 * 60 * 60 * 1000;
-    localStorage.setItem(DISMISSED_KEY, String(until));
+    sessionStorage.setItem(DISMISSED_KEY, "1");
     setVisible(false);
   }, []);
 
@@ -69,8 +70,8 @@ export function InstallPrompt() {
     // Already installed: this is the app talking to itself.
     if (isStandaloneDisplay()) return;
 
-    const until = Number(localStorage.getItem(DISMISSED_KEY) ?? 0);
-    if (until > Date.now()) return;
+    if (localStorage.getItem(INSTALLED_KEY)) return;
+    if (sessionStorage.getItem(DISMISSED_KEY)) return;
 
     const visits = Number(localStorage.getItem(VISITS_KEY) ?? 0) + 1;
     localStorage.setItem(VISITS_KEY, String(visits));
@@ -96,7 +97,7 @@ export function InstallPrompt() {
     }
     function onInstalled() {
       setVisible(false);
-      localStorage.setItem(DISMISSED_KEY, String(Date.now() + 3650 * 24 * 60 * 60 * 1000));
+      localStorage.setItem(INSTALLED_KEY, "1");
     }
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onInstalled);
