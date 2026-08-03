@@ -8,6 +8,7 @@ import { NavBar } from "@/components/nav-bar";
 import { PushPromptBanner } from "@/components/push/push-prompt-banner";
 import { BankAccountPromptBanner } from "@/components/profile/bank-account-prompt-banner";
 import { SplashScreen } from "@/components/splash-screen";
+import { InstallPrompt } from "@/components/install/install-prompt";
 import { ErrorReporter } from "@/components/error-reporter";
 import { PageTransition } from "@/components/page-transition";
 
@@ -77,6 +78,7 @@ export default function RootLayout({
           <main className="mx-auto w-full max-w-3xl flex-1 pb-24 md:pb-0 lg:max-w-5xl xl:max-w-6xl">
             <PageTransition>{children}</PageTransition>
           </main>
+          <InstallPrompt />
         </ThemeProvider>
       </body>
     </html>

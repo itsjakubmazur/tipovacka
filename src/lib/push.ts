@@ -1,17 +1,13 @@
 import { createClient } from "@/lib/supabase/client";
+import { isIosLike, isStandaloneDisplay } from "@/lib/install-platform";
 
-export function isIos(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /iPad|iPhone|iPod/.test(navigator.userAgent);
-}
-
-export function isStandalone(): boolean {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
-}
+// Kept as named exports because push code reads better saying isIos(), but
+// there is one implementation, in install-platform. Two copies drifted: this
+// one missed iPadOS (which reports itself as a Mac) and the desktop
+// window-controls-overlay display mode, so an iPad was told it could enable
+// notifications in the browser, which it cannot.
+export const isIos = isIosLike;
+export const isStandalone = isStandaloneDisplay;
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

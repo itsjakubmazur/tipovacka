@@ -1,50 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Smartphone } from "lucide-react";
-import { isIos, isStandalone } from "@/lib/push";
 import { Section } from "@/components/ui/section-heading";
+import {
+  detectInstallPlatform,
+  installGuide,
+  isStandaloneDisplay,
+} from "@/lib/install-platform";
 
-function isAndroid(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /Android/.test(navigator.userAgent);
-}
-
+/** The permanent copy of the install instructions.
+ *
+ * The floating nudge can be dismissed and then stays away for two months; this
+ * is where someone goes when they change their mind, or when they open the
+ * site on a second device. Both read the same platform detection, so they can
+ * no longer describe two different menus for the same phone. */
 export function InstallAppGuide() {
-  const [platform] = useState<"ios" | "android" | "other" | null>(() =>
-    isStandalone() ? null : isIos() ? "ios" : isAndroid() ? "android" : "other"
+  // Nothing to detect until we are in a browser, and rendering one platform's
+  // steps for a frame before swapping to another's is worse than rendering
+  // nothing.
+  const client = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
   );
+  if (!client) return null;
+  if (isStandaloneDisplay()) return null;
 
-  if (!platform) return null;
+  const guide = installGuide(detectInstallPlatform());
+  if (!guide) return null;
 
   return (
-    <Section title="Přidej si tipovačku na plochu" icon={<Smartphone className="size-4" />}>
-    <div className="flex flex-col gap-2 rounded-xl glass-accent-soft border p-4">
-      <p className="text-sm text-neutral-700 dark:text-neutral-300">
-        {platform === "ios"
-          ? "Na iPhonu/iPadu bez toho nepůjdou zapnout upozornění na uzávěrky."
-          : "Aplikace se pak otevírá rychleji a líp ti budou chodit upozornění na uzávěrky."}
-      </p>
-      {platform === "ios" && (
+    <Section
+      title={guide.title}
+      icon={<Smartphone className="size-4" />}
+    >
+      <div className="glass-accent-soft flex flex-col gap-2 rounded-xl border p-4">
+        <p className="text-sm text-neutral-700 dark:text-neutral-300">{guide.why}</p>
         <ol className="list-decimal pl-5 text-sm text-neutral-700 dark:text-neutral-300">
-          <li>V Safari klikni dole na ikonu Sdílet (čtverec se šipkou nahoru).</li>
-          <li>Vyber „Přidat na plochu“.</li>
-          <li>Otevři tipovačku z ikony na ploše a zapni si upozornění tady na profilu.</li>
+          {guide.steps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
         </ol>
-      )}
-      {platform === "android" && (
-        <ol className="list-decimal pl-5 text-sm text-neutral-700 dark:text-neutral-300">
-          <li>V Chromu klikni vpravo nahoře na tři tečky.</li>
-          <li>Vyber „Přidat na plochu“ nebo „Instalovat aplikaci“.</li>
-          <li>Otevři tipovačku z ikony na ploše a zapni si upozornění tady na profilu.</li>
-        </ol>
-      )}
-      {platform === "other" && (
-        <p className="text-sm text-neutral-700 dark:text-neutral-300">
-          Otevři tuhle stránku v mobilním prohlížeči (Safari na iPhonu, Chrome na Androidu) a tam se ti zobrazí návod.
-        </p>
-      )}
-    </div>
+      </div>
     </Section>
   );
 }
