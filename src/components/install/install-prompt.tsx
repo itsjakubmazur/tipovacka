@@ -18,12 +18,9 @@ const DISMISSED_KEY = "install-prompt-dismissed";
 /** This one is localStorage and permanent - once the app is actually
  * installed there is nothing left to ask for. */
 const INSTALLED_KEY = "install-prompt-installed";
-const VISITS_KEY = "install-prompt-visits";
-/** Nobody wants this on their first look around, so it waits until someone
- * has come back. */
-const SHOW_AFTER_VISITS = 2;
-/** Long enough that the card arrives after the page has settled, rather than
- * on top of it loading. */
+/** The only thing standing between arriving and being asked to install: long
+ * enough that the card lands after the page has settled rather than on top of
+ * it loading. */
 const DELAY_MS = 2500;
 
 type BeforeInstallPromptEvent = Event & {
@@ -72,10 +69,6 @@ export function InstallPrompt() {
 
     if (localStorage.getItem(INSTALLED_KEY)) return;
     if (sessionStorage.getItem(DISMISSED_KEY)) return;
-
-    const visits = Number(localStorage.getItem(VISITS_KEY) ?? 0) + 1;
-    localStorage.setItem(VISITS_KEY, String(visits));
-    if (visits < SHOW_AFTER_VISITS) return;
 
     const platform = detectInstallPlatform();
     const found = installGuide(platform);
