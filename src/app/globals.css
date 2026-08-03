@@ -188,6 +188,95 @@ body::before {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   The install nudge. It has one job - to be noticed - so it arrives rather
+   than appears: the card springs up past its resting place and settles back,
+   the app icon lands a beat later, and a single highlight sweeps across the
+   glass. Three staggered moments read as one deliberate entrance; all at once
+   would read as a glitch.
+   --------------------------------------------------------------------------- */
+@keyframes install-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(130%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-install-card {
+  /* the overshoot in the curve is what makes it land rather than slide */
+  animation: install-card-in 0.62s cubic-bezier(0.34, 1.4, 0.5, 1) backwards;
+}
+
+/* The icon drops in after the card has already arrived, so the eye is drawn
+   to it second - it is the thing you are being asked to put on your phone. */
+@keyframes install-icon-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-12deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.12) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-install-icon {
+  animation: install-icon-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s backwards;
+}
+
+/* One pass of light across the glass, once, after everything has settled.
+   Looping it would turn a flourish into a nag with a strobe. */
+@keyframes install-sheen {
+  from {
+    transform: translateX(-150%) skewX(12deg);
+  }
+  to {
+    transform: translateX(350%) skewX(12deg);
+  }
+}
+
+.animate-install-sheen {
+  animation: install-sheen 1.1s ease-out 0.6s backwards;
+}
+
+/* The step you have to perform is the one that moves: the share icon bobs
+   toward the button it is telling you to press. Slow and small - it has to
+   survive being on screen the whole time you read the steps. */
+@keyframes install-bob {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-install-bob {
+  animation: install-bob 2.2s ease-in-out 1.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-install-card,
+  .animate-install-icon,
+  .animate-install-sheen,
+  .animate-install-bob {
+    animation: none;
+  }
+  .animate-install-sheen {
+    display: none;
+  }
+}
+
 /* A tip just landed: a single accent pulse around the fight card, so saving
    registers as something that happened rather than a line of small text. */
 @keyframes tip-saved {

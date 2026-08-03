@@ -29,7 +29,8 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 function PlatformIcon({ platform }: { platform: InstallGuide["platform"] }) {
-  const className = "size-4 shrink-0";
+  // bobs toward the button it is telling you to press
+  const className = "animate-install-bob size-4 shrink-0";
   if (platform === "ios" || platform === "ios-other-browser" || platform === "macos-safari") {
     return <Share className={className} />;
   }
@@ -123,12 +124,20 @@ export function InstallPrompt() {
         role="dialog"
         aria-label="Přidat tipovačku na plochu"
         className={cn(
-          "glass-panel w-full max-w-sm rounded-2xl border p-4 transition-all duration-500 ease-out motion-reduce:transition-none",
+          "glass-panel relative w-full max-w-sm overflow-hidden rounded-2xl border p-4 transition-all duration-300 ease-out motion-reduce:transition-none",
           visible
-            ? "pointer-events-auto translate-y-0 opacity-100"
+            ? "animate-install-card pointer-events-auto opacity-100"
             : "translate-y-6 opacity-0"
         )}
       >
+        {/* the sheen, clipped to the card's rounded corners by overflow-hidden
+            on the panel; pointer-events-none so it never eats the tap */}
+        {visible && (
+          <span
+            aria-hidden
+            className="animate-install-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent dark:via-white/15"
+          />
+        )}
         <div className="flex items-start gap-3">
           <Image
             src="/icon"
@@ -136,7 +145,7 @@ export function InstallPrompt() {
             width={44}
             height={44}
             unoptimized
-            className="size-11 shrink-0 rounded-xl"
+            className="animate-install-icon size-11 shrink-0 rounded-xl"
           />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold leading-tight">{guide.title}</p>
