@@ -13,9 +13,30 @@ on:
   # events that have started.
   workflow_dispatch: {}
 
+# The scheduler fires every few minutes and never asks whether the last run
+# finished. That is fine while a runner is free - the job's real work takes
+# about 35 seconds - but when GitHub's hosted-runner queue slows down, the
+# dispatches arrive faster than they drain and the backlog compounds: waits
+# climbed from 5 to 30 minutes, and GitHub eventually cancelled the jobs that
+# had never been given a runner. Nothing ran, and every one of them was
+# reported as a failed run.
+#
+# This caps the pile at one running plus one waiting: GitHub cancels any
+# *older* pending run in the group when a new one queues. Dropping a stale
+# pending run costs nothing here, because every run does the same sweep of
+# whatever is currently due - a skipped one is picked up by the next.
+concurrency:
+  group: scraper-cron
+  # never kill a run that is mid-flight; it may be halfway through sending
+  # pushes or writing results
+  cancel-in-progress: false
+
 jobs:
   cron:
     runs-on: ubuntu-latest
+    # The work is ~35s. Ten minutes is generous for a slow API and still stops
+    # a wedged run from holding the concurrency slot for GitHub's 6h default.
+    timeout-minutes: 10
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
