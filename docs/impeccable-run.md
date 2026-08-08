@@ -21,7 +21,7 @@ Poslední aktualizace: 2026-08-08
 - [x] 3. BRÁNA A — kontrola kontextu — uživatel schválil vše default (PRODUCT.md OK, North Star OK, pokračovat bez detectu)
 - [x] 4. detect baseline — `node .claude/skills/impeccable/scripts/detect.mjs --json src` funguje přímo (bez npx); baseline uložen do `.impeccable/detect-baseline.json` (52 nálezů: 43 design-system-color, 4 bounce-easing, 1 design-system-radius, 1 gray-on-color, 1 layout-transition, 1 overused-font, 1 design-system-font)
 - [x] 5. critique po obrazovkách — odlehčený běh (sub-agent na obrazovku, kód + detect.mjs, bez browseru/dev serveru), zápis do `docs/critique-notes.md`
-- [ ] 6. audit
+- [x] 6. audit — statická analýza (a11y/výkon/responzivita/theming/integrita), skóre 15/20 „Good", zápis do `docs/audit-notes.md`
 - [ ] 7. backlog
 - [ ] 8. BRÁNA B — schválení backlogu
 - [ ] 9. shape
