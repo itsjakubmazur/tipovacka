@@ -38,4 +38,4 @@ Poslední aktualizace: 2026-08-08
 - Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 
 ## Otevřené otázky
-<věci, na které se zeptáš u nejbližší brány>
+- Viz BRÁNA A níže — schválení PRODUCT.md a DESIGN.md.
