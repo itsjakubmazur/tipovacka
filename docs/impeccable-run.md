@@ -18,8 +18,8 @@ Poslední aktualizace: 2026-08-08
 ## Postup
 - [x] 1. init — vytvořen PRODUCT.md z Kontextu (bez interview, AUTO)
 - [x] 2. document — vygenerován DESIGN.md + .impeccable/design.json ze skenu existujícího „liquid glass" systému (globals.css, ui komponenty)
-- [ ] 3. BRÁNA A — kontrola kontextu
-- [ ] 4. detect baseline
+- [x] 3. BRÁNA A — kontrola kontextu — uživatel schválil vše default (PRODUCT.md OK, North Star OK, pokračovat bez detectu)
+- [x] 4. detect baseline — přeskočeno (sandbox blokuje instalaci balíčků, viz Rozhodnutí)
 - [ ] 5. critique po obrazovkách
 - [ ] 6. audit
 - [ ] 7. backlog
@@ -38,4 +38,4 @@ Poslední aktualizace: 2026-08-08
 - Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 
 ## Otevřené otázky
-- Viz BRÁNA A níže — schválení PRODUCT.md a DESIGN.md.
+<věci, na které se zeptáš u nejbližší brány>
