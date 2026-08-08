@@ -17,7 +17,7 @@ Poslední aktualizace: 2026-08-08
 
 ## Postup
 - [x] 1. init — vytvořen PRODUCT.md z Kontextu (bez interview, AUTO)
-- [ ] 2. document
+- [x] 2. document — vygenerován DESIGN.md + .impeccable/design.json ze skenu existujícího „liquid glass" systému (globals.css, ui komponenty)
 - [ ] 3. BRÁNA A — kontrola kontextu
 - [ ] 4. detect baseline
 - [ ] 5. critique po obrazovkách

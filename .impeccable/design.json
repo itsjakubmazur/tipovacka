@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-08T00:00:00Z",
+  "title": "Design System: OKTAGON GARÁŽ Tipovačka",
+  "extensions": {
+    "colorMeta": {
+      "background": { "role": "neutral", "displayName": "Arena Fog", "canonical": "#f1f1f2" },
+      "background-dark": { "role": "neutral", "displayName": "Ringside Black", "canonical": "#161616" },
+      "foreground": { "role": "neutral", "displayName": "Ink", "canonical": "#0a0a0a" },
+      "foreground-dark": { "role": "neutral", "displayName": "Bone", "canonical": "#ededed" },
+      "accent": { "role": "primary", "displayName": "Oktagon Yellow", "canonical": "#ffd400" },
+      "accent-deep": { "role": "primary", "displayName": "Oktagon Yellow, Deep", "canonical": "#e8be00" },
+      "danger": { "role": "error", "displayName": "Void Red", "canonical": "#ef4444" },
+      "success": { "role": "success", "displayName": "Win Green", "canonical": "#22c55e" },
+      "info-blue": { "role": "info", "displayName": "Tag Blue", "canonical": "#2563eb" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Wrapped Display", "purpose": "Season-recap headlines and big numbers on /wrapped only." },
+      "body": { "displayName": "Geist", "purpose": "All standard UI text." },
+      "mono": { "displayName": "Geist Mono", "purpose": "Tabular/numeric data where alignment matters." }
+    },
+    "shadows": [
+      { "name": "glass-floating", "value": "inset 0 1px 0.5px 0 rgba(255,255,255,.95), inset 0 -1px 0.5px 0 rgba(255,255,255,.5), inset 0 0 0 0.5px rgba(255,255,255,.6), 0 1px 2px rgba(0,0,0,.12), 0 8px 24px -8px rgba(0,0,0,.28)", "purpose": "Floating capsules with backdrop-filter (header, chips over content)." },
+      { "name": "glass-surface", "value": "inset 0 1px 0.5px 0 rgba(255,255,255,.85), 0 1px 2px rgba(0,0,0,.08), 0 10px 24px -12px rgba(0,0,0,.3)", "purpose": "Default card material, no blur." },
+      { "name": "glass-panel", "value": "inset 0 1px 0.5px 0 rgba(255,255,255,.95), inset 0 0 0 0.5px rgba(255,255,255,.6), 0 2px 6px rgba(0,0,0,.14), 0 24px 60px -20px rgba(0,0,0,.45)", "purpose": "Modals and sheets, backdrop-filter: blur(28px) saturate(180%)." },
+      { "name": "glass-bar", "value": "inset 0 1px 0.5px 0 rgba(255,255,255,.95), inset 0 0.5px 0 0 rgba(0,0,0,.06), 0 -4px 16px -8px rgba(0,0,0,.25)", "purpose": "Bottom navigation bar." }
+    ],
+    "motion": [
+      { "name": "ease-settle", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Default entrance easing: page-in, stagger rows, podium rise, result wipe." },
+      { "name": "ease-overshoot", "value": "cubic-bezier(0.34, 1.56, 0.64, 1)", "purpose": "Playful arrival with overshoot: install card/icon, tip-check confirmation." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Primary call-to-action / selected pick button, lit glass in the app's one accent color.",
+      "html": "<button class=\"ds-btn-accent\">Tipni si</button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 6px; font-weight: 600; font-size: 14px; color: #000; border: 1px solid rgba(190,158,0,.55); background-image: linear-gradient(to bottom, rgba(255,226,77,.98) 0%, rgba(255,212,0,.94) 55%, rgba(232,190,0,.96) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.85), inset 0 -1px 0.5px 0 rgba(140,115,0,.25), 0 1px 2px rgba(0,0,0,.18), 0 6px 16px -8px rgba(255,212,0,.75); transition: filter .15s; } .ds-btn-accent:hover { filter: brightness(1.04); } .ds-btn-accent:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(0,0,0,.6), 0 0 0 4px rgba(255,212,0,.4); }"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Secondary action button, dark chrome glass regardless of theme.",
+      "html": "<button class=\"ds-btn-default\">Zavřít</button>",
+      "css": ".ds-btn-default { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; color: #fff; border: 1px solid rgba(255,255,255,.1); background-image: linear-gradient(to bottom, rgba(20,20,22,.82) 0%, rgba(10,10,12,.72) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.22), inset 0 -0.5px 0 0 rgba(255,255,255,.08), 0 1px 12px rgba(0,0,0,.3); } .ds-btn-default:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.6); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Default content container, flat glass gradient without blur (repeated on every list screen).",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div class=\"ds-card-title\">Fight card</div></div><div class=\"ds-card-content\">Obsah karty</div></div>",
+      "css": ".ds-card { border-radius: 12px; border: 1px solid rgba(255,255,255,.5); background-image: linear-gradient(to bottom, rgba(255,255,255,.55) 0%, rgba(255,255,255,.32) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.85), 0 1px 2px rgba(0,0,0,.08), 0 10px 24px -12px rgba(0,0,0,.3); color: #0a0a0a; } .ds-card-header { display: flex; flex-direction: column; gap: 4px; padding: 16px; } .ds-card-title { font-weight: 600; line-height: 1; } .ds-card-content { padding: 16px; padding-top: 0; }"
+    },
+    {
+      "name": "Accent Badge",
+      "kind": "chip",
+      "refersTo": "badge-accent",
+      "description": "Selected/active pill state, same lit-glass accent material as the button.",
+      "html": "<span class=\"ds-badge-accent\">Vybráno</span>",
+      "css": ".ds-badge-accent { display: inline-flex; align-items: center; border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 500; color: #000; border: 1px solid rgba(190,158,0,.55); background-image: linear-gradient(to bottom, rgba(255,226,77,.98) 0%, rgba(255,212,0,.94) 55%, rgba(232,190,0,.96) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.85), 0 1px 2px rgba(0,0,0,.18); }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text field with the pressed-in glass material (inverted specular).",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Jméno\" />",
+      "css": ".ds-input { display: flex; height: 40px; width: 100%; border-radius: 6px; padding: 8px 12px; font-size: 14px; border: 1px solid rgba(0,0,0,.12); background-image: linear-gradient(to bottom, rgba(255,255,255,.5) 0%, rgba(255,255,255,.78) 100%); box-shadow: inset 0 1px 1.5px 0 rgba(0,0,0,.07), inset 0 -1px 0.5px 0 rgba(255,255,255,.8); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px #000; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Fight-night glass",
+    "overview": "The app reads as a piece of arena signage lit from below, not a business tool: a warm yellow glow bleeds up from the bottom of every screen, and nearly every surface — buttons, cards, pills, the nav bar, the bottom bar — is built from the same layered-glass material (.glass-* classes in globals.css): a vertical brightness gradient, a bright specular line along the top inside edge, a hairline rim, and a drop shadow. Structural surfaces (cards, chips, the bottom bar) keep the look of glass without paying for blur; only elements that actually float over content (the header, modals, the install prompt) carry a real backdrop-filter. The system is dark-mode-first, high contrast, and unapologetically loud about its one accent color — yellow — while staying flat and calm everywhere that color isn't the point. Motion is a first-class part of the identity, not a garnish: pages fade and lift in, lists stagger row by row, a saved tip pulses an accent ring, a graded fight's result wipes in left-to-right, and the leaderboard podium rises like blocks growing out of the floor. Every animation is deliberate, short, and wrapped in prefers-reduced-motion / prefers-reduced-transparency fallbacks — motion earns its place by marking a real event, never as decoration for its own sake.",
+    "keyCharacteristics": [
+      "One accent color (#ffd400), used sparingly and always as glass (lit, not flat) so its rare appearances read as chosen or important.",
+      "Everything is a layered-glass surface with a consistent light-from-above construction; nothing is a flat, borderless rectangle.",
+      "Dark mode is the primary experience; light mode exists but the glow, the chrome header, and event-poster imagery are tuned for dark first.",
+      "Motion marks state changes (saved, graded, arrived) — it is never ambient or looping without a reason, and always respects reduced-motion/transparency."
+    ],
+    "rules": [
+      { "name": "The Lit-Not-Flat Rule", "body": "The accent never appears as a flat #ffd400 fill on an interactive surface — it is always built from the .glass-accent gradient + specular + rim, so the one color the app spends is never spent cheaply.", "section": "colors" },
+      { "name": "The One Display Rule", "body": "The condensed Wrapped face is scoped to /wrapped only and never touches body copy anywhere, including on /wrapped itself.", "section": "typography" },
+      { "name": "The Blur-Where-It's-Earned Rule", "body": "A component only pays for backdrop-filter if there is real content behind it worth bending; repeated cards and pills use the flat glass gradient instead.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do build every new interactive/status surface from the existing .glass-* vocabulary rather than a flat Tailwind background.",
+      "Do wrap any new looping or entrance animation in a prefers-reduced-motion: reduce fallback, and any new translucent surface in a prefers-reduced-transparency: reduce fallback.",
+      "Do reserve backdrop-filter for elements that truly float over visible content; use the no-blur glass classes for repeated/list surfaces.",
+      "Do keep motion tied to a real event rather than continuous decoration, except the already-established slow ambient loops."
+    ],
+    "donts": [
+      "Don't introduce a generic SaaS dashboard look: no purple→blue gradients, no Inter, no cards-inside-cards, no icon-in-a-rounded-square-above-a-heading pattern.",
+      "Don't render the accent color as a flat, unlit fill on an interactive surface.",
+      "Don't use the Wrapped display font outside /wrapped, or on body copy anywhere.",
+      "Don't add a heavy animation library; motion is hand-written CSS keyframes only."
+    ]
+  }
+}
