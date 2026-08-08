@@ -16,7 +16,7 @@ Poslední aktualizace: 2026-08-08
 - Mantinely: Next.js, Tailwind, Supabase, mobile-first, žádná těžká animační knihovna
 
 ## Postup
-- [ ] 1. init
+- [x] 1. init — vytvořen PRODUCT.md z Kontextu (bez interview, AUTO)
 - [ ] 2. document
 - [ ] 3. BRÁNA A — kontrola kontextu
 - [ ] 4. detect baseline
@@ -34,7 +34,8 @@ Poslední aktualizace: 2026-08-08
 - [ ] 17. BRÁNA E — souhrn a merge
 
 ## Rozhodnutí
-<sem zapisuj, co jsi rozhodl sám a proč — jeden řádek na rozhodnutí>
+- `npx impeccable detect` v tomhle sandboxu nejde spustit (blokovaný network install balíčku) — všechny kroky s detectem (4, 16, commit-message výstupy) se přeskakují; místo detect výstupu se do commit message píše poznámka "detect: skipped (sandbox blocks package install)".
+- Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 
 ## Otevřené otázky
 <věci, na které se zeptáš u nejbližší brány>
