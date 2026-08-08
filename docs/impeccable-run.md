@@ -19,7 +19,7 @@ Poslední aktualizace: 2026-08-08
 - [x] 1. init — vytvořen PRODUCT.md z Kontextu (bez interview, AUTO)
 - [x] 2. document — vygenerován DESIGN.md + .impeccable/design.json ze skenu existujícího „liquid glass" systému (globals.css, ui komponenty)
 - [x] 3. BRÁNA A — kontrola kontextu — uživatel schválil vše default (PRODUCT.md OK, North Star OK, pokračovat bez detectu)
-- [x] 4. detect baseline — přeskočeno (sandbox blokuje instalaci balíčků, viz Rozhodnutí)
+- [x] 4. detect baseline — `node .claude/skills/impeccable/scripts/detect.mjs --json src` funguje přímo (bez npx); baseline uložen do `.impeccable/detect-baseline.json` (52 nálezů: 43 design-system-color, 4 bounce-easing, 1 design-system-radius, 1 gray-on-color, 1 layout-transition, 1 overused-font, 1 design-system-font)
 - [ ] 5. critique po obrazovkách
 - [ ] 6. audit
 - [ ] 7. backlog
@@ -34,7 +34,7 @@ Poslední aktualizace: 2026-08-08
 - [ ] 17. BRÁNA E — souhrn a merge
 
 ## Rozhodnutí
-- `npx impeccable detect` v tomhle sandboxu nejde spustit (blokovaný network install balíčku) — všechny kroky s detectem (4, 16, commit-message výstupy) se přeskakují; místo detect výstupu se do commit message píše poznámka "detect: skipped (sandbox blocks package install)".
+- `npx impeccable detect` samo (npm-installed wrapper) v sandboxu nejde spustit (blokovaná instalace balíčku z internetu). Zjištěno ale, že skript existuje lokálně v repu skillu a jde spustit přímo: `node .claude/skills/impeccable/scripts/detect.mjs --json <cíl>` funguje bez sítě. Oprava předchozího rozhodnutí: detect kroky (4, 16) se NEPŘESKAKUJÍ, používá se lokální `node` volání místo `npx`; do commit message se i tak píše krátká poznámka o metodě spuštění.
 - Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 
 ## Otevřené otázky
