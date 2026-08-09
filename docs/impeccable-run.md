@@ -30,7 +30,7 @@ Poslední aktualizace: 2026-08-08
   1. [x] Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 implementováno (viz Rozhodnutí a BRÁNA D níže)
   2. [x] Seznam eventů — B-2, B-3 implementováno
   3. [x] Leaderboard — B-6 implementováno
-  4. Detail tipů ostatních — B-7, B-8
+  4. [x] Detail tipů ostatních — B-7, B-8 implementováno
   5. Profil — B-9, B-10
 - [ ] 13. harden + onboard
 - [ ] 14. animate + delight

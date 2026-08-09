@@ -13,7 +13,7 @@ export default async function TipperDetailModal({
 
   return (
     <Modal>
-      <TipperDetail userId={userId} eventId={eventId} season={season} />
+      <TipperDetail userId={userId} eventId={eventId} season={season} inModal />
     </Modal>
   );
 }

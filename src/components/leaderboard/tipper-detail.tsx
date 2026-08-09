@@ -25,10 +25,17 @@ export async function TipperDetail({
   userId,
   eventId,
   season: rawSeason,
+  inModal,
 }: {
   userId: string;
   eventId?: string;
   season?: string;
+  /** Rendered inside the intercepted-route Modal, which already offers its
+   * own close (X button, Escape, backdrop click) via router.back(). A
+   * second "back" link to /leaderboard would do a hard navigation instead
+   * of dismissing the overlay - two different ways to leave that don't feel
+   * like the same action. */
+  inModal?: boolean;
 }) {
   const supabase = await createClient();
 
@@ -148,7 +155,7 @@ export async function TipperDetail({
     return (
       <>
         <div>
-          <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
+          {!inModal && <BackLink href="/leaderboard">Zpět na žebříček</BackLink>}
           <h1 className="mt-1 text-xl font-bold">{profile.nickname ?? "Bez přezdívky"}</h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {event.number ? `OKTAGON ${event.number}` : event.name}
@@ -279,7 +286,7 @@ export async function TipperDetail({
   return (
     <>
       <div>
-        <BackLink href="/leaderboard">Zpět na žebříček</BackLink>
+        {!inModal && <BackLink href="/leaderboard">Zpět na žebříček</BackLink>}
         <h1 className="mt-1 text-xl font-bold lg:text-3xl">{profile.nickname ?? "Bez přezdívky"}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Sezóna {season} · celkem {totalPoints} b.
@@ -402,6 +409,12 @@ export async function TipperDetail({
             );
           })()}
         </div>
+      )}
+
+      {stats.events.length === 0 && (
+        <p className="text-neutral-600 dark:text-neutral-400">
+          Zatím žádné tipy v této sezóně.
+        </p>
       )}
 
       <div className="flex flex-col gap-2">
