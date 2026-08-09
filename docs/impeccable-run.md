@@ -23,10 +23,15 @@ Poslední aktualizace: 2026-08-08
 - [x] 5. critique po obrazovkách — odlehčený běh (sub-agent na obrazovku, kód + detect.mjs, bez browseru/dev serveru), zápis do `docs/critique-notes.md`
 - [x] 6. audit — statická analýza (a11y/výkon/responzivita/theming/integrita), skóre 15/20 „Good", zápis do `docs/audit-notes.md`
 - [x] 7. backlog — 29 položek prioritizovaných P0-P3 s dopadem/rizikem v `docs/design-backlog.md`, 3 otázky pro herní logiku vyčleněny k BRÁNĚ B
-- [ ] 8. BRÁNA B — schválení backlogu
-- [ ] 9. shape
+- [x] 8. BRÁNA B — schválení backlogu — uživatel schválil P0+P1 (B-1 až B-10) + B-12 do implementace, P2/P3 zbytek do backlogu na později, B-28/B-29 vyhozeno ze scope; podmínka u B-1: nesmí se dotknout superadmin náhledu eventu před veřejným spuštěním
+- [x] 9. shape — plán pro nejhorší obrazovku (fight card/uzávěrka/výsledky) v `docs/shape-fight-card.md`, pokrývá B-1, B-4, B-5, B-12
 - [ ] 10. BRÁNA C — schválení plánu
-- [ ] 11.–12. implementace po obrazovkách (doplň seznam po BRÁNĚ B)
+- [ ] 11.–12. implementace po obrazovkách (seznam podle schváleného scope z BRÁNY B):
+  1. Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 (plán hotový, čeká na BRÁNU C)
+  2. Seznam eventů — B-2, B-3
+  3. Leaderboard — B-6
+  4. Detail tipů ostatních — B-7, B-8
+  5. Profil — B-9, B-10
 - [ ] 13. harden + onboard
 - [ ] 14. animate + delight
 - [ ] 15. extract + polish
@@ -37,6 +42,7 @@ Poslední aktualizace: 2026-08-08
 - `npx impeccable detect` samo (npm-installed wrapper) v sandboxu nejde spustit (blokovaná instalace balíčku z internetu). Zjištěno ale, že skript existuje lokálně v repu skillu a jde spustit přímo: `node .claude/skills/impeccable/scripts/detect.mjs --json <cíl>` funguje bez sítě. Oprava předchozího rozhodnutí: detect kroky (4, 16) se NEPŘESKAKUJÍ, používá se lokální `node` volání místo `npx`; do commit message se i tak píše krátká poznámka o metodě spuštění.
 - Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 - Krok 5 (critique) běžel odlehčeně: jeden sub-agent na obrazovku dělá kód-review + scoped detect.mjs místo plné `critique.md` dual-agent + browser choreografie (žádný dev server/browser session k dispozici, 7 obrazovek by jinak znamenalo 14 izolovaných agentů). Report je v `docs/critique-notes.md`. Lze doběhnout plnou verzi na vyžádání pro konkrétní obrazovku.
+- B-1 (countdown/uzávěrka fix): uživatel výslovně potvrdil, že superadmin náhled eventu před veřejným spuštěním (`event.status === "draft" && !isAdmin` gate + `VIEW_MODE_COOKIE`/`isSuperadmin` flow) se touhle opravou nesmí dotknout — fix je scoped čistě na `lock_at`/countdown přechod scheduled→locked přes `router.refresh()`, viz `docs/shape-fight-card.md`.
 
 ## Otevřené otázky
 <věci, na které se zeptáš u nejbližší brány>
