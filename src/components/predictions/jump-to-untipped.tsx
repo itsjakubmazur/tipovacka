@@ -5,7 +5,14 @@ import { ArrowDown } from "lucide-react";
 
 /** Floating helper shown while the card is still open: one tap scrolls
  * to the first fight without a saved tip. Stays in sync as tips are
- * saved/cleared via the "tip-state-changed" events FightTipCard fires. */
+ * saved/cleared via the "tip-state-changed" events FightTipCard fires.
+ *
+ * On mobile, TipActionBar's own "Dotipovat (N)" button does the exact same
+ * thing from inside the status hero at the top of the page - two CTAs for
+ * one action is chrome the small screen doesn't have room for. This pill
+ * only shows up once that button has scrolled out of view; on desktop,
+ * where the hero often isn't in the same column as the fight list, it's
+ * always available. */
 export function JumpToUntipped({
   fightIds,
   initialUntipped,
@@ -14,6 +21,7 @@ export function JumpToUntipped({
   initialUntipped: string[];
 }) {
   const [untipped, setUntipped] = useState(() => new Set(initialUntipped));
+  const [suppressForActionBar, setSuppressForActionBar] = useState(false);
 
   useEffect(() => {
     function onChange(e: Event) {
@@ -29,8 +37,20 @@ export function JumpToUntipped({
     return () => window.removeEventListener("tip-state-changed", onChange);
   }, []);
 
+  useEffect(() => {
+    const cta = document.getElementById("tip-action-bar-cta");
+    const isMobile = window.matchMedia("(max-width: 767px)");
+    if (!cta || !isMobile.matches) return;
+
+    const observer = new IntersectionObserver(([entry]) => setSuppressForActionBar(entry.isIntersecting), {
+      rootMargin: "0px",
+    });
+    observer.observe(cta);
+    return () => observer.disconnect();
+  }, []);
+
   const firstUntipped = fightIds.find((id) => untipped.has(id));
-  if (!firstUntipped) return null;
+  if (!firstUntipped || suppressForActionBar) return null;
 
   return (
     <button

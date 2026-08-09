@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown, Clock, Trophy } from "lucide-react";
 import { CountUp } from "@/components/count-up";
 import { cn } from "@/lib/utils";
@@ -100,7 +101,7 @@ function Countdown({ targetIso }: { targetIso: string }) {
       {units.map((u, i) => (
         <div
           key={i}
-          className="min-w-[34px] overflow-hidden rounded-md border border-black/10 bg-black/[0.03] px-1 py-1 text-center dark:border-white/10 dark:bg-white/[0.04]"
+          className="glass-danger min-w-[34px] overflow-hidden rounded-md border px-1 py-1 text-center"
         >
           <div
             // keyed by the value, so only the unit that actually changed
@@ -277,6 +278,26 @@ export function EventStatusTimeline({
   footer?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const router = useRouter();
+  // `locked` is computed once server-side at render time. The countdown
+  // above ticks down client-side and just goes blank at zero - nothing told
+  // this page to ask the server again, so a card can sit tippable for
+  // however long the tab stays open past the deadline. One refresh, timed to
+  // the actual deadline rather than polled, fixes that without touching how
+  // `locked` itself is computed.
+  const refreshedAtLock = useRef(false);
+  useEffect(() => {
+    if (locked || !lockAtIso) return;
+    const msUntilLock = new Date(lockAtIso).getTime() - Date.now();
+    if (msUntilLock <= 0) return;
+    const id = setTimeout(() => {
+      if (!refreshedAtLock.current) {
+        refreshedAtLock.current = true;
+        router.refresh();
+      }
+    }, msUntilLock + 250);
+    return () => clearTimeout(id);
+  }, [locked, lockAtIso, router]);
 
   const tipState: StepState = locked || completed ? "done" : "current";
   const liveState: StepState = completed ? "done" : locked ? "current" : "future";

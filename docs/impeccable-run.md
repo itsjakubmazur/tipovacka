@@ -25,9 +25,9 @@ Poslední aktualizace: 2026-08-08
 - [x] 7. backlog — 29 položek prioritizovaných P0-P3 s dopadem/rizikem v `docs/design-backlog.md`, 3 otázky pro herní logiku vyčleněny k BRÁNĚ B
 - [x] 8. BRÁNA B — schválení backlogu — uživatel schválil P0+P1 (B-1 až B-10) + B-12 do implementace, P2/P3 zbytek do backlogu na později, B-28/B-29 vyhozeno ze scope; podmínka u B-1: nesmí se dotknout superadmin náhledu eventu před veřejným spuštěním
 - [x] 9. shape — plán pro nejhorší obrazovku (fight card/uzávěrka/výsledky) v `docs/shape-fight-card.md`, pokrývá B-1, B-4, B-5, B-12
-- [ ] 10. BRÁNA C — schválení plánu
+- [x] 10. BRÁNA C — schválení plánu — uživatel schválil beze změn
 - [ ] 11.–12. implementace po obrazovkách (seznam podle schváleného scope z BRÁNY B):
-  1. Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 (plán hotový, čeká na BRÁNU C)
+  1. [x] Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 implementováno (viz Rozhodnutí a BRÁNA D níže)
   2. Seznam eventů — B-2, B-3
   3. Leaderboard — B-6
   4. Detail tipů ostatních — B-7, B-8
@@ -42,7 +42,8 @@ Poslední aktualizace: 2026-08-08
 - `npx impeccable detect` samo (npm-installed wrapper) v sandboxu nejde spustit (blokovaná instalace balíčku z internetu). Zjištěno ale, že skript existuje lokálně v repu skillu a jde spustit přímo: `node .claude/skills/impeccable/scripts/detect.mjs --json <cíl>` funguje bez sítě. Oprava předchozího rozhodnutí: detect kroky (4, 16) se NEPŘESKAKUJÍ, používá se lokální `node` volání místo `npx`; do commit message se i tak píše krátká poznámka o metodě spuštění.
 - Init proběhl bez interview — publikum, účel a mantinely už byly zodpovězené v sekci „Kontext", takže PRODUCT.md je odvozen z ní + z prohlídky kódu (routy, package.json), v souladu s pravidlem design-run neptat se na věci zjistitelné z kódu.
 - Krok 5 (critique) běžel odlehčeně: jeden sub-agent na obrazovku dělá kód-review + scoped detect.mjs místo plné `critique.md` dual-agent + browser choreografie (žádný dev server/browser session k dispozici, 7 obrazovek by jinak znamenalo 14 izolovaných agentů). Report je v `docs/critique-notes.md`. Lze doběhnout plnou verzi na vyžádání pro konkrétní obrazovku.
-- B-1 (countdown/uzávěrka fix): uživatel výslovně potvrdil, že superadmin náhled eventu před veřejným spuštěním (`event.status === "draft" && !isAdmin` gate + `VIEW_MODE_COOKIE`/`isSuperadmin` flow) se touhle opravou nesmí dotknout — fix je scoped čistě na `lock_at`/countdown přechod scheduled→locked přes `router.refresh()`, viz `docs/shape-fight-card.md`.
+- B-1 (countdown/uzávěrka fix): uživatel výslovně potvrdil, že superadmin náhled eventu před veřejným spuštěním (`event.status === "draft" && !isAdmin` gate + `VIEW_MODE_COOKIE`/`isSuperadmin` flow) se touhle opravou nesmí dotknout — fix je scoped čistě na `lock_at`/countdown přechod scheduled→locked přes `router.refresh()`, viz `docs/shape-fight-card.md`. Implementováno jako jediný `setTimeout` v `EventStatusTimeline` (timed přímo na `lock_at`, ne interval), gate na `!locked` — draft/admin gate v `page.tsx` vůbec nedotčen.
+- Oprava předchozí opravy: `npx impeccable detect` i `npm install` v tomhle sandboxu NAKONEC fungují (síť je dostupná) — `npx tsc --noEmit`, `npx eslint` a `npx impeccable detect --json` proběhly čistě na všech upravených souborech kroku 11 (0 chyb, 0 nálezů). Od teď se pro implementační kroky používá `npx impeccable detect` přímo, ne jen lokální `node` volání.
 
 ## Otevřené otázky
 <věci, na které se zeptáš u nejbližší brány>

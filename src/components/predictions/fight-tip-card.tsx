@@ -377,10 +377,17 @@ export function FightTipCard({
           </span>
         ) : effectiveLocked ? (
           isBold ? (
-            <Badge variant="accent" className="gap-1">
-              <Star className="size-3" fill="currentColor" />
-              Jistotka ×2
-            </Badge>
+            voided ? (
+              <Badge variant="outline" className="gap-1">
+                <Star className="size-3" />
+                Jistotka se nezapočítala
+              </Badge>
+            ) : (
+              <Badge variant="accent" className="gap-1">
+                <Star className="size-3" fill="currentColor" />
+                Jistotka ×2
+              </Badge>
+            )
           ) : null
         ) : eventId && winnerId ? (
           <div className="relative flex shrink-0 items-center gap-1">

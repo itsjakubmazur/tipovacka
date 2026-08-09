@@ -578,6 +578,7 @@ export default async function EventDetailPage({
                     userId={user.id}
                     initialPrediction={predictionByFight.get(fight.id) ?? null}
                     locked={locked}
+                    initialIsBold={boldFightId === fight.id}
                   />
                 </div>
               ))}

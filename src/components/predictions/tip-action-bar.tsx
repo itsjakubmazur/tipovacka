@@ -107,6 +107,7 @@ export function TipActionBar({
       <div className="flex items-stretch gap-2">
         <button
           type="button"
+          id="tip-action-bar-cta"
           onClick={goToFights}
           className="glass-accent flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-2 outline-none transition-transform focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.98]"
         >
