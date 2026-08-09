@@ -36,7 +36,7 @@ Poslední aktualizace: 2026-08-08
 - [x] 14. animate + delight — report only: appka má bohatý motion vokabulář, nic dalšího nedoporučuju přidávat (viz Rozhodnutí)
 - [x] 15. extract + polish — DESIGN.md a `.impeccable/design.json` doplněny o nový `Badge` variant `info` (glass-blue) zavedený v kroku 11
 - [x] 16. finální detect + audit — `npx impeccable detect --json src`: 52 nálezů, shodné s baseline (0 přidáno/odebráno), žádný nový drift; odhadované audit skóre 16/20 (bylo 15/20), viz `docs/audit-notes.md`
-- [ ] 17. BRÁNA E — souhrn a merge
+- [ ] 17. BRÁNA E — souhrn a merge (čeká na odpověď uživatele)
 
 ## Rozhodnutí
 - `npx impeccable detect` samo (npm-installed wrapper) v sandboxu nejde spustit (blokovaná instalace balíčku z internetu). Zjištěno ale, že skript existuje lokálně v repu skillu a jde spustit přímo: `node .claude/skills/impeccable/scripts/detect.mjs --json <cíl>` funguje bez sítě. Oprava předchozího rozhodnutí: detect kroky (4, 16) se NEPŘESKAKUJÍ, používá se lokální `node` volání místo `npx`; do commit message se i tak píše krátká poznámka o metodě spuštění.
