@@ -35,7 +35,7 @@ Poslední aktualizace: 2026-08-08
 - [x] 13. harden + onboard — report only, viz Rozhodnutí; žádná další slepá implementace mimo schválený scope
 - [x] 14. animate + delight — report only: appka má bohatý motion vokabulář, nic dalšího nedoporučuju přidávat (viz Rozhodnutí)
 - [x] 15. extract + polish — DESIGN.md a `.impeccable/design.json` doplněny o nový `Badge` variant `info` (glass-blue) zavedený v kroku 11
-- [ ] 16. finální detect + audit
+- [x] 16. finální detect + audit — `npx impeccable detect --json src`: 52 nálezů, shodné s baseline (0 přidáno/odebráno), žádný nový drift; odhadované audit skóre 16/20 (bylo 15/20), viz `docs/audit-notes.md`
 - [ ] 17. BRÁNA E — souhrn a merge
 
 ## Rozhodnutí

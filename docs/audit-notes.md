@@ -70,3 +70,20 @@ očekávané, ne systémový problém.
 - Viz verdikt výše. Jediné systémové warningy jsou bounce-easing (4×) a jeden
   `design-system-radius`/`gray-on-color`/`layout-transition`/`overused-font`
   nález — vše izolované, ne opakující se vzorce.
+
+## Finální kontrola (krok 16)
+
+`npx impeccable detect --json src` po dokončení implementace: **52 nálezů,
+stejně jako baseline** (`.impeccable/detect-baseline.json`) — 0 přidaných, 0
+odebraných. Implementované opravy nepřidaly žádný nový design-system drift a
+nevyřešily nic, co detektor umí zachytit (opravené položky byly a11y/stavové/
+interakční, ne barvy/fonty/radius mimo DESIGN.md).
+
+Ruční zlepšení oproti původnímu auditu (nejsou v detectu vidět):
+- Accessibility (byl 2/4): `aria-hidden` na medaili, `router.refresh()` u
+  vypršelé uzávěrky odstraňuje matoucí "tichý" stav, validace čísla účtu na
+  blur, empty-state copy na dvou místech. Odhad po opravách: **3/4**.
+- Ostatní dimenze beze změny (žádná z oprav se jich netýkala).
+
+**Aktualizované odhadované skóre: 16/20 „Good"** (bylo 15/20). Zbytek P2/P3
+backlogu (`docs/design-backlog.md`) zůstává k řešení v dalším běhu.
