@@ -25,13 +25,20 @@ export function BankAccountForm({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = account.trim();
+  function validate(value: string): boolean {
+    const trimmed = value.trim();
     if (trimmed && !parseCzechAccount(trimmed)) {
       setError("Formát čísla účtu nesedí - očekávám např. 19-2000145399/0800.");
-      return;
+      return false;
     }
+    setError(null);
+    return true;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validate(account)) return;
+    const trimmed = account.trim();
 
     setSaving(true);
     setError(null);
@@ -70,7 +77,9 @@ export function BankAccountForm({
           onChange={(e) => {
             setAccount(e.target.value);
             setSaved(false);
+            setError(null);
           }}
+          onBlur={(e) => validate(e.target.value)}
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}

@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Section } from "@/components/ui/section-heading";
 
 export function NicknameForm({
   userId,
@@ -44,32 +45,34 @@ export function NicknameForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="glass-surface flex flex-col gap-3 rounded-xl border p-4"
-    >
-      <div className="flex max-w-sm flex-col gap-1.5">
-        <Label htmlFor="nickname">Přezdívka</Label>
-        <Input
-          id="nickname"
-          value={nickname}
-          onChange={(e) => {
-            setNickname(e.target.value);
-            setSaved(false);
-          }}
-          required
-        />
-      </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {saved && (
-        <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
-          <Check className="size-4" />
-          Uloženo.
-        </p>
-      )}
-      <Button type="submit" variant="accent" disabled={saving} className="self-start">
-        {saving ? "Ukládám…" : "Uložit"}
-      </Button>
-    </form>
+    <Section title="Přezdívka">
+      <form
+        onSubmit={handleSubmit}
+        className="glass-surface flex flex-col gap-3 rounded-xl border p-4"
+      >
+        <div className="flex max-w-sm flex-col gap-1.5">
+          <Label htmlFor="nickname">Přezdívka</Label>
+          <Input
+            id="nickname"
+            value={nickname}
+            onChange={(e) => {
+              setNickname(e.target.value);
+              setSaved(false);
+            }}
+            required
+          />
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        {saved && (
+          <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+            <Check className="size-4" />
+            Uloženo.
+          </p>
+        )}
+        <Button type="submit" variant="accent" disabled={saving} className="self-start">
+          {saving ? "Ukládám…" : "Uložit"}
+        </Button>
+      </form>
+    </Section>
   );
 }

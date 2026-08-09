@@ -26,12 +26,12 @@ Poslední aktualizace: 2026-08-08
 - [x] 8. BRÁNA B — schválení backlogu — uživatel schválil P0+P1 (B-1 až B-10) + B-12 do implementace, P2/P3 zbytek do backlogu na později, B-28/B-29 vyhozeno ze scope; podmínka u B-1: nesmí se dotknout superadmin náhledu eventu před veřejným spuštěním
 - [x] 9. shape — plán pro nejhorší obrazovku (fight card/uzávěrka/výsledky) v `docs/shape-fight-card.md`, pokrývá B-1, B-4, B-5, B-12
 - [x] 10. BRÁNA C — schválení plánu — uživatel schválil beze změn
-- [ ] 11.–12. implementace po obrazovkách (seznam podle schváleného scope z BRÁNY B):
+- [x] 11.–12. implementace po obrazovkách (seznam podle schváleného scope z BRÁNY B):
   1. [x] Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 implementováno (viz Rozhodnutí a BRÁNA D níže)
   2. [x] Seznam eventů — B-2, B-3 implementováno
   3. [x] Leaderboard — B-6 implementováno
   4. [x] Detail tipů ostatních — B-7, B-8 implementováno
-  5. Profil — B-9, B-10
+  5. [x] Profil — B-9, B-10 implementováno
 - [ ] 13. harden + onboard
 - [ ] 14. animate + delight
 - [ ] 15. extract + polish

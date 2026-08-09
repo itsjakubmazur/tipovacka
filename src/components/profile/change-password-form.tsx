@@ -44,11 +44,16 @@ export function ChangePasswordForm() {
 
   return (
     <div className="glass-surface flex flex-col gap-3 rounded-xl border p-4">
+      {/* Not wrapped in <Section>: this toggle already carries the section's
+          heading weight (matches SectionHeading's text-lg font-semibold), so
+          the row reads as a section title in the same scan rhythm as the
+          cards around it, without stacking a second "Heslo" title above a
+          disclosure that already says "Změnit heslo". */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex items-center justify-between text-sm font-semibold"
+        className="flex items-center justify-between text-lg font-semibold"
       >
         Změnit heslo
         <ChevronDown
