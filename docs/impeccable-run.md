@@ -28,7 +28,7 @@ Poslední aktualizace: 2026-08-08
 - [x] 10. BRÁNA C — schválení plánu — uživatel schválil beze změn
 - [ ] 11.–12. implementace po obrazovkách (seznam podle schváleného scope z BRÁNY B):
   1. [x] Fight card / uzávěrka / výsledky — B-1, B-4, B-5, B-12 implementováno (viz Rozhodnutí a BRÁNA D níže)
-  2. Seznam eventů — B-2, B-3
+  2. [x] Seznam eventů — B-2, B-3 implementováno
   3. Leaderboard — B-6
   4. Detail tipů ostatních — B-7, B-8
   5. Profil — B-9, B-10

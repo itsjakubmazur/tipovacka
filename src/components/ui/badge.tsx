@@ -13,6 +13,7 @@ const badgeVariants = cva(
         accent: "glass-accent",
         outline: GLASS_PILL,
         secondary: GLASS_PILL,
+        info: "glass-blue",
       },
     },
     defaultVariants: {

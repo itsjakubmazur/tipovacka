@@ -123,14 +123,7 @@ export default async function EventsPage() {
 
       {!events?.length && <p className="text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>}
 
-      <div
-        className={cn(
-          "flex flex-col gap-3",
-          "lg:grid lg:grid-cols-3 lg:gap-4",
-          // the newest gala leads at full width and gets room for its poster
-          "lg:[&>*:first-child]:col-span-3 lg:[&>*:first-child]:min-h-[250px]"
-        )}
-      >
+      <div className={cn("flex flex-col gap-3", "lg:grid lg:grid-cols-3 lg:gap-4")}>
         {events?.map((event) => {
           // Drafts always use the teaser card, so an admin previews exactly
           // what everyone else will see. Admins in admin-view get every draft
@@ -175,7 +168,13 @@ export default async function EventsPage() {
                 "relative flex min-h-[168px] items-end justify-between gap-3 overflow-hidden rounded-xl border p-4 shadow-lg shadow-black/20 transition-shadow hover:shadow-xl dark:shadow-black/60",
                 event.image_url
                   ? "border-black/10 hover:border-black/25 dark:border-white/10 dark:hover:border-white/25"
-                  : "glass-surface border glass-surface-interactive"
+                  : "glass-surface border glass-surface-interactive",
+                // the current/next gala leads at full width and gets room for
+                // its poster - keyed off primaryEventId rather than DOM
+                // position, so a draft teaser that happens to sort first
+                // (e.g. a far-future scheduled gala) never inherits the hero
+                // slot meant for a real, tappable card
+                event.id === primaryEventId && "lg:col-span-3 lg:min-h-[250px]"
               )}
             >
               {event.image_url && (
@@ -219,7 +218,13 @@ export default async function EventsPage() {
               ) : (
                 <Badge
                   className="relative z-10"
-                  variant={effectiveStatus === "upcoming" ? "accent" : "secondary"}
+                  variant={
+                    effectiveStatus === "upcoming"
+                      ? "accent"
+                      : effectiveStatus === "locked"
+                        ? "info"
+                        : "secondary"
+                  }
                 >
                   {STATUS_LABELS[effectiveStatus]}
                 </Badge>
