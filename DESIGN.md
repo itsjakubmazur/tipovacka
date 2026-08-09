@@ -37,6 +37,9 @@ components:
   badge-accent:
     backgroundColor: "{colors.accent}"
     rounded: "{rounded.full}"
+  badge-info:
+    backgroundColor: "{colors.info-blue}"
+    rounded: "{rounded.full}"
 ---
 
 # Design System: OKTAGON GARÁŽ Tipovačka
@@ -182,8 +185,9 @@ the glass material. No sharp corners anywhere in the shipped UI.
 - **Focus:** `ring-2 ring-black/60` (light) / `ring-white/60` (dark), offset 2px.
 
 ### Badges / Pills
-- **Style:** `rounded-full`, `.glass-chrome` (default) or `.glass-accent` (accent) or the shared `GLASS_PILL` token (outline/secondary).
+- **Style:** `rounded-full`, `.glass-chrome` (default), `.glass-accent` (accent), `.glass-blue` (info), or the shared `GLASS_PILL` token (outline/secondary).
 - **State:** selected pick / active nav segment renders as `.glass-accent`; everything else stays neutral glass.
+- **Info:** `variant="info"` (`.glass-blue`) marks a neutral-but-notable status that isn't the accent and isn't an error/success — e.g. "Uzamčeno" on the events list, distinct from the muted "Vyhodnoceno" badge and from the red urgency of the last-hour countdown.
 
 ### Cards / Containers
 - **Corner Style:** `rounded-xl`.

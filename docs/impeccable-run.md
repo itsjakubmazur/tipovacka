@@ -32,9 +32,9 @@ Poslední aktualizace: 2026-08-08
   3. [x] Leaderboard — B-6 implementováno
   4. [x] Detail tipů ostatních — B-7, B-8 implementováno
   5. [x] Profil — B-9, B-10 implementováno
-- [ ] 13. harden + onboard
-- [ ] 14. animate + delight
-- [ ] 15. extract + polish
+- [x] 13. harden + onboard — report only, viz Rozhodnutí; žádná další slepá implementace mimo schválený scope
+- [x] 14. animate + delight — report only: appka má bohatý motion vokabulář, nic dalšího nedoporučuju přidávat (viz Rozhodnutí)
+- [x] 15. extract + polish — DESIGN.md a `.impeccable/design.json` doplněny o nový `Badge` variant `info` (glass-blue) zavedený v kroku 11
 - [ ] 16. finální detect + audit
 - [ ] 17. BRÁNA E — souhrn a merge
 
@@ -44,6 +44,11 @@ Poslední aktualizace: 2026-08-08
 - Krok 5 (critique) běžel odlehčeně: jeden sub-agent na obrazovku dělá kód-review + scoped detect.mjs místo plné `critique.md` dual-agent + browser choreografie (žádný dev server/browser session k dispozici, 7 obrazovek by jinak znamenalo 14 izolovaných agentů). Report je v `docs/critique-notes.md`. Lze doběhnout plnou verzi na vyžádání pro konkrétní obrazovku.
 - B-1 (countdown/uzávěrka fix): uživatel výslovně potvrdil, že superadmin náhled eventu před veřejným spuštěním (`event.status === "draft" && !isAdmin` gate + `VIEW_MODE_COOKIE`/`isSuperadmin` flow) se touhle opravou nesmí dotknout — fix je scoped čistě na `lock_at`/countdown přechod scheduled→locked přes `router.refresh()`, viz `docs/shape-fight-card.md`. Implementováno jako jediný `setTimeout` v `EventStatusTimeline` (timed přímo na `lock_at`, ne interval), gate na `!locked` — draft/admin gate v `page.tsx` vůbec nedotčen.
 - Oprava předchozí opravy: `npx impeccable detect` i `npm install` v tomhle sandboxu NAKONEC fungují (síť je dostupná) — `npx tsc --noEmit`, `npx eslint` a `npx impeccable detect --json` proběhly čistě na všech upravených souborech kroku 11 (0 chyb, 0 nálezů). Od teď se pro implementační kroky používá `npx impeccable detect` přímo, ne jen lokální `node` volání.
+
+- Krok 13 (harden+onboard) a 14 (animate+delight): implementace v tomhle běhu byla scoped na konkrétní schválené backlog položky (BRÁNA B). Přidávat další edge-case ošetření nebo animace bez schválení by porušilo "match scope of actions to what was requested" — místo toho jen report:
+  - Harden/onboard: zbylé P2/P3 položky z `docs/design-backlog.md` (B-11, B-14 až B-26 kromě B-12) pokrývají většinu reálných edge/empty-state mezer, které appka má; nic akutního navíc jsem při implementaci nenašel. Doporučuju je řešit v dalším `/design-run` běhu, ne teď mimo schválený scope.
+  - Animate/delight: appka má už bohatý, disciplinovaný motion systém (`globals.css`, `.animate-*` třídy) přesně podle DESIGN.md Do's ("motion tied to a real event"). Nepřidávám nic dalšího — riziko gratuitous flourish proti vlastnímu pravidlu appky.
+- Krok 15 (extract+polish): jediná nová komponenta zavedená v implementaci byl `Badge` variant `info` (glass-blue, pro "Uzamčeno" stav). Doplněno do `DESIGN.md` (Components → Badges) a `.impeccable/design.json` (components pole), aby budoucí `/impeccable` běhy věděly, že existuje.
 
 ## Otevřené otázky
 <věci, na které se zeptáš u nejbližší brány>

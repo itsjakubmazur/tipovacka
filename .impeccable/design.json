@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-08T00:00:00Z",
+  "generatedAt": "2026-08-09T00:00:00Z",
   "title": "Design System: OKTAGON GARÁŽ Tipovačka",
   "extensions": {
     "colorMeta": {
@@ -63,6 +63,14 @@
       "description": "Selected/active pill state, same lit-glass accent material as the button.",
       "html": "<span class=\"ds-badge-accent\">Vybráno</span>",
       "css": ".ds-badge-accent { display: inline-flex; align-items: center; border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 500; color: #000; border: 1px solid rgba(190,158,0,.55); background-image: linear-gradient(to bottom, rgba(255,226,77,.98) 0%, rgba(255,212,0,.94) 55%, rgba(232,190,0,.96) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.85), 0 1px 2px rgba(0,0,0,.18); }"
+    },
+    {
+      "name": "Info Badge",
+      "kind": "chip",
+      "refersTo": "badge-info",
+      "description": "Neutral-but-notable status pill (e.g. 'Uzamčeno' on the events list), distinct from the muted default badge and from the accent/danger tones.",
+      "html": "<span class=\"ds-badge-info\">Uzamčeno</span>",
+      "css": ".ds-badge-info { display: inline-flex; align-items: center; border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 500; color: #fff; border: 1px solid rgba(29,78,216,.5); background-image: linear-gradient(to bottom, rgba(80,150,255,.98) 0%, rgba(37,99,235,.96) 100%); box-shadow: inset 0 1px 0.5px 0 rgba(255,255,255,.45), inset 0 0 0 0.5px rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.2), 0 6px 16px -8px rgba(59,130,246,.6); }"
     },
     {
       "name": "Input Field",
