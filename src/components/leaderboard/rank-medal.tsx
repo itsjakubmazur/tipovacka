@@ -14,7 +14,7 @@ export function RankMedal({ rank }: { rank: number }) {
   if (rank >= 1 && rank <= 3) {
     return (
       <span className="flex w-6 shrink-0 justify-center" aria-label={`${rank}. místo`}>
-        <Medal className={cn("size-5", MEDAL_COLORS[rank - 1])} strokeWidth={2.25} />
+        <Medal className={cn("size-5", MEDAL_COLORS[rank - 1])} strokeWidth={2.25} aria-hidden="true" />
       </span>
     );
   }
