@@ -51,6 +51,12 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
             href={item.href}
             data-active={active}
             aria-current={active ? "page" : undefined}
+            // These four destinations are always mounted (the nav itself is
+            // sticky/fixed), so prefetching them in full - not just Next's
+            // default shell-only prefetch for dynamic routes - means the RSC
+            // payload (now served from cache server-side) is usually already
+            // in hand by the time you tap.
+            prefetch={true}
             className={cn(
               "relative z-10 rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
               active ? "text-accent" : "text-white/70 hover:text-white"
@@ -96,6 +102,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
               href={item.href}
               data-active={active}
               aria-current={active ? "page" : undefined}
+              prefetch={true}
               className={cn(
                 // the bottom bar is white in light mode, so the active item
                 // can't use the raw accent - yellow on white is unreadable

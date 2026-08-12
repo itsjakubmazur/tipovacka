@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getEventsListShared } from "@/lib/data/events-list";
 import { Badge } from "@/components/ui/badge";
 import { TeaserEventCard } from "@/components/events/teaser-event-card";
 import { WelcomeCard } from "@/components/events/welcome-card";
@@ -25,7 +26,13 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function EventsPage() {
   const supabase = await createClient();
 
-  const { data: userData } = await supabase.auth.getUser();
+  // Every gala plus its fight count is identical for every viewer - served
+  // from the cached shell in parallel with auth, rather than waiting on it.
+  // Drafts are included here and filtered per-viewer below (showDrafts).
+  const [{ data: userData }, { events, fightCounts }] = await Promise.all([
+    supabase.auth.getUser(),
+    getEventsListShared(),
+  ]);
   const user = userData.user;
 
   let showDrafts = false;
@@ -41,29 +48,15 @@ export default async function EventsPage() {
     }
   }
 
-  // Fetch everything (drafts included): admins in admin-view see drafts
-  // as normal cards, and regular tippers see a draft as a dimmed teaser
-  // card once it's inside the teaser window. Anything else draft is
-  // filtered out per-row below.
-  const { data: events } = await supabase
-    .from("events")
-    .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url")
-    .order("event_date", { ascending: false });
-
   // Counted in the database, one row per gala. Doing it here in JS meant
   // fetching every fight ever imported plus every prediction the viewer has
   // made, which PostgREST truncates at 1000 rows - around the 90th gala the
   // counters would have started silently under-reporting.
-  const [{ data: fightCounts }, { data: tipCounts }] = await Promise.all([
-    supabase.from("event_fight_counts").select("event_id, fight_count"),
-    user
-      ? supabase.from("event_user_tip_counts").select("event_id, tipped").eq("user_id", user.id)
-      : Promise.resolve({ data: null as { event_id: string; tipped: number }[] | null }),
-  ]);
+  const { data: tipCounts } = user
+    ? await supabase.from("event_user_tip_counts").select("event_id, tipped").eq("user_id", user.id)
+    : { data: null as { event_id: string; tipped: number }[] | null };
 
-  const fightCountByEvent = new Map(
-    (fightCounts ?? []).map((r) => [r.event_id as string, r.fight_count as number])
-  );
+  const fightCountByEvent = new Map(fightCounts.map((r) => [r.event_id, r.fight_count]));
   const predictionCountByEvent = new Map(
     (tipCounts ?? []).map((r) => [r.event_id as string, r.tipped as number])
   );
