@@ -14,6 +14,10 @@ export type Segment = {
    * three views are pages - the segment renders as a Link, so it keeps
    * prefetching, middle-click and the back button. */
   href?: string;
+  /** Force full data prefetch (not just the loading shell) for a dynamic
+   * route - same override `<Link prefetch>` normally takes. Left unset,
+   * Next's default (viewport-triggered, shell-only) behaviour applies. */
+  prefetch?: boolean;
 };
 
 /** A row of segments with one piece of glass sliding between them.
@@ -123,6 +127,7 @@ export function SegmentedControl({
             key={segment.key}
             ref={ref}
             href={segment.href}
+            prefetch={segment.prefetch}
             aria-current={active ? "page" : undefined}
             {...shared}
           />

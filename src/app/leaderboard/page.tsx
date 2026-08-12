@@ -135,11 +135,16 @@ export default async function LeaderboardPage({
               key: "event",
               label: "Galavečer",
               href: `/leaderboard?view=event&eventId=${selectedEvent.id}`,
+              // Only three of these ever exist and they're all cached-data
+              // reads for a gala already on screen, so prefetching all three
+              // in full is cheap - switching views becomes instant.
+              prefetch: true,
             },
             {
               key: "season",
               label: `Sezóna ${season}`,
               href: `/leaderboard?view=season&eventId=${selectedEvent.id}`,
+              prefetch: true,
             },
             {
               key: "history",
@@ -150,6 +155,7 @@ export default async function LeaderboardPage({
                 </>
               ),
               href: "/leaderboard?view=history",
+              prefetch: true,
             },
           ]}
         />
@@ -163,10 +169,14 @@ export default async function LeaderboardPage({
             value={selectedEvent.id}
             size="sm"
             ariaLabel="Galavečer"
-            segments={events.map((event) => ({
+            segments={events.map((event, i) => ({
               key: event.id,
               label: event.number ? `OKTAGON ${event.number}` : event.name,
               href: `/leaderboard?view=event&eventId=${event.id}`,
+              // The gala you're most likely to tap next is whichever is
+              // adjacent to the one you're looking at (events sorted desc by
+              // date) - prefetch just those two in full, not the whole row.
+              prefetch: Math.abs(i - events.findIndex((e) => e.id === selectedEvent.id)) === 1,
             }))}
           />
         </div>
