@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Trophy } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getHallOfFameData } from "@/lib/data/leaderboard";
 import { RankMedal } from "@/components/leaderboard/rank-medal";
 import { cn } from "@/lib/utils";
 
@@ -13,21 +13,13 @@ type SeasonRow = {
 };
 
 /** Per-season podium list - rendered as the "Síň slávy" view of the
- * leaderboard page. */
+ * leaderboard page. Zero personalization, so it's served entirely from the
+ * cached getHallOfFameData() - instant on repeat visits. */
 export async function HallOfFame() {
-  const supabase = await createClient();
-
-  const { data: rows } = await supabase
-    .from("season_leaderboard")
-    .select("season, user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at")
-    .order("season", { ascending: false })
-    .order("points", { ascending: false })
-    .order("fights_correct_winner", { ascending: false })
-    .order("perfect_cards", { ascending: false })
-    .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
+  const rows = await getHallOfFameData();
 
   const bySeason = new Map<number, SeasonRow[]>();
-  for (const row of (rows ?? []) as SeasonRow[]) {
+  for (const row of rows as SeasonRow[]) {
     const list = bySeason.get(row.season) ?? [];
     list.push(row);
     bySeason.set(row.season, list);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Landmark, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getLeaderboardEvents, getEventLeaderboard, getSeasonLeaderboard } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
@@ -11,34 +12,12 @@ import { PodiumCard } from "@/components/leaderboard/podium-card";
 import { SeasonCompareList } from "@/components/leaderboard/season-compare-list";
 import { EventCompareList } from "@/components/leaderboard/event-compare-list";
 import { GalaReplay } from "@/components/leaderboard/gala-replay";
-import { METHOD_LABELS } from "@/lib/method-labels";
-import type { Method } from "@/lib/types";
 import { Disclosure } from "@/components/ui/disclosure";
 import { SlideOnChange } from "@/components/ui/slide-on-change";
 import { RankJourney } from "@/components/leaderboard/rank-journey";
 import { PageHeading } from "@/components/ui/page-heading";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-
-type EventLeaderboardRow = {
-  user_id: string;
-  nickname: string | null;
-  points: number;
-  fights_scored: number;
-  fights_completed: number;
-  perfect_card: boolean;
-  fights_correct_winner: number;
-  earliest_prediction_at: string | null;
-};
-
-type SeasonLeaderboardRow = {
-  user_id: string;
-  nickname: string | null;
-  points: number;
-  fights_correct_winner: number;
-  perfect_cards: number;
-  earliest_prediction_at: string | null;
-  events_played: number;
-};
+import type { EventLeaderboardRow, SeasonLeaderboardRow } from "@/lib/data/leaderboard";
 
 export default async function LeaderboardPage({
   searchParams,
@@ -50,17 +29,14 @@ export default async function LeaderboardPage({
 
   const supabase = await createClient();
 
-  const { data: userData } = await supabase.auth.getUser();
+  const [{ data: userData }, events] = await Promise.all([
+    supabase.auth.getUser(),
+    getLeaderboardEvents(),
+  ]);
   if (!userData.user) {
     redirect("/login");
   }
   const currentUserId = userData.user.id;
-
-  const { data: events } = await supabase
-    .from("events")
-    .select("id, number, name, event_date, status, lock_at, image_url")
-    .neq("status", "draft")
-    .order("event_date", { ascending: false });
 
   if (!events?.length) {
     return (
@@ -105,109 +81,20 @@ export default async function LeaderboardPage({
     const selectedIndex = events.findIndex((e) => e.id === selectedEvent.id);
     const previousEvent = events[selectedIndex + 1]; // events sorted desc by date
 
-    const [{ data }, { count }, prevResult] = await Promise.all([
-      supabase
-        .from("event_leaderboard")
-        .select(
-          "user_id, nickname, points, fights_scored, fights_completed, perfect_card, fights_correct_winner, earliest_prediction_at"
-        )
-        .eq("event_id", selectedEvent.id)
-        .order("points", { ascending: false })
-        .order("fights_correct_winner", { ascending: false })
-        .order("perfect_card", { ascending: false })
-        .order("earliest_prediction_at", { ascending: true, nullsFirst: false }),
-      supabase
-        .from("fights")
-        .select("id", { count: "exact", head: true })
-        .eq("event_id", selectedEvent.id)
-        .not("status", "in", "(cancelled,no_contest)"),
-      previousEvent
-        ? supabase
-            .from("event_leaderboard")
-            .select("user_id, points")
-            .eq("event_id", previousEvent.id)
-            .order("points", { ascending: false })
-        : Promise.resolve({ data: null }),
-    ]);
-    eventRows = data ?? [];
-    totalFights = count ?? 0;
-
-    if (selectedEvent.status === "completed") {
-      const [{ data: replayFights }, { data: replayPicks }, { data: replayBold }] =
-        await Promise.all([
-          supabase
-            .from("fights")
-            .select(
-              `id, card_order, status, winner_fighter_id, method, result_round,
-               fighter_a:fighters!fights_fighter_a_id_fkey(name),
-               fighter_b:fighters!fights_fighter_b_id_fkey(name)`
-            )
-            .eq("event_id", selectedEvent.id)
-            .eq("status", "completed")
-            .order("card_order", { ascending: true }),
-          supabase
-            .from("predictions")
-            .select("user_id, fight_id, points, fights!inner(event_id)")
-            .eq("fights.event_id", selectedEvent.id),
-          supabase
-            .from("bold_picks")
-            .select("user_id, fight_id")
-            .eq("event_id", selectedEvent.id),
-        ]);
-
-      const boldByUser = new Map(
-        (replayBold ?? []).map((b: { user_id: string; fight_id: string }) => [b.user_id, b.fight_id])
-      );
-      const picks = (replayPicks ?? []) as unknown as {
-        user_id: string;
-        fight_id: string;
-        points: number | null;
-      }[];
-
-      replaySteps = ((replayFights ?? []) as unknown as {
-        id: string;
-        winner_fighter_id: string | null;
-        method: string | null;
-        result_round: number | null;
-        fighter_a: { name: string };
-        fighter_b: { name: string };
-      }[]).map((fight) => {
-        const gains: Record<string, number> = {};
-        for (const p of picks) {
-          if (p.fight_id !== fight.id || !p.points) continue;
-          // the jistotka doubles whatever its fight paid out
-          gains[p.user_id] = p.points * (boldByUser.get(p.user_id) === fight.id ? 2 : 1);
-        }
-        return {
-          fightId: fight.id,
-          label: `${fight.fighter_a.name} vs ${fight.fighter_b.name}`,
-          result: [
-            fight.winner_fighter_id ? "" : "bez vítěze",
-            fight.method ? METHOD_LABELS[fight.method as Method] : "",
-            fight.result_round ? `${fight.result_round}. kolo` : "",
-          ]
-            .filter(Boolean)
-            .join(" · "),
-          gains,
-        };
-      });
+    const board = await getEventLeaderboard(
+      selectedEvent.id,
+      previousEvent?.id ?? null,
+      selectedEvent.status === "completed"
+    );
+    eventRows = board.eventRows;
+    totalFights = board.totalFights;
+    replaySteps = board.replaySteps;
+    for (const [userId, rank] of Object.entries(board.prevRankByUser)) {
+      prevRankByUser.set(userId, rank);
     }
-    (prevResult.data ?? []).forEach((row: { user_id: string }, i: number) => {
-      prevRankByUser.set(row.user_id, i + 1);
-    });
     myFinalRank = eventRows.findIndex((r) => r.user_id === currentUserId) + 1;
   } else {
-    const { data } = await supabase
-      .from("season_leaderboard")
-      .select(
-        "user_id, nickname, points, fights_correct_winner, perfect_cards, earliest_prediction_at, events_played"
-      )
-      .eq("season", season)
-      .order("points", { ascending: false })
-      .order("fights_correct_winner", { ascending: false })
-      .order("perfect_cards", { ascending: false })
-      .order("earliest_prediction_at", { ascending: true, nullsFirst: false });
-    seasonRows = data ?? [];
+    seasonRows = await getSeasonLeaderboard(season);
   }
 
   return (

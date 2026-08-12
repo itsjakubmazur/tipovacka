@@ -1,27 +1,16 @@
-import { Fragment } from "react";
+import { Suspense } from "react";
 import Image from "next/image";
-import { Wallet } from "lucide-react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getEventShared } from "@/lib/data/event-detail";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
-import { FightTipCard } from "@/components/predictions/fight-tip-card";
-import { FotnPicker } from "@/components/predictions/fotn-picker";
-import { JumpToUntipped } from "@/components/predictions/jump-to-untipped";
 import { SegmentJump } from "@/components/predictions/segment-jump";
-import { EventStatusTimeline } from "@/components/events/event-status-timeline";
-import { EventComments } from "@/components/events/event-comments";
-import { EventPayoutPool } from "@/components/events/event-payout-pool";
-import { FightNightLive } from "@/components/events/fight-night-live";
-import { WhoHasntTipped } from "@/components/events/who-hasnt-tipped";
-import { BraveryReveal } from "@/components/events/bravery-reveal";
-import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
-import { TipActionBar } from "@/components/predictions/tip-action-bar";
-import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
+import { PersonalizedEventData } from "@/components/events/personalized-event-data";
+import { EventDetailSkeleton } from "@/components/events/event-detail-skeleton";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
-import { Confetti } from "@/components/confetti";
 import { perfStart, perfLogParts } from "@/lib/perf";
-import type { Fight, Prediction } from "@/lib/types";
+import type { Fight } from "@/lib/types";
 import { PageHeading } from "@/components/ui/page-heading";
 
 const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
@@ -39,19 +28,14 @@ export default async function EventDetailPage({
   const supabase = await createClient();
   const perf = perfStart();
 
-  // First wave: everything that needs only the event id (or nothing).
-  // These used to run one after another - a ~10-query serial waterfall
-  // was the biggest chunk of this page's load time.
-  const [{ data: event }, { data: userData }, cookieStore] = await Promise.all([
-    supabase
-      .from("events")
-      .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url, actual_fotn_fight_id, payouts_enabled")
-      .eq("id", id)
-      .single(),
-    supabase.auth.getUser(),
-    cookies(),
-  ]);
-  const perfW1 = perfStart();
+  // The shared shell (event row, fight card, comments, standings) comes
+  // from a cached fetch keyed on the event id - instant on repeat nav,
+  // busted server-side by /api/internal/revalidate whenever a write
+  // touches this event. Auth can't be cached (it's cookie-bound and
+  // security-relevant), so it still runs live, in parallel.
+  const [{ event, fights, comments, finalStandings, allPredictions }, { data: userData }, cookieStore] =
+    await Promise.all([getEventShared(id), supabase.auth.getUser(), cookies()]);
+  const perfShared = perfStart();
 
   if (!event) {
     notFound();
@@ -65,172 +49,35 @@ export default async function EventDetailPage({
     event.status === "completed" ||
     (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
 
-  // Second (and last) wave: everything scoped by user and/or event.
-  // The prediction queries filter through the fights' event via an
-  // inner join (fights!inner), so they no longer wait on a separate
-  // "get the fight ids first" round-trip - the whole page is now two
-  // waves (auth, then this batch) instead of three, one fewer ~100ms
-  // hop to the co-located-but-still-not-instant Supabase.
-  const [
-    { data: profile },
-    { data: fights },
-    { data: bonusPrediction },
-    { data: boldPick },
-    { data: myLeaderboardRow },
-    { data: rawComments },
-    { data: predictions },
-    { data: allPredictions },
-    { data: finalStandings },
-  ] = await Promise.all([
-    supabase.from("profiles").select("is_admin, is_superadmin, nickname").eq("id", user.id).single(),
-    supabase
-      .from("fights")
-      .select(
-        `id, weight_class, is_title_fight, is_main_event, card_order, card_segment, rounds, status,
-         winner_fighter_id, method, result_round, result_time, odds_fighter_a, odds_fighter_b,
-         fighter_a:fighters!fights_fighter_a_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba),
-         fighter_b:fighters!fights_fighter_b_id_fkey(id, name, nickname, photo_url, fight_card_photo_url, bio, record, oktagon_rank, oktagon_rank_change, oktagon_slug, weight_kg, height_cm, birth_date, nationality, flag_code, is_tba)`
-      )
-      .eq("event_id", id)
-      .order("card_order", { ascending: false }),
-    supabase
-      .from("bonus_predictions")
-      .select("predicted_fotn_fight_id, points")
-      .eq("user_id", user.id)
-      .eq("event_id", id)
-      .maybeSingle(),
-    supabase
-      .from("bold_picks")
-      .select("fight_id")
-      .eq("user_id", user.id)
-      .eq("event_id", id)
-      .maybeSingle(),
-    // event_leaderboard already folds in the FOTN and perfect-card
-    // bonuses, so "Tvé body" always matches the leaderboard exactly.
-    supabase
-      .from("event_leaderboard")
-      .select("points")
-      .eq("event_id", id)
-      .eq("user_id", user.id)
-      .maybeSingle(),
-    supabase
-      .from("event_comments")
-      .select(
-        "id, user_id, body, created_at, is_system, gif_url, profiles(nickname), event_comment_reactions(id, user_id, emoji)"
-      )
-      .eq("event_id", id)
-      .order("created_at", { ascending: false })
-      .limit(100),
-    // the viewer's own predictions for this event, filtered via the
-    // fight's event_id (no fight-id list needed first)
-    supabase
-      .from("predictions")
-      .select("fight_id, predicted_winner_id, predicted_method, predicted_round, points, updated_at, fights!inner(event_id)")
-      .eq("fights.event_id", id)
-      .eq("user_id", user.id),
-    // everyone's picks, but only once the event is locked
-    locked
-      ? supabase
-          .from("predictions")
-          .select("fight_id, predicted_winner_id, profiles(nickname), fights!inner(event_id)")
-          .eq("fights.event_id", id)
-      : Promise.resolve({
-          data: null as
-            | { fight_id: string; predicted_winner_id: string; profiles: { nickname: string } | null }[]
-            | null,
-        }),
-    // final standings (rank out of N) - only once the gala is graded,
-    // ordered exactly like the leaderboard so the place matches it
-    event.status === "completed"
-      ? supabase
-          .from("event_leaderboard")
-          .select("user_id, nickname, points")
-          .eq("event_id", id)
-          .order("points", { ascending: false })
-          .order("fights_correct_winner", { ascending: false })
-          .order("perfect_card", { ascending: false })
-          .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
-      : Promise.resolve({
-          data: null as { user_id: string; nickname: string | null; points: number }[] | null,
-        }),
-  ]);
-  const perfW2 = perfStart();
-
-  const isAdmin = profile?.is_admin ?? false;
-  // Same "browse as a regular tipper" preference the events listing
-  // uses for draft visibility - a superadmin testing what everyone
-  // else sees shouldn't still get the payout checklist's admin powers.
-  const isSuperadmin =
-    (profile?.is_superadmin ?? false) &&
-    cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin";
-
-  if (event.status === "draft" && !isAdmin) {
-    notFound();
+  // Draft galas are only visible to admins - that check needs the caller's
+  // profile, which is per-user and therefore fetched inside the
+  // personalized/Suspense half below, but a non-admin must never even see a
+  // draft's shell. Fall back to a live single-row check here (cheap - one
+  // indexed lookup) rather than caching admin status globally.
+  if (event.status === "draft") {
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+    if (!profile?.is_admin) {
+      notFound();
+    }
   }
 
-  const boldFightId = boldPick?.fight_id ?? null;
-  const scoredSoFar = myLeaderboardRow?.points ?? 0;
-
-  const standings = finalStandings ?? [];
-  const myRankIndex = standings.findIndex((r) => r.user_id === user.id);
-  const finalRank = myRankIndex >= 0 ? myRankIndex + 1 : null;
-  const participants = standings.length || null;
-  const standingRows = standings.map((r) => ({
-    userId: r.user_id,
-    nickname: r.nickname ?? "Bez přezdívky",
-    points: r.points,
-  }));
-
-  const predictionByFight = new Map<string, Prediction>(
-    (predictions ?? []).map((p) => [p.fight_id, p as unknown as Prediction])
-  );
-
-  const fotnOptions = (fights ?? [])
-    .map((rawFight) => rawFight as unknown as Fight)
-    .filter((fight) => fight.status !== "cancelled")
-    .map((fight) => ({
-      id: fight.id,
-      fighterAName: fight.fighter_a.name,
-      fighterBName: fight.fighter_b.name,
-    }));
-
-  const actualFotnFight = (fights ?? [])
-    .map((f) => f as unknown as Fight)
-    .find((f) => f.id === event.actual_fotn_fight_id);
-
-  const cancelledFights = (fights ?? [])
-    .map((f) => f as unknown as Fight)
-    .filter((f) => f.status === "cancelled");
-
-  const { rows: fightsWithHeaders } = (fights ?? [])
-    .filter((f) => (f as unknown as Fight).status !== "cancelled")
+  const { rows: fightsWithHeaders } = fights
+    .filter((f) => f.status !== "cancelled")
     .reduce<{
-    rows: { fight: Fight; showSegmentHeader: boolean }[];
-    lastSegment: Fight["card_segment"];
-  }>(
-    (acc, rawFight) => {
-      const fight = rawFight as unknown as Fight;
-      const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== acc.lastSegment);
-      return {
-        rows: [...acc.rows, { fight, showSegmentHeader }],
-        lastSegment: fight.card_segment ?? acc.lastSegment,
-      };
-    },
-    { rows: [], lastSegment: null }
-  );
+      rows: { fight: Fight; showSegmentHeader: boolean }[];
+      lastSegment: Fight["card_segment"];
+    }>(
+      (acc, fight) => {
+        const showSegmentHeader = Boolean(fight.card_segment && fight.card_segment !== acc.lastSegment);
+        return {
+          rows: [...acc.rows, { fight, showSegmentHeader }],
+          lastSegment: fight.card_segment ?? acc.lastSegment,
+        };
+      },
+      { rows: [], lastSegment: null }
+    );
 
-  const picksByFight = new Map<string, Map<string, string[]>>();
-  for (const p of (allPredictions ?? []) as unknown as {
-    fight_id: string;
-    predicted_winner_id: string;
-    profiles: { nickname: string } | null;
-  }[]) {
-    const names = picksByFight.get(p.fight_id) ?? new Map<string, string[]>();
-    const list = names.get(p.predicted_winner_id) ?? [];
-    list.push(p.profiles?.nickname ?? "Bez přezdívky");
-    names.set(p.predicted_winner_id, list);
-    picksByFight.set(p.fight_id, names);
-  }
+  const cancelledFights = fights.filter((f) => f.status === "cancelled");
 
   const segmentsOnCard = fightsWithHeaders
     .filter(({ showSegmentHeader }) => showSegmentHeader)
@@ -239,65 +86,13 @@ export default async function EventDetailPage({
       label: CARD_SEGMENT_LABELS[fight.card_segment!],
     }));
 
-  // The cancelled block is a section of the card like any other, so it gets a
-  // pill too - otherwise the bar quietly stops working two thirds down the
+  // The cancelled block is a section of the card like any other, so it gets
+  // a pill too - otherwise the bar quietly stops working two thirds down the
   // page, right where you'd most want it.
   const jumpSegments =
     cancelledFights.length > 0
       ? [...segmentsOnCard, { key: "cancelled", label: "Zrušené zápasy" }]
       : segmentsOnCard;
-
-  // cancelled/no_contest fights don't count toward either side of "X z Y"
-  // - matches event_leaderboard's own treatment of them as if they were
-  // never on the card at all.
-  const countableFights = (fights ?? []).filter(
-    (f) => f.status !== "cancelled" && f.status !== "no_contest"
-  );
-  const countableFightIds = new Set(countableFights.map((f) => f.id));
-  const gradedFights = countableFights.filter((f) => f.status === "completed");
-  const countablePredictions = (predictions ?? []).filter((p) => countableFightIds.has(p.fight_id));
-
-  const tippableFightIds = (fights ?? [])
-    .filter((f) => {
-      const fight = f as unknown as Fight;
-      return (
-        fight.status === "scheduled" && !fight.fighter_a.is_tba && !fight.fighter_b.is_tba
-      );
-    })
-    .map((f) => f.id);
-  const untippedFightIds = tippableFightIds.filter((fid) => !predictionByFight.has(fid));
-
-  // Fast-tip carousel works over the tippable fights in running order
-  // (main event as the finale), with the viewer's current picks.
-  const tippableFightsAsc = (fights ?? [])
-    .map((f) => f as unknown as Fight)
-    .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
-    .sort((a, b) => a.card_order - b.card_order);
-  const fastTipPredictions: Record<string, Prediction> = Object.fromEntries(
-    tippableFightsAsc
-      .filter((f) => predictionByFight.has(f.id))
-      .map((f) => [f.id, predictionByFight.get(f.id)!])
-  );
-
-  const comments = ((rawComments ?? []) as unknown as {
-    id: string;
-    user_id: string | null;
-    body: string;
-    created_at: string;
-    is_system: boolean;
-    gif_url: string | null;
-    profiles: { nickname: string } | null;
-    event_comment_reactions: { id: string; user_id: string; emoji: string }[];
-  }[]).map((c) => ({
-    id: c.id,
-    user_id: c.user_id,
-    body: c.body,
-    created_at: c.created_at,
-    isSystem: c.is_system,
-    gifUrl: c.gif_url,
-    nickname: c.profiles?.nickname ?? "Bez přezdívky",
-    reactions: c.event_comment_reactions,
-  }));
 
   // "11.07.2026 | KÖLN | LANXESS ARENA" - the poster's own line, in the
   // poster's own order. Our location is stored venue-first ("Lanxess Arena,
@@ -320,21 +115,19 @@ export default async function EventDetailPage({
   ].join(" | ");
 
   perfLogParts(`event/${id}`, {
-    w1_auth: perfW1 - perf,
-    w2_batch: perfW2 - perfW1,
-    total: perfW2 - perf,
+    w1_shared: perfShared - perf,
+    total: perfShared - perf,
   });
 
   return (
     <div className="stagger-in flex flex-col gap-4 px-4 py-8">
-      {/* you won the night - celebrate every time it's opened, it's a
-          few seconds and never takes a tap */}
-      {event.status === "completed" && finalRank === 1 && <Confetti />}
       {/* One watcher for all three tables, so a burst of changes costs one
           refresh. While the gala is running it also polls: results arrive in
           exactly the minutes when a phone is most likely to have been asleep,
           backgrounded or on arena wifi, and none of those deliver a socket
-          event. Outside that window there's nothing to poll for. */}
+          event. Outside that window there's nothing to poll for. This also
+          busts the cached shell above on the next request, complementing
+          (not replacing) the DB-webhook-driven revalidation. */}
       <RealtimeRefresh
         tables={["fights", "predictions", "event_payouts"]}
         pollMs={locked && event.status !== "completed" ? 45_000 : undefined}
@@ -372,222 +165,29 @@ export default async function EventDetailPage({
       </PageHeading>
 
       {/* Desktop keeps the jump row above both columns: inside the fights
-          column it would push the first fight card below the first card in the
-          rail. On a phone the same row floats instead - it takes no layout at
-          the top of the page, where you don't need it, and arrives as soon as
-          you start scrolling the card. */}
+          column it would push the first fight card below the first card in
+          the rail. On a phone the same row floats instead - it takes no
+          layout at the top of the page, where you don't need it, and
+          arrives as soon as you start scrolling the card. */}
       <SegmentJump segments={jumpSegments} className="hidden lg:flex" />
       <SegmentJump segments={jumpSegments} className="lg:hidden" floating />
 
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
-        <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
-          <div className="stagger-in flex flex-col gap-4 lg:sticky lg:top-20 lg:-mx-3 lg:h-[calc(100dvh-5.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:px-3 lg:pb-2">
-            {/* Mirrors the "Hlavní karta" heading in the main column so both
-                columns' first card starts on the same line. Desktop only -
-                on a phone the rail is just the page, and a label there would
-                be noise. */}
-            <h2 className="hidden text-sm font-bold uppercase tracking-wide text-neutral-500 lg:block dark:text-neutral-400">
-              Přehled
-            </h2>
-            {countableFights.length > 0 && (
-              <EventStatusTimeline
-                locked={locked}
-                completed={event.status === "completed"}
-                lockAtIso={event.lock_at}
-                eventDateIso={event.event_date}
-                tippedCount={countablePredictions.length}
-                totalCount={countableFights.length}
-                gradedCount={gradedFights.length}
-                points={scoredSoFar}
-                rank={finalRank}
-                participants={participants}
-                standings={standingRows}
-                currentUserId={user.id}
-                eventId={id}
-                actions={
-                  !locked && tippableFightsAsc.length > 0 ? (
-                    <TipActionBar
-                      tippableFightIds={tippableFightIds}
-                      initialUntipped={untippedFightIds}
-                      fotnAvailable={fotnOptions.length > 0}
-                      initialFotnPicked={Boolean(bonusPrediction?.predicted_fotn_fight_id)}
-                    >
-                      <FastTipOverlay
-                        eventId={id}
-                        userId={user.id}
-                        fights={tippableFightsAsc}
-                        initialPredictions={fastTipPredictions}
-                        initialBoldFightId={boldFightId}
-                        fotnFights={fotnOptions}
-                        initialFotnFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
-                        tippedCountable={countablePredictions.length}
-                        totalCountable={countableFights.length}
-                      />
-                    </TipActionBar>
-                  ) : undefined
-                }
-                footer={
-                  <>
-                    {event.payouts_enabled && (
-                      <span className="flex items-center gap-1.5">
-                        <Wallet className="size-3.5 shrink-0" />
-                        Startovné 50 Kč · vítěz bere vše · QR po turnaji
-                      </span>
-                    )}
-                    {!locked && <WhoHasntTipped eventId={id} />}
-                  </>
-                }
-              />
-            )}
-            {!locked && countableFights.length > 0 && <BoldPickIntro />}
-
-            {locked && event.status !== "completed" && (
-              <FightNightLive
-                eventId={id}
-                fights={(fights ?? []).map((f) => f as unknown as Fight)}
-                currentUserId={user.id}
-                nickname={profile?.nickname ?? "Bez přezdívky"}
-                showWatcherNames={isSuperadmin}
-                predictionByFight={predictionByFight}
-                picksByFight={picksByFight}
-              />
-            )}
-
-            {/* Only while the gala is running. Who staked their jistotka on
-                what is a question you ask before the fights, not after - once
-                it's graded the answer is in the points and this is just a
-                long list in the way. */}
-            {locked && event.status !== "completed" && (
-              <BraveryReveal eventId={id} fights={(fights ?? []).map((f) => f as unknown as Fight)} />
-            )}
-
-            {event.status === "completed" && event.payouts_enabled && (
-              <EventPayoutPool
-                eventId={id}
-                eventLabel={event.number ? `OKTAGON ${event.number}` : event.name}
-                currentUserId={user.id}
-                isSuperadmin={isSuperadmin}
-              />
-            )}
-
-            <EventComments
-              eventId={id}
-              userId={user.id}
-              isAdmin={isAdmin}
-              initialComments={comments}
-              livePoll={(() => {
-                if (!locked || event.status === "completed") return null;
-                const next = (fights ?? [])
-                  .map((f) => f as unknown as Fight)
-                  .filter((f) => f.status === "scheduled" && !f.fighter_a.is_tba && !f.fighter_b.is_tba)
-                  .sort((a, b) => a.card_order - b.card_order)[0];
-                if (!next) return null;
-                return {
-                  fightId: next.id,
-                  fighterAId: next.fighter_a.id,
-                  fighterAName: next.fighter_a.name,
-                  fighterBId: next.fighter_b.id,
-                  fighterBName: next.fighter_b.name,
-                };
-              })()}
-            />
-          </div>
-        </aside>
-
-        <div className="stagger-in flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:min-w-0">
-
-          {/* From xl the card pairs up - the column is wide enough that a
-              single stack of fight cards would just be a lot of empty space
-              either side of the fighter names. */}
-          <div id="fights" className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
-            {fightsWithHeaders.map(({ fight, showSegmentHeader }, cardIndex) => {
-              const names = picksByFight.get(fight.id);
-              const fighterANames = names?.get(fight.fighter_a.id) ?? [];
-              const fighterBNames = names?.get(fight.fighter_b.id) ?? [];
-              const total = fighterANames.length + fighterBNames.length;
-              return (
-                <Fragment key={fight.id}>
-                  {/* Every group prints its own heading, the first one
-                      included: the pill row says where you are, it isn't a
-                      replacement for the label. "Hlavní karta" is also what
-                      lines this column up with "Přehled" in the rail. */}
-                  {showSegmentHeader && (
-                    <h2
-                      id={`segment-${fight.card_segment!}`}
-                      className="-mb-1 scroll-mt-[calc(env(safe-area-inset-top)+7rem)] text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
-                    >
-                      {CARD_SEGMENT_LABELS[fight.card_segment!]}
-                    </h2>
-                  )}
-                  <div id={`fight-${fight.id}`} className="scroll-mt-16 xl:min-w-0">
-                    <FightTipCard
-                      fight={fight}
-                      userId={user.id}
-                      eventId={id}
-                      initialPrediction={predictionByFight.get(fight.id) ?? null}
-                      initialIsBold={boldFightId === fight.id}
-                      locked={locked}
-                      consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
-                      revealIndex={cardIndex}
-                    />
-                  </div>
-                </Fragment>
-              );
-            })}
-          </div>
-
-          {/* FOTN is a bonus meta-pick on top of the fights, so it sits after
-              the card - you can't sensibly crown the best fight before you've
-              read them. It gets its own segment heading for the same reason
-              the fight groups do: without one it reads as a stray card that
-              happens to be last, rather than the closing step of the card. */}
-          <h2 className="-mb-1 text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            {locked ? "Bonus" : "Poslední tip"}
-          </h2>
-          <div id="fotn" className="scroll-mt-16">
-            <FotnPicker
-              eventId={id}
-              userId={user.id}
-              fights={fotnOptions}
-              initialFightId={bonusPrediction?.predicted_fotn_fight_id ?? null}
-              initialPoints={bonusPrediction?.points ?? null}
-              locked={locked}
-              actualFight={
-                actualFotnFight
-                  ? {
-                      fighterAName: actualFotnFight.fighter_a.name,
-                      fighterBName: actualFotnFight.fighter_b.name,
-                    }
-                  : null
-              }
-            />
-          </div>
-
-          {cancelledFights.length > 0 && (
-            <div className="flex flex-col gap-5 xl:grid xl:grid-cols-2 xl:items-start">
-              <h2
-                id="segment-cancelled"
-                className="-mb-1 scroll-mt-[calc(env(safe-area-inset-top)+7rem)] text-sm font-bold uppercase tracking-wide text-neutral-500 xl:col-span-2 dark:text-neutral-400"
-              >
-                Zrušené zápasy
-              </h2>
-              {cancelledFights.map((fight) => (
-                <div key={fight.id} className="xl:min-w-0">
-                  <FightTipCard
-                    fight={fight}
-                    userId={user.id}
-                    initialPrediction={predictionByFight.get(fight.id) ?? null}
-                    locked={locked}
-                    initialIsBold={boldFightId === fight.id}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {!locked && <JumpToUntipped fightIds={tippableFightIds} initialUntipped={untippedFightIds} />}
+      {/* Everything below needs the viewer's own predictions, rank and admin
+          flags - fetched fresh per request, streamed in so the shell above
+          (already resolved from cache) never waits on it. */}
+      <Suspense fallback={<EventDetailSkeleton fightsCount={fightsWithHeaders.length} />}>
+        <PersonalizedEventData
+          eventId={id}
+          userId={user.id}
+          event={event}
+          fights={fights}
+          comments={comments}
+          finalStandings={finalStandings}
+          allPredictions={allPredictions}
+          locked={locked}
+          viewModeCookie={cookieStore.get(VIEW_MODE_COOKIE)?.value}
+        />
+      </Suspense>
     </div>
   );
 }
