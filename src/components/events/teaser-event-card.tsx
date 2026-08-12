@@ -133,7 +133,10 @@ export function TeaserEventCard({
   );
 
   return href ? (
-    <Link href={href} className={shell}>
+    // Only ever set for an admin previewing a draft - rare, so prefetching
+    // it in full whenever it's tappable at all is cheap, and it's exactly
+    // the "open it long before tipping officially opens" case.
+    <Link href={href} prefetch={true} className={shell}>
       {content}
     </Link>
   ) : (

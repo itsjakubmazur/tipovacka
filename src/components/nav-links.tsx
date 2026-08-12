@@ -122,6 +122,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
             href="/admin"
             data-active={isActive(pathname, "/admin")}
             aria-current={isActive(pathname, "/admin") ? "page" : undefined}
+            prefetch={true}
             className={cn(
               "relative z-10 mx-0.5 flex flex-1 flex-col items-center gap-1 rounded-xl py-2 text-xs transition-colors",
               isActive(pathname, "/admin")
