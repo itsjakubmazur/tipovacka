@@ -3,6 +3,15 @@
 Datum: 2026-08-18
 Vůči: `main` @ `6de090e` (po design runu + cache/revalidate hotfixes)
 
+**Implementace (tento branch):** vlny 1–4 jsou v kódu. Migrace
+`20260743000000_integrity_and_privacy.sql` se na živou DB dostane až merge
+na `main` (workflow `db-migrate`). Před prvním fight night po merge ověřit:
+
+- anon GET `profiles?select=*` nesmí vrátit `bank_account` (sloupec je pryč)
+- PATCH `predictions.points` musí selhat
+- uložení tipu (upsert) musí pořád projít
+- `admin_set_user_admin` znovu povyšuje
+
 Tohle **není** opakování `docs/critique-notes.md` / `docs/audit-notes.md`.
 Designová vrstva už má za sebou poctivý běh (P0+P1 z `docs/design-backlog.md`
 jsou hotové, čeká se na BRÁNU E). Tady jde o **produkt, bezpečnost, data a

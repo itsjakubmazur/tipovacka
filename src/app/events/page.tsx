@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getEventsListShared } from "@/lib/data/events-list";
 import { Badge } from "@/components/ui/badge";
@@ -34,27 +35,29 @@ export default async function EventsPage() {
     getEventsListShared(),
   ]);
   const user = userData.user;
+  if (!user) {
+    redirect("/login");
+  }
 
   let showDrafts = false;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_superadmin")
-      .eq("id", user.id)
-      .single();
-    if (profile?.is_superadmin) {
-      const cookieStore = await cookies();
-      showDrafts = cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin";
-    }
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_superadmin")
+    .eq("id", user.id)
+    .single();
+  if (profile?.is_superadmin) {
+    const cookieStore = await cookies();
+    showDrafts = cookieStore.get(VIEW_MODE_COOKIE)?.value === "admin";
   }
 
   // Counted in the database, one row per gala. Doing it here in JS meant
   // fetching every fight ever imported plus every prediction the viewer has
   // made, which PostgREST truncates at 1000 rows - around the 90th gala the
   // counters would have started silently under-reporting.
-  const { data: tipCounts } = user
-    ? await supabase.from("event_user_tip_counts").select("event_id, tipped").eq("user_id", user.id)
-    : { data: null as { event_id: string; tipped: number }[] | null };
+  const { data: tipCounts } = await supabase
+    .from("event_user_tip_counts")
+    .select("event_id, tipped")
+    .eq("user_id", user.id);
 
   const fightCountByEvent = new Map(fightCounts.map((r) => [r.event_id, r.fight_count]));
   const predictionCountByEvent = new Map(
@@ -114,7 +117,11 @@ export default async function EventsPage() {
 
       {user && <WelcomeCard />}
 
-      {!events?.length && <p className="text-neutral-600 dark:text-neutral-400">Žádné galavečery zatím nejsou.</p>}
+          {!events?.length && (
+            <div className="glass-surface rounded-xl border p-6 text-center text-neutral-600 dark:text-neutral-400">
+              Žádné galavečery zatím nejsou.
+            </div>
+          )}
 
       <div className={cn("flex flex-col gap-3", "lg:grid lg:grid-cols-3 lg:gap-4")}>
         {events?.map((event) => {
@@ -201,9 +208,27 @@ export default async function EventsPage() {
                   })}
                 </p>
                 {user && !locked && totalFights > 0 && (
-                  <p className={cn("text-sm", event.image_url ? "text-white/70" : "text-neutral-500 dark:text-neutral-300")}>
-                    Tipnuto {tippedCount} z {totalFights} zápasů
-                  </p>
+                  <div className="mt-1 flex flex-col gap-1">
+                    <p className={cn("text-sm", event.image_url ? "text-white/70" : "text-neutral-500 dark:text-neutral-300")}>
+                      Tipnuto {tippedCount} z {totalFights} zápasů
+                    </p>
+                    <div
+                      className={cn(
+                        "h-1 w-28 overflow-hidden rounded-full",
+                        event.image_url ? "bg-white/25" : "bg-black/10 dark:bg-white/15"
+                      )}
+                      role="progressbar"
+                      aria-valuenow={tippedCount}
+                      aria-valuemin={0}
+                      aria-valuemax={totalFights}
+                      aria-label={`Tipnuto ${tippedCount} z ${totalFights} zápasů`}
+                    >
+                      <div
+                        className="h-full rounded-full bg-accent"
+                        style={{ width: `${Math.round((tippedCount / totalFights) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               {effectiveStatus === "upcoming" && event.lock_at ? (

@@ -4,6 +4,7 @@ import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { FightMatchup } from "@/components/predictions/fight-matchup";
 import { pointsLabel } from "@/lib/score-breakdown";
+import { COMPARE_B_TEXT } from "@/lib/compare-tone";
 import type { Fight, Prediction } from "@/lib/types";
 
 /** Two tippers on the same fight. Same matchup as everywhere else - the
@@ -65,7 +66,7 @@ export function CompareFightCard({
           <span className="text-yellow-600 dark:text-accent">
             {nicknameA} {pointsLabel(predictionA?.points, boldA)}
           </span>
-          <span className="text-blue-500">
+          <span className={COMPARE_B_TEXT}>
             {nicknameB} {pointsLabel(predictionB?.points, boldB)}
           </span>
         </div>

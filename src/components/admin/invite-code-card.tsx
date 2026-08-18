@@ -57,8 +57,8 @@ export function InviteCodeCard() {
 
   async function save() {
     const trimmed = draft.trim();
-    if (trimmed.length < 6) {
-      setError("Kód musí mít aspoň 6 znaků.");
+    if (trimmed.length < 12) {
+      setError("Kód musí mít aspoň 12 znaků.");
       return;
     }
     setSaving(true);
@@ -107,7 +107,7 @@ export function InviteCodeCard() {
           <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Nový kód (min. 6 znaků)"
+            placeholder="Nový kód (min. 12 znaků)"
             className="max-w-56"
           />
           <Button type="button" variant="accent" size="sm" onClick={save} disabled={saving}>

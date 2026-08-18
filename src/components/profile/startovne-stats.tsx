@@ -1,8 +1,31 @@
 import { Wallet } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui/section-heading";
+import { STARTOVNE_CZK } from "@/lib/startovne";
 
-const STARTOVNE_CZK = 50;
+type BoardRow = {
+  event_id: string;
+  user_id: string;
+  points: number;
+  fights_correct_winner: number;
+  perfect_card: boolean;
+  earliest_prediction_at: string | null;
+};
+
+function rankRows(rows: BoardRow[]): BoardRow[] {
+  return [...rows].sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.fights_correct_winner !== a.fights_correct_winner) {
+      return b.fights_correct_winner - a.fights_correct_winner;
+    }
+    if (Number(b.perfect_card) !== Number(a.perfect_card)) {
+      return Number(b.perfect_card) - Number(a.perfect_card);
+    }
+    const aT = a.earliest_prediction_at ? Date.parse(a.earliest_prediction_at) : Number.POSITIVE_INFINITY;
+    const bT = b.earliest_prediction_at ? Date.parse(b.earliest_prediction_at) : Number.POSITIVE_INFINITY;
+    return aT - bT;
+  });
+}
 
 /** How this user has fared in the startovné pool across every completed,
  * payouts-enabled gala. Money moves peer-to-peer outside the app, so the
@@ -22,21 +45,20 @@ export async function StartovneStats({ userId }: { userId: string }) {
 
   const eventIds = events.map((e) => e.id);
 
-  const [boards, { data: payoutRows }] = await Promise.all([
-    Promise.all(
-      events.map((event) =>
-        supabase
-          .from("event_leaderboard")
-          .select("user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
-          .eq("event_id", event.id)
-          .order("points", { ascending: false })
-          .order("fights_correct_winner", { ascending: false })
-          .order("perfect_card", { ascending: false })
-          .order("earliest_prediction_at", { ascending: true, nullsFirst: false })
-      )
-    ),
+  const [{ data: allRows }, { data: payoutRows }] = await Promise.all([
+    supabase
+      .from("event_leaderboard")
+      .select("event_id, user_id, points, fights_correct_winner, perfect_card, earliest_prediction_at")
+      .in("event_id", eventIds),
     supabase.from("event_payouts").select("event_id, user_id, paid").in("event_id", eventIds),
   ]);
+
+  const rowsByEvent = new Map<string, BoardRow[]>();
+  for (const row of (allRows ?? []) as BoardRow[]) {
+    const list = rowsByEvent.get(row.event_id) ?? [];
+    list.push(row);
+    rowsByEvent.set(row.event_id, list);
+  }
 
   const paidByEvent = new Map<string, Map<string, boolean>>();
   for (const p of payoutRows ?? []) {
@@ -47,14 +69,15 @@ export async function StartovneStats({ userId }: { userId: string }) {
 
   let wins = 0;
   let losses = 0;
-  let collected = 0; // paid to you (as winner)
-  let owedToYou = 0; // others who haven't paid you yet
-  let paidOut = 0; // you paid (as loser)
-  let youOwe = 0; // you still owe a past winner
+  let collected = 0;
+  let owedToYou = 0;
+  let paidOut = 0;
+  let youOwe = 0;
 
-  boards.forEach(({ data: rows }, i) => {
-    if (!rows || rows.length < 2) return;
-    const paidMap = paidByEvent.get(eventIds[i]) ?? new Map<string, boolean>();
+  for (const eventId of eventIds) {
+    const rows = rankRows(rowsByEvent.get(eventId) ?? []);
+    if (rows.length < 2) continue;
+    const paidMap = paidByEvent.get(eventId) ?? new Map<string, boolean>();
     const [winner, ...others] = rows;
 
     if (winner.user_id === userId) {
@@ -68,7 +91,7 @@ export async function StartovneStats({ userId }: { userId: string }) {
       if (paidMap.get(userId)) paidOut += STARTOVNE_CZK;
       else youOwe += STARTOVNE_CZK;
     }
-  });
+  }
 
   if (wins === 0 && losses === 0) return null;
 

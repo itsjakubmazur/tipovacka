@@ -27,7 +27,8 @@ a žebříček uvnitř uzavřené skupiny.
 - Eventy = Oktagon galavečery, každý má fight card (seznam zápasů).
 - Před uzávěrkou uživatelé tipují výsledky jednotlivých zápasů.
 - Po uzávěrce se tipy uzamknou; po eventu se zadají výsledky a spočítají body.
-- Skupiny (`groups`) sdružují uživatele, mají vlastní leaderboard a historii.
+- Skupiny (`groups`) jsou volitelné mini-ligy pod Profilem, ne položka
+  primární navigace.
 - Sdílení výsledků/žebříčku navenek (share card, podium, wrapped roční shrnutí).
 - Admin sekce pro správu eventů, scraper log a chybové logy (interní, ne pro
   běžné uživatele).
@@ -41,8 +42,8 @@ a žebříček uvnitř uzavřené skupiny.
 - PWA prvky přítomny (`components/install`, `components/push`).
 
 ## Brand Commitments
-- Fight-card estetika, vysoký kontrast, dark mode výchozí, sportovní a
-  data-driven, hravé — výslovně NE korporátní SaaS vzhled.
+- Dark mode je výchozí zážitek; light mode existuje jako přepínač, ne jako
+  default podle systému.
 - Voice: neformální čeština, krátké, hláškové texty, ne uměle vtipné.
 - Anti-reference: generický SaaS dashboard, purple→blue gradient, Inter,
   karty v kartách, ikonka v zakulaceném čtverečku nad nadpisem.

@@ -12,6 +12,7 @@ import { ageFromBirthDate, cn } from "@/lib/utils";
 import { GLASS_PILL } from "@/lib/pills";
 import { weightClassLabel } from "@/lib/weight-classes";
 import { METHOD_LABELS } from "@/lib/method-labels";
+import { persistFotnTip, persistTip } from "@/lib/persist-tip";
 import type { Fight, Fighter, Method, Prediction } from "@/lib/types";
 
 const SWIPE_THRESHOLD = 60; // px of horizontal drag that commits a fight change
@@ -222,16 +223,13 @@ function FastTipCarousel({
     if (!tipComplete(next)) return;
     setError(null);
     const p = (async () => {
-      const { error } = await supabase.from("predictions").upsert(
-        {
-          user_id: userId,
-          fight_id: fightId,
-          predicted_winner_id: next.winnerId,
-          predicted_method: next.method,
-          predicted_round: next.method === "DECISION" ? null : next.round,
-        },
-        { onConflict: "user_id,fight_id" }
-      );
+      const { error } = await persistTip({
+        userId,
+        fightId,
+        winnerId: next.winnerId!,
+        method: next.method!,
+        round: next.round,
+      });
       if (error) setError("Uložení se nepodařilo.");
       window.dispatchEvent(
         new CustomEvent("tip-state-changed", { detail: { fightId, tipped: !error } })
@@ -283,10 +281,7 @@ function FastTipCarousel({
     window.dispatchEvent(new CustomEvent("fotn-state-changed", { detail: { picked: willBe } }));
     const p = (async () => {
       const { error } = willBe
-        ? await supabase.from("bonus_predictions").upsert(
-            { user_id: userId, event_id: eventId, predicted_fotn_fight_id: fightId },
-            { onConflict: "user_id,event_id" }
-          )
+        ? await persistFotnTip({ userId, eventId, fightId })
         : await supabase
             .from("bonus_predictions")
             .delete()
@@ -522,6 +517,7 @@ function FightSlide({
               key={fighter.id}
               type="button"
               onClick={() => onPickWinner(fighter.id)}
+              aria-pressed={tip.winnerId === fighter.id}
               className={cn(
                 "flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors",
                 tip.winnerId === fighter.id
@@ -584,6 +580,7 @@ function FightSlide({
                 key={m}
                 type="button"
                 onClick={() => onPickMethod(m)}
+                aria-pressed={tip.method === m}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium",
                   tip.method === m ? "glass-accent border" : GLASS_PILL
@@ -600,6 +597,7 @@ function FightSlide({
                   key={r}
                   type="button"
                   onClick={() => onPickRound(r)}
+                  aria-pressed={tip.round === r}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium",
                     tip.round === r ? "glass-accent border" : GLASS_PILL

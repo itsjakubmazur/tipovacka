@@ -83,7 +83,10 @@ export function ChangePasswordForm() {
               type="password"
               autoComplete="new-password"
               value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
+              onChange={(e) => {
+                setConfirm(e.target.value);
+                setSaved(false);
+              }}
             />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}

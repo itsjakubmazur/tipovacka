@@ -30,9 +30,16 @@ export function NicknameForm({
     setError(null);
     setSaved(false);
 
+    const trimmed = nickname.trim();
+    if (!trimmed) {
+      setSaving(false);
+      setError("Přezdívka nemůže být prázdná.");
+      return;
+    }
+
     const { error } = await supabase
       .from("profiles")
-      .update({ nickname })
+      .update({ nickname: trimmed })
       .eq("id", userId);
 
     setSaving(false);

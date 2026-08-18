@@ -11,6 +11,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import { pointsLabel } from "@/lib/score-breakdown";
 import { X, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
+import { persistTip } from "@/lib/persist-tip";
 import type { Fight, Method, Prediction } from "@/lib/types";
 
 function Pill({
@@ -33,6 +34,7 @@ function Pill({
       type="button"
       disabled={disabled}
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
         // the press is the whole feedback loop for tipping - let the pill give
         "rounded-full px-3 py-1.5 text-sm font-medium transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100",
@@ -216,16 +218,13 @@ export function FightTipCard({
 
     setSaving(true);
     setError(null);
-    const { error } = await supabase.from("predictions").upsert(
-      {
-        user_id: userId,
-        fight_id: fight.id,
-        predicted_winner_id: next.winnerId,
-        predicted_method: next.method,
-        predicted_round: next.method === "DECISION" ? null : next.round,
-      },
-      { onConflict: "user_id,fight_id" }
-    );
+    const { error } = await persistTip({
+      userId,
+      fightId: fight.id,
+      winnerId: next.winnerId,
+      method: next.method,
+      round: next.round,
+    });
     setSaving(false);
     if (error) {
       setError("Uložení se nepodařilo.");

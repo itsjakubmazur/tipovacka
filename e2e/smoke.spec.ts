@@ -16,7 +16,7 @@ test("registration mode requires an invite code", async ({ page }) => {
 });
 
 test("unauthenticated visitor is redirected to login", async ({ page }) => {
-  for (const path of ["/leaderboard", "/profile", "/wrapped"]) {
+  for (const path of ["/events", "/groups", "/leaderboard", "/profile", "/wrapped"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login/);
   }

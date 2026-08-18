@@ -12,12 +12,7 @@ import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { perfStart, perfLogParts } from "@/lib/perf";
 import type { Fight } from "@/lib/types";
 import { PageHeading } from "@/components/ui/page-heading";
-
-const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
-  main_card: "Hlavní karta",
-  prelims: "Prelims",
-  free_prelims: "Free Prelims",
-};
+import { CARD_SEGMENT_LABELS } from "@/lib/card-segments";
 
 export default async function EventDetailPage({
   params,
@@ -55,8 +50,12 @@ export default async function EventDetailPage({
   // draft's shell. Fall back to a live single-row check here (cheap - one
   // indexed lookup) rather than caching admin status globally.
   if (event.status === "draft") {
-    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-    if (!profile?.is_admin) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin, is_superadmin")
+      .eq("id", user.id)
+      .single();
+    if (!profile?.is_admin && !profile?.is_superadmin) {
       notFound();
     }
   }

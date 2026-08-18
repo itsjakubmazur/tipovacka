@@ -44,10 +44,24 @@ export function BankAccountForm({
     setError(null);
     setSaved(false);
 
+    if (!trimmed) {
+      const { error } = await supabase.from("profile_bank_accounts").delete().eq("user_id", userId);
+      setSaving(false);
+      if (error) {
+        setError("Uložení se nepodařilo, zkus to znovu.");
+        return;
+      }
+      setSaved(true);
+      router.refresh();
+      return;
+    }
+
     const { error } = await supabase
-      .from("profiles")
-      .update({ bank_account: trimmed || null })
-      .eq("id", userId);
+      .from("profile_bank_accounts")
+      .upsert(
+        { user_id: userId, bank_account: trimmed, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" }
+      );
 
     setSaving(false);
     if (error) {
@@ -73,7 +87,7 @@ export function BankAccountForm({
         <Input
           id="bank-account"
           value={account}
-          placeholder="19-2000145399/0800"
+          placeholder="např. 19-2000145399/0800"
           onChange={(e) => {
             setAccount(e.target.value);
             setSaved(false);

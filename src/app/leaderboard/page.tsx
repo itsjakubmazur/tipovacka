@@ -102,7 +102,7 @@ export default async function LeaderboardPage({
       <RealtimeRefresh table="predictions" />
       {view === "event" &&
         selectedEvent.status === "completed" &&
-        eventRows[0]?.user_id === currentUserId && <Confetti />}
+        eventRows[0]?.user_id === currentUserId && <Confetti onceKey={`lb-win:${selectedEvent.id}`} />}
       <PageHeading
         eyebrow={
           view === "history"
@@ -207,7 +207,15 @@ export default async function LeaderboardPage({
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] lg:gap-6">
           <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">
             <div className="stagger-in flex flex-col gap-4 lg:sticky lg:top-20">
+              <Link
+                href="/pravidla#body"
+                className={cn(GLASS_PILL, "flex items-center justify-between px-4 py-2.5 text-sm font-semibold")}
+              >
+                Jak se počítá skóre
+                <ArrowRight className="ml-auto size-4 text-neutral-400" />
+              </Link>
               <Disclosure
+                defaultOpen
                 className="glass-surface rounded-xl border text-xs text-neutral-600 dark:text-neutral-400"
                 summaryClassName="p-3 font-semibold text-neutral-700 dark:text-neutral-300"
                 summary="Za co se dávají body"
@@ -223,14 +231,14 @@ export default async function LeaderboardPage({
                 </div>
               </Disclosure>
 
-              {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 3 && (
+              {view === "event" && selectedEvent.status === "completed" && eventRows.length >= 1 && (
                 <PodiumCard
                   // without a key React keeps the same DOM nodes across galas, and a
                   // CSS animation only runs when its element is created - so the
                   // podium would rise once and never again
                   key={`podium-${selectedEvent.id}`}
                   eventLabel={selectedEvent.number ? `OKTAGON ${selectedEvent.number}` : selectedEvent.name}
-                  places={eventRows.slice(0, 3).map((row, i) => ({
+                  places={eventRows.slice(0, Math.min(3, eventRows.length)).map((row, i) => ({
                     rank: i + 1,
                     userId: row.user_id,
                     nick: row.nickname ?? "Bez přezdívky",

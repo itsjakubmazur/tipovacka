@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChartNoAxesColumn, ArrowRight, BookOpen } from "lucide-react";
+import { Suspense } from "react";
+import { ChartNoAxesColumn, ArrowRight, BookOpen, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { NicknameForm } from "@/components/profile/nickname-form";
 import { BankAccountForm } from "@/components/profile/bank-account-form";
@@ -23,13 +24,14 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(
-      "nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates, notify_comments, bank_account"
-    )
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: bankRow }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("nickname, is_admin, notify_fight_results, notify_reminders, notify_card_updates, notify_comments")
+      .eq("id", user.id)
+      .single(),
+    supabase.from("profile_bank_accounts").select("bank_account").eq("user_id", user.id).maybeSingle(),
+  ]);
 
   return (
     <div className="stagger-in flex flex-col gap-6 px-4 py-8">
@@ -45,9 +47,21 @@ export default async function ProfilePage() {
         <div className="stagger-in flex flex-col gap-6">
           <TipperPathCard userId={user.id} />
           <NicknameForm userId={user.id} initialNickname={profile?.nickname ?? ""} />
-          <BankAccountForm userId={user.id} initialAccount={profile?.bank_account ?? ""} />
-          <StartovneStats userId={user.id} />
-          <NemesisCard userId={user.id} />
+          <BankAccountForm userId={user.id} initialAccount={bankRow?.bank_account ?? ""} />
+          <Suspense fallback={<div className="glass-surface h-24 animate-pulse rounded-xl border" />}>
+            <StartovneStats userId={user.id} />
+          </Suspense>
+          <Suspense fallback={<div className="glass-surface h-24 animate-pulse rounded-xl border" />}>
+            <NemesisCard userId={user.id} />
+          </Suspense>
+          <Link
+            href="/groups"
+            className="glass-surface glass-surface-interactive flex items-center gap-2 rounded-xl border p-4 text-sm font-semibold transition"
+          >
+            <Users className="size-4 text-yellow-600 dark:text-accent" />
+            Mini-ligy a skupiny
+            <ArrowRight className="ml-auto size-4 text-neutral-400" />
+          </Link>
           <Link
             href={`/leaderboard/u/${user.id}`}
             className="glass-surface glass-surface-interactive flex items-center gap-2 rounded-xl border p-4 text-sm font-semibold transition"

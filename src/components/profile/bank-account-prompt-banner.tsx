@@ -25,14 +25,14 @@ export function BankAccountPromptBanner() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user || cancelled) return;
 
-      const { data: profile } = await supabase
-        .from("profiles")
+      const { data: account } = await supabase
+        .from("profile_bank_accounts")
         .select("bank_account")
-        .eq("id", userData.user.id)
-        .single();
+        .eq("user_id", userData.user.id)
+        .maybeSingle();
       if (cancelled) return;
 
-      if (!profile?.bank_account) setVisible(true);
+      if (!account?.bank_account) setVisible(true);
     })();
 
     return () => {
