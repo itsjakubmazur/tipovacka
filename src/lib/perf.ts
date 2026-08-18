@@ -12,6 +12,7 @@ export function perfStart(): number {
 }
 
 export function perfLog(label: string, start: number): void {
+  if (process.env.PERF_LOG !== "1") return;
   console.log(`[perf] ${label}: ${Math.round(performance.now() - start)}ms`);
 }
 
@@ -19,6 +20,7 @@ export function perfLog(label: string, start: number): void {
 // total=270ms" - so we can see which query wave (auth, the parallel
 // batch, ...) actually dominates rather than just the grand total.
 export function perfLogParts(label: string, parts: Record<string, number>): void {
+  if (process.env.PERF_LOG !== "1") return;
   const body = Object.entries(parts)
     .map(([k, v]) => `${k}=${Math.round(v)}ms`)
     .join(" ");

@@ -1,9 +1,9 @@
 import type { createClient } from "@/lib/supabase/server";
 import type { Method } from "@/lib/types";
+import { STARTOVNE_CZK } from "@/lib/startovne";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
-const STARTOVNE_CZK = 50;
 const NO_MATCH = "00000000-0000-0000-0000-000000000000";
 
 export type SeasonEvent = {

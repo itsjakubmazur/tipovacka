@@ -4,8 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PayoutStatus } from "@/components/events/payout-status";
 import { QrPayment } from "@/components/events/qr-payment";
 import { czAccountToIban } from "@/lib/cz-payment";
-
-const STARTOVNE_CZK = 50;
+import { STARTOVNE_CZK } from "@/lib/startovne";
 
 /** Startovné settlement card: winner-takes-all pool at 50 Kč per
  * tipping participant, settled peer-to-peer (bank transfer, outside
@@ -44,13 +43,6 @@ export async function EventPayoutPool({
   const pot = others.length * STARTOVNE_CZK;
   const winnerName = winner.nickname ?? "Bez přezdívky";
 
-  // only the winner's bank account is left, and it needs the winner id
-  const { data: winnerProfile } = await supabase
-    .from("profiles")
-    .select("bank_account")
-    .eq("id", winner.user_id)
-    .single();
-
   const paidByUser = new Map((payoutRows ?? []).map((r) => [r.user_id, r.paid]));
   const payoutStatusRows = others.map((o) => ({
     userId: o.user_id,
@@ -59,7 +51,16 @@ export async function EventPayoutPool({
   }));
 
   const isWinner = currentUserId === winner.user_id;
-  const bankAccount = winnerProfile?.bank_account ?? null;
+  const { data: bankAccount } = isWinner
+    ? await supabase
+        .from("profile_bank_accounts")
+        .select("bank_account")
+        .eq("user_id", winner.user_id)
+        .maybeSingle()
+        .then((r) => ({ data: r.data?.bank_account ?? null }))
+    : await supabase.rpc("event_winner_bank_account", { p_event_id: eventId }).then((r) => ({
+        data: (r.data as string | null) ?? null,
+      }));
   const iban = bankAccount ? czAccountToIban(bankAccount) : null;
 
   return (

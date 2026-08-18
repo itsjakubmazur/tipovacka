@@ -164,7 +164,9 @@ export async function TipperDetail({
         </div>
 
         {!locked ? (
-          <p className="text-neutral-600 dark:text-neutral-400">Tipy se zobrazí až po uzávěrce galavečera.</p>
+          <p className="glass-surface rounded-xl border p-4 text-neutral-600 dark:text-neutral-400">
+            Tipy se zobrazí až po uzávěrce galavečera.
+          </p>
         ) : (
           <>
             {shareData && (
@@ -412,7 +414,7 @@ export async function TipperDetail({
       )}
 
       {stats.events.length === 0 && (
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="glass-surface rounded-xl border p-4 text-neutral-600 dark:text-neutral-400">
           Zatím žádné tipy v této sezóně.
         </p>
       )}

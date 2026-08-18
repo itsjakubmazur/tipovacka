@@ -495,7 +495,7 @@ export function EventComments({
                               type="button"
                               onClick={() => remove(comment.id)}
                               aria-label="Smazat zprávu"
-                              className="rounded-full p-1 text-neutral-400 transition-colors hover:bg-red-500/10 hover:text-red-600"
+                              className="rounded-full p-1 text-neutral-500 transition-colors hover:bg-red-500/10 hover:text-red-600 dark:text-neutral-400"
                             >
                               <Trash2 className="size-3.5" />
                             </button>

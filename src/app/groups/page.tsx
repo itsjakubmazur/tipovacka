@@ -24,9 +24,9 @@ export default async function GroupsPage() {
 
   return (
     <div className="stagger-in flex flex-col gap-4 px-4 py-8">
-      <h1 className="text-xl font-bold lg:text-3xl">Skupiny</h1>
+      <h1 className="text-xl font-bold lg:text-3xl">Mini-ligy</h1>
       <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        Založ si privátní skupinu s kámoši a poměřte se jen mezi sebou.
+        Privátní tabulka jen s vybranou partou. Hlavní žebříček party zůstává na Žebříčku.
       </p>
 
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-3">

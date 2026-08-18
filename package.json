@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "e2e": "playwright test",
+    "db:types": "npx supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
     "postinstall": "node scripts/copy-emoji-assets.mjs"
   },
   "dependencies": {
@@ -42,6 +44,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

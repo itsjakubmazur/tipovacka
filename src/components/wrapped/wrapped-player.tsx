@@ -112,10 +112,10 @@ export function WrappedPlayer({ scenes, posters }: { scenes: Scene[]; posters: s
         {scenes.map((_, i) => (
           <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25">
             <div
-              className="h-full rounded-full bg-white"
+              className="h-full origin-left rounded-full bg-white"
               style={{
-                width: i < index ? "100%" : i === index ? `${Math.round(progress * 100)}%` : "0%",
-                transition: i === index ? "width 50ms linear" : "none",
+                transform: `scaleX(${i < index ? 1 : i === index ? progress : 0})`,
+                transition: i === index ? "transform 50ms linear" : "none",
               }}
             />
           </div>

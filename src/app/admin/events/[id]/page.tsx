@@ -24,11 +24,11 @@ export default async function AdminEventPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, is_superadmin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) {
+  if (!profile?.is_admin && !profile?.is_superadmin) {
     redirect("/");
   }
 

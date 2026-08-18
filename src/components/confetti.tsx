@@ -20,11 +20,22 @@ type Piece = {
 /** A short burst of confetti over the whole screen. Purely decorative: it sits
  * above everything but never takes a click, and removes itself when it's done
  * so nothing lingers. Skipped entirely for prefers-reduced-motion. */
-export function Confetti({ durationMs = 2600 }: { durationMs?: number }) {
+export function Confetti({ durationMs = 2600, onceKey }: { durationMs?: number; onceKey?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [done, setDone] = useState(false);
+  const [allowed, setAllowed] = useState(!onceKey);
 
   useEffect(() => {
+    if (!onceKey) return;
+    const storageKey = `confetti:${onceKey}`;
+    if (sessionStorage.getItem(storageKey)) return;
+    sessionStorage.setItem(storageKey, "1");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sessionStorage is client-only; first paint must not fire confetti on a repeat visit
+    setAllowed(true);
+  }, [onceKey]);
+
+  useEffect(() => {
+    if (!allowed) return;
     // Reduced motion: draw nothing at all. The canvas stays mounted but is
     // transparent and never takes a pointer event, so it changes nothing.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -90,9 +101,9 @@ export function Confetti({ durationMs = 2600 }: { durationMs?: number }) {
 
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [durationMs]);
+  }, [durationMs, allowed]);
 
-  if (done) return null;
+  if (!allowed || done) return null;
 
   return (
     <canvas

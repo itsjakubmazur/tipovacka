@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLayoutEffect, useRef, useState } from "react";
-import { Trophy, Swords, User, ShieldCheck, Users } from "lucide-react";
+import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/events", label: "Galavečery", icon: Swords },
   { href: "/leaderboard", label: "Žebříček", icon: Trophy },
-  { href: "/groups", label: "Skupiny", icon: Users },
   { href: "/profile", label: "Profil", icon: User },
 ];
 
@@ -51,7 +50,7 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
             href={item.href}
             data-active={active}
             aria-current={active ? "page" : undefined}
-            // These four destinations are always mounted (the nav itself is
+            // These destinations are always mounted (the nav itself is
             // sticky/fixed), so prefetching them in full - not just Next's
             // default shell-only prefetch for dynamic routes - means the RSC
             // payload (now served from cache server-side) is usually already

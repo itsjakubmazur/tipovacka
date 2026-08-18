@@ -29,6 +29,9 @@ function czechAuthError(message: string): string {
   if (m.includes("signups not allowed") || m.includes("signup is disabled")) {
     return "Registrace je momentálně zavřená.";
   }
+  if (m.includes("invalid invite code") || m.includes("invite code")) {
+    return "Zvací kód nesedí. Vyžádej si ho od někoho z party.";
+  }
   return "Něco se nepovedlo. Zkus to prosím znovu.";
 }
 
@@ -74,17 +77,6 @@ export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "
       router.push("/events");
       router.refresh();
     } else {
-      // friendly pre-check; the handle_new_user trigger enforces the
-      // same code server-side even if this call is skipped
-      const { data: codeOk } = await supabase.rpc("check_invite_code", {
-        code: inviteCode.trim(),
-      });
-      if (!codeOk) {
-        setLoading(false);
-        setError("Zvací kód nesedí. Vyžádej si ho od někoho z party.");
-        return;
-      }
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

@@ -3,6 +3,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { COMPARE_B_TEXT } from "@/lib/compare-tone";
 import { CompareFightCard } from "@/components/leaderboard/compare-fight-card";
 import type { Fight, Prediction } from "@/lib/types";
 
@@ -159,7 +160,7 @@ export default async function ComparePage({
             <span className="text-2xl font-bold">{totalA}</span>
           </div>
           <div className="glass-surface flex flex-col items-center gap-1 rounded-xl border p-4">
-            <span className="font-semibold text-blue-500">{nicknameB}</span>
+            <span className={`font-semibold ${COMPARE_B_TEXT}`}>{nicknameB}</span>
             <span className="text-2xl font-bold">{totalB}</span>
           </div>
         </div>
@@ -185,7 +186,7 @@ export default async function ComparePage({
                 <span className="text-neutral-400">bez tipu</span>
               )}
             </p>
-            <p className="text-blue-500">
+            <p className={COMPARE_B_TEXT}>
               {nicknameB}:{" "}
               {bonusFightB ? (
                 <span className="text-neutral-700 dark:text-neutral-300">

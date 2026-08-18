@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Swords, Trophy } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
+import { persistFotnTip } from "@/lib/persist-tip";
 
 type FightOption = { id: string; fighterAName: string; fighterBName: string };
 
@@ -25,8 +25,6 @@ export function FotnPicker({
   locked: boolean;
   actualFight?: { fighterAName: string; fighterBName: string } | null;
 }) {
-  const supabase = createClient();
-
   // Open by default exactly when there's still something to do: it's the last
   // thing on the card, and a collapsed one-line row at the bottom of eleven
   // fight cards is the easiest thing in the app to scroll past.
@@ -41,10 +39,7 @@ export function FotnPicker({
     setPickedId(fightId);
     setSaving(true);
     setError(null);
-    const { error } = await supabase.from("bonus_predictions").upsert(
-      { user_id: userId, event_id: eventId, predicted_fotn_fight_id: fightId },
-      { onConflict: "user_id,event_id" }
-    );
+    const { error } = await persistFotnTip({ userId, eventId, fightId });
     setSaving(false);
     if (error) {
       setError("Uložení se nepodařilo.");

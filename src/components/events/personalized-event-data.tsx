@@ -14,14 +14,9 @@ import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { TipActionBar } from "@/components/predictions/tip-action-bar";
 import { BoldPickIntro } from "@/components/predictions/bold-pick-intro";
 import { Confetti } from "@/components/confetti";
+import { CARD_SEGMENT_LABELS } from "@/lib/card-segments";
 import type { Fight, Prediction } from "@/lib/types";
 import type { EventRow, CommentRow, FinalStandingRow, ConsensusPick } from "@/lib/data/event-detail";
-
-const CARD_SEGMENT_LABELS: Record<NonNullable<Fight["card_segment"]>, string> = {
-  main_card: "Hlavní karta",
-  prelims: "Prelims",
-  free_prelims: "Free Prelims",
-};
 
 /** Everything about this gala that's specific to the logged-in viewer: their
  * own predictions, bold pick, FOTN pick, rank, admin flags - fetched fresh on
@@ -167,7 +162,7 @@ export async function PersonalizedEventData({
     <>
       {/* you won the night - celebrate every time it's opened, it's a few
           seconds and never takes a tap */}
-      {event.status === "completed" && finalRank === 1 && <Confetti />}
+      {event.status === "completed" && finalRank === 1 && <Confetti onceKey={`event-win:${eventId}`} />}
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-6">
         <aside className="contents lg:col-start-2 lg:row-start-1 lg:block">

@@ -15,14 +15,16 @@ export const metadata = { title: "Jak se hraje" };
 function Card({
   icon,
   title,
+  id,
   children,
 }: {
   icon: React.ReactNode;
   title: string;
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="glass-surface flex flex-col gap-2 rounded-xl border p-4">
+    <section id={id} className="glass-surface flex flex-col gap-2 rounded-xl border p-4">
       <h2 className="flex items-center gap-2 text-base font-semibold">
         <span className="text-yellow-600 dark:text-accent">{icon}</span>
         {title}
@@ -44,7 +46,7 @@ export default function RulesPage() {
   return (
     <div className="stagger-in mx-auto flex max-w-2xl flex-col gap-4 px-4 py-8">
       <div>
-        <BackLink href="/profile">Zpět na profil</BackLink>
+        <BackLink href="/events">Zpět na galavečery</BackLink>
         <h1 className="mt-1 text-2xl font-bold">Jak se hraje</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Tipuješ výsledky zápasů galavečerů OKTAGON a soupeříš s partou o body i o startovné.
@@ -71,7 +73,7 @@ export default function RulesPage() {
         </p>
       </Card>
 
-      <Card icon={<Target className="size-5" />} title="Kolik je za co bodů">
+      <Card id="body" icon={<Target className="size-5" />} title="Kolik je za co bodů">
         <ul className="flex flex-col gap-1.5">
           <li className="flex items-center gap-2">
             <Pts n={1} /> správný vítěz

@@ -69,7 +69,7 @@ export default function RootLayout({
       <body className="flex min-h-[100dvh] flex-col bg-background text-foreground">
         <SplashScreen />
         <ErrorReporter />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <Suspense fallback={<NavBarFallback />}>
             <NavBar />
           </Suspense>

@@ -233,8 +233,11 @@ def _announce_payout_pool(db: SupabaseClient, event_id: str, event: dict) -> Non
     # The one moment this actually blocks someone from getting paid -
     # nudge the winner directly instead of relying on them noticing the
     # banner/kecárna message.
-    winner_profile = db.select("profiles", {"id": f"eq.{winner['user_id']}", "select": "bank_account"})
-    if winner_profile and not winner_profile[0].get("bank_account"):
+    winner_account = db.select(
+        "profile_bank_accounts",
+        {"user_id": f"eq.{winner['user_id']}", "select": "bank_account"},
+    )
+    if not winner_account:
         send_to_user(
             db,
             winner["user_id"],
