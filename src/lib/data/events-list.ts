@@ -16,6 +16,7 @@ export type EventsListRow = {
   status: string;
   lock_at: string | null;
   image_url: string | null;
+  watch_party_enabled: boolean;
 };
 
 /** Every gala (drafts included) plus each one's fight count - identical for
@@ -26,7 +27,9 @@ export const getEventsListShared = unstable_cache(
     const [{ data: events }, { data: fightCounts }] = await Promise.all([
       supabase
         .from("events")
-        .select("id, number, name, subtitle, event_date, location, status, lock_at, image_url")
+        .select(
+          "id, number, name, subtitle, event_date, location, status, lock_at, image_url, watch_party_enabled"
+        )
         .order("event_date", { ascending: false }),
       supabase.from("event_fight_counts").select("event_id, fight_count"),
     ]);

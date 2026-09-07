@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Beer } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getEventsListShared } from "@/lib/data/events-list";
 import { Badge } from "@/components/ui/badge";
@@ -229,6 +230,16 @@ export default async function EventsPage() {
                       />
                     </div>
                   </div>
+                )}
+                {/* V levém sloupci, ne pod stavovým badgem: vpravo je vedle
+                    něj odpočet a na úzkém telefonu by se o šířku prali (proto
+                    má sám odpočet strop na tři boxy). Tady je místa dost a
+                    pill funguje stejně pro návrh, otevřeno i uzamčeno. */}
+                {event.watch_party_enabled && effectiveStatus !== "completed" && (
+                  <Badge variant="info" className="mt-1.5 w-fit gap-1">
+                    <Beer className="size-3.5 shrink-0" aria-hidden />
+                    Koukáme v garáži
+                  </Badge>
                 )}
               </div>
               {effectiveStatus === "upcoming" && event.lock_at ? (
