@@ -128,7 +128,7 @@ export default async function EventDetailPage({
           busts the cached shell above on the next request, complementing
           (not replacing) the DB-webhook-driven revalidation. */}
       <RealtimeRefresh
-        tables={["fights", "predictions", "event_payouts"]}
+        tables={["fights", "predictions", "event_payouts", "watch_party_rsvps"]}
         pollMs={locked && event.status !== "completed" ? 45_000 : undefined}
       />
       {/* The poster stays untouched. Laying the title over it cost more than

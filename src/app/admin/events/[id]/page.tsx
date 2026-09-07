@@ -37,6 +37,7 @@ export default async function AdminEventPage({
     .select(
       `id, number, name, subtitle, subtitle_locked, location, event_date, status, lock_at,
        auto_lock, actual_fotn_fight_id, payouts_enabled,
+       watch_party_enabled, watch_party_starts_at, watch_party_note,
        hype_notified_at, card_notified_at, reminder_sent_at, lock_notified_at,
        followup_notified_at, fotn_reminder_sent_at, payout_all_paid_notified_at`
     )
@@ -232,6 +233,9 @@ export default async function AdminEventPage({
             initialAutoLock={event.auto_lock}
             initialStatus={event.status}
             initialPayoutsEnabled={event.payouts_enabled}
+            initialWatchPartyEnabled={event.watch_party_enabled}
+            initialWatchPartyStartsAt={event.watch_party_starts_at}
+            initialWatchPartyNote={event.watch_party_note}
           />
 
           <Section title="Zápasy" className="gap-3">

@@ -47,6 +47,9 @@ export function EventSettingsForm({
   initialAutoLock,
   initialStatus,
   initialPayoutsEnabled,
+  initialWatchPartyEnabled,
+  initialWatchPartyStartsAt,
+  initialWatchPartyNote,
 }: {
   eventId: string;
   initialName: string;
@@ -58,6 +61,9 @@ export function EventSettingsForm({
   initialAutoLock: boolean;
   initialStatus: string;
   initialPayoutsEnabled: boolean;
+  initialWatchPartyEnabled: boolean;
+  initialWatchPartyStartsAt: string | null;
+  initialWatchPartyNote: string | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -72,6 +78,11 @@ export function EventSettingsForm({
   const [autoLock, setAutoLock] = useState(initialAutoLock);
   const [status, setStatus] = useState(initialStatus);
   const [payoutsEnabled, setPayoutsEnabled] = useState(initialPayoutsEnabled);
+  const [watchParty, setWatchParty] = useState(initialWatchPartyEnabled);
+  const [watchPartyStartsAt, setWatchPartyStartsAt] = useState(
+    initialWatchPartyStartsAt ? utcIsoToPragueLocalInput(initialWatchPartyStartsAt) : ""
+  );
+  const [watchPartyNote, setWatchPartyNote] = useState(initialWatchPartyNote ?? "");
   // Seeded from the server's own verdict so the first client render matches it
   // exactly (deciding this from the clock during render would disagree right
   // at the lock instant - hydration error #418). Re-checked after mount, when
@@ -106,6 +117,12 @@ export function EventSettingsForm({
         auto_lock: autoLock,
         status,
         payouts_enabled: payoutsEnabled,
+        watch_party_enabled: watchParty,
+        // Vypnutá sledovačka si čas i poznámku nechává - když ji Rejdoš
+        // omylem odškrtne a zapne zpátky, nemusí je psát znovu (odpovědi se
+        // taky nemažou, jen se schovají).
+        watch_party_starts_at: watchPartyStartsAt ? pragueLocalToUtcIso(watchPartyStartsAt) : null,
+        watch_party_note: watchPartyNote.trim() || null,
       })
       .eq("id", eventId);
 
@@ -195,6 +212,41 @@ export function EventSettingsForm({
         />
         Startovné (50 Kč, vítěz bere vše) - vypni pro testovací/nepeněžní večer
       </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="size-4 accent-accent"
+          checked={watchParty}
+          onChange={(e) => setWatchParty(e.target.checked)}
+        />
+        Sledovačka v garáži u Rejdoše - tipéři si zaznačí, jestli dorazí
+      </label>
+      {watchParty && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="watch_party_starts_at">Sledovačka od (český čas)</Label>
+            <Input
+              id="watch_party_starts_at"
+              type="datetime-local"
+              value={watchPartyStartsAt}
+              onChange={(e) => setWatchPartyStartsAt(e.target.value)}
+            />
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              Prázdné = od začátku galavečera.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="watch_party_note">Poznámka pro partu</Label>
+            <Input
+              id="watch_party_note"
+              value={watchPartyNote}
+              maxLength={500}
+              onChange={(e) => setWatchPartyNote(e.target.value)}
+              placeholder="např. vem si pití, gril je můj"
+            />
+          </div>
+        </div>
+      )}
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" variant="accent" disabled={saving} className="self-start">
         {saving ? "Ukládám…" : "Uložit"}

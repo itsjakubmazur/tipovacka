@@ -9,6 +9,7 @@ import { EventComments } from "@/components/events/event-comments";
 import { EventPayoutPool } from "@/components/events/event-payout-pool";
 import { FightNightLive } from "@/components/events/fight-night-live";
 import { WhoHasntTipped } from "@/components/events/who-hasnt-tipped";
+import { WatchParty } from "@/components/events/watch-party";
 import { BraveryReveal } from "@/components/events/bravery-reveal";
 import { FastTipOverlay } from "@/components/predictions/fast-tip-overlay";
 import { TipActionBar } from "@/components/predictions/tip-action-bar";
@@ -220,6 +221,20 @@ export async function PersonalizedEventData({
                 }
               />
             )}
+            {/* Hned pod odpočtem, protože <aside> je na mobilu `contents` -
+                celý tenhle sloupec je tam nad fight cardou, takže je
+                sledovačka první věc pod časomírou a ne až kdesi dole. */}
+            {event.watch_party_enabled && (
+              <WatchParty
+                eventId={eventId}
+                userId={userId}
+                nickname={profile?.nickname ?? "Bez přezdívky"}
+                startsAtIso={event.watch_party_starts_at ?? event.lock_at}
+                note={event.watch_party_note}
+                completed={event.status === "completed"}
+              />
+            )}
+
             {!locked && countableFights.length > 0 && <BoldPickIntro />}
 
             {locked && event.status !== "completed" && (
