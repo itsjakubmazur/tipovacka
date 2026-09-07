@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Beer, Minus, Plus } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { persistRsvp } from "@/lib/persist-rsvp";
 import { SegmentedControl, type Segment } from "@/components/ui/segmented-control";
 import {
   MAX_PLUS_ONES,
@@ -76,8 +76,6 @@ export function WatchPartyRsvp({
   when: string | null;
   note: string | null;
 }) {
-  const supabase = useMemo(() => createClient(), []);
-
   const fromServer = rows.find((r) => r.userId === userId) ?? null;
   const serverAnswer = fromServer?.answer ?? null;
   const serverPlusOnes = fromServer?.plusOnes ?? 0;
@@ -88,6 +86,8 @@ export function WatchPartyRsvp({
 
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queued = useRef<WatchPartyMine | null>(null);
+  const alive = useRef(true);
+  const [failed, setFailed] = useState(false);
 
   const flush = useCallback(() => {
     if (timer.current) {
@@ -97,11 +97,17 @@ export function WatchPartyRsvp({
     const value = queued.current;
     queued.current = null;
     if (!value) return;
-    void supabase.from("watch_party_rsvps").upsert(
-      { event_id: eventId, user_id: userId, answer: value.answer, plus_ones: value.plusOnes },
-      { onConflict: "event_id,user_id" }
-    );
-  }, [supabase, eventId, userId]);
+    void (async () => {
+      try {
+        const { error } = await persistRsvp({ eventId, userId, ...value });
+        if (alive.current) setFailed(Boolean(error));
+      } catch {
+        // spadlá síť vypadá stejně jako odmítnutý zápis: v obou případech
+        // odpověď nikde není, takže to nesmí zůstat tiché
+        if (alive.current) setFailed(true);
+      }
+    })();
+  }, [eventId, userId]);
 
   const commit = useCallback(
     (next: WatchPartyMine) => {
@@ -114,7 +120,13 @@ export function WatchPartyRsvp({
   );
 
   // Odchod ze stránky do 300 ms po klepnutí by jinak odpověď zahodil.
-  useEffect(() => () => flush(), [flush]);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      flush();
+      alive.current = false;
+    };
+  }, [flush]);
 
   // Novější pravda ze serveru (třeba když si to člověk přepsal na druhém
   // zařízení) - ale ne přes rozepsaný zápis, ten by přepsala zpátky.
@@ -167,6 +179,12 @@ export function WatchPartyRsvp({
         size="sm"
         ariaLabel="Dorazíš na sledovačku?"
       />
+
+      {failed && (
+        <p className="text-sm text-red-600 dark:text-red-400">
+          Odpověď se nepodařilo uložit. Zkus na ni klepnout ještě jednou.
+        </p>
+      )}
 
       {choice === "plus" && (
         <div className="flex items-center gap-2 text-sm">
