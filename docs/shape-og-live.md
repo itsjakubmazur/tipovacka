@@ -18,7 +18,8 @@ znělo jako další produktová značka).
   galavečera — **nekoná se pokaždé**, výchozí stav je vypnuto.
 - **Vždycky garáž u Rejdoše**, nikde jinde — místo není pole ve formuláři,
   je to konstanta. Žádné adresy, mapy ani víc sledovaček na jeden galavečer.
-- Čtyři odpovědi: **Přijdu sám / Přijdu s někým / Možná / Ne**.
+- Čtyři odpovědi: **Přijdu sám / Přijdu s někým / Možná / Ne**, u „s někým“
+  se počet hostů naklikává.
 - Karta musí být na mobilu **nahoře**, ne až pod fight cardou.
 - **Žádné pushe.** Kdo bude chtít, označí se v appce.
 - Docházka se **nepočítá** do wrapped ani do statistik.
@@ -61,14 +62,19 @@ Co tím padá:
   se nedá omylem přepsat a nedá se z ní stát pole, které by někdo vyplňoval.
 
 Čtyři segmenty v UI se mapují na dva sloupce: **Přijdu sám** = `yes`/`0`,
-**Přijdu s někým** = `yes`/`1`, **Možná** = `maybe`, **Ne** = `no`. Součet
-„kolik nás bude“ je pak jeden dotaz (`sum(1 + plus_ones) where answer = 'yes'`)
-místo počítání enum hodnot.
+**Přijdu s někým** = `yes`/`1` a výš, **Možná** = `maybe`, **Ne** = `no`.
+Součet „kolik nás bude“ je pak jeden dotaz
+(`sum(1 + plus_ones) where answer = 'yes'`) místo počítání enum hodnot.
+`plus_ones` má význam jen u `yes`; přepnutí na „Sám“ ho vrací na nulu, takže
+se starý počet nemůže tiše připočíst, když si to někdo za týden rozmyslí.
 
 ### RLS pro odpovědi
 - select: `auth.uid() is not null` (celá appka je stejně za auth gate
   v `src/proxy.ts`; účast je uvnitř party veřejná, viz Soukromí).
-- insert/update/delete: `auth.uid() = user_id`, delete navíc admin (úklid).
+- insert/update/delete: `auth.uid() = user_id` **a** galavečer ještě není
+  vyhodnocený (`events.status <> 'completed'`) — stejný vzorec jako
+  `predictions_insert_own` v `20260618000000_init.sql`. Ze vzpomínky se pak
+  nedá nic přepsat ani přes REST, nejen přes UI. Delete navíc admin (úklid).
 - Tabulku přidat do publikace `supabase_realtime` (stejný `do $$` blok jako
   v migraci `20260712000000_event_comments.sql`).
 
@@ -102,7 +108,13 @@ Obsah karty:
   čtyřmi segmenty, vybraný `.glass-accent` (Lit-Not-Flat pravidlo z DESIGN.md).
   Na úzkém mobilu se čtyři plné popisky nevejdou — segmenty jsou zkrácené
   („Sám / S někým / Možná / Ne“) s plným `title` pro čtečky.
-- Souhrn: „**Bude nás 9** · 7 dorazí (+2) · 2 možná · 1 ne“ a pod tím jména.
+- **Počet hostů**: klepnutí na „S někým“ nastaví `plus_ones = 1` a pod
+  segmenty vyjede řádek „Kolik jich vezmeš?“ s `−  1  +` (rozsah 1–5, výš to
+  DB check stejně nepustí). Stepper se ukazuje jen u tohohle segmentu.
+  Klikání je potřeba **debouncovat** (~300 ms) — jinak tři klepnutí na `+`
+  znamenají tři zápisy a tři realtime echa zpátky do stejné karty.
+- Souhrn: „**Bude nás 9** · 7 dorazí (+2) · 2 možná · 1 ne“ a pod tím jména;
+  u toho, kdo někoho veze, se přípona píše k němu („Rejdoš +2“).
 - Zápis optimisticky, realtime na `watch_party_rsvps` dorovná ostatní.
 
 Stavy:
@@ -110,7 +122,10 @@ Stavy:
   fight cardou. Tohle je výchozí stav většiny galavečerů.
 - **Neodpovězeno**: segmenty prázdné. Karta je první věc pod odpočtem,
   nepotřebuje se dovolávat pozornosti navíc.
-- **Po vyhodnocení**: karta se smrskne na jeden řádek „V garáži nás bylo 9“.
+- **Po vyhodnocení**: karta se smrskne na jeden řádek „V garáži nás bylo 9“
+  a **zůstane tam natrvalo** jako vzpomínka na ten večer. Nic se nemaže,
+  odpovědi se jen přestanou dát měnit (`answer` už nejde přepsat, jakmile je
+  `events.status = 'completed'` — hlídá to RLS `with check`, ne jen UI).
 
 Mimo scope v1: badge v seznamu galavečerů (`src/lib/data/events-list.ts` je
 cachovaný — zapnutí sledovačky sice cache zneplatní, ale počet odpovědí ne;
@@ -154,7 +169,4 @@ aditivní: tři sloupce, jedna tabulka, jeden checkbox, jedna karta.
 Odhad: půl večera.
 
 ## Otevřené otázky
-1. **„Přijdu s někým“** — stačí jeden host napevno (`+1`), nebo chceš počet
-   přes malý `+`/`−` (`+2`, `+3`)?
-2. **Kdy karta zmizí** — hned po vyhodnocení galavečera, nebo ať tam řádek
-   „v garáži nás bylo 9“ zůstane natrvalo jako vzpomínka?
+Žádné — scope je uzavřený, návrh je připravený k implementaci.
