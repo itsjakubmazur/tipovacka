@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { MessageCircle, SmilePlus, Trash2, X, Send, Film } from "lucide-react";
 import { EmojiGlyph } from "@/components/events/emoji-glyph";
-import { EmojiPickerSheet } from "@/components/events/emoji-picker-sheet";
 import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
@@ -25,6 +25,18 @@ type Comment = {
   gifUrl: string | null;
   reactions: Reaction[];
 };
+
+/** The picker carries emoji-mart's whole Picker UI, and it only ever
+ * mounts after someone taps the reaction button - so it is loaded on
+ * demand rather than shipped with the thread. Client-only: it portals
+ * into document.body and never renders on the server anyway.
+ *
+ * Note this does *not* defer @emoji-mart/data - EmojiGlyph needs the
+ * dataset up front to draw the reactions already on a comment. */
+const EmojiPickerSheet = dynamic(
+  () => import("@/components/events/emoji-picker-sheet").then((m) => m.EmojiPickerSheet),
+  { ssr: false }
+);
 
 const MAX_LENGTH = 500;
 const REACTION_EMOJI = ["👍", "❤️", "😂", "😮", "😢", "🔥"] as const;
