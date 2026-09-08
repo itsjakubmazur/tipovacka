@@ -7,6 +7,11 @@
 // time) - this is just how to regenerate it after bumping the
 // emoji-datasource-apple version: `node scripts/copy-emoji-assets.mjs`,
 // then commit whatever changed under public/emoji.
+//
+// Only the spritesheet is copied. The per-emoji img/apple/64/*.png files
+// used to be copied too - 3 667 files, 26 MB, re-uploaded on every
+// deployment - but nothing ever requested them: both the picker grid and
+// EmojiGlyph draw from the sheet via background-position.
 import { cpSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,6 +26,5 @@ if (!existsSync(src)) {
 }
 
 mkdirSync(dest, { recursive: true });
-cpSync(join(src, "64"), join(dest, "64"), { recursive: true });
 cpSync(join(src, "sheets-256/64.png"), join(dest, "sheets-256-64.png"));
-console.log("Copied Apple emoji assets into public/emoji/apple");
+console.log("Copied Apple emoji spritesheet into public/emoji/apple");

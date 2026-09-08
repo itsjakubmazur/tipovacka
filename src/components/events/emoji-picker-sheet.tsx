@@ -6,7 +6,7 @@ import { Picker } from "emoji-mart";
 // see emoji-mart-init.ts for why this is the "apple" set specifically,
 // not the package's default "native" one
 import data from "@emoji-mart/data/sets/15/apple.json";
-import { emojiImageUrl, emojiSpritesheetUrl } from "@/lib/emoji-mart-init";
+import { emojiSpritesheetUrl } from "@/lib/emoji-mart-init";
 import { X } from "lucide-react";
 
 /** Full emoji-mart picker (categories + search + skin tones), rendered
@@ -32,7 +32,6 @@ export function EmojiPickerSheet({
       theme: resolvedTheme === "dark" ? "dark" : "light",
       previewPosition: "none",
       skinTonePosition: "search",
-      getImageURL: emojiImageUrl,
       getSpritesheetURL: emojiSpritesheetUrl,
       onEmojiSelect: (emoji: { native: string }) => onSelect(emoji.native),
     });
