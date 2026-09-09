@@ -10,6 +10,7 @@ import { EmojiGlyph } from "@/components/events/emoji-glyph";
 import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
+import { useScrolledDown } from "@/lib/use-scrolled-down";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { dequeue, enqueue, queuedFor, type QueuedComment } from "@/lib/comment-queue";
 
@@ -120,6 +121,7 @@ export function EventComments({
   const seenKey = `kecarna-seen-${eventId}`;
   // Docked in the sidebar from lg up; a bubble + slide-up sheet below that.
   const docked = useMediaQuery("(min-width: 1024px)");
+  const hidden = useScrolledDown();
   const sheetOpen = open && !docked;
   // the chat is on screen either way - docked it never closes
   const showing = docked || open;
@@ -319,7 +321,20 @@ export function EventComments({
           // to sit on top of whatever card happened to be at the bottom of the
           // screen - covering text, which is the one thing a floating button
           // must not do. A speech bubble needs no caption.
-          className="glass-floating fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full text-neutral-800 transition-transform active:scale-95 md:bottom-6 dark:text-neutral-100"
+          // Steps aside on the way down and comes back the moment you reach
+          // up, in step with the nav capsule - same useScrolledDown signal, so
+          // the two can't drift apart. aria-hidden and pointer-events-none
+          // while it is out: a button faded to nothing must not still be
+          // tappable, or catch a screen reader.
+          aria-hidden={hidden}
+          tabIndex={hidden ? -1 : undefined}
+          className={cn(
+            "glass-floating fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full text-neutral-800 duration-300 ease-out active:scale-95 md:bottom-6 dark:text-neutral-100",
+            "transition-[opacity,transform] motion-reduce:transition-none",
+            hidden
+              ? "pointer-events-none translate-y-3 scale-90 opacity-0"
+              : "pointer-events-auto translate-y-0 scale-100 opacity-100"
+          )}
         >
           <MessageCircle className="size-5" />
           {unread > 0 && (

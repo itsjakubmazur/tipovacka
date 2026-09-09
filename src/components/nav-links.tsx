@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useScrolledDown } from "@/lib/use-scrolled-down";
 
 const navItems = [
   { href: "/events", label: "Gala", icon: Swords },
@@ -71,41 +72,12 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
 
 export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
-  const [compact, setCompact] = useState(false);
+  /* Same signal drives the kecárna bubble - see useScrolledDown for why the
+   * two share it rather than each watching scroll on their own. */
+  const compact = useScrolledDown();
   const items = isAdmin
     ? [...navItems, { href: "/admin", label: "Admin", icon: ShieldCheck }]
     : navItems;
-
-  /* Driven by direction, not by depth: scrolling down means you are reading,
-   * so the bar hands its labels back to the content and keeps the icons;
-   * reaching back up is what "I want the nav" looks like, so they return
-   * immediately instead of only at the top of a long list.
-   *
-   * The 6px floor is what keeps it from twitching - sub-pixel scroll noise
-   * and iOS rubber-banding both report tiny deltas, and `last` deliberately
-   * does not move until one is exceeded, so slow drags still accumulate into
-   * a real direction. Near the top the bar is always full: nothing up there
-   * needs the room. */
-  useEffect(() => {
-    let frame = 0;
-    let last = window.scrollY;
-    const read = () => {
-      frame = 0;
-      const y = window.scrollY;
-      const delta = y - last;
-      if (Math.abs(delta) < 6) return;
-      last = y;
-      setCompact(y > 96 && delta > 0);
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(read);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-    };
-  }, []);
 
   return (
     /* pointer-events-none on the frame, auto on the capsule: the bar no longer
