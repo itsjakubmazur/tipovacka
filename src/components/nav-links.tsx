@@ -7,7 +7,7 @@ import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/events", label: "Galavečery", icon: Swords },
+  { href: "/events", label: "Gala", icon: Swords },
   { href: "/leaderboard", label: "Žebříček", icon: Trophy },
   { href: "/profile", label: "Profil", icon: User },
 ];
@@ -138,9 +138,11 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
                  * cannot interpolate to or from `auto`, so every browser
                  * simply snapped between the two sizes. Fixed track widths
                  * also mean the tabs stop jittering as labels of different
-                 * lengths come and go. 44px square collapsed keeps the touch
-                 * target after the label is gone. */
-                compact ? "h-11 w-11" : "h-14 w-[4.75rem]",
+                 * lengths come and go - 68px is the longest label
+                 * ("Žebříček", 48px) plus its padding, so nothing clips.
+                 * 44px square collapsed keeps the touch target after the
+                 * label is gone. */
+                compact ? "h-11 w-11" : "h-14 w-[4.25rem]",
                 // the bottom bar is white in light mode, so the active item
                 // can't use the raw accent - yellow on white is unreadable
                 active
