@@ -84,7 +84,7 @@ export function TipActionBar({
           </span>
           <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
             <span
-              className="block h-full rounded-full bg-accent transition-all"
+              className="block h-full rounded-full bg-accent transition-[width]"
               style={{ width: `${total ? Math.round((tipped / total) * 100) : 0}%` }}
             />
           </span>

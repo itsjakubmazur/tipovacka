@@ -6,6 +6,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { Trophy, Swords, User, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScrolledDown } from "@/lib/use-scrolled-down";
+import { useSettling } from "@/lib/use-settling";
 
 const navItems = [
   { href: "/events", label: "Gala", icon: Swords },
@@ -39,7 +40,7 @@ export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
       {pill && (
         <span
           aria-hidden
-          className="glass-thumb-chrome absolute inset-y-0 rounded-full transition-all duration-300 ease-out motion-reduce:transition-none"
+          className="glass-thumb-chrome absolute inset-y-0 rounded-full transition-[left,width] duration-300 ease-out motion-reduce:transition-none"
           style={{ left: pill.left, width: pill.width }}
         />
       )}
@@ -75,6 +76,8 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   /* Same signal drives the kecárna bubble - see useScrolledDown for why the
    * two share it rather than each watching scroll on their own. */
   const compact = useScrolledDown();
+  // the capsule is glass; while it is resizing it goes flat, see useSettling
+  const settling = useSettling(compact);
   const items = isAdmin
     ? [...navItems, { href: "/admin", label: "Admin", icon: ShieldCheck }]
     : navItems;
@@ -87,6 +90,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
         className={cn(
           "glass-bar pointer-events-auto flex rounded-full duration-300 ease-out",
           "transition-[padding] motion-reduce:transition-none",
+          settling && "glass-settling",
           compact ? "p-1.5" : "p-2"
         )}
       >

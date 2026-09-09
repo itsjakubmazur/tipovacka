@@ -77,6 +77,28 @@ body::before {
   animation: modal-panel-in 0.18s ease-out;
 }
 
+/* A sheet is not a modal. The kecárna and the GIF picker both used the
+   centre-modal pop - translateY(8px) plus scale(0.98) - which on a panel
+   carrying blur(28px) is the worst case there is: scaling a backdrop-filter
+   re-blurs the whole thing at a new size on every frame, and 8px of travel
+   reads as a stutter rather than a move anyway. A sheet comes up off the
+   bottom edge, translate only, no scale. */
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.animate-sheet-up {
+  animation: sheet-up 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sheet-up {
+    animation: none;
+  }
+}
+
 /* Branded loading state: a yellow highlight sweeping across the
    OKTAGON GARÁŽ wordmark while a page loads. */
 @keyframes brand-shimmer {
@@ -666,7 +688,6 @@ body::before {
     rgba(255, 255, 255, 0.42) 100%
   );
   backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
   box-shadow:
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
     inset 0 -1px 0.5px 0 rgba(255, 255, 255, 0.5),
@@ -844,7 +865,6 @@ body::before {
   .glass-thumb {
     background-image: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     background-color: #ffffff;
   }
   .dark .glass-floating,
@@ -895,7 +915,6 @@ body::before {
     rgba(255, 255, 255, 0.86) 100%
   );
   backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
   box-shadow:
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.6),
@@ -1128,7 +1147,6 @@ body::before {
   .glass-field {
     background-image: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     background-color: #ffffff;
   }
   .dark .glass-panel,
@@ -1159,6 +1177,16 @@ body::before {
   }
 }
 
+/* Dropped onto a glass surface while it is animating. Re-blurring a changing
+   backdrop every frame is the expensive part of moving glass; without the
+   blur the same transition is a plain composite. Paired with useSettling,
+   which puts it on for the length of the animation and takes it off again -
+   so the surface is only ever flat while it is in motion, where the
+   difference cannot be seen. */
+.glass-settling {
+  backdrop-filter: none !important;
+}
+
 /* The bottom nav capsule. It floats clear of all four edges over whatever the
    page is showing, so it is built like the rest of the floating glass: blur,
    gradient, specular top and bottom, a rim all the way round, a drop shadow.
@@ -1177,7 +1205,6 @@ body::before {
     rgba(255, 255, 255, 0.64) 100%
   );
   backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
   box-shadow:
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
     inset 0 -1px 0.5px 0 rgba(255, 255, 255, 0.6),
@@ -1205,7 +1232,6 @@ body::before {
   .glass-bar {
     background-image: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     background-color: #ffffff;
   }
   .dark .glass-bar {

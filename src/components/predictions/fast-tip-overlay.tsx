@@ -350,7 +350,7 @@ function FastTipCarousel({
         </button>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
           <div
-            className="h-full rounded-full bg-accent transition-all duration-300"
+            className="h-full rounded-full bg-accent transition-[width] duration-300"
             style={{ width: `${(tippedCount / slideCount) * 100}%` }}
           />
         </div>
