@@ -157,6 +157,16 @@ export default async function EventsPage() {
                   : "upcoming";
           const totalFights = fightCountByEvent.get(event.id) ?? 0;
           const tippedCount = predictionCountByEvent.get(event.id) ?? 0;
+          // Sledovačka se hlásí u každého stavu kromě vyhodnoceného, ale
+          // stavový badge se renderuje ve dvou větvích (s odpočtem a bez),
+          // tak ať se pill nepíše dvakrát.
+          const watchPartyPill =
+            event.watch_party_enabled && effectiveStatus !== "completed" ? (
+              <Badge variant="info" className="w-fit gap-1">
+                <Beer className="size-3.5 shrink-0" aria-hidden />
+                Koukáme v garáži
+              </Badge>
+            ) : null;
           return (
             <Link
               key={event.id}
@@ -231,32 +241,33 @@ export default async function EventsPage() {
                     </div>
                   </div>
                 )}
-                {/* V levém sloupci, ne pod stavovým badgem: vpravo je vedle
-                    něj odpočet a na úzkém telefonu by se o šířku prali (proto
-                    má sám odpočet strop na tři boxy). Tady je místa dost a
-                    pill funguje stejně pro návrh, otevřeno i uzamčeno. */}
-                {event.watch_party_enabled && effectiveStatus !== "completed" && (
-                  <Badge variant="info" className="mt-1.5 w-fit gap-1">
-                    <Beer className="size-3.5 shrink-0" aria-hidden />
-                    Koukáme v garáži
-                  </Badge>
-                )}
               </div>
+              {/* Pod stavovým badgem, ne v levém sloupci: obojí je stav
+                  galavečera, tak patří k sobě - a pill v levém sloupci
+                  přidával kartě řádek navíc. Změřeno na 320/360/390/430:
+                  od 360 výš se text vlevo láme úplně stejně a karta je o
+                  31 px nižší. Na 320 je to výměna (adresa si vezme třetí
+                  řádek), ale i tam vyjde karta nižší než dřív, kdy se
+                  místo toho lámal na dva řádky sám pill. */}
               {effectiveStatus === "upcoming" && event.lock_at ? (
-                <TippingStatus lockAtIso={event.lock_at} onImage={Boolean(event.image_url)} />
+                <TippingStatus lockAtIso={event.lock_at} onImage={Boolean(event.image_url)}>
+                  {watchPartyPill}
+                </TippingStatus>
               ) : (
-                <Badge
-                  className="relative z-10"
-                  variant={
-                    effectiveStatus === "upcoming"
-                      ? "accent"
-                      : effectiveStatus === "locked"
-                        ? "info"
-                        : "secondary"
-                  }
-                >
-                  {STATUS_LABELS[effectiveStatus]}
-                </Badge>
+                <div className="relative z-10 flex shrink-0 flex-col items-end gap-1.5">
+                  <Badge
+                    variant={
+                      effectiveStatus === "upcoming"
+                        ? "accent"
+                        : effectiveStatus === "locked"
+                          ? "info"
+                          : "secondary"
+                    }
+                  >
+                    {STATUS_LABELS[effectiveStatus]}
+                  </Badge>
+                  {watchPartyPill}
+                </div>
               )}
             </Link>
           );

@@ -26,9 +26,14 @@ function daysWord(n: number): string {
 export function TippingStatus({
   lockAtIso,
   onImage,
+  children,
 }: {
   lockAtIso: string;
   onImage: boolean;
+  /** Rendered directly under the status badge, above the countdown - the
+   * column is justify-between, so anything belonging *with* the badge has
+   * to sit inside its group rather than as a third child. */
+  children?: React.ReactNode;
 }) {
   const target = new Date(lockAtIso).getTime();
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -77,7 +82,10 @@ export function TippingStatus({
 
   return (
     <div className="relative z-10 flex shrink-0 flex-col items-end justify-between gap-2 self-stretch">
-      <Badge variant={locked ? "secondary" : "accent"}>{locked ? "Uzamčeno" : "Otevřeno"}</Badge>
+      <div className="flex flex-col items-end gap-1.5">
+        <Badge variant={locked ? "secondary" : "accent"}>{locked ? "Uzamčeno" : "Otevřeno"}</Badge>
+        {children}
+      </div>
 
       {showCountdown && (
         <div className="flex gap-1 min-[420px]:gap-1.5">
