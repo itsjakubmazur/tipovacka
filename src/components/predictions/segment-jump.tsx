@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { useSettling } from "@/lib/use-settling";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 
 /** how far under the app header a heading has to travel before that segment
@@ -42,6 +43,8 @@ export function SegmentJump({
     ratio: 0,
   });
   const [visible, setVisible] = useState(!floating);
+  // glass goes flat while this moves - see useSettling
+  const settling = useSettling(visible);
 
   // false while rendering on the server and through hydration, true after -
   // there's no document to portal into until then
@@ -141,7 +144,8 @@ export function SegmentJump({
       >
         <div
           className={cn(
-            "glass-floating max-w-full rounded-full p-1 transition-all duration-300 ease-out motion-reduce:transition-none",
+            "glass-floating max-w-full rounded-full p-1 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+            settling && "glass-settling",
             visible
               ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
               : "-translate-y-3 scale-95 opacity-0"

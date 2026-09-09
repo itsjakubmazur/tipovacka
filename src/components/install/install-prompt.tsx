@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { X, Share, MoreVertical, MonitorDown, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSettling } from "@/lib/use-settling";
 import {
   detectInstallPlatform,
   installGuide,
@@ -50,6 +51,8 @@ export function InstallPrompt() {
   const [guide, setGuide] = useState<InstallGuide | null>(null);
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  // glass goes flat while this moves - see useSettling
+  const settling = useSettling(visible);
   // false on the server and through hydration, true after - there is no
   // document to portal into until then
   const mounted = useSyncExternalStore(
@@ -124,7 +127,8 @@ export function InstallPrompt() {
         role="dialog"
         aria-label="Přidat tipovačku na plochu"
         className={cn(
-          "glass-panel relative w-full max-w-sm overflow-hidden rounded-2xl border p-4 transition-all duration-300 ease-out motion-reduce:transition-none",
+          "glass-panel relative w-full max-w-sm overflow-hidden rounded-2xl border p-4 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+          settling && "glass-settling",
           visible
             ? "animate-install-card pointer-events-auto opacity-100"
             : "translate-y-6 opacity-0"

@@ -106,7 +106,7 @@ export function LiveFightPoll({
       {total > 0 && (
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
           <div
-            className="h-full rounded-full bg-accent transition-all duration-500"
+            className="h-full rounded-full bg-accent transition-[width] duration-500"
             style={{ width: `${aPct}%` }}
           />
         </div>

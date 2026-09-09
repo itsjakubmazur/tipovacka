@@ -11,6 +11,7 @@ import { GifPicker, gifsEnabled } from "@/components/events/gif-picker";
 import { LiveFightPoll } from "@/components/events/live-fight-poll";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
 import { useScrolledDown } from "@/lib/use-scrolled-down";
+import { useSettling } from "@/lib/use-settling";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { dequeue, enqueue, queuedFor, type QueuedComment } from "@/lib/comment-queue";
 
@@ -122,6 +123,10 @@ export function EventComments({
   // Docked in the sidebar from lg up; a bubble + slide-up sheet below that.
   const docked = useMediaQuery("(min-width: 1024px)");
   const hidden = useScrolledDown();
+  // glass goes flat while the sheet is coming up - see useSettling
+  const sheetSettling = useSettling(open);
+  // the bubble is glass too, and it moves - same reason as the sheet
+  const fabSettling = useSettling(hidden);
   const sheetOpen = open && !docked;
   // the chat is on screen either way - docked it never closes
   const showing = docked || open;
@@ -331,6 +336,7 @@ export function EventComments({
           className={cn(
             "glass-floating fixed bottom-24 left-4 z-30 flex size-12 items-center justify-center rounded-full text-neutral-800 duration-300 ease-out active:scale-95 md:bottom-6 dark:text-neutral-100",
             "transition-[opacity,transform] motion-reduce:transition-none",
+            fabSettling && "glass-settling",
             hidden
               ? "pointer-events-none translate-y-3 scale-90 opacity-0"
               : "pointer-events-auto translate-y-0 scale-100 opacity-100"
@@ -352,7 +358,14 @@ export function EventComments({
           style={docked ? undefined : { paddingBottom: keyboardInset }}
           onClick={docked ? undefined : () => setOpen(false)}
         >
-          {!docked && <div className="absolute inset-0 bg-black/15 backdrop-blur-sm" />}
+          {!docked && (
+            <div
+              className={cn(
+                "absolute inset-0 bg-black/15 backdrop-blur-sm",
+                sheetSettling && "glass-settling"
+              )}
+            />
+          )}
           <div
             onClick={(e) => e.stopPropagation()}
             style={docked ? undefined : { maxHeight: keyboardInset > 0 ? "100%" : "82vh" }}
@@ -360,7 +373,10 @@ export function EventComments({
               "relative flex flex-col overflow-hidden",
               docked
                 ? "glass-surface min-h-[14rem] flex-1 rounded-xl border"
-                : "glass-panel border animate-modal-panel rounded-t-2xl border-t"
+                : cn(
+                    "glass-panel animate-sheet-up rounded-t-2xl border border-t",
+                    sheetSettling && "glass-settling"
+                  )
             )}
           >
             {/* grab handle */}
