@@ -254,7 +254,10 @@ export default async function EventsPage() {
                   {watchPartyPill}
                 </TippingStatus>
               ) : (
-                <div className="relative z-10 flex shrink-0 flex-col items-end gap-1.5">
+                // self-stretch, aby stavový badge seděl nahoře stejně jako
+                // v TippingStatus. Bez něj ho items-end na kartě stáhne dolů
+                // a badge skáče podle toho, jestli má galavečer odpočet.
+                <div className="relative z-10 flex shrink-0 flex-col items-end gap-1.5 self-stretch">
                   <Badge
                     variant={
                       effectiveStatus === "upcoming"
