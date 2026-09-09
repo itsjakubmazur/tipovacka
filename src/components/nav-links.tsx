@@ -78,20 +78,30 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
     ? [...navItems, { href: "/admin", label: "Admin", icon: ShieldCheck }]
     : navItems;
 
-  /* Once the page has scrolled you are reading, not navigating, so the bar
-   * hands its labels back to the content and keeps the icons. Two different
-   * thresholds on purpose: collapsing and expanding at the same pixel makes
-   * the bar flicker when a finger rests right on it. */
+  /* Driven by direction, not by depth: scrolling down means you are reading,
+   * so the bar hands its labels back to the content and keeps the icons;
+   * reaching back up is what "I want the nav" looks like, so they return
+   * immediately instead of only at the top of a long list.
+   *
+   * The 6px floor is what keeps it from twitching - sub-pixel scroll noise
+   * and iOS rubber-banding both report tiny deltas, and `last` deliberately
+   * does not move until one is exceeded, so slow drags still accumulate into
+   * a real direction. Near the top the bar is always full: nothing up there
+   * needs the room. */
   useEffect(() => {
     let frame = 0;
+    let last = window.scrollY;
     const read = () => {
       frame = 0;
-      setCompact((was) => (was ? window.scrollY > 48 : window.scrollY > 96));
+      const y = window.scrollY;
+      const delta = y - last;
+      if (Math.abs(delta) < 6) return;
+      last = y;
+      setCompact(y > 96 && delta > 0);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(read);
     };
-    read();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
