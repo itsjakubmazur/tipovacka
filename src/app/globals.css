@@ -720,6 +720,39 @@ body::before {
     0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
+/* The thumb again, in the accent, for the selected tab in the bottom nav.
+   glass-accent-soft is the wrong material here: it is tuned to sit on a page
+   surface, and 22% yellow over the near-white capsule comes out as barely
+   tinted cream. Same construction as .glass-thumb, carrying the accent
+   instead of white, so the selected tab reads as chosen at a glance in both
+   themes. Its own class rather than a tweak to glass-accent-soft, which 26
+   other components rely on staying quiet. */
+.glass-thumb-accent {
+  border-color: rgba(190, 158, 0, 0.55);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 212, 0, 0.72) 0%,
+    rgba(255, 212, 0, 0.46) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.dark .glass-thumb-accent {
+  border-color: rgba(255, 212, 0, 0.42);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 212, 0, 0.24) 0%,
+    rgba(255, 212, 0, 0.12) 100%
+  );
+  box-shadow:
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 0.5px rgba(255, 212, 0, 0.24),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
 /* ---------------------------------------------------------------------------
    Glass, part two: the surfaces that do NOT float.
 
@@ -1104,35 +1137,65 @@ body::before {
   }
 }
 
-/* A full-width bar is not a capsule. The segment pills hover over a card for
-   a moment and carry two short words; the bottom nav sits over whatever the
-   page happens to be showing - on the events list that's a wall of gala
-   posters - and has to stay readable the whole time. Same glass, far more of
-   it, so the type never fights the artwork underneath. */
+/* The active pill used to slide between tabs. It cannot any more - it is now
+   the item's own background, which is what keeps it glued to the label - so
+   the arrival gets its own moment instead: it lifts into place rather than
+   blinking on. Marks a real event (you changed tab), like the rest of the
+   app's motion. */
+@keyframes nav-pill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+}
+
+.animate-nav-pill {
+  animation: nav-pill-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-nav-pill {
+    animation: none;
+  }
+}
+
+/* The bottom nav capsule. It floats clear of all four edges over whatever the
+   page is showing - on the events list that's a wall of gala posters - so it
+   is built like the rest of the floating glass (blur, gradient, specular top
+   and bottom, a rim all the way round, a drop shadow) rather than like the
+   edge-anchored slab it used to be. Without that rim it reads as a flat white
+   lozenge in light mode instead of a lens.
+   The one thing it keeps from the old bar is the heavy fill: two words of nav
+   type sitting directly on a poster need more than the 30% white a segment
+   pill gets away with. */
 .glass-bar {
   background-image: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.84) 100%
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.82) 100%
   );
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   box-shadow:
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0.5px 0 0 rgba(0, 0, 0, 0.06),
-    0 -4px 16px -8px rgba(0, 0, 0, 0.25);
+    inset 0 -1px 0.5px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    0 12px 32px -10px rgba(0, 0, 0, 0.35);
 }
 
 .dark .glass-bar {
   background-image: linear-gradient(
     to bottom,
-    rgba(18, 18, 20, 0.92) 0%,
-    rgba(12, 12, 14, 0.88) 100%
+    rgba(32, 32, 36, 0.9) 0%,
+    rgba(16, 16, 19, 0.84) 100%
   );
   box-shadow:
-    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.14),
-    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.05),
-    0 -4px 16px -8px rgba(0, 0, 0, 0.7);
+    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0.5px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.16),
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    0 14px 36px -10px rgba(0, 0, 0, 0.75);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1143,28 +1206,6 @@ body::before {
     background-color: #ffffff;
   }
   .dark .glass-bar {
-    background-color: #0d0d0f;
+    background-color: #17171a;
   }
-}
-
-/* The bottom bar as a floating capsule. Same fill, specular and rim as
-   .glass-bar - it is the same material, not a new one - but the drop shadow
-   points down and outward instead of up: an edge-anchored bar only ever has
-   content above it, a capsule that hovers clear of all four sides does not.
-   Must stay below .dark .glass-bar in the file, or that rule's higher
-   specificity would win the box-shadow back in dark mode. */
-.glass-bar-floating {
-  box-shadow:
-    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0.5px 0 0 rgba(0, 0, 0, 0.06),
-    0 8px 24px -6px rgba(0, 0, 0, 0.3),
-    0 2px 6px -2px rgba(0, 0, 0, 0.18);
-}
-
-.dark .glass-bar-floating {
-  box-shadow:
-    inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.14),
-    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.05),
-    0 10px 30px -6px rgba(0, 0, 0, 0.75),
-    0 2px 8px -2px rgba(0, 0, 0, 0.5);
 }
