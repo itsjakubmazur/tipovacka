@@ -1160,19 +1160,21 @@ body::before {
 }
 
 /* The bottom nav capsule. It floats clear of all four edges over whatever the
-   page is showing - on the events list that's a wall of gala posters - so it
-   is built like the rest of the floating glass (blur, gradient, specular top
-   and bottom, a rim all the way round, a drop shadow) rather than like the
-   edge-anchored slab it used to be. Without that rim it reads as a flat white
-   lozenge in light mode instead of a lens.
-   The one thing it keeps from the old bar is the heavy fill: two words of nav
-   type sitting directly on a poster need more than the 30% white a segment
-   pill gets away with. */
+   page is showing, so it is built like the rest of the floating glass: blur,
+   gradient, specular top and bottom, a rim all the way round, a drop shadow.
+
+   The alpha is the whole point and it used to be wrong. This started life as
+   an edge-anchored slab at 92% white, where opacity cost nothing because
+   there was never anything behind it worth seeing. As a capsule at that fill
+   it reads as a solid lozenge - no amount of blur shows through 92% white.
+   It sits in the same range as .glass-floating now, three stops like the
+   header, and the blur does the legibility work instead of the paint. */
 .glass-bar {
   background-image: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.82) 100%
+    rgba(255, 255, 255, 0.74) 0%,
+    rgba(255, 255, 255, 0.54) 50%,
+    rgba(255, 255, 255, 0.64) 100%
   );
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
@@ -1187,8 +1189,9 @@ body::before {
 .dark .glass-bar {
   background-image: linear-gradient(
     to bottom,
-    rgba(32, 32, 36, 0.9) 0%,
-    rgba(16, 16, 19, 0.84) 100%
+    rgba(30, 30, 34, 0.7) 0%,
+    rgba(16, 16, 20, 0.5) 50%,
+    rgba(20, 20, 24, 0.6) 100%
   );
   box-shadow:
     inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.28),

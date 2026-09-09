@@ -130,10 +130,17 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
               prefetch={true}
               className={cn(
                 "relative flex flex-col items-center justify-center gap-1 rounded-full duration-300 ease-out",
-                "transition-[min-width,width,padding,color] motion-reduce:transition-none",
-                // 44px square when collapsed - the touch target survives
-                // losing the label
-                compact ? "size-11" : "min-w-[4.25rem] px-2 py-2",
+                "transition-[width,height,color] motion-reduce:transition-none",
+                /* Both states carry an explicit width and height, and that is
+                 * the whole reason the collapse animates at all. It used to go
+                 * from `size-11` to a content-sized box (min-width plus
+                 * padding, so width and height resolved to `auto`) - and CSS
+                 * cannot interpolate to or from `auto`, so every browser
+                 * simply snapped between the two sizes. Fixed track widths
+                 * also mean the tabs stop jittering as labels of different
+                 * lengths come and go. 44px square collapsed keeps the touch
+                 * target after the label is gone. */
+                compact ? "h-11 w-11" : "h-14 w-[4.75rem]",
                 // the bottom bar is white in light mode, so the active item
                 // can't use the raw accent - yellow on white is unreadable
                 active
@@ -164,7 +171,7 @@ export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
                   reading the destination either way. */}
               <span
                 className={cn(
-                  "relative block overflow-hidden text-xs leading-4 duration-300 ease-out",
+                  "relative block max-w-full overflow-hidden text-xs leading-4 duration-300 ease-out",
                   "transition-[max-height,opacity] motion-reduce:transition-none",
                   compact ? "max-h-0 opacity-0" : "max-h-4 opacity-100"
                 )}
