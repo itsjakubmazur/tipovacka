@@ -12,6 +12,17 @@ const METHOD_OPTIONS: { value: Method; label: string }[] = [
   { value: "DECISION", label: "Rozhodnutí" },
 ];
 
+// OKTAGON's API has no field for this - a five-round fight that isn't for a
+// belt (a main event booked long) is only ever known to a human, so the
+// admin has to be able to say so by hand.
+const ROUNDS_OPTIONS = [
+  { value: 1, label: "1 kolo" },
+  { value: 2, label: "2 kola" },
+  { value: 3, label: "3 kola" },
+  { value: 4, label: "4 kola" },
+  { value: 5, label: "5 kol" },
+];
+
 const STATUS_OPTIONS = [
   { value: "scheduled", label: "Naplánováno" },
   { value: "completed", label: "Odehráno" },
@@ -46,11 +57,13 @@ export function AdminFightRow({
   const router = useRouter();
   const supabase = createClient();
 
+  const [rounds, setRounds] = useState(fight.rounds);
   const [status, setStatus] = useState(fight.status);
   const [winnerId, setWinnerId] = useState(fight.winner_fighter_id ?? "");
   const [method, setMethod] = useState<Method | "">(fight.method ?? "");
   const [round, setRound] = useState(fight.result_round?.toString() ?? "");
   const [saving, setSaving] = useState(false);
+  const [savingRounds, setSavingRounds] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [locked, setLocked] = useState(fight.result_locked);
 
@@ -69,6 +82,42 @@ export function AdminFightRow({
       setError("Přesunutí se nepodařilo, zkus to znovu.");
       return;
     }
+    router.refresh();
+  }
+
+  async function changeRounds(next: number) {
+    if (next === rounds) return;
+    // A result already sits in a round that would no longer exist.
+    if (fight.result_round && next < fight.result_round) {
+      setError(`Zápas má zadaný výsledek v ${fight.result_round}. kole - nejdřív uprav výsledek.`);
+      return;
+    }
+    if (
+      next < rounds &&
+      !window.confirm(
+        `Zkrátit zápas na ${next} ${next === 1 ? "kolo" : next < 5 ? "kola" : "kol"}? ` +
+          "Tipy na vyšší kola, pokud už nějaké padly, tím přestanou dávat smysl."
+      )
+    ) {
+      return;
+    }
+
+    const previous = rounds;
+    setRounds(next);
+    setSavingRounds(true);
+    setError(null);
+    const { error: roundsError } = await supabase
+      .from("fights")
+      .update({ rounds: next })
+      .eq("id", fight.id);
+    setSavingRounds(false);
+    if (roundsError) {
+      setRounds(previous);
+      setError("Změna počtu kol se nepodařila.");
+      return;
+    }
+    // The round pills on the tip card are built from this number, so refresh
+    // the page instead of leaving the server copy behind.
     router.refresh();
   }
 
@@ -141,6 +190,30 @@ export function AdminFightRow({
         </div>
       </div>
 
+      {/* Saved on its own, not with the result - the round count is usually
+          set days before anyone knows how the fight ended, and saving a
+          result locks the scraper out of the fight. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">
+          Zápas na
+        </label>
+        <select
+          value={rounds}
+          onChange={(e) => changeRounds(Number(e.target.value))}
+          disabled={savingRounds}
+          className="h-9 glass-field rounded-md border px-2 text-sm"
+        >
+          {ROUNDS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        {savingRounds && (
+          <span className="text-xs text-neutral-500 dark:text-neutral-400">Ukládám…</span>
+        )}
+      </div>
+
       <form onSubmit={saveResult} className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-300">Stav</label>
@@ -195,7 +268,7 @@ export function AdminFightRow({
                   className="h-9 glass-field rounded-md border px-2 text-sm"
                 >
                   <option value="">—</option>
-                  {Array.from({ length: fight.rounds }, (_, i) => i + 1).map((r) => (
+                  {Array.from({ length: rounds }, (_, i) => i + 1).map((r) => (
                     <option key={r} value={r}>
                       {r}.
                     </option>

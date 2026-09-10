@@ -212,19 +212,21 @@ def import_card(event_id: str) -> tuple[int, int]:
             },
         )
         if existing_legacy:
-            db.update(
-                "fights",
-                {
-                    "oktagon_fight_id": fight["oktagon_fight_id"],
-                    "weight_class": fight["weight_class"],
-                    "is_title_fight": fight["is_title_fight"],
-                    "is_main_event": fight["is_main_event"],
-                    "rounds": 5 if fight["is_title_fight"] else 3,
-                    "card_order": fight["card_order"],
-                    "card_segment": fight["card_segment"],
-                },
-                {"id": f"eq.{existing_legacy[0]['id']}"},
-            )
+            legacy_patch = {
+                "oktagon_fight_id": fight["oktagon_fight_id"],
+                "weight_class": fight["weight_class"],
+                "is_title_fight": fight["is_title_fight"],
+                "is_main_event": fight["is_main_event"],
+                "card_order": fight["card_order"],
+                "card_segment": fight["card_segment"],
+            }
+            # Only ever raise the round count here, never lower it: a
+            # five-round fight without a belt on the line is invisible in the
+            # OKTAGON API, so the number in the DB may have been set by hand
+            # in the admin and this is the only place that knows better.
+            if fight["is_title_fight"]:
+                legacy_patch["rounds"] = 5
+            db.update("fights", legacy_patch, {"id": f"eq.{existing_legacy[0]['id']}"})
             continue
 
         cancelled += cancel_stale_fight(
