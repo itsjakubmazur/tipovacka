@@ -25,6 +25,7 @@ tohle za nás na serveru.
 | `GET /v1/fights?fighterId={id}` | **200** | **Použitelné.** Pole všech zápasů daného bojovníka (viz níže), nejnovější první, včetně nadcházejícího nerozhodnutého zápasu (`result: null`) i historických s plným výsledkem. Bez limitu/stránkování — vrátilo se vše. |
 | `GET /v1/fighters/{id}` | 200 | Detail bojovníka (jméno, vážová kategorie, `scores.MMA_PROFI` = souhrnné V-P-R za **celou profi kariéru**, ne jen OKTAGON) — **bez seznamu jednotlivých zápasů**. |
 | `GET /v1/fighters/{slug}` | 200 | Totéž jako výše, `id` i `slug` fungují zaměnitelně jako identifikátor v cestě. |
+| `GET /v1/fighters/{id}/stats` | 200 / 404 | **Použitelné, ale ne vždy dostupné.** `highlights` objekt s `finishRate`, `finishEndTypePercentageWins`, `hitTypePercentage`, `lastFightsResults` a další (viz dodatek níže). 404 `"Stats not found using both legacy and esports ids."` u bojovníků, pro které tahle data OKTAGON nemá napárovaná. |
 | `GET /v1/fighters/` | 200 | Stránkovaný seznam bojovníků (výchozí 20 položek), stejný tvar jako detail jednoho — opět bez historie zápasů. |
 | `GET /v1/fights/` | 200 | Flat seznam zápasů napříč celým OKTAGONem (výchozí stránka ~20 položek, nejnovější/nejbližší nahoře) — použitelné jako generický "poslední/nadcházející zápasy" feed, ne pro historii jednoho bojovníka. |
 | `GET /v1/events/?limit=150` | 200 | **Kompletní** seznam eventů, `oktagon-1` (2016-12-10) až po nejnovější ohlášené (2027). Vrátilo se 145 položek jedním requestem. |
@@ -209,21 +210,56 @@ Plná odpověď (i s rozpadem podle kola — `hitTypeCount`/`hitResultCount`/
 agregovaná struktura pro celou kariéru — tohle vypadá jako jediný zdroj
 těchto konkrétních čísel, žádná náhrada se nenašla.
 
-**Přesná REST cesta na `api.oktagonmma.com` se nepodařilo ověřit** (na rozdíl
-od `/v1/fights` výše, který je potvrzený). Vyzkoušené tvary vrátily 404
-(`/v1/statistics/fighter/{id}`, `/v1/fighters/{id}/statistics`,
-`/v1/fighter-statistics/{id}`, `/v1/fighters/{id}/highlights`) — jedna cesta,
-`/v1/fights/statistics`, evidentně existuje (vrací 400 misto 404), ale
-nenašel jsem správný formát parametrů (`fighterId`/`fighterIds` ani prosté,
-ani jako pole nesedí — pořád `"Validation failed (numeric string is
-expected)"`). Je to vedlejší zjištění, ne blokující: **"posledních 5
-zápasů" umíme spočítat sami** z dat, co už stahujeme přes `/v1/fights?
-fighterId=` (viz sekce výše) — netřeba kvůli tomu tenhle endpoint řešit.
-Pro finish %/výhry na body %/signifikantní údery % by ale bylo potřeba buď
-dohledat správný tvar téhle cesty (další kolo zkoušení parametrů), nebo to
-brát přímo z `_next/data/.../cs/fighters/<slug>.json?id=<slug>` webu
-(funguje bez auth, ale je to interní, nezdokumentované rozhraní webu, ne
-veřejné API — křehčí volba na dlouhodobé použití).
+### Potvrzená REST cesta: `GET /v1/fighters/{id}/stats`
+
+Doplněno po druhém kole průzkumu (2026-09-11, tentýž den) — cesta se
+nenašla hádáním ani ze zachycených XHR (Next.js na `oktagonmma.com` renderuje
+fighter profil server-side, takže prohlížeč po tvrdém načtení stránky žádný
+XHR na `api.oktagonmma.com` neudělá; `_next/data` JSON se navíc natáhne jen
+při SPA navigaci, ne při přímém vstupu na URL). Skutečnou cestu jsem našel
+tak, že jsem v Chromu otevřel profil bojovníka, v `document.scripts` našel
+stránkový JS chunk (`pages/fighters/[id]-*.js`), stáhl ho a v minifikovaném
+kódu dohledal react-query hook, který volá:
+
+```js
+d = async (id, opts) => (await oktApiAxiosClient.get(`/fighters/${id}/stats`, opts)).data
+```
+
+— tedy **`GET /v1/fighters/{id}/stats`** (stejný `oktApiAxiosClient`, jako
+zbytek `/v1/...`). Ověřeno curlem:
+
+```
+GET /v1/fighters/385/stats  → 200, vrací přesně strukturu highlights výše
+GET /v1/fighters/678/stats  → 404 {"message":"Stats not found using both legacy and esports ids."}
+GET /v1/fighters/551/stats  → 404 (stejná zpráva)
+```
+
+**Tahle data nejsou u všech bojovníků.** Chybová hláška prozrazuje, že se
+statistiky vedou v odděleném systému (`esports.cz` — viz níže), spárovaném
+přes `legacyId`/`metadata.esportsId` z `/v1/fighters/{id}`. Zkusil jsem
+hypotézu "chybí `legacyId` → chybí stats", ale nesedí: Kerim Engizek
+(`id=551`) `legacyId` **má** (64733), přesto `/stats` vrací 404 — takže
+dostupnost prakticky nejde předem odhadnout z ničeho, co máme, a je nutné
+počítat s tím, že endpoint pro konkrétního bojovníka prostě někdy vrátí 404
+(u nás v UI = žádné stat-štítky, žádná chyba). Zkoumaný vzorek byl malý
+(3 bojovníci), takže není jasné, jestli je to vzácná výjimka nebo běžná věc
+u míň sledovaných jmen — dřív než se na to bude spoléhat, stálo by za to
+zkusit endpoint na víc bojovníků (mimo scope tohoto zápisu).
+
+Vedlejší nález ze stejného JS chunku: **živá "kolo po kole" data k
+jednotlivému zápasu** (odznaky "OKTAGON 91 fight statistics" apod. —
+`fight-statistics.tsx`, `fighters-comparison.tsx`) jdou z úplně **jiného,
+externího systému**: `oktApiAxiosClient` se pro tohle nepoužívá, místo toho
+`axios.create({baseURL: "https://oktagon.sh12w3.esports.cz/api/export/"})`,
+volané jako `GET /matches/external/{legacyId}` nebo `GET /matches/{esportsId}`
+(`legacyId`/`esportsId` = pole `metadata.legacyId`/`metadata.esportsId` na
+zápasu z `/v1/fights`). To je zjevně cizí doména (samostatná esportová
+timing/stat firma, ne OKTAGON), takže bych na ni nesázel jako na oficiální
+zdroj — zmiňuju jen pro úplnost, `finishRate`/`hitTypePercentage`/
+`lastFightsResults` z `/v1/fighters/{id}/stats` jsou pro naše potřeby
+dostačující a jsou na `api.oktagonmma.com`, ne na cizí doméně.
+
+Vzorek reálné odpovědi: `fighter_stats_patrik-kincl.json`.
 
 ### Kam s tím v appce — stav dnes a doporučení
 
