@@ -48,8 +48,14 @@ Migrace `20260745000000_fighter_history_and_fight_stats.sql`:
   Řídká tabulka: u zápasu, ke kterému statistiky nejsou, prostě řádek není.
 - `fighters.oktagon_legacy_id` a `fights.oktagon_esports_id` — klíče do
   externího statistického systému.
-- Obě nové tabulky jsou v revalidačním triggeru (`fighter-<id>`, resp. event tag
-  přes `fights`), takže se cache po importu zneplatní sama.
+- Obě nové tabulky mají **vlastní** trigger funkci na invalidaci cache
+  (`fighter-<id>`, resp. event tag přes `fights`), která posílá webhook přes
+  sdílené `revalidate_tag()`. Do společné `notify_revalidate()` se sahat nesmí:
+  PL/pgSQL u ní typově kontroluje jen tu větev, na kterou dojde řada, a jakmile
+  se z IF/ELSIF udělá CASE nebo se přidá odkaz na sloupec, který jiná tabulka
+  nemá, přestanou fungovat zápisy do tabulek, kterých se změna vůbec netýká.
+  Stálo to jeden výpadek zápisů do `fights` (viz 20260746 a 20260747) — a bylo
+  to podruhé, popsané už v hlavičce migrace 20260742.
 
 RLS: čtení pro přihlášené, zápis výhradně service-role klíčem scraperu.
 `fight_stats` navíc zrcadlí viditelnost `fights` — nic z karty skrytého (draft)
