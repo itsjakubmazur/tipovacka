@@ -304,3 +304,111 @@ intercepting route) už má precedens u tipujících. Navíc pokud se někdy bud
 chtít ukázat i celá historie zápasů uživatelům (ne jen pro interní import),
 bio panel v kartě zápasu by na to nebyl vhodné místo tak jako tak. Varianta
 1 dává smysl jako levný mezikrok, pokud je čas teď omezený.
+
+## Dodatek 2: pozápasové statistiky konkrétního zápasu (hity, sig. hity, takedowny...)
+
+Doplněno na žádost prozkoumat, jestli existují **statistiky jednoho
+konkrétního odehraného zápasu** (ne kariérní průměry z Dodatku 1), které by
+šlo přidat vedle toho, co už o zápasu ukazujeme (výsledek, čas, kolo,
+způsob) — tzn. hity, signifikantní hity, takedowny, pokusy o submisi apod.
+
+### Ano, existují — ale je to úplně jiný, cizí systém
+
+V tom samém JS chunku (`pages/fighters/[id]-*.js`), kde je definovaný hook
+na `/v1/fighters/{id}/stats` (Dodatek 1), je hned vedle druhý hook pro
+**data konkrétního zápasu**:
+
+```js
+let r = axios.create({
+  baseURL: "https://oktagon.sh12w3.esports.cz/api/export/",
+  validateStatus: () => true,
+});
+// zkusí legacyId, když není/nevyjde, zkusí esportsId:
+await r.get(`/matches/external/${fight.legacyId}`);
+await r.get(`/matches/${fight.metadata.esportsId}`);
+```
+
+`oktagon.sh12w3.esports.cz` je cizí doména — externí dodavatel živého
+"fight trackingu" (soudě podle názvu český esportový/timing systém), OKTAGON
+k ní nemá vlastní branding ani `api.oktagonmma.com` prefix. **Neexistuje
+oficiální dokumentace, žádná autentizace nebyla potřeba** (veřejně čitelné
+přes `GET`), ale je to nezávislý systém mimo OKTAGON API — je potřeba s tím
+počítat jako s méně stabilním zdrojem (může se kdykoli změnit/přestat
+fungovat, aniž by to OKTAGON řešil jako svůj breaking change).
+
+Napojení na náš `fight.id`: přes `fight.metadata.esportsId` (pole, co už
+máme z `/v1/fights` / fightcard — viz hlavní část dokumentu). `legacyId` na
+úrovni zápasu jsem nikde v datech nenašel (jen bojovníci mají vlastní
+`legacyId`), takže v praxi se použije vždy jen `esportsId`.
+
+### `GET https://oktagon.sh12w3.esports.cz/api/export/matches/{esportsId}`
+
+Ověřeno na dvou reálných zápasech (200 u obou):
+
+- `esportsId=1093` — Kincl vs. Khajevand (OKTAGON 91), SUB ve 2. kole →
+  `esportscz_match-stats_submission-example_1093.json`
+- `esportsId=981` — OKTAGON 81, DEC na 3 kola →
+  `esportscz_match-stats_decision-example_981.json`
+
+Klíčová pole v odpovědi:
+
+- `endType`, `endTime`, `rounds`, `roundsCount` — **stejná informace**, co
+  už máme z `/v1/fights` (`resultType`, `time`, `numRounds`), jen jinak
+  pojmenovaná. Redundantní, ne potřeba k ničemu novému.
+- `fighter1`/`fighter2`/`winner` — vlastní (jiná, esports.cz interní) `id`
+  bojovníků; `fighter{1,2}.externalId` odpovídá **bojovníkovu**
+  `legacyId` z `/v1/fighters/{id}` (u Kincla `externalId: 56682` ==
+  `legacyId: 56682`) — tudy jde párovat, kdyby bylo potřeba.
+- **`hits`** — pole **jednotlivých úderů/zásahů** za celý zápas (72 u
+  zápasu 1093, 163 u zápasu 981!), každý se `attacker`, `defender`,
+  `matchRound`, `matchTime` (sekundy od začátku kola), `type`
+  (`"significant"` / `"insignificant"`) a `target` (`"head"` / `"body"` /
+  `"legs"`). V obou vzorcích má `result` vždy jen hodnotu `"landed"` —
+  nenarazil jsem na žádnou jinou hodnotu, i když název pole naznačuje, že
+  by tam mohlo být i něco jako "blocked"/"missed" (nepotvrzeno, malý
+  vzorek).
+- **`takedowns`** — pole pokusů o takedown, stejný tvar (`attacker`,
+  `defender`, `matchRound`, `matchTime`), `result: "completed"` nebo
+  `null` (= neúspěšný pokus).
+- **`submissionAttempts`** — stejně, `result: "completed"` (u zápasu 1093
+  jde o ten samý moment, co zápas ukončil submisí).
+- `possessions` — v obou vzorcích prázdné pole; podle názvu asi
+  grappling/ground-control časy, ale bez dat to nejde ověřit.
+
+Z `hits`/`takedowns`/`submissionAttempts` by šlo dopočítat přesně to, co
+web ukazuje ve widgetu "ALL HITS / SIGNIFICANT HITS / TAKEDOWNS / SUBMISSION
+ATTEMPTS" (`fight-statistics.tsx`) — prostý součet podle `attacker.id` a
+`type`/`target`, případně rozpad po kolech (`matchTime`/`matchRound` už
+tam je).
+
+### Jak daleko do minulosti tohle sahá
+
+**Ne moc daleko — o dost méně, než historie výsledků.** `esportsId`
+(klíč k tomuhle systému) v `metadata` u zápasu chybí u starých eventů
+úplně (`oktagon-1` z roku 2016 má `metadata: {}` u všech zápasů) a chybí
+ještě i u zápasu z **OKTAGON 43 (2023-05-20)**. První potvrzený výskyt
+`esportsId` v datech, na která jsem narazil, je **OKTAGON 52
+(2024-01-27)**. Rozmezí OKTAGON 43–52 jsem neprocházel zápas po zápasu
+(bylo by to dost requestů), takže přesné datum zavedení nemám, ale řádově
+**early/mid 2024** je bezpečný odhad dolní hranice použitelnosti. Zápasy
+před tím tahle data mít nebudou.
+
+I v rozmezí, kde `esportsId` existuje, není jistota, že `/matches/{id}`
+vrátí 200 (viz nejistá dostupnost `/v1/fighters/{id}/stats` v Dodatku 1) —
+je to cizí systém, testoval jsem jen 2 zápasy a oba vyšly, ale na větším
+vzorku bych se 100% spoléháním nepočítal.
+
+### Doporučení
+
+Tohle bych **do appky nedával jako spolehlivou trvalou funkci**, spíš jako
+"bonus, pokud je k dispozici": zkusit `GET /matches/{esportsId}` při
+importu výsledku zápasu, a pokud vrátí 200, uložit si agregáty (hity/sig.
+hity/takedowny/pokusy o submisi za zápas, případně po kolech) k tomu
+zápasu; když 404/timeout, prostě to okno neukázat. Vzhledem k tomu, že je
+to cizí doména bez SLA k OKTAGONu, bych to nestavěl jako blokující krok
+importu (`cron.py`) — spíš jako samostatný, volitelný doplňkový krok, který
+smí selhat. Vizuálně: dobrý kandidát právě do fighter modalu z Dodatku 1
+(řádky "ALL HITS"/"SIGNIFICANT HITS"/"TAKEDOWNS"/"SUBMISSION ATTEMPTS" pro
+oba bojovníky vedle sebe, přesně jako to má sám OKTAGON ve svém
+`fight-statistics.tsx`), ne do samotné karty zápasu — je to detail, co
+zajímá jen toho, kdo si zápas prohlíží zpětně, ne při rychlém tipování.

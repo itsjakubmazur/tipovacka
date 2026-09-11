@@ -1,0 +1,252 @@
+{
+  "id": 981,
+  "externalId": null,
+  "start": "2025-12-28T21:30:00+01:00",
+  "roundsCount": 3,
+  "tournamentId": 94,
+  "tournamentName": "Oktagon 81",
+  "place": "",
+  "fighter1": {
+    "id": 359,
+    "externalId": 56682,
+    "firstname": "Patrik",
+    "lastname": "Kincl",
+    "middlename": "",
+    "nickname": "Inspektor",
+    "nationality": "CZ",
+    "birthDate": "1989-07-21T00:00:00+02:00",
+    "height": 180,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Middleweight",
+    "categories": [
+      "Middleweight"
+    ],
+    "mmaDebut": "",
+    "gym": "All Sports Academy",
+    "background": "Judo",
+    "photo": "/data/fighter/photo/2025-06/11_979428_cs.1742297929499.png",
+    "profilePhoto": null
+  },
+  "fighter2": {
+    "id": 76,
+    "externalId": 2274,
+    "firstname": "Robert",
+    "lastname": "Pukač",
+    "middlename": "",
+    "nickname": "Princ Bratislavský",
+    "nationality": "SK",
+    "birthDate": "1992-05-15T00:00:00+02:00",
+    "height": 180,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Welterweight",
+    "categories": [
+      "Welterweight"
+    ],
+    "mmaDebut": "",
+    "gym": "Jiu Jitsu Academy / Corener Gym",
+    "background": "MMA",
+    "photo": "/data/fighter/photo/2023-05/15_e1c31a_pukac.png",
+    "profilePhoto": null
+  },
+  "winner": {
+    "id": 359,
+    "externalId": 56682,
+    "firstname": "Patrik",
+    "lastname": "Kincl",
+    "middlename": "",
+    "nickname": "Inspektor",
+    "nationality": "CZ",
+    "birthDate": "1989-07-21T00:00:00+02:00",
+    "height": 180,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Middleweight",
+    "categories": [
+      "Middleweight"
+    ],
+    "mmaDebut": "",
+    "gym": "All Sports Academy",
+    "background": "Judo",
+    "photo": "/data/fighter/photo/2025-06/11_979428_cs.1742297929499.png",
+    "profilePhoto": null
+  },
+  "endType": "decision",
+  "endTime": "05:00",
+  "rounds": 3,
+  "fighter1DominantTime": null,
+  "fighter2DominantTime": null,
+  "fighter1OktagonCheckTime": null,
+  "fighter2OktagonCheckTime": null,
+  "hits": [
+    {
+      "id": 108574,
+      "matchId": 981,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "matchTime": 0,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:40+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 108575,
+      "matchId": 981,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "matchTime": 8,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:47+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 108576,
+      "matchId": 981,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "matchTime": 18,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:57+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 108578,
+      "matchId": 981,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "matchTime": 19,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:58+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 108577,
+      "matchId": 981,
+      "attacker": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 23,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:57+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 108579,
+      "matchId": 981,
+      "attacker": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 24,
+      "matchRound": 1,
+      "realTime": "2025-12-28T22:59:59+01:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 108580,
+      "matchId": 981,
+      "attacker": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 40,
+      "matchRound": 1,
+      "realTime": "2025-12-28T23:00:14+01:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 108581,
+      "matchId": 981,
+      "attacker": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 54,
+      "matchRound": 1,
+      "realTime": "2025-12-28T23:00:28+01:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "head"
+    }
+  ],
+  "possessions": [],
+  "submissionAttempts": [
+    {
+      "id": 741,
+      "matchId": 981,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 76,
+        "name": "Robert Pukač"
+      },
+      "matchTime": 133,
+      "matchRound": 3,
+      "realTime": "2025-12-28T23:14:45+01:00",
+      "result": "completed"
+    }
+  ],
+  "takedowns": [],
+  "_fixture_note": "hits zkráceno z 163 na 8 položek pro fixture, jinak reálná data"
+}

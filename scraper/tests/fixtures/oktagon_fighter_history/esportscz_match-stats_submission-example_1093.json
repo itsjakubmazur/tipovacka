@@ -1,0 +1,285 @@
+{
+  "id": 1093,
+  "externalId": null,
+  "start": "2026-07-11T22:30:00+02:00",
+  "roundsCount": 3,
+  "tournamentId": 104,
+  "tournamentName": "Oktagon 91",
+  "place": "",
+  "fighter1": {
+    "id": 359,
+    "externalId": 56682,
+    "firstname": "Patrik",
+    "lastname": "Kincl",
+    "middlename": "",
+    "nickname": "Inspektor",
+    "nationality": "CZ",
+    "birthDate": "1989-07-21T00:00:00+02:00",
+    "height": 180,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Middleweight",
+    "categories": [
+      "Middleweight"
+    ],
+    "mmaDebut": "",
+    "gym": "All Sports Academy",
+    "background": "Judo",
+    "photo": "/data/fighter/photo/2025-06/11_979428_cs.1742297929499.png",
+    "profilePhoto": null
+  },
+  "fighter2": {
+    "id": 410,
+    "externalId": 59766,
+    "firstname": "Hojat",
+    "lastname": "Khajevand",
+    "middlename": "",
+    "nickname": "",
+    "nationality": "DE",
+    "birthDate": null,
+    "height": null,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Middleweight",
+    "categories": [
+      "Middleweight"
+    ],
+    "mmaDebut": "",
+    "gym": "Astrasport Academy",
+    "background": "Wrestling",
+    "photo": "/data/fighter/photo/2025-01/29_047dfb_cs.1735497679540.png",
+    "profilePhoto": null
+  },
+  "winner": {
+    "id": 359,
+    "externalId": 56682,
+    "firstname": "Patrik",
+    "lastname": "Kincl",
+    "middlename": "",
+    "nickname": "Inspektor",
+    "nationality": "CZ",
+    "birthDate": "1989-07-21T00:00:00+02:00",
+    "height": 180,
+    "weight": null,
+    "reach": null,
+    "legReach": null,
+    "category": "Middleweight",
+    "categories": [
+      "Middleweight"
+    ],
+    "mmaDebut": "",
+    "gym": "All Sports Academy",
+    "background": "Judo",
+    "photo": "/data/fighter/photo/2025-06/11_979428_cs.1742297929499.png",
+    "profilePhoto": null
+  },
+  "endType": "submission",
+  "endTime": "02:08",
+  "rounds": 2,
+  "fighter1DominantTime": null,
+  "fighter2DominantTime": null,
+  "fighter1OktagonCheckTime": null,
+  "fighter2OktagonCheckTime": null,
+  "hits": [
+    {
+      "id": 123673,
+      "matchId": 1093,
+      "attacker": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 1,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:08:49+02:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 123674,
+      "matchId": 1093,
+      "attacker": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 2,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:08:50+02:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 123675,
+      "matchId": 1093,
+      "attacker": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 11,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:00+02:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 123676,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 32,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:21+02:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 123677,
+      "matchId": 1093,
+      "attacker": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 44,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:33+02:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 123678,
+      "matchId": 1093,
+      "attacker": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "defender": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "matchTime": 46,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:34+02:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "legs"
+    },
+    {
+      "id": 123679,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 47,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:35+02:00",
+      "type": "significant",
+      "result": "landed",
+      "target": "head"
+    },
+    {
+      "id": 123680,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 48,
+      "matchRound": 1,
+      "realTime": "2026-07-11T22:09:36+02:00",
+      "type": "insignificant",
+      "result": "landed",
+      "target": "legs"
+    }
+  ],
+  "possessions": [],
+  "submissionAttempts": [
+    {
+      "id": 882,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 128,
+      "matchRound": 2,
+      "realTime": "2026-07-11T22:17:09+02:00",
+      "result": "completed"
+    }
+  ],
+  "takedowns": [
+    {
+      "id": 2680,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 66,
+      "matchRound": 2,
+      "realTime": "2026-07-11T22:16:10+02:00",
+      "result": null
+    },
+    {
+      "id": 2681,
+      "matchId": 1093,
+      "attacker": {
+        "id": 359,
+        "name": "Patrik Kincl"
+      },
+      "defender": {
+        "id": 410,
+        "name": "Hojat Khajevand"
+      },
+      "matchTime": 73,
+      "matchRound": 2,
+      "realTime": "2026-07-11T22:16:14+02:00",
+      "result": "completed"
+    }
+  ],
+  "_fixture_note": "hits zkráceno z 72 na 8 položek pro fixture, jinak reálná data"
+}
