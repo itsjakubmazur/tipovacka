@@ -3,7 +3,7 @@
 Cíl: najít zdroj, odkud jde vytáhnout kompletní historii zápasů konkrétního
 bojovníka (s kým zápasil a jak to dopadlo), aby šlo párovat na naše záznamy
 přes `oktagon_fighter_id`. **Nic v `src/` ani ve scraperu se neměnilo** — jde
-čistě o zápisky z průzkumu + fixtures v `scraper/tests/fixtures/oktagon_fighter_history/`.
+čistě o zápisky z průzkumu + fixtures v `docs/tohle/fixtures/`.
 
 Všechny požadavky šly s `User-Agent` z `scraper/oktagon.py` (běžný Chrome UA).
 Testováno 2026-09-11.
@@ -128,7 +128,7 @@ požadavky).
 - **Profil bojovníka historii jednotlivých zápasů NEUKAZUJE** — jen souhrnné
   skóre (V-P-R), pár statistik (% ukončení, % výher na body, % signifikantních
   úderů) a **posledních 5 zápasů jako pouhé W/L odznaky** (bez soupeře, data
-  nebo způsobu ukončení). Screenshot: `docs/oktagon-fighter-profile-web.jpg`
+  nebo způsobu ukončení). Screenshot: `docs/tohle/oktagon-fighter-profile-web.jpg`
   (Patrik Kincl — vidět řada `W W L L W` / "POSLEDNÍCH 5 ZÁPASŮ").
 - Odkud ta W/L data tečou: stránka je Next.js SSR, takže z prohlížeče nejde
   vidět XHR na `api.oktagonmma.com` přímo — data se natahují na serveru a
@@ -172,7 +172,7 @@ slotem (`fighter1`/`fighter2`), ve kterém náš bojovník figuruje.
 Doplněno na základě dotazu, kam by šlo v appce zapracovat i další čísla,
 která web u bojovníka ukazuje vedle "posledních 5 zápasů" — "PROCENTO
 UKONČENÍ", "VÝHRY NA BODY", "SIGNIFIKANTNÍ ÚDERY" (viz
-`docs/oktagon-fighter-profile-web.jpg`).
+`docs/tohle/oktagon-fighter-profile-web.jpg`).
 
 ### Odkud ta čísla jdou
 
