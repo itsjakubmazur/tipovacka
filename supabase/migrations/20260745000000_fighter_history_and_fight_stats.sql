@@ -128,6 +128,8 @@ begin
   select decrypted_secret into v_url from vault.decrypted_secrets where name = 'revalidate_url';
   select decrypted_secret into v_secret from vault.decrypted_secrets where name = 'revalidate_secret';
 
+  -- Nothing configured yet in this environment (e.g. local dev) - skip
+  -- rather than fail the write.
   if v_url is null or v_secret is null then
     return coalesce(new, old);
   end if;
@@ -153,6 +155,8 @@ begin
     return coalesce(new, old);
   end if;
 
+  -- Fire-and-forget: net.http_post queues onto pg_net's async worker and
+  -- does not block this transaction.
   perform net.http_post(
     url := v_url,
     headers := jsonb_build_object('Content-Type', 'application/json', 'Authorization', 'Bearer ' || v_secret),
