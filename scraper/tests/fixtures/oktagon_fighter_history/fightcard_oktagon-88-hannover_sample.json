@@ -1,0 +1,910 @@
+[
+  {
+    "id": 3421,
+    "title": {
+      "cs": "MAIN CARD"
+    },
+    "fights": [
+      {
+        "id": 1417,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "TKO",
+        "time": "3:14",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 678,
+          "slugs": [
+            "max-holzer"
+          ],
+          "slug": "max-holzer",
+          "firstName": "Max",
+          "lastName": "Holzer",
+          "nickName": "MADE IN GERMANY",
+          "description": {
+            "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+            "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+            "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+            "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 12,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 2002,
+          "monthOfBirth": 1,
+          "dayOfBirth": 2,
+          "heightCm": 170,
+          "nationality": "DE",
+          "imageProfile": {
+            "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [
+            {
+              "type": "OFFICIAL",
+              "position": 2,
+              "positionChange": 0,
+              "weightClass": {
+                "id": 7,
+                "legacyId": 53,
+                "gender": "MALE",
+                "type": "MMA_STANDARD",
+                "title": "Featherweight",
+                "weightLbs": 145,
+                "weightKg": 65.8
+              }
+            }
+          ],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 872,
+          "slugs": [
+            "khalid-taha"
+          ],
+          "slug": "khalid-taha",
+          "firstName": "Khalid",
+          "lastName": "Taha",
+          "nickName": "THE WARRIOR",
+          "description": {
+            "cs": "<p><span>Khalid Taha je profesionální bojovník organizace OKTAGON MMA. Jeho domovským klubem je </span>Elite Fit Zone Sportscenter Dortmund<span>.</sp…[zkráceno pro fixture]",
+            "de": "<p>Khalid Taha ist professioneller Kämpfer der OKTAGON MMA. Sein Heimatgym ist Elite Fit Zone Sportscenter Dortmund.</p><p></p>",
+            "en": "<p>Khalid Taha is a professional fighter of OKTAGON MMA. His home gym is Elite Fit Zone Sportscenter Dortmund.</p><p></p>",
+            "pl": "<p>Khalid Taha jest zawodowym zawodnikiem organizacji OKTAGON MMA. Jego macierzystym klubem jest Elite Fit Zone Sportscenter Dortmund.</p>"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 16,
+              "losses": 6,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1993,
+          "monthOfBirth": 2,
+          "dayOfBirth": 15,
+          "heightCm": 165,
+          "nationality": "DE",
+          "imageProfile": {
+            "id": "77d4fbef-d65b-4c7a-a3ed-b37897befe44",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/77d4fbef-d65b-4c7a-a3ed-b37897befe44/cs.1743862180775.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [
+            {
+              "type": "OFFICIAL",
+              "position": 6,
+              "positionChange": 0,
+              "weightClass": {
+                "id": 7,
+                "legacyId": 53,
+                "gender": "MALE",
+                "type": "MMA_STANDARD",
+                "title": "Featherweight",
+                "weightLbs": 145,
+                "weightKg": 65.8
+              }
+            }
+          ],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 7,
+          "legacyId": 53,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Featherweight",
+          "weightLbs": 145,
+          "weightKg": 65.8
+        },
+        "event": {
+          "id": 133,
+          "slugs": [
+            "oktagon-88-hannover"
+          ],
+          "slug": "oktagon-88-hannover",
+          "startDate": "2026-05-16T16:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 88: HOLZER VS. TAHA",
+            "de": "OKTAGON 88: HOLZER VS. TAHA",
+            "en": "OKTAGON 88: HOLZER VS. TAHA",
+            "pl": "OKTAGON 88: HOLZER VS. TAHA"
+          },
+          "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+          "linkPPVRedirectRules": [
+            {
+              "countries": [
+                "DE",
+                "AT",
+                "CH",
+                "LU",
+                "LI"
+              ],
+              "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+              "destinationTitle": "RTL+"
+            },
+            {
+              "countries": [
+                "PL"
+              ],
+              "redirectUrl": "https://sport.tvp.pl/transmisje",
+              "destinationTitle": "TVP sport "
+            }
+          ],
+          "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+          "metadata": {
+            "preferredCta": {},
+            "ticketBuyType": "STANDARD"
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 88"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "description": {
+          "cs": "<h4></h4><p><strong>MAX HOLZER</strong> nikam neodchází… a při jeho comebacku jde hned o všechno. Silnější po zranění a ve formě svého života, zatímco…[zkráceno pro fixture]",
+          "de": "<h4></h4><p><strong>MAX HOLZER</strong> geht nirgendwo hin… und bei seinem Comeback geht es gleich um alles. Stärker nach seiner Verletzung und in der…[zkráceno pro fixture]",
+          "en": "<h4></h4><p><strong>MAX HOLZER</strong> isn’t going anywhere… and in his comeback, everything is on the line. Stronger after his injury and in the sha…[zkráceno pro fixture]"
+        },
+        "metadata": {
+          "esportsId": 1059,
+          "tipsportId": 7947663
+        },
+        "fighter1WeightKg": 66.2,
+        "fighter2WeightKg": 66.3,
+        "promotionBeforeTarget": "_self",
+        "promotionAfterTarget": "_self",
+        "refereeName": "Marc Goddard"
+      },
+      {
+        "id": 1379,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "KO",
+        "time": "2:50",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 908,
+          "slugs": [
+            "hugo-vach"
+          ],
+          "slug": "hugo-vach",
+          "firstName": "Hugo",
+          "lastName": "Vach",
+          "nickName": "The German Tarzan",
+          "description": {
+            "cs": "<p>Hugo Vach je německý profesionální MMA zápasník, který během své kariéry utrpěl pouze jednu porážku. Reprezentuje tým Fightschool Hannover.</p>",
+            "de": "<p>Hugo Vach ist ein deutscher professioneller MMA-Kämpfer, der in seiner Karriere nur eine Niederlage erlitten hat. Er repräsentiert das Team Fightsc…[zkráceno pro fixture]",
+            "en": "<p>Hugo Vach is a German professional MMA fighter who has suffered only one loss in his career. He represents the Fightschool Hannover team.</p>"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 8,
+              "losses": 1,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 2000,
+          "monthOfBirth": 5,
+          "dayOfBirth": 5,
+          "heightCm": 175,
+          "nationality": "DE",
+          "imageProfile": {
+            "id": "d77923d0-4089-4624-80aa-f4dabc67ea3e",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/d77923d0-4089-4624-80aa-f4dabc67ea3e/cs.1766924021764.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 929,
+          "slugs": [
+            "teo-smith"
+          ],
+          "slug": "teo-smith",
+          "firstName": "Teo",
+          "middleName": "Saldana",
+          "lastName": "Smith",
+          "nickName": "SANGRE",
+          "description": {
+            "cs": "<p>Švýcarský profesionální zápasník organizace OKTAGON MMA, známý agresivním a explozivním stylem. Jeho domovským klubem je Strike Academy.</p>",
+            "de": "<p>Schweizer Profikämpfer in OKTAGON MMA, bekannt für seinen aggressiven und explosiven Stil. Sein Heimclub ist die Strike Academy.</p>",
+            "en": "<p>Swiss professional fighter in OKTAGON MMA, known for his aggressive and explosive style. His home gym is Strike Academy.</p>"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 5,
+              "losses": 2,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1994,
+          "monthOfBirth": 9,
+          "dayOfBirth": 30,
+          "heightCm": 175,
+          "nationality": "CH",
+          "imageProfile": {
+            "id": "bd93172d-533a-4510-8f93-a7e1bc906a4d",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bd93172d-533a-4510-8f93-a7e1bc906a4d/cs.1763815676353.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 7,
+          "legacyId": 53,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Featherweight",
+          "weightLbs": 145,
+          "weightKg": 65.8
+        },
+        "event": {
+          "id": 133,
+          "slugs": [
+            "oktagon-88-hannover"
+          ],
+          "slug": "oktagon-88-hannover",
+          "startDate": "2026-05-16T16:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 88: HOLZER VS. TAHA",
+            "de": "OKTAGON 88: HOLZER VS. TAHA",
+            "en": "OKTAGON 88: HOLZER VS. TAHA",
+            "pl": "OKTAGON 88: HOLZER VS. TAHA"
+          },
+          "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+          "linkPPVRedirectRules": [
+            {
+              "countries": [
+                "DE",
+                "AT",
+                "CH",
+                "LU",
+                "LI"
+              ],
+              "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+              "destinationTitle": "RTL+"
+            },
+            {
+              "countries": [
+                "PL"
+              ],
+              "redirectUrl": "https://sport.tvp.pl/transmisje",
+              "destinationTitle": "TVP sport "
+            }
+          ],
+          "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+          "metadata": {
+            "preferredCta": {},
+            "ticketBuyType": "STANDARD"
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 88"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "description": {
+          "cs": "<h4></h4><p><strong>HUGO VACH</strong>, známý jako „The German Tarzan“ a další svěřenec z Fightschool Hannover, se vrací s bilancí 7–1 tam, kde loni d…[zkráceno pro fixture]",
+          "de": "<h4></h4><p><strong>HUGO VACH</strong>, bekannt als „The German Tarzan“ – ein weiterer Schützling aus der Fightschool Hannover – kehrt mit einer Bilan…[zkráceno pro fixture]",
+          "en": "<h4></h4><p><strong>HUGO VACH</strong>, also known as \"The German Tarzan\" and another protégé from Fightschool Hannover, returns with a 7–1 record to …[zkráceno pro fixture]"
+        },
+        "metadata": {
+          "esportsId": 1057,
+          "tipsportId": 7864369
+        },
+        "fighter1WeightKg": 66.1,
+        "fighter2WeightKg": 66.3,
+        "promotionBeforeTarget": "_self",
+        "promotionAfterTarget": "_self",
+        "refereeName": "Gerd Richter"
+      }
+    ]
+  },
+  {
+    "id": 3422,
+    "title": {
+      "cs": "PRELIMS"
+    },
+    "fights": [
+      {
+        "id": 1426,
+        "titleFight": false,
+        "result": "FIGHTER_2_WIN",
+        "resultType": "DEC",
+        "time": "5:00",
+        "numRounds": 3,
+        "fighter1": {
+          "id": 899,
+          "slugs": [
+            "daniel-makin"
+          ],
+          "slug": "daniel-makin",
+          "firstName": "Daniel",
+          "lastName": "Makin",
+          "description": {
+            "cs": "<p>Daniel Makin je německý zápasník, který se prezentuje tvrdým a přímočarým stylem. V minulosti držel sérii šesti vítězství v řadě. Jeho domovským kl…[zkráceno pro fixture]",
+            "de": "<p>Daniel Makin ist ein deutscher Kämpfer, der für seinen aggressiven und direkten Stil bekannt ist. In der Vergangenheit hielt er eine Siegesserie vo…[zkráceno pro fixture]",
+            "en": "<p>Daniel Makin is a German fighter known for his aggressive and straightforward style. In the past, he held a six-fight winning streak. His home gym …[zkráceno pro fixture]",
+            "pl": "<p>Daniel Makin to niemiecki zawodnik znany z agresywnego i bezpośredniego stylu. W przeszłości miał serię sześciu zwycięstw z rzędu. Jego macierzysty…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 10,
+              "losses": 17,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1986,
+          "monthOfBirth": 1,
+          "dayOfBirth": 22,
+          "heightCm": 178,
+          "nationality": "DE",
+          "imageProfile": {
+            "id": "09056c75-47bf-48d1-8106-ee4d0da35332",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/09056c75-47bf-48d1-8106-ee4d0da35332/cs.1778928272347.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 1001,
+          "slugs": [
+            "christian-draxler"
+          ],
+          "slug": "christian-draxler",
+          "firstName": "Christian ",
+          "lastName": "Draxler",
+          "nickName": "THE AUSTRIAN EMPEROR",
+          "description": {
+            "cs": "<p>Christian Draxler je extrémně zkušený rakouský bojovník, který většinu svých výher získal submisí, což z něj dělá velmi nebezpečného grapplera. Jeh…[zkráceno pro fixture]",
+            "de": "<p>Christian Draxler ist ein äußerst erfahrener österreichischer Kämpfer, der die meisten seiner Siege durch Submission errungen hat, was ihn zu einem…[zkráceno pro fixture]",
+            "en": "<p>Christian Draxler is a highly experienced Austrian fighter who has earned most of his victories by submission, making him a very dangerous grappler…[zkráceno pro fixture]",
+            "pl": "<p>Christian Draxler to bardzo doświadczony austriacki zawodnik, który większość swoich zwycięstw odniósł przez poddanie, co czyni go bardzo niebezpie…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 1,
+            "legacyId": 55,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Welterweight",
+            "weightLbs": 170,
+            "weightKg": 77.1
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 21,
+              "losses": 9,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1988,
+          "monthOfBirth": 3,
+          "dayOfBirth": 14,
+          "heightCm": 180,
+          "nationality": "AT",
+          "imageProfile": {
+            "id": "998b1e80-8597-4f12-9a79-3531de32e42d",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/998b1e80-8597-4f12-9a79-3531de32e42d/cs.1778929264732.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 1,
+          "legacyId": 55,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Welterweight",
+          "weightLbs": 170,
+          "weightKg": 77.1
+        },
+        "event": {
+          "id": 133,
+          "slugs": [
+            "oktagon-88-hannover"
+          ],
+          "slug": "oktagon-88-hannover",
+          "startDate": "2026-05-16T16:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 88: HOLZER VS. TAHA",
+            "de": "OKTAGON 88: HOLZER VS. TAHA",
+            "en": "OKTAGON 88: HOLZER VS. TAHA",
+            "pl": "OKTAGON 88: HOLZER VS. TAHA"
+          },
+          "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+          "linkPPVRedirectRules": [
+            {
+              "countries": [
+                "DE",
+                "AT",
+                "CH",
+                "LU",
+                "LI"
+              ],
+              "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+              "destinationTitle": "RTL+"
+            },
+            {
+              "countries": [
+                "PL"
+              ],
+              "redirectUrl": "https://sport.tvp.pl/transmisje",
+              "destinationTitle": "TVP sport "
+            }
+          ],
+          "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+          "metadata": {
+            "preferredCta": {},
+            "ticketBuyType": "STANDARD"
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 88"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "description": {
+          "cs": "<h4></h4><p><strong>DANIEL MAKIN</strong> je dokonalým příkladem toho, že vzdát se nepřipadá v úvahu! Na začátku své kariéry musel skousnout 9 porážek…[zkráceno pro fixture]",
+          "de": "<h4></h4><p><strong>DANIEL MAKIN</strong> ist das perfekte Beispiel dafür, dass Aufgeben keine Option ist! Zu Beginn seiner Karriere musste er 9 Niede…[zkráceno pro fixture]",
+          "en": "<h4></h4><p><strong>DANIEL MAKIN</strong> is the perfect example that giving up is not an option! At the beginning of his career, he had to endure 9 l…[zkráceno pro fixture]"
+        },
+        "metadata": {
+          "esportsId": 1055
+        },
+        "fighter1WeightKg": 77.3,
+        "fighter2WeightKg": 77.5,
+        "promotionBeforeTarget": "_self",
+        "promotionAfterTarget": "_self",
+        "refereeName": "Marc Goddard",
+        "scoreCards": [
+          {
+            "rounds": [
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              }
+            ],
+            "judgeName": "Jan Voborník"
+          },
+          {
+            "rounds": [
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              }
+            ],
+            "judgeName": "Eva Borodáčová"
+          },
+          {
+            "rounds": [
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              },
+              {
+                "fighter1": {
+                  "points": 9
+                },
+                "fighter2": {
+                  "points": 10
+                }
+              }
+            ],
+            "judgeName": "Björn Lütjens"
+          }
+        ]
+      },
+      {
+        "id": 1412,
+        "titleFight": false,
+        "result": "FIGHTER_2_WIN",
+        "resultType": "TKO",
+        "time": "3:42",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 860,
+          "slugs": [
+            "danielle-misteli"
+          ],
+          "slug": "danielle-misteli",
+          "firstName": "Danielle",
+          "lastName": "Misteli",
+          "nickName": "THE HOUSEWIFE",
+          "description": {
+            "cs": "<p>Danielle Misteli je švýcarská profesionální zápasnice organizace OKTAGON MMA. Jejím domovským klubem je Fight Industry, sídlící ve švýcarském Pfäff…[zkráceno pro fixture]",
+            "de": "<p>Danielle Misteli ist eine Schweizer Profikämpferin der OKTAGON MMA Organisation. Ihr Heimatverein ist Fight Industry, mit Sitz in Pfäffikon, Schwei…[zkráceno pro fixture]",
+            "en": "<p>Danielle Misteli is a Swiss professional fighter of OKTAGON MMA organization. Her home club is Fight Industry, based in Pfäffikon, Switzerland.</p>"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 6,
+            "legacyId": 52,
+            "gender": "FEMALE",
+            "type": "MMA_STANDARD",
+            "title": "Bantamweight",
+            "weightLbs": 135,
+            "weightKg": 61.2
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 5,
+              "losses": 5,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1976,
+          "monthOfBirth": 12,
+          "dayOfBirth": 17,
+          "heightCm": 173,
+          "nationality": "CH",
+          "imageProfile": {
+            "id": "004aefc3-ff77-4f20-91ba-3d2b082778bc",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/004aefc3-ff77-4f20-91ba-3d2b082778bc/cs.1773923973732.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [
+            {
+              "type": "OFFICIAL",
+              "position": 10,
+              "positionChange": 0,
+              "weightClass": {
+                "id": 6,
+                "legacyId": 52,
+                "gender": "FEMALE",
+                "type": "MMA_STANDARD",
+                "title": "Bantamweight",
+                "weightLbs": 135,
+                "weightKg": 61.2
+              }
+            }
+          ],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 996,
+          "slugs": [
+            "ivana-petrovic"
+          ],
+          "slug": "ivana-petrovic",
+          "firstName": "Ivana ",
+          "lastName": "Petrović",
+          "description": {
+            "cs": "<p>Ivana Petrović – UFC prověřená bojovnice s bohatými mezinárodními zkušenostmi. Na kontě má 8 výher, z toho 4 KO/TKO, 3 submise a 1 na body, což z n…[zkráceno pro fixture]",
+            "de": "<p>Ivana Petrović – UFC-erprobte Kämpferin mit umfangreicher internationaler Erfahrung. Sie hat 8 Siege auf dem Konto, davon 4 KO/TKOs, 3 Submissions …[zkráceno pro fixture]",
+            "en": "<p>Ivana Petrović – a UFC-tested fighter with extensive international experience. She has 8 wins to her name, including 4 KO/TKOs, 3 submissions, and …[zkráceno pro fixture]",
+            "pl": "<p>Ivana Petrović – zawodniczka sprawdzona w UFC z bogatym międzynarodowym doświadczeniem. Ma na koncie 8 zwycięstw, w tym 4 KO/TKO, 3 poddania i 1 de…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 6,
+            "legacyId": 52,
+            "gender": "FEMALE",
+            "type": "MMA_STANDARD",
+            "title": "Bantamweight",
+            "weightLbs": 135,
+            "weightKg": 61.2
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 8,
+              "losses": 4,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1994,
+          "monthOfBirth": 6,
+          "dayOfBirth": 11,
+          "heightCm": 172,
+          "nationality": "HR",
+          "imageProfile": {
+            "id": "d03aa6e2-9a8a-434e-beb4-0f8e9b161d68",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/d03aa6e2-9a8a-434e-beb4-0f8e9b161d68/cs.1778928961586.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [
+            {
+              "type": "OFFICIAL",
+              "position": 3,
+              "positionChange": 0,
+              "weightClass": {
+                "id": 6,
+                "legacyId": 52,
+                "gender": "FEMALE",
+                "type": "MMA_STANDARD",
+                "title": "Bantamweight",
+                "weightLbs": 135,
+                "weightKg": 61.2
+              }
+            }
+          ],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 6,
+          "legacyId": 52,
+          "gender": "FEMALE",
+          "type": "MMA_STANDARD",
+          "title": "Bantamweight",
+          "weightLbs": 135,
+          "weightKg": 61.2
+        },
+        "event": {
+          "id": 133,
+          "slugs": [
+            "oktagon-88-hannover"
+          ],
+          "slug": "oktagon-88-hannover",
+          "startDate": "2026-05-16T16:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 88: HOLZER VS. TAHA",
+            "de": "OKTAGON 88: HOLZER VS. TAHA",
+            "en": "OKTAGON 88: HOLZER VS. TAHA",
+            "pl": "OKTAGON 88: HOLZER VS. TAHA"
+          },
+          "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+          "linkPPVRedirectRules": [
+            {
+              "countries": [
+                "DE",
+                "AT",
+                "CH",
+                "LU",
+                "LI"
+              ],
+              "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+              "destinationTitle": "RTL+"
+            },
+            {
+              "countries": [
+                "PL"
+              ],
+              "redirectUrl": "https://sport.tvp.pl/transmisje",
+              "destinationTitle": "TVP sport "
+            }
+          ],
+          "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+          "metadata": {
+            "preferredCta": {},
+            "ticketBuyType": "STANDARD"
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 88"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "description": {
+          "cs": "<h4></h4><p><strong>DANIELLE MISTELI</strong> vstupuje do klece se silnou sérií 4 vítězství v řadě! Ze svých 5 výher jich 4 získala submisí a 1 na bod…[zkráceno pro fixture]",
+          "de": "<h4></h4><p><strong>DANIELLE MISTELI</strong> kommt mit einer starken Serie von 4 Siegen in Folge in den Cage! Von ihren 5 Siegen holte sie 4 durch Su…[zkráceno pro fixture]",
+          "en": "<h4></h4><p><strong>DANIELLE MISTELI</strong> comes into the cage with a strong 4-fight winning streak! Of her 5 wins, she secured 4 by submission and…[zkráceno pro fixture]"
+        },
+        "metadata": {
+          "esportsId": 1054,
+          "tipsportId": 7907197
+        },
+        "fighter1WeightKg": 61.4,
+        "fighter2WeightKg": 61.6,
+        "promotionBeforeTarget": "_self",
+        "promotionAfterTarget": "_self",
+        "refereeName": "Gerd Richter"
+      }
+    ]
+  }
+]

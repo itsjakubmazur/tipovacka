@@ -1,0 +1,798 @@
+[
+  {
+    "id": 11,
+    "legacyId": 1843,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-1"
+    ],
+    "slug": "oktagon-1",
+    "startDate": "2016-12-10T18:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 50.1013391,
+        "lng": 14.416319899999962
+      },
+      "zip": "17000",
+      "city": {
+        "cs": "Praha"
+      },
+      "name": {
+        "cs": "Sportovní hala Královka"
+      },
+      "street": "Nad Královskou oborou",
+      "country": "CZ",
+      "mapLink": "https://oktagonmma.cz/wp-content/uploads/maps/1843-50.1013391-14.4163199.png"
+    },
+    "title": {
+      "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON 1"
+    },
+    "subtitle": {
+      "cs": "OKTAGON VÝZVA FINÁLE JE TU!!"
+    },
+    "description": {
+      "cs": "<p>OKTAGON 1 &#8211; FINÁLE &#8211; 10. 12. 2016</p>\n"
+    },
+    "descriptionShort": {
+      "cs": "Poznej prvního šampiona show O2 TV OKTAGON na historicky prvním turnaji!"
+    },
+    "descriptionLong": {
+      "cs": "OKTAGON bude mít svého prvního šampiona. Bude to Gábor nebo Bělé?"
+    },
+    "links": {},
+    "linkBuyTicket": "https://www.ticketportal.cz",
+    "linkYoutubeVideo": {
+      "cs": ""
+    },
+    "descriptionImage": {
+      "id": "b51fb991-6c6e-421e-ad70-8526842b544a",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_DETAIL_IMAGE/b51fb991-6c6e-421e-ad70-8526842b544a/cs.1680241692996.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "f14e9e46-cc24-4429-b28a-848f02fd7ca6",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_DETAIL_IMAGE/f14e9e46-cc24-4429-b28a-848f02fd7ca6/cs.1680241693354.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {}
+    },
+    "seoTitle": {
+      "cs": ""
+    },
+    "seoDescription": {
+      "cs": ""
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "programDescription": {
+      "cs": ""
+    },
+    "programShowButton": true,
+    "hideInCarousel": false,
+    "weighInDescription": {
+      "cs": ""
+    },
+    "weighInShowButton": true,
+    "arenaDescription": {
+      "cs": ""
+    },
+    "registrationEnabled": false
+  },
+  {
+    "id": 10,
+    "legacyId": 1841,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-2"
+    ],
+    "slug": "oktagon-2",
+    "startDate": "2017-04-07T18:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 48.1623503,
+        "lng": 17.141280400000028
+      },
+      "zip": "831 04",
+      "city": {
+        "cs": "Bratislava"
+      },
+      "name": {
+        "cs": "Hant Arena"
+      },
+      "street": "Trnavská cesta 29",
+      "country": "CZ",
+      "mapLink": "https://oktagonmma.cz/wp-content/uploads/maps/1835-48.1623503-17.1412804.png"
+    },
+    "title": {
+      "cs": "OKTAGON 2: BORÁROS VS. ČAMBAL"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON 2"
+    },
+    "subtitle": {
+      "cs": "Chcete opäť vidieť bojovať hviezdy televíznej show O2 TV Oktagon Výzva?"
+    },
+    "description": {
+      "cs": "<p>OKTAGON 2 &#8211; 7. 4. 2017</p>\n"
+    },
+    "descriptionShort": {
+      "cs": "Jedenásť zápasov prinesie súboj skúsenosti vs mladosť, súboj dvoch kamarátov aj súperov z TV show Oktagon Výzva."
+    },
+    "descriptionLong": {
+      "cs": "A v hlavnom zápase večera sa postaví Gábor Boráros proti rozbehnutému Rolandovi Čambalovi, ktorý ťahá šnúru štyroch víťazstiev v rade. Na ktorý zápas …[zkráceno pro fixture]"
+    },
+    "links": {},
+    "linkBuyTicket": "https://www.ticketportal.sk",
+    "linkYoutubeVideo": {
+      "cs": ""
+    },
+    "descriptionImage": {
+      "id": "0ffd6db4-505d-40e8-a544-191e55104b9c",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_DETAIL_IMAGE/0ffd6db4-505d-40e8-a544-191e55104b9c/cs.1680241690110.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "a82c3358-891d-4e1e-8afb-707aadd33bbc",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_DETAIL_IMAGE/a82c3358-891d-4e1e-8afb-707aadd33bbc/cs.1680241690496.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {}
+    },
+    "seoTitle": {
+      "cs": ""
+    },
+    "seoDescription": {
+      "cs": ""
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "programDescription": {
+      "cs": ""
+    },
+    "programShowButton": true,
+    "hideInCarousel": false,
+    "weighInDescription": {
+      "cs": ""
+    },
+    "weighInShowButton": true,
+    "arenaDescription": {
+      "cs": ""
+    },
+    "registrationEnabled": false
+  },
+  {
+    "id": 133,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-88-hannover"
+    ],
+    "slug": "oktagon-88-hannover",
+    "startDate": "2026-05-16T16:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 52.3225103,
+        "lng": 9.816476699999999
+      },
+      "zip": "30539",
+      "city": {
+        "cs": "Hannover"
+      },
+      "name": {
+        "cs": "ZAG Arena"
+      },
+      "street": "Expo Plaza 7",
+      "country": "DE"
+    },
+    "title": {
+      "cs": "OKTAGON 88: HOLZER VS. TAHA",
+      "de": "OKTAGON 88: HOLZER VS. TAHA",
+      "en": "OKTAGON 88: HOLZER VS. TAHA",
+      "pl": "OKTAGON 88: HOLZER VS. TAHA"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON 88"
+    },
+    "subtitle": {
+      "cs": "Hannover se znovu promění ve středobod evropského MMA!",
+      "de": "Hannover wird erneut zum Zentrum des europäischen MMA!",
+      "en": "Hanover will once again become the center of European MMA! ",
+      "pl": "Hanower ponownie stanie się centrum europejskiego MMA!"
+    },
+    "description": {
+      "cs": "<p><strong>Hannover se znovu promění ve středobod evropského MMA!</strong></p><p><strong>Největší MMA show v Evropě míří do Hannoveru, který se 16. 5.…[zkráceno pro fixture]",
+      "de": "<p><strong>Hannover wird erneut zum Zentrum des europäischen MMA!</strong></p><p><strong>Die größte MMA-Show Europas kehrt nach Hannover zurück. Am 16…[zkráceno pro fixture]",
+      "en": "<p><strong>Hannover will again transform into the center of European MMA!</strong></p><p><strong>The biggest MMA show in Europe is heading to Hannover…[zkráceno pro fixture]",
+      "pl": "<p><strong>Hanower ponownie stanie się centrum europejskiego MMA!</strong></p><p><strong>Największe show MMA w Europie zawita do Hanoweru, który 16.05…[zkráceno pro fixture]"
+    },
+    "descriptionAfter": {
+      "cs": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/1665a4f0-aacb-43a4-879f-22c67200c40e/cs.1778846554720.png\" mobileurl=\"htt…[zkráceno pro fixture]",
+      "de": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/77b5d2b1-331d-4567-a218-1f18fbb71558/cs.1778846637459.png\" mobileurl=\"htt…[zkráceno pro fixture]",
+      "en": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/100c3072-dc2d-48e4-a98e-2fd62d90e932/cs.1778846602369.png\" mobileurl=\"htt…[zkráceno pro fixture]"
+    },
+    "descriptionShort": {
+      "cs": "Největší MMA show v Evropě míří do Hannoveru, který se 16. 5. opět promění v arénu plnou adrenalinu, emocí a tvrdých soubojů. OKTAGON 88 přinese zážit…[zkráceno pro fixture]",
+      "de": "Die größte MMA-Show Europas kehrt nach Hannover zurück. Am 16. Mai wird die Stadt erneut zur Bühne für Adrenalin, Emotionen und kompromisslose Kämpfe.…[zkráceno pro fixture]",
+      "en": "On 16.05.2026, the biggest MMA show in Europe heads to Hanover, which will once again become an arena packed with adrenaline, emotions, and ferocious …[zkráceno pro fixture]",
+      "pl": "Największe show MMA w Europie zawita do Hanoweru, który 16.05 ponownie zamieni się w arenę pełną adrenaliny, emocji i zaciętych walk. OKTAGON 88 zapew…[zkráceno pro fixture]"
+    },
+    "descriptionLong": {
+      "cs": "Hannover se znovu promění ve středobod evropského MMA!\nNejvětší MMA show v Evropě míří do Hannoveru, který se 16. 5. opět promění v arénu plnou adrena…[zkráceno pro fixture]",
+      "de": "Hannover wird erneut zum Zentrum des europäischen MMA!\nDie größte MMA-Show Europas kehrt nach Hannover zurück. Am 16. Mai wird die Stadt wieder zur Bü…[zkráceno pro fixture]",
+      "en": "Hannover will again transform into the center of European MMA!\nThe biggest MMA show in Europe is heading to Hannover, which on May 16th will again tra…[zkráceno pro fixture]",
+      "pl": "Hanower ponownie stanie się centrum europejskiego MMA!\nNajwiększe show MMA w Europie zawita do Hanoweru, który 16.05 ponownie zamieni się w arenę pełn…[zkráceno pro fixture]"
+    },
+    "links": {},
+    "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+    "linkPPVRedirectRules": [
+      {
+        "countries": [
+          "DE",
+          "AT",
+          "CH",
+          "LU",
+          "LI"
+        ],
+        "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+        "destinationTitle": "RTL+"
+      },
+      {
+        "countries": [
+          "PL"
+        ],
+        "redirectUrl": "https://sport.tvp.pl/transmisje",
+        "destinationTitle": "TVP sport "
+      }
+    ],
+    "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+    "descriptionImage": {
+      "id": "aef8dc85-6525-421c-9cb3-c53a8ccd32d8",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/aef8dc85-6525-421c-9cb3-c53a8ccd32d8/cs.1778603247693.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/aef8dc85-6525-421c-9cb3-c53a8ccd32d8/de.1778603247693.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/aef8dc85-6525-421c-9cb3-c53a8ccd32d8/en.1778603247693.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/aef8dc85-6525-421c-9cb3-c53a8ccd32d8/pl.1778673760557.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "fb08ff9c-292d-41fc-9872-8d060b49c9cb",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/fb08ff9c-292d-41fc-9872-8d060b49c9cb/cs.1778603251659.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/fb08ff9c-292d-41fc-9872-8d060b49c9cb/de.1778603251659.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/fb08ff9c-292d-41fc-9872-8d060b49c9cb/en.1778603251659.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/fb08ff9c-292d-41fc-9872-8d060b49c9cb/pl.1778603251659.jpg"
+      }
+    },
+    "mobileAppDetailImage": {
+      "id": "74a70c82-ac7b-40fd-bb26-1e2bb31cfa37",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/74a70c82-ac7b-40fd-bb26-1e2bb31cfa37/cs.1778603259031.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/74a70c82-ac7b-40fd-bb26-1e2bb31cfa37/de.1778603259031.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/74a70c82-ac7b-40fd-bb26-1e2bb31cfa37/en.1778603259031.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/74a70c82-ac7b-40fd-bb26-1e2bb31cfa37/pl.1778603259031.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {},
+      "ticketBuyType": "STANDARD"
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "programDescription": {
+      "cs": "<oktprogramcomponent programid=\"569f8f4c-3d4a-4c31-8aad-32c158c0ee6a\"></oktprogramcomponent>"
+    },
+    "programShowButton": true,
+    "hideInCarousel": false,
+    "weighInDescription": {
+      "cs": "<oktprogramcomponent programid=\"6e44feac-1c6d-415b-a36f-35c58ffded66\"></oktprogramcomponent>"
+    },
+    "weighInShowButton": true,
+    "arena": {
+      "id": 23,
+      "createdAt": "2025-09-08T14:59:52.752Z",
+      "updatedAt": "2025-09-08T14:59:52.752Z",
+      "slugs": [
+        "zag-arena"
+      ],
+      "name": {
+        "cs": "ZAG arena "
+      },
+      "location": {
+        "gps": {
+          "lat": 52.3225103,
+          "lng": 9.816476699999999
+        },
+        "zip": "30539",
+        "city": {
+          "cs": "Hannover"
+        },
+        "name": {
+          "cs": "ZAG Arena"
+        },
+        "street": "Expo Plaza 7",
+        "country": "DE"
+      },
+      "link": {},
+      "shortDescription": {},
+      "defaultDescription": {},
+      "capacity": {},
+      "thumbnail": {
+        "id": "f9e1388e-ac00-4e6c-b9da-5d10550ae06f",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/ARENA_THUMBNAIL/f9e1388e-ac00-4e6c-b9da-5d10550ae06f/cs.1757343588482.jpg"
+        }
+      },
+      "description": {
+        "cs": "<oktfaqcomponent faqid=\"FAQ Hannover\" hidetitle=\"true\" hidedescription=\"true\"></oktfaqcomponent>"
+      },
+      "seoTitle": {
+        "cs": ""
+      },
+      "seoDescription": {
+        "cs": ""
+      }
+    },
+    "arenaDescription": {
+      "cs": "<oktfaqcomponent faqid=\"FAQ Hannover\" hidetitle=\"true\" hidedescription=\"true\"></oktfaqcomponent>"
+    },
+    "registrationEnabled": true,
+    "registrationStartsAt": "2025-12-28T15:30:00.000Z",
+    "registrationEndsAt": "2026-01-27T23:00:00.000Z",
+    "registrationFormInfoText": {
+      "cs": "<ol><li><p>Vyplň formulář a zaregistruj se do předprodeje.</p></li><li><p>Oznámíme ti, jakmile bude stanoven termín zahájení prodeje.</p></li><li><p>4…[zkráceno pro fixture]",
+      "de": "<ol><li><p>Formular ausfüllen und für den Vorverkauf anmelden</p></li><li><p>Wir informieren dich, sobald der Termin für den Verkaufsstart steht</p></…[zkráceno pro fixture]",
+      "en": "<ol><li><p>Fill out the form and register for the pre-sale.</p></li><li><p>We will notify you as soon as the date for the sales start is set.</p></li>…[zkráceno pro fixture]",
+      "pl": "<ol><li><p>Wypełnij formularz i zarejestruj się do przedsprzedaży.</p></li><li><p>Przed oficjalnym rozpoczęciem sprzedaży otrzymasz e-mail i uzyskasz …[zkráceno pro fixture]"
+    },
+    "registrationClosedText": {
+      "cs": "<p><span style=\"font-size: 16px; font-family: var(--font-barlow-condensed);\">Milý fanoušku OKTAGONu,</span><br><br><span style=\"font-size: 16px; font-…[zkráceno pro fixture]",
+      "de": "<p>Lieber OKTAGON-Fan,</p><p>die Registrierung für den Vorverkauf von OKTAGON 88 ist leider nicht mehr möglich. Aber keine Sorge, der offizielle Verka…[zkráceno pro fixture]",
+      "en": "<p>Dear OKTAGON Fan,</p><p>Unfortunately, registration for the OKTAGON 88 presale is no longer possible. But don’t worry, the official sale on <a targ…[zkráceno pro fixture]",
+      "pl": "<p>Drogi Fanie OKTAGON,</p><p>niestety rejestracja na przedsprzedaż OKTAGON 88 nie jest już możliwa. Nie martw się jednak – oficjalna sprzedaż na <a t…[zkráceno pro fixture]"
+    },
+    "registrationSubmitSuccessMessage": {
+      "cs": "<p>Děkujeme za registraci!</p>",
+      "de": "<p>Danke für deine Registrierung.</p>",
+      "en": "<p>Thank you for your registration.&nbsp;</p>",
+      "pl": "<p>Dziękujemy za rejestrację!</p>"
+    },
+    "registrationThankYouOptinSuccessMessage": {
+      "cs": "<p>Mnohokrát děkujeme! Úspěšně jste se zaregistroval(a) k předprodeji na OKTAGON 88 v&nbsp;<span style=\"font-size: 11pt; font-family: var(--font-barlo…[zkráceno pro fixture]",
+      "de": "<p>Vielen Dank! Du bist jetzt erfolgreich für den Pre-Sale von OKTAGON 88 in Hannover registriert.&nbsp;</p>",
+      "en": "<p>Thank you very much! You have successfully registered for the pre-sale of OKTAGON 88 in Hannover. 🙌</p>",
+      "pl": "<p>Bardzo dziękujemy! Pomyślnie zarejestrowałeś się do przedsprzedaży w <strong>OKTAGON 88 w Hanowerze. 🙌</strong></p>"
+    },
+    "registrationContactListId": 35,
+    "registrationBannerImage": {
+      "id": "7f3eb3e2-fb9d-4ddf-9c94-0ae73ffd8062",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_IMAGE/7f3eb3e2-fb9d-4ddf-9c94-0ae73ffd8062/cs.1766935794734.jpg",
+        "de": "https://assets.oktagonmma.com/BANNER_IMAGE/7f3eb3e2-fb9d-4ddf-9c94-0ae73ffd8062/de.1766935794734.jpg",
+        "en": "https://assets.oktagonmma.com/BANNER_IMAGE/7f3eb3e2-fb9d-4ddf-9c94-0ae73ffd8062/en.1766935794734.jpg",
+        "pl": "https://assets.oktagonmma.com/BANNER_IMAGE/7f3eb3e2-fb9d-4ddf-9c94-0ae73ffd8062/pl.1766935794734.jpg"
+      }
+    },
+    "registrationMobileBannerImage": {
+      "id": "37612025-a9f1-4da0-ad25-2e09fb020961",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_IMAGE/37612025-a9f1-4da0-ad25-2e09fb020961/cs.1766935806393.jpg",
+        "de": "https://assets.oktagonmma.com/BANNER_IMAGE/37612025-a9f1-4da0-ad25-2e09fb020961/de.1766935806393.jpg",
+        "en": "https://assets.oktagonmma.com/BANNER_IMAGE/37612025-a9f1-4da0-ad25-2e09fb020961/en.1766935806393.jpg",
+        "pl": "https://assets.oktagonmma.com/BANNER_IMAGE/37612025-a9f1-4da0-ad25-2e09fb020961/pl.1766935806393.jpg"
+      }
+    },
+    "memorabiliaLink": "https://store.oktagonmma.com/collections/oktagon-88"
+  },
+  {
+    "id": 124,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-90-berlin"
+    ],
+    "slug": "oktagon-90-berlin",
+    "startDate": "2026-06-20T16:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 52.5063143,
+        "lng": 13.4436316
+      },
+      "zip": "10243",
+      "city": {
+        "cs": "Berlin"
+      },
+      "name": {
+        "cs": "Uber Arena"
+      },
+      "street": "Uber Platz 1",
+      "country": "DE"
+    },
+    "title": {
+      "cs": "OKTAGON 90: FLEURY VS. ARAS",
+      "de": "OKTAGON 90: FLEURY VS. ARAS",
+      "en": "OKTAGON 90: FLEURY VS. ARAS",
+      "pl": "OKTAGON 90: FLEURY VS. ARAS"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON 90"
+    },
+    "subtitle": {
+      "cs": "OKTAGON míří poprvé do Berlína s nejlepší evropskou MMA show!",
+      "de": "OKTAGON kommt erstmals nach Berlin, um die Fans mit der besten europäischen MMA-Show zu begeistern!",
+      "en": "OKTAGON heads to Berlin for the first time with Europe’s greatest MMA show! ",
+      "pl": "OKTAGON po raz pierwszy zmierza do Berlina z najlepszym europejskim show MMA!"
+    },
+    "description": {
+      "cs": "<p><strong>2 titulové bitvy v&nbsp;jeden večer</strong></p><p><strong>Berlíne, připrav se na MMA show, kterou si ještě neviděl!</strong></p><p><strong…[zkráceno pro fixture]",
+      "de": "<p><strong>Kampf um den Schwergewichts- und Leichtgewichtstitel</strong></p><p><strong>Berlin, mach dich bereit für eine MMA-Show, wie du sie noch nie…[zkráceno pro fixture]",
+      "en": "<p><strong>Heavyweight Title Fight</strong></p><p><strong>Berlin, get ready for an MMA spectacle like you’ve never seen before!</strong></p><p><strong…[zkráceno pro fixture]",
+      "pl": "<p><strong>Walka o pas wagi ciężkiej</strong></p><p><strong>Berlin, przygotuj się na widowisko MMA, jakiego jeszcze nie widziałeś!</strong></p><p><str…[zkráceno pro fixture]"
+    },
+    "descriptionAfter": {
+      "cs": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/9650055e-96fd-4bf0-a893-8ed9596c7897/cs.1781946864770.png\" mobileurl=\"htt…[zkráceno pro fixture]",
+      "de": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/d4ad7fe1-5b84-49fa-b0b1-85af8bec7d60/cs.1781946944902.png\" mobileurl=\"htt…[zkráceno pro fixture]",
+      "en": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/ae6c1dbf-7090-4af5-9b7d-536806b48ec1/cs.1781946916484.png\" mobileurl=\"htt…[zkráceno pro fixture]",
+      "pl": "<oktresponsiveimagecomponent url=\"https://assets.oktagonmma.com/COMMON_IMAGE/6f89d402-947f-45fa-a817-c6a8e434d95d/cs.1781946971811.png\" mobileurl=\"htt…[zkráceno pro fixture]"
+    },
+    "descriptionShort": {
+      "cs": "Největší MMA show v Evropě míří do nového města! Uber Arena v Berlíně se 20. 6. 2026 poprvé promění v arénu plnou adrenalinu, emocí a tvrdých soubojů.…[zkráceno pro fixture]",
+      "de": "Die größte MMA-Show Europas kommt in eine neue Stadt! Am 20. Juni 2026 bringt OKTAGON die größte MMA-Show Europas in die Uber Arena und verwandelt Ber…[zkráceno pro fixture]",
+      "en": "Europe’s biggest MMA show is heading to a new city! On 20.06.2026, Berlin’s Uber Arena will become an arena charged with adrenaline, wild emotional ro…[zkráceno pro fixture]",
+      "pl": "Największe show MMA w Europie zmierza do nowego miasta! Uber Arena w Berlinie 20.06.2026 po raz pierwszy zamieni się w arenę pełną adrenaliny, emocji …[zkráceno pro fixture]"
+    },
+    "descriptionLong": {
+      "cs": "2 titulové bitvy v jeden večer\nBerlíne, připrav se na MMA show, kterou si ještě neviděl!\nNejvětší MMA show v Evropě OKTAGON poprvé v hlavním městě Něm…[zkráceno pro fixture]",
+      "de": "Kampf um den Schwergewichts- und Leichtgewichtstitel\nBerlin, mach dich bereit für eine MMA-Show, wie du sie noch nie erlebt hast!\nDie größte MMA-Organ…[zkráceno pro fixture]",
+      "en": "Heavyweight Title Fight\nBerlin, get ready for an MMA spectacle like you’ve never seen before!\nEurope’s biggest MMA organization OKTAGON is coming to t…[zkráceno pro fixture]",
+      "pl": "Walka o pas wagi ciężkiej\nBerlin, przygotuj się na widowisko MMA, jakiego jeszcze nie widziałeś!\nNajwiększa organizacja MMA w Europie OKTAGON po raz p…[zkráceno pro fixture]"
+    },
+    "links": {},
+    "linkPPV": "https://oktagon.tv/event/oktagon-90/",
+    "linkPPVRedirectRules": [
+      {
+        "countries": [
+          "DE",
+          "AT",
+          "CH",
+          "LU",
+          "LI"
+        ],
+        "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-90-main-root-service-f_159?utm_source=oktagonmma&utm_medium=corporation&utm_campaign=oktagon90",
+        "destinationTitle": "RTL+"
+      },
+      {
+        "countries": [
+          "PL"
+        ],
+        "redirectUrl": "https://sport.tvp.pl/transmisje",
+        "destinationTitle": "TVP Sport"
+      }
+    ],
+    "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/644615",
+    "descriptionImage": {
+      "id": "395665c7-8eba-4033-b715-75963f9d5c70",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/395665c7-8eba-4033-b715-75963f9d5c70/cs.1779886403210.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/395665c7-8eba-4033-b715-75963f9d5c70/de.1779886403210.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/395665c7-8eba-4033-b715-75963f9d5c70/en.1779886403210.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/395665c7-8eba-4033-b715-75963f9d5c70/pl.1779886403210.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "72e898c0-fbb0-49e6-8bca-ba060b45300f",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/72e898c0-fbb0-49e6-8bca-ba060b45300f/cs.1779886408195.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/72e898c0-fbb0-49e6-8bca-ba060b45300f/de.1779886408195.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/72e898c0-fbb0-49e6-8bca-ba060b45300f/en.1779886408195.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/72e898c0-fbb0-49e6-8bca-ba060b45300f/pl.1779886408195.jpg"
+      }
+    },
+    "mobileAppDetailImage": {
+      "id": "6419d236-0480-4def-b7b0-a003b0e47619",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/6419d236-0480-4def-b7b0-a003b0e47619/cs.1779886413471.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/6419d236-0480-4def-b7b0-a003b0e47619/de.1779886413471.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/6419d236-0480-4def-b7b0-a003b0e47619/en.1779886413471.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/6419d236-0480-4def-b7b0-a003b0e47619/pl.1779886413471.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {},
+      "ticketBuyType": "STANDARD"
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "programDescription": {
+      "cs": "<oktprogramcomponent programid=\"796cca84-f49e-499c-bd02-e2e7e00f9364\"></oktprogramcomponent>"
+    },
+    "programShowButton": true,
+    "hideInCarousel": false,
+    "weighInDescription": {
+      "cs": "<oktprogramcomponent programid=\"c10d2c93-267c-489f-afb8-a66f23ea71aa\"></oktprogramcomponent>"
+    },
+    "weighInShowButton": true,
+    "arena": {
+      "id": 26,
+      "createdAt": "2026-06-15T12:02:54.692Z",
+      "updatedAt": "2026-06-15T12:02:54.692Z",
+      "slugs": [
+        "uber-arena-berlin"
+      ],
+      "name": {
+        "cs": "Uber Arena Berlin"
+      },
+      "location": {
+        "gps": {
+          "lat": 52.5063143,
+          "lng": 13.4436316
+        },
+        "zip": "10243",
+        "city": {
+          "cs": "Berlin"
+        },
+        "name": {
+          "cs": "Uber Arena"
+        },
+        "street": "Uber Platz 1",
+        "country": "DE"
+      },
+      "link": {},
+      "thumbnail": {
+        "id": "b5dd6a9b-d1c9-4afd-8eac-26b03294d639",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/ARENA_THUMBNAIL/b5dd6a9b-d1c9-4afd-8eac-26b03294d639/cs.1781524958659.jpg"
+        }
+      },
+      "description": {
+        "cs": "<oktfaqcomponent faqid=\"FAQ Uber aréna Berlín\" hidetitle=\"true\" hidedescription=\"true\"></oktfaqcomponent>"
+      }
+    },
+    "arenaDescription": {
+      "cs": "<oktfaqcomponent faqid=\"FAQ Uber aréna Berlín\" hidetitle=\"true\" hidedescription=\"true\"></oktfaqcomponent>"
+    },
+    "registrationEnabled": true,
+    "registrationStartsAt": "2025-10-17T14:00:00.000Z",
+    "registrationEndsAt": "2025-12-19T22:19:00.000Z",
+    "registrationFormInfoText": {
+      "cs": "<ol><li><p>Vyplň formulář a zaregistruj se do předprodeje.</p></li><li><p>Oznámíme ti, jakmile bude stanoven termín zahájení prodeje.</p></li><li><p>4…[zkráceno pro fixture]",
+      "de": "<ol><li><p>Formular ausfüllen und für den Vorverkauf anmelden</p></li><li><p>Wir informieren dich, sobald der Termin für den Verkaufsstart steht</p></…[zkráceno pro fixture]",
+      "en": "<ol><li><p>Fill out the form and register for the pre-sale.</p></li><li><p>We will notify you as soon as the date for the sales start is set.</p></li>…[zkráceno pro fixture]"
+    },
+    "registrationClosedText": {
+      "cs": "<p><span style=\"font-size: 16px; font-family: var(--font-barlow-condensed);\">Milý fanoušku OKTAGONu,</span><br><br><span style=\"font-size: 16px; font-…[zkráceno pro fixture]",
+      "de": "<p>Lieber OKTAGON-Fan,</p><p>die Registrierung für den Vorverkauf von OKTAGON 90 ist leider nicht mehr möglich. Aber keine Sorge, der offizielle Verka…[zkráceno pro fixture]",
+      "en": "<p>Dear OKTAGON Fan,</p><p>Unfortunately, registration for the OKTAGON 90 presale is no longer possible. But don’t worry, the official sale on <a targ…[zkráceno pro fixture]"
+    },
+    "registrationSubmitSuccessMessage": {
+      "cs": "<p>Díky za registraci!&nbsp;</p>",
+      "de": "<p>Danke für deine Registrierung. </p>",
+      "en": "<p>Thank you for your registration. </p>"
+    },
+    "registrationThankYouOptinSuccessMessage": {
+      "cs": "<p>Mnohokrát děkujeme! Úspěšně jste se zaregistroval(a) k předprodeji na OKTAGON 90 v&nbsp;<span style=\"font-size: 11pt; font-family: var(--font-barlo…[zkráceno pro fixture]",
+      "de": "<p>Vielen Dank! Du bist jetzt erfolgreich für den Pre-Sale von OKTAGON 90 in Berlin registriert.&nbsp;🙌</p>",
+      "en": "<p>Thank you very much! You have successfully registered for the pre-sale of OKTAGON 90 in Berlin. 🙌</p>"
+    },
+    "registrationContactListId": 16,
+    "registrationBannerImage": {
+      "id": "02e43386-1c62-44db-b14e-8f02c17671e6",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_IMAGE/02e43386-1c62-44db-b14e-8f02c17671e6/cs.1760699556834.jpg",
+        "de": "https://assets.oktagonmma.com/BANNER_IMAGE/02e43386-1c62-44db-b14e-8f02c17671e6/de.1760699556834.jpg",
+        "en": "https://assets.oktagonmma.com/BANNER_IMAGE/02e43386-1c62-44db-b14e-8f02c17671e6/en.1760699556834.jpg"
+      }
+    },
+    "registrationMobileBannerImage": {
+      "id": "edebf80f-4b3e-4d3f-a4ca-4c3c7df7ed03",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/BANNER_IMAGE/edebf80f-4b3e-4d3f-a4ca-4c3c7df7ed03/cs.1760699561795.jpg",
+        "de": "https://assets.oktagonmma.com/BANNER_IMAGE/edebf80f-4b3e-4d3f-a4ca-4c3c7df7ed03/de.1760699561795.jpg",
+        "en": "https://assets.oktagonmma.com/BANNER_IMAGE/edebf80f-4b3e-4d3f-a4ca-4c3c7df7ed03/en.1760699561795.jpg"
+      }
+    },
+    "memorabiliaLink": "https://store.oktagonmma.com/collections/oktagon-90-berlin"
+  },
+  {
+    "id": 147,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-100-prague"
+    ],
+    "slug": "oktagon-100-prague",
+    "startDate": "2026-12-29T17:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 50.104819,
+        "lng": 14.4936272
+      },
+      "zip": "190 00",
+      "city": {
+        "cs": "Hlavní město Praha"
+      },
+      "name": {
+        "cs": "O2 arena"
+      },
+      "street": "Českomoravská 2345/17a",
+      "country": "CZ"
+    },
+    "title": {
+      "cs": "OKTAGON 100: PRAHA",
+      "de": "OKTAGON 100: Prag",
+      "en": "OKTAGON 100: Prague",
+      "pl": "OKTAGON 100: Praga"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON 100",
+      "de": "OKTAGON 100",
+      "en": "OKTAGON 100",
+      "pl": "OKTAGON 100"
+    },
+    "subtitle": {
+      "cs": "Jubilejní OKTAGON 100: Epická show na závěr roku a oslavy historického milníku",
+      "de": "Das Jubiläumsturnier OKTAGON 100: Eine epische Show zum Abschluss des Jahres und die Feier eines historischen Meilensteins",
+      "en": "Landmark OKTAGON 100 event: An epic show to close out the year and a joyous celebration of a historic milestone.",
+      "pl": "Jubileuszowy OKTAGON 100: Epickie show na zakończenie roku i obchody historycznego kamienia milowego"
+    },
+    "description": {
+      "cs": "<p><strong>Jubilejní OKTAGON 100: Epická show na závěr roku a oslavy historického milníku</strong></p><p><strong>100 turnajů OKTAGONu. 10 let na scéně…[zkráceno pro fixture]",
+      "de": "<p><strong>Das Jubiläumsturnier OKTAGON 100: Eine epische Show zum Abschluss des Jahres und die Feier eines historischen Meilensteins</strong></p><p><…[zkráceno pro fixture]",
+      "en": "<p><strong>Landmark OKTAGON 100 event: An epic show to close out the year and a joyous celebration of a historic milestone.</strong></p><p><strong>100…[zkráceno pro fixture]",
+      "pl": "<p><strong>Jubileuszowy OKTAGON 100: Epickie show na zakończenie roku i obchody historycznego kamienia milowego </strong></p><p><strong>100 gal OKTAGO…[zkráceno pro fixture]"
+    },
+    "descriptionShort": {
+      "cs": "100 turnajů OKTAGONu. 10 let na scéně. A velkolepé završení sezóny 2026! Není lepšího místa pro tuto historickou událost než pražská O2 arena, která s…[zkráceno pro fixture]",
+      "de": "100 OKTAGON-Turniere. 10 Jahre Geschichte. Ein grandioser Abschluss der Saison 2026! Für dieses historische Ereignis gibt es keinen besseren Ort als d…[zkráceno pro fixture]",
+      "en": "100 OKTAGON tournaments. 10 years on the fight scene. And a spectacular finale to the 2026 season! There’s no better venue for this historic event tha…[zkráceno pro fixture]",
+      "pl": "100 gal OKTAGONu. 10 lat na scenie. I spektakularne zwieńczenie sezonu 2026! Nie ma lepszego miejsca na to historyczne wydarzenie niż praska O2 Arena,…[zkráceno pro fixture]"
+    },
+    "descriptionLong": {
+      "cs": "Jubilejní OKTAGON 100: Epická show na závěr roku a oslavy historického milníku\n100 turnajů OKTAGONu. 10 let na scéně. A velkolepé završení sezóny 2026…[zkráceno pro fixture]",
+      "de": "Das Jubiläumsturnier OKTAGON 100: Eine epische Show zum Abschluss des Jahres und die Feier eines historischen Meilensteins\n100 OKTAGON-Turniere. 10 Ja…[zkráceno pro fixture]",
+      "en": "Landmark OKTAGON 100 event: An epic show to close out the year and a joyous celebration of a historic milestone.\n100 OKTAGON tournaments. 10 years on …[zkráceno pro fixture]",
+      "pl": "Jubileuszowy OKTAGON 100: Epickie show na zakończenie roku i obchody historycznego kamienia milowego \n100 gal OKTAGONu. 10 lat na scenie. I spektakula…[zkráceno pro fixture]"
+    },
+    "links": {},
+    "linkPPVRedirectRules": [],
+    "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-100",
+    "descriptionImage": {
+      "id": "36662acb-7f8e-4b9d-82f8-b8d0f3bb5908",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/36662acb-7f8e-4b9d-82f8-b8d0f3bb5908/cs.1785507589229.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/36662acb-7f8e-4b9d-82f8-b8d0f3bb5908/de.1785507572170.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/36662acb-7f8e-4b9d-82f8-b8d0f3bb5908/en.1785507580374.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/36662acb-7f8e-4b9d-82f8-b8d0f3bb5908/pl.1785507551507.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "0f51ff2e-847b-457a-a92a-a13a2ebab79d",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0f51ff2e-847b-457a-a92a-a13a2ebab79d/cs.1785507100309.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0f51ff2e-847b-457a-a92a-a13a2ebab79d/de.1785507473833.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0f51ff2e-847b-457a-a92a-a13a2ebab79d/en.1785507400584.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0f51ff2e-847b-457a-a92a-a13a2ebab79d/pl.1785507557063.jpg"
+      }
+    },
+    "mobileAppDetailImage": {
+      "id": "0bda9bfd-099d-4a1b-b208-95e046c53b45",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/0bda9bfd-099d-4a1b-b208-95e046c53b45/cs.1785507124423.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/0bda9bfd-099d-4a1b-b208-95e046c53b45/de.1785507478967.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/0bda9bfd-099d-4a1b-b208-95e046c53b45/en.1785507405519.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/0bda9bfd-099d-4a1b-b208-95e046c53b45/pl.1785507562518.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {},
+      "ticketBuyType": "STANDARD"
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "hideInCarousel": false,
+    "registrationEnabled": false
+  },
+  {
+    "id": 140,
+    "state": "ACTIVE",
+    "slugs": [
+      "oktagon-bratislava-2027"
+    ],
+    "slug": "oktagon-bratislava-2027",
+    "startDate": "2027-05-01T16:00:00.000Z",
+    "location": {
+      "gps": {
+        "lat": 48.1601864,
+        "lng": 17.1362163
+      },
+      "zip": "831 04",
+      "city": {
+        "cs": "Bratislava"
+      },
+      "name": {
+        "cs": "Zimní stadion Ondřeje Nepely"
+      },
+      "street": "Odbojárov 9",
+      "country": "SK"
+    },
+    "title": {
+      "cs": "OKTAGON: Bratislava 2027",
+      "de": "OKTAGON: Bratislava 2027",
+      "en": "OKTAGON: Bratislava 2027",
+      "pl": "OKTAGON: Bratislava 2027"
+    },
+    "shortTitle": {
+      "cs": "OKTAGON Bratislava",
+      "de": "OKTAGON Bratislava",
+      "en": "OKTAGON Bratislava",
+      "pl": "OKTAGON Bratislava"
+    },
+    "subtitle": {
+      "cs": "Připravte se na další nezapomenutelný večer plný špičkového MMA",
+      "de": "Mach dich bereit für einen weiteren unvergesslichen Abend mit erstklassigem MMA!",
+      "en": "Get ready for another unforgettable night of world-class MMA.",
+      "pl": "Przygotuj się na kolejny niezapomniany wieczór pełen MMA na najwyższym poziomie. "
+    },
+    "description": {
+      "cs": "<p><strong>Připravte se na další nezapomenutelný večer plný špičkového MMA. Zimný štadión Ondreja Nepelu (Tipos aréna) už zažil mnoho bouřlivých legen…[zkráceno pro fixture]",
+      "de": "<p><span><strong>Mach dich bereit für einen weiteren unvergesslichen Abend mit erstklassigem MMA! Die Tipos Aréna – das Winterstadion Ondrej Nepela – …[zkráceno pro fixture]",
+      "en": "<p><span><strong>Get ready for another unforgettable night of world-class MMA. The Ondrej Nepela Winter Stadium (the Tipos Arena) has already witnesse…[zkráceno pro fixture]",
+      "pl": "<p><span><strong>Przygotuj się na kolejny niezapomniany wieczór pełen MMA na najwyższym poziomie. Stadion Zimowy im. Ondreja Nepelu (Tipos Arena) był …[zkráceno pro fixture]"
+    },
+    "descriptionShort": {
+      "cs": "Zimný štadión Ondreja Nepelu (Tipos aréna) už zažil mnoho bouřlivých legendárních bitev. Ale 1. 5. 2027 to opět posuneme o level výš!",
+      "de": "Die Tipos Aréna – das Winterstadion Ondrej Nepela – war bereits Schauplatz zahlreicher legendärer Kämpfe und unvergesslicher Momente. Doch am 1. Mai 2…[zkráceno pro fixture]",
+      "en": "The Ondrej Nepela Winter Stadium (the Tipos Arena) has already witnessed countless legendary fights and unforgettable moments. But on May 1, 2027, we'…[zkráceno pro fixture]",
+      "pl": "Stadion Zimowy im. Ondreja Nepelu (Tipos Arena) był już świadkiem wielu legendarnych i pełnych emocji walk. Ale 1.05.2027 r. ponownie wejdziemy na wyż…[zkráceno pro fixture]"
+    },
+    "descriptionLong": {
+      "cs": "Zimný štadión Ondreja Nepelu (Tipos aréna) už zažil mnoho bouřlivých legendárních bitev. Ale 1. 5. 2027 to opět posuneme o level výš!\nSlovenští fanouš…[zkráceno pro fixture]",
+      "de": "Die Tipos Aréna – das Winterstadion Ondrej Nepela – war bereits Schauplatz zahlreicher legendärer Kämpfe und unvergesslicher Momente. Doch am 1. Mai 2…[zkráceno pro fixture]",
+      "en": "The Ondrej Nepela Winter Stadium (the Tipos Arena) has already witnessed countless legendary fights and unforgettable moments. But on May 1, 2027, we'…[zkráceno pro fixture]",
+      "pl": "Stadion Zimowy im. Ondreja Nepelu (Tipos Arena) był już świadkiem wielu legendarnych i pełnych emocji walk. Ale 1.05.2027 r. ponownie wejdziemy na wyż…[zkráceno pro fixture]"
+    },
+    "links": {},
+    "linkPPVRedirectRules": [],
+    "linkBuyTicket": "https://www.ticketportal.sk/event/OKTAGON-Bratislava-600117",
+    "descriptionImage": {
+      "id": "2fc215d7-b9e2-416e-b5d7-af6b2b5264a4",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/2fc215d7-b9e2-416e-b5d7-af6b2b5264a4/cs.1780663158016.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/2fc215d7-b9e2-416e-b5d7-af6b2b5264a4/de.1780663158016.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/2fc215d7-b9e2-416e-b5d7-af6b2b5264a4/en.1780663158016.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_DESCRIPTION_IMAGE/2fc215d7-b9e2-416e-b5d7-af6b2b5264a4/pl.1780663158016.jpg"
+      }
+    },
+    "coverImage": {
+      "id": "0d466353-4cec-431b-8fec-b1acb1cc8d84",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0d466353-4cec-431b-8fec-b1acb1cc8d84/cs.1780663168527.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0d466353-4cec-431b-8fec-b1acb1cc8d84/de.1780663168527.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0d466353-4cec-431b-8fec-b1acb1cc8d84/en.1780663168527.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_COVER_IMAGE/0d466353-4cec-431b-8fec-b1acb1cc8d84/pl.1780663168527.jpg"
+      }
+    },
+    "mobileAppDetailImage": {
+      "id": "fe92807f-dd0d-4981-9588-ccdbffba20f5",
+      "url": {
+        "cs": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/fe92807f-dd0d-4981-9588-ccdbffba20f5/cs.1780663196470.jpg",
+        "de": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/fe92807f-dd0d-4981-9588-ccdbffba20f5/de.1780663196470.jpg",
+        "en": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/fe92807f-dd0d-4981-9588-ccdbffba20f5/en.1780663196470.jpg",
+        "pl": "https://assets.oktagonmma.com/EVENT_MOBILE_APP_DETAIL_IMAGE/fe92807f-dd0d-4981-9588-ccdbffba20f5/pl.1780663196470.jpg"
+      }
+    },
+    "metadata": {
+      "preferredCta": {},
+      "ticketBuyType": "STANDARD"
+    },
+    "type": "TOURNAMENT",
+    "organizationId": "OKTAGON_MMA",
+    "hideInCarousel": false,
+    "registrationEnabled": false
+  }
+]

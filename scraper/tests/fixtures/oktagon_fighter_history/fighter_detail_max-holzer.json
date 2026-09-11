@@ -1,0 +1,90 @@
+{
+  "id": 678,
+  "slugs": [
+    "max-holzer"
+  ],
+  "slug": "max-holzer",
+  "createdAt": "2023-12-22T19:15:29.036Z",
+  "updatedAt": "2026-08-13T11:11:25.944Z",
+  "weightClass": {
+    "id": 7,
+    "legacyId": 53,
+    "gender": "MALE",
+    "type": "MMA_STANDARD",
+    "title": "Featherweight",
+    "weightLbs": 145,
+    "weightKg": 65.8
+  },
+  "firstName": "Max",
+  "lastName": "Holzer",
+  "nickName": "MADE IN GERMANY",
+  "official": true,
+  "links": {
+    "shop": "https://store.oktagonmma.com/products/max-holzer-jersey-2025/?utm_source=web&utm_medium=fighters_page&utm_campaign=oktagon",
+    "sherdog": "https://www.sherdog.com/fighter/Max-Holzer-365883",
+    "tapology": "https://www.tapology.com/fightcenter/fighters/255458-max-holzer",
+    "instagram": "https://www.instagram.com/maxholzermma/?hl=en"
+  },
+  "scores": {
+    "MMA_AMATEUR": {
+      "wins": 0,
+      "losses": 0,
+      "draws": 0,
+      "noContests": 0
+    },
+    "MMA_PROFI": {
+      "wins": 12,
+      "losses": 0,
+      "draws": 0,
+      "noContests": 0
+    }
+  },
+  "yearOfBirth": 2002,
+  "monthOfBirth": 1,
+  "dayOfBirth": 2,
+  "heightCm": 170,
+  "nationality": "DE",
+  "gym": "Fightschool Hannover",
+  "description": {
+    "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+    "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+    "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+    "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+  },
+  "imageProfile": {
+    "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+    "url": {
+      "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+    }
+  },
+  "champion": false,
+  "interimChampion": false,
+  "rankings": [
+    {
+      "type": "OFFICIAL",
+      "position": 2,
+      "positionChange": 0,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      }
+    }
+  ],
+  "otherRankings": [],
+  "metadata": {
+    "youtubeListId": {
+      "cs": "PL0L63vNNR843Lx4qI1EV5eH7ErkfU1WQ1"
+    }
+  },
+  "seoImage": {
+    "id": "f7b233f3-864d-409a-bfc3-dbe2f07505a1",
+    "url": {
+      "cs": "https://assets.oktagonmma.com/SEO_IMAGE/f7b233f3-864d-409a-bfc3-dbe2f07505a1/cs.1777911985674.jpg"
+    }
+  }
+}

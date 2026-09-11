@@ -1,0 +1,921 @@
+[
+  {
+    "id": 146,
+    "title": {
+      "cs": "hlavní karta"
+    },
+    "description": {
+      "cs": ""
+    },
+    "fights": [
+      {
+        "id": 1,
+        "legacyId": 1898,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "SUB",
+        "time": "227",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 22,
+          "legacyId": 1893,
+          "slugs": [
+            "gabor-boraros"
+          ],
+          "slug": "gabor-boraros",
+          "firstName": "Gábor",
+          "lastName": "Boráros",
+          "nickName": "PUNISHER",
+          "description": {
+            "cs": "Slovenský profesionální MMA zápasník organizace OKTAGON MMA, který se stal prvním šampionem televizní show OKTAGON VÝZVA. Jeho domovským klubem je bra…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 1,
+            "legacyId": 55,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Welterweight",
+            "weightLbs": 170,
+            "weightKg": 77.1
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 20,
+              "losses": 10,
+              "draws": 1,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1993,
+          "heightCm": 175,
+          "nationality": "SK",
+          "imageProfile": {
+            "id": "73702db0-40f8-4400-8925-c94d5d86123d",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/73702db0-40f8-4400-8925-c94d5d86123d/cs.1680206414872.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "a10144dc-7e9d-4cb6-8b09-e49f1c4442aa",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/a10144dc-7e9d-4cb6-8b09-e49f1c4442aa/cs.1680206415232.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 23,
+          "legacyId": 1897,
+          "slugs": [
+            "jakub-bele"
+          ],
+          "slug": "jakub-bele",
+          "firstName": "Jakub ",
+          "lastName": "Běle",
+          "nickName": "Kuba",
+          "description": {
+            "cs": "Jakub Běle je český profesionální bojovník MMA organizace OKTAGON MMA. Jeho domovským gymem je Reinders MMA."
+          },
+          "official": true,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 6,
+              "losses": 8,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1996,
+          "heightCm": 191,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "0f926a9b-5a36-4e67-b7e5-ba12296829b2",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/0f926a9b-5a36-4e67-b7e5-ba12296829b2/cs.1680206415589.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "1f7599d6-c7f1-400a-838c-43f9f3675bb0",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/1f7599d6-c7f1-400a-838c-43f9f3675bb0/cs.1680206415937.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 1,
+          "legacyId": 55,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Welterweight",
+          "weightLbs": 170,
+          "weightKg": 77.1
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "youtubeVideoUrl": {
+          "cs": "https://www.youtube.com/watch?v=d-2Ilc5pEeA"
+        },
+        "metadata": {}
+      },
+      {
+        "id": 2,
+        "legacyId": 1899,
+        "titleFight": false,
+        "result": "DRAW",
+        "resultType": "DEC",
+        "time": "300",
+        "numRounds": 3,
+        "fighter1": {
+          "id": 20,
+          "legacyId": 1888,
+          "slugs": [
+            "jaroslav-poborsky"
+          ],
+          "slug": "jaroslav-poborsky",
+          "firstName": "Jaroslav",
+          "lastName": "Poborský",
+          "nickName": "Číňan",
+          "description": null,
+          "official": false,
+          "weightClass": {
+            "id": 1,
+            "legacyId": 55,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Welterweight",
+            "weightLbs": 170,
+            "weightKg": 77.1
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 27,
+              "losses": 49,
+              "draws": 1,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1982,
+          "heightCm": 170,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "233f23cc-5171-40f3-a4b8-79e856973786",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/233f23cc-5171-40f3-a4b8-79e856973786/cs.1680206413442.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "3c4e84a4-8bb5-42b8-a67a-0eb0dfb8d4a3",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/3c4e84a4-8bb5-42b8-a67a-0eb0dfb8d4a3/cs.1680206413966.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 21,
+          "legacyId": 1892,
+          "slugs": [
+            "tomas-lejsek"
+          ],
+          "slug": "tomas-lejsek",
+          "firstName": "Tomáš",
+          "lastName": "Lejsek",
+          "nickName": "Guláš",
+          "description": null,
+          "official": false,
+          "weightClass": {
+            "id": 1,
+            "legacyId": 55,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Welterweight",
+            "weightLbs": 170,
+            "weightKg": 77.1
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 5,
+              "losses": 10,
+              "draws": 3,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1997,
+          "heightCm": 183,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "0a3addd6-7ec6-4503-9870-09f1a280cc3f",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/0a3addd6-7ec6-4503-9870-09f1a280cc3f/cs.1680206414328.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "bea1d6d0-ff46-4eb0-b66b-79543e709849",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/bea1d6d0-ff46-4eb0-b66b-79543e709849/cs.1680206414623.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 1,
+          "legacyId": 55,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Welterweight",
+          "weightLbs": 170,
+          "weightKg": 77.1
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "metadata": {}
+      },
+      {
+        "id": 3,
+        "legacyId": 1900,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "SUB",
+        "time": "224",
+        "numRounds": 2,
+        "fighter1": {
+          "id": 19,
+          "legacyId": 1883,
+          "slugs": [
+            "frantisek-fodor"
+          ],
+          "slug": "frantisek-fodor",
+          "firstName": "František",
+          "lastName": "Fodor",
+          "description": {
+            "cs": "<p>Slovenský zápasník organizace OKTAGON MMA. Účastník první OKTAGON Challenge. Svou profesionální kariéru začal v&nbsp;roce 2014. Jeho domovským klub…[zkráceno pro fixture]",
+            "de": "<p>Slowakischer Kämpfer der OKTAGON MMA Organisation. Teilnehmer an der ersten OKTAGON Challenge. Er begann seine Profikarriere im Jahr 2014. Sein Hei…[zkráceno pro fixture]",
+            "en": "<p>Slovak fighter of OKTAGON MMA organization. Participant of the first OKTAGON Challenge. He started his professional career in 2014. His home club i…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 4,
+            "legacyId": 54,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Lightweight",
+            "weightLbs": 155,
+            "weightKg": 70.3
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 11,
+              "losses": 9,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "heightCm": 175,
+          "nationality": "SK",
+          "imageProfile": {
+            "id": "31ee3232-38af-4274-af0b-e7c4c7d9df60",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/31ee3232-38af-4274-af0b-e7c4c7d9df60/cs.1771076569389.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "43af2b52-f0d7-4b8e-97b0-a2d1e7cf3141",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/43af2b52-f0d7-4b8e-97b0-a2d1e7cf3141/cs.1694886599945.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 148,
+          "legacyId": 2813,
+          "slugs": [
+            "jakub-bahnik"
+          ],
+          "slug": "jakub-bahnik",
+          "firstName": "Jakub ",
+          "lastName": "Bahník",
+          "nickName": "BAHŇAS",
+          "description": {
+            "cs": "Když Bahník vstoupí do klece, neztrácí čas a jde rovnou na věc. Má přesné tvrdé údery a v postoji vyhrává většinu přestřelek. Ve vitríně má mnoho tvrd…[zkráceno pro fixture]",
+            "de": "Wenn Bahník den Käfig betritt, verschwendet er keine Zeit und kommt sofort zur Sache. Er hat präzise harte Schläge und gewinnt die meisten seiner Shoo…[zkráceno pro fixture]",
+            "en": "When Bahník enters the cage, he wastes no time and gets straight to the point. He has accurate hard punches and wins most of his shootouts standing up…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 4,
+            "legacyId": 54,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Lightweight",
+            "weightLbs": 155,
+            "weightKg": 70.3
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 10,
+              "losses": 5,
+              "draws": 0,
+              "noContests": 1
+            },
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1993,
+          "monthOfBirth": 10,
+          "dayOfBirth": 14,
+          "heightCm": 183,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "b1d6be13-e9da-4270-ba26-a1f2affa9b57",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/b1d6be13-e9da-4270-ba26-a1f2affa9b57/cs.1708945610193.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "e3b9456a-1299-4879-a71d-b60bb405cb7b",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/e3b9456a-1299-4879-a71d-b60bb405cb7b/cs.1698420390333.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 1,
+          "legacyId": 55,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Welterweight",
+          "weightLbs": 170,
+          "weightKg": 77.1
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "metadata": {}
+      }
+    ]
+  },
+  {
+    "id": 147,
+    "title": {
+      "cs": "Prelims"
+    },
+    "description": {
+      "cs": ""
+    },
+    "fights": [
+      {
+        "id": 7,
+        "legacyId": 1904,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "TKO",
+        "time": "60",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 11,
+          "legacyId": 1861,
+          "slugs": [
+            "michal-kotalik"
+          ],
+          "slug": "michal-kotalik",
+          "firstName": "Michal",
+          "lastName": "Kotalík",
+          "nickName": "IronMan",
+          "description": {
+            "cs": "<p>Michal Kotalík je účastníkem legendární 2. série OKTAGON Výzvy, který v zápasech využívá především svou titánskou sílu, pro níž se mu přezdívá „Iro…[zkráceno pro fixture]",
+            "de": "<p>Michal Kotalík ist ein Teilnehmer der legendären 2. Serie der OKTAGON Challenge, der in seinen Kämpfen seine titanische Stärke einsetzt, weswegen e…[zkráceno pro fixture]",
+            "en": "<p>Michal Kotalík is a participant of the legendary 2nd series of OKTAGON Challenge, who uses his titanic strength in his matches, for which he is nic…[zkráceno pro fixture]"
+          },
+          "official": false,
+          "weightClass": {
+            "id": 3,
+            "legacyId": 57,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Light heavyweight",
+            "weightLbs": 205,
+            "weightKg": 93
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 6,
+              "losses": 7,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1995,
+          "monthOfBirth": 3,
+          "dayOfBirth": 6,
+          "heightCm": 188,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "aa3f06ea-87ac-4669-9649-9ec5f18f3571",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/aa3f06ea-87ac-4669-9649-9ec5f18f3571/cs.1712063647302.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "78cccc0e-2d1a-422b-bb00-2307edd591c8",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/78cccc0e-2d1a-422b-bb00-2307edd591c8/cs.1698748766848.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 12,
+          "legacyId": 1865,
+          "slugs": [
+            "pavol-langer"
+          ],
+          "slug": "pavol-langer",
+          "firstName": "Pavol",
+          "lastName": "Langer",
+          "description": {
+            "cs": "Respektovaný slovenský kat z Košic, který se neotočí zády k žádné výzvě, je aktuálně světovou #97 v polotěžké váze. Langer si nikdy nevybírá a je kova…[zkráceno pro fixture]",
+            "de": "Der angesehene slowakische Henker aus Košice, der vor keiner Herausforderung zurückschreckt, ist derzeit die Nummer 97 der Welt im Weltergewicht. Lang…[zkráceno pro fixture]",
+            "en": "The respected Slovakian hangman from Košice, who won't turn his back on any challenge, is currently the world's #97 welterweight. Langer never picks a…[zkráceno pro fixture]"
+          },
+          "official": true,
+          "weightClass": {
+            "id": 3,
+            "legacyId": 57,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Light heavyweight",
+            "weightLbs": 205,
+            "weightKg": 93
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 13,
+              "losses": 12,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1991,
+          "heightCm": 196,
+          "nationality": "SK",
+          "imageProfile": {
+            "id": "ccf69e79-0f3f-4486-9e57-31fb71ac43ea",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/ccf69e79-0f3f-4486-9e57-31fb71ac43ea/cs.1747390657906.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "a6f1d904-bb3e-4dc8-97aa-20c32113563b",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/a6f1d904-bb3e-4dc8-97aa-20c32113563b/cs.1696799479417.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [
+            {
+              "type": "OFFICIAL",
+              "position": 3,
+              "positionChange": 0,
+              "weightClass": {
+                "id": 3,
+                "legacyId": 57,
+                "gender": "MALE",
+                "type": "MMA_STANDARD",
+                "title": "Light heavyweight",
+                "weightLbs": 205,
+                "weightKg": 93
+              }
+            }
+          ],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 3,
+          "legacyId": 57,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Light heavyweight",
+          "weightLbs": 205,
+          "weightKg": 93
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "metadata": {}
+      },
+      {
+        "id": 8,
+        "legacyId": 1905,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "SUB",
+        "time": "159",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 9,
+          "legacyId": 1857,
+          "slugs": [
+            "veronika-rodova"
+          ],
+          "slug": "veronika-rodova",
+          "firstName": "Veronika",
+          "lastName": "Rodová",
+          "description": null,
+          "official": false,
+          "weightClass": {
+            "id": 6,
+            "legacyId": 52,
+            "gender": "FEMALE",
+            "type": "MMA_STANDARD",
+            "title": "Bantamweight",
+            "weightLbs": 135,
+            "weightKg": 61.2
+          },
+          "scores": {
+            "MMA_PROFI": {
+              "wins": 3,
+              "losses": 2,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "heightCm": 178,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "7dbbad4e-3386-4f98-80df-5a21a569fc82",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/7dbbad4e-3386-4f98-80df-5a21a569fc82/cs.1680206406170.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "564149ff-f8cc-4a80-a9a2-9f9e30efb240",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/564149ff-f8cc-4a80-a9a2-9f9e30efb240/cs.1680206406646.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 10,
+          "legacyId": 1860,
+          "slugs": [
+            "natalia-matlag"
+          ],
+          "slug": "natalia-matlag",
+          "firstName": "Natalia ",
+          "lastName": "Matlag",
+          "description": null,
+          "official": false,
+          "weightClass": {
+            "id": 6,
+            "legacyId": 52,
+            "gender": "FEMALE",
+            "type": "MMA_STANDARD",
+            "title": "Bantamweight",
+            "weightLbs": 135,
+            "weightKg": 61.2
+          },
+          "scores": {},
+          "nationality": "PL",
+          "imageProfile": {
+            "id": "018a4541-0c10-4889-9860-9f8c265f1570",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/018a4541-0c10-4889-9860-9f8c265f1570/cs.1680206407004.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "b0117c76-9f61-4378-96d0-acf4c2eb87de",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/b0117c76-9f61-4378-96d0-acf4c2eb87de/cs.1680206407214.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 11,
+          "legacyId": 50,
+          "gender": "FEMALE",
+          "type": "MMA_STANDARD",
+          "title": "Strawweight",
+          "weightLbs": 115,
+          "weightKg": 52.2
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "metadata": {}
+      },
+      {
+        "id": 9,
+        "legacyId": 1906,
+        "titleFight": false,
+        "result": "FIGHTER_1_WIN",
+        "resultType": "TKO",
+        "time": "193",
+        "numRounds": 1,
+        "fighter1": {
+          "id": 7,
+          "legacyId": 1850,
+          "slugs": [
+            "michal-martinek"
+          ],
+          "slug": "michal-martinek",
+          "firstName": "Michal",
+          "lastName": "Martínek",
+          "nickName": "Blackbeard",
+          "description": {
+            "cs": ""
+          },
+          "official": false,
+          "weightClass": {
+            "id": 5,
+            "legacyId": 58,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Heavyweight",
+            "weightLbs": 265,
+            "weightKg": 120.2
+          },
+          "scores": {
+            "MMA_AMATEUR": {
+              "wins": 0,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            },
+            "MMA_PROFI": {
+              "wins": 7,
+              "losses": 0,
+              "draws": 0,
+              "noContests": 0
+            }
+          },
+          "yearOfBirth": 1993,
+          "heightCm": 189,
+          "nationality": "CZ",
+          "imageProfile": {
+            "id": "88ae7aa5-f03f-43e9-b2c1-049e0a3df256",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/88ae7aa5-f03f-43e9-b2c1-049e0a3df256/cs.1680206405246.png"
+            }
+          },
+          "imageFightCard": {
+            "id": "e05bc787-ddf3-47c6-b392-1f1237670beb",
+            "url": {
+              "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/e05bc787-ddf3-47c6-b392-1f1237670beb/cs.1680206405746.png"
+            }
+          },
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "fighter2": {
+          "id": 8,
+          "legacyId": 1853,
+          "slugs": [
+            "dusan-dedek"
+          ],
+          "slug": "dusan-dedek",
+          "firstName": "Dušan",
+          "lastName": "Dědek",
+          "description": null,
+          "official": false,
+          "weightClass": {
+            "id": 5,
+            "legacyId": 58,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Heavyweight",
+            "weightLbs": 265,
+            "weightKg": 120.2
+          },
+          "scores": {},
+          "yearOfBirth": 1993,
+          "heightCm": 183,
+          "nationality": "CZ",
+          "champion": false,
+          "interimChampion": false,
+          "rankings": [],
+          "otherRankings": []
+        },
+        "weightClass": {
+          "id": 5,
+          "legacyId": 58,
+          "gender": "MALE",
+          "type": "MMA_STANDARD",
+          "title": "Heavyweight",
+          "weightLbs": 265,
+          "weightKg": 120.2
+        },
+        "event": {
+          "id": 11,
+          "slugs": [
+            "oktagon-1"
+          ],
+          "slug": "oktagon-1",
+          "legacyId": 1843,
+          "startDate": "2016-12-10T18:00:00.000Z",
+          "title": {
+            "cs": "OKTAGON 1: BORÁROS VS. BĚLE"
+          },
+          "linkPPVRedirectRules": null,
+          "linkBuyTicket": "https://www.ticketportal.cz",
+          "linkYoutubeVideo": {
+            "cs": ""
+          },
+          "metadata": {
+            "preferredCta": {}
+          },
+          "organizationId": "OKTAGON_MMA",
+          "shortTitle": {
+            "cs": "OKTAGON 1"
+          },
+          "programShowButton": true,
+          "weighInShowButton": true
+        },
+        "metadata": {}
+      }
+    ]
+  }
+]

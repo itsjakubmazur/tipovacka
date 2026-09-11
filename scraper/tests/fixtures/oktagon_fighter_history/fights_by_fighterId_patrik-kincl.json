@@ -1,0 +1,2267 @@
+[
+  {
+    "id": 1494,
+    "titleFight": false,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 881,
+      "slugs": [
+        "dominik-humburger"
+      ],
+      "slug": "dominik-humburger",
+      "firstName": "Dominik",
+      "lastName": "Humburger",
+      "description": {
+        "cs": "<p>Dominik Humburger je český profesionální MMA bojovník a voják z Liberce. S bojovými sporty začal v roce 2012. V roce 2018 přešel k MMA, k…[zkráceno pro fixture]",
+        "de": "<p>Dominik Humburger ist ein tschechischer professioneller MMA-Kämpfer und Soldat aus Liberec. Er begann 2012 mit Kampfsportarten. Im Jahr 2018 wechse…[zkráceno pro fixture]",
+        "en": "<p>Dominik Humburger is a Czech professional MMA fighter and soldier from Liberec. He started practicing combat sports in 2012. In 2018, he transition…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 3,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1996,
+      "monthOfBirth": 1,
+      "dayOfBirth": 3,
+      "heightCm": 188,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "cefa4130-6cf0-42dd-8c0f-dbae97c06e47",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/cefa4130-6cf0-42dd-8c0f-dbae97c06e47/cs.1745668704499.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 3,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 139,
+      "slugs": [
+        "oktagon-95-karlovy-vary"
+      ],
+      "slug": "oktagon-95-karlovy-vary",
+      "startDate": "2026-10-17T16:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 95: KINCL VS. HUMBURGER",
+        "de": "OKTAGON 95: KINCL VS. HUMBURGER",
+        "en": "OKTAGON 95: KINCL VS. HUMBURGER",
+        "pl": "OKTAGON 95: KINCL VS. HUMBURGER"
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-95/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-95-main-root-service-f_159",
+          "destinationTitle": "RTL+"
+        },
+        {
+          "countries": [
+            "PL"
+          ],
+          "redirectUrl": "https://sport.tvp.pl/transmisje",
+          "destinationTitle": "tvp.sport"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-95",
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 95",
+        "de": "OKTAGON 95",
+        "en": "OKTAGON 95",
+        "pl": "OKTAGON 95"
+      },
+      "programShowButton": false,
+      "weighInShowButton": false
+    },
+    "metadata": {
+      "tipsportId": 8421747
+    },
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 1452,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "SUB",
+    "time": "2:08",
+    "numRounds": 2,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 458,
+      "legacyId": 59766,
+      "slugs": [
+        "hojat-khajevand"
+      ],
+      "slug": "hojat-khajevand",
+      "firstName": "Hojat",
+      "lastName": "Khajevand",
+      "description": {
+        "cs": "<p>Hojat Khajevand je střední váha, která se nebojí jít do války od první vteřiny. Německý bojovník íránského původu má nekompromisní styl. Fanoušci s…[zkráceno pro fixture]",
+        "de": "<p>Hojat Khajevand ist ein Mittelgewicht, das keine Angst hat, vom ersten Moment an in den Krieg zu ziehen. Der deutsche Kämpfer iranischer Herkunft h…[zkráceno pro fixture]",
+        "en": "<p>Hojat Khajevand is a middleweight who isn’t afraid to go to war from the very first second. The German fighter of Iranian origin has an uncompromis…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 10,
+          "losses": 6,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1990,
+      "monthOfBirth": 8,
+      "dayOfBirth": 23,
+      "heightCm": 188,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "dcb23f7f-7d9b-40ab-ad02-dd901aa05e28",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/dcb23f7f-7d9b-40ab-ad02-dd901aa05e28/cs.1735497679540.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "c1c617c4-7838-4d36-a911-ca5a988ae502",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/c1c617c4-7838-4d36-a911-ca5a988ae502/cs.1687028477063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 4,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 134,
+      "slugs": [
+        "oktagon-91-cologne"
+      ],
+      "slug": "oktagon-91-cologne",
+      "startDate": "2026-07-11T15:45:00.000Z",
+      "title": {
+        "cs": "OKTAGON 91: ENGIZEK VS. JOTKO 2",
+        "de": "OKTAGON 91: ENGIZEK VS. JOTKO 2",
+        "en": "OKTAGON 91: ENGIZEK VS. JOTKO 2",
+        "pl": "OKTAGON 91: ENGIZEK VS. JOTKO 2"
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-91/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-91-main-root-service-f_160",
+          "destinationTitle": "RTL+"
+        },
+        {
+          "countries": [
+            "PL"
+          ],
+          "redirectUrl": "https://sport.tvp.pl/transmisje",
+          "destinationTitle": "TVP sport"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/650266",
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 91"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "description": {
+      "cs": "<h4></h4><p>„Kostky jsou vrženy, vidíme se brzy,“ láká na zápas bývalý 4násobný vládce střední divize a někdejší nejlepší bojovník OKTAGONu napříč vah…[zkráceno pro fixture]",
+      "de": "<h4></h4><p>„Die Würfel sind gefallen, wir sehen uns bald“, kündigt der ehemalige 4-fache Herrscher der Mittelgewichtsklasse und einstige Pound-for-Po…[zkráceno pro fixture]",
+      "en": "<h4></h4><p>“The die is cast, see you soon,” says former 4-time middleweight ruler and former OKTAGON pound-for-pound #1 fighter <strong>PATRIK \"INSPE…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 1093,
+      "tipsportId": 8124999
+    },
+    "fighter1WeightKg": 84.3,
+    "fighter2WeightKg": 84.2,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self",
+    "refereeName": "Josef Louč",
+    "scoreCards": [
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Clemens Werner"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Vojtěch Novák"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Nic Skunde"
+      }
+    ]
+  },
+  {
+    "id": 1277,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 3,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 109,
+      "legacyId": 2274,
+      "slugs": [
+        "robert-pukac"
+      ],
+      "slug": "robert-pukac",
+      "firstName": "Robert",
+      "lastName": "Pukač",
+      "nickName": "PRINC BRATISLAVSKÝ",
+      "description": {
+        "cs": "Ačkoli je oblíbený Pukač ročník 1992, patří mezi nejzkušenější borce na scéně. Svůj 1. profi zápas měl již v 17 letech roce 2010. Má za sebou bitvy s …[zkráceno pro fixture]",
+        "de": "Obwohl der beliebte Pukač erst 1992 Jahre alt ist, ist er einer der erfahrensten Kämpfer der Szene. Seinen 1. Profikampf bestritt er im Alter von 17 J…[zkráceno pro fixture]",
+        "en": "Although the popular Pukač is a 1992 year old, he is one of the most experienced fighters on the scene. He had his 1st pro fight at the age of 17 in 2…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 1,
+        "legacyId": 55,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Welterweight",
+        "weightLbs": 170,
+        "weightKg": 77.1
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 21,
+          "losses": 14,
+          "draws": 1,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1992,
+      "monthOfBirth": 5,
+      "dayOfBirth": 15,
+      "heightCm": 180,
+      "nationality": "SK",
+      "imageProfile": {
+        "id": "be0fd4ff-f05e-48a7-a904-771b474f3a55",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/be0fd4ff-f05e-48a7-a904-771b474f3a55/cs.1696704523618.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "7385a189-3f5c-4f19-bf58-b9dd922b5c3e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/7385a189-3f5c-4f19-bf58-b9dd922b5c3e/cs.1696704524036.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 9,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 118,
+      "slugs": [
+        "oktagon-81-prague"
+      ],
+      "slug": "oktagon-81-prague",
+      "startDate": "2025-12-28T17:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 81: FLEURY vs. BUDAY",
+        "de": "OKTAGON 81: FLEURY vs. BUDAY",
+        "en": "OKTAGON 81: FLEURY vs. BUDAY",
+        "pl": "OKTAGON 81: FLEURY vs. BUDAY"
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-81/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/video-tv/live/weitere-live-events/oktagon-81-28-12-2025-1025621",
+          "destinationTitle": "RTL+"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-81",
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 81"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "description": {
+      "cs": "<h4></h4><p>„V Robovi bublá, že jsem ho porazil. Ale chce využít své stoupající formy, takže sportovně je to správně. Jinak je jednoduchej a primitivn…[zkráceno pro fixture]",
+      "de": "<h4></h4><p>„In Robo brodelt es, dass ich ihn besiegt habe, aber er will seine ansteigende Form nutzen, also ist es sportlich gesehen richtig; ansonst…[zkráceno pro fixture]",
+      "en": "<h4></h4><p>\"It's simmering inside Robo that I beat him, but he wants to capitalize on his rising form, so sport-wise it’s correct; otherwise, he is s…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 981,
+      "tipsportId": 7453760
+    },
+    "fighter1WeightKg": 84.25,
+    "fighter2WeightKg": 84.2,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self",
+    "refereeName": "Piotr Jarosz",
+    "scoreCards": [
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Josef Louč"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Vojtěch Novák"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Eva Borodáčová"
+      }
+    ]
+  },
+  {
+    "id": 1153,
+    "titleFight": true,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 5,
+    "fighter1": {
+      "id": 133,
+      "legacyId": 2476,
+      "slugs": [
+        "makhmud-muradov"
+      ],
+      "slug": "makhmud-muradov",
+      "firstName": "Makhmud",
+      "lastName": "Muradov",
+      "description": {
+        "cs": "<p>Šampion polotěžké váhy a prozatímní šampion střední váhy OKTAGONu. Bývalý bojovník UFC a první Uzbek v americké organizaci získal druhý pas v OKTAG…[zkráceno pro fixture]",
+        "de": "<p>OKTAGON-Halbschwergewichtschampion und interimistischer Mittelgewichtschampion. Der ehemalige UFC-Kämpfer und erste Usbeke in der Organisation sich…[zkráceno pro fixture]",
+        "en": "<p>OKTAGON Light Heavyweight Champion and Interim Middleweight Champion. The former UFC fighter and first Uzbek in the organization claimed his second…[zkráceno pro fixture]",
+        "pl": "<p>Mistrz wagi półciężkiej oraz tymczasowy mistrz wagi średniej OKTAGON. Były zawodnik UFC i pierwszy Uzbek w tej organizacji zdobył swój drugi pas w …[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 8,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1990,
+      "monthOfBirth": 2,
+      "dayOfBirth": 8,
+      "heightCm": 188,
+      "nationality": "UZ",
+      "imageProfile": {
+        "id": "a1264d53-c2b4-441e-8ff4-22c87df6e117",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/a1264d53-c2b4-441e-8ff4-22c87df6e117/cs.1751359823823.png"
+        }
+      },
+      "champion": true,
+      "interimChampion": true,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": "champion",
+          "weightClass": {
+            "id": 3,
+            "legacyId": 57,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Light heavyweight",
+            "weightLbs": 205,
+            "weightKg": 93
+          }
+        },
+        {
+          "type": "OFFICIAL",
+          "position": "interim",
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 1,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 109,
+      "slugs": [
+        "oktagon-72",
+        "oktagon-72-praha",
+        "oktagon-72-prague",
+        "oktagon-72-eden"
+      ],
+      "slug": "oktagon-72",
+      "startDate": "2025-06-14T16:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 72: VÉMOLA VS. VÉGH 3",
+        "de": "OKTAGON 72: VÉMOLA VS. VÉGH 3",
+        "en": "OKTAGON 72: VÉMOLA VS. VÉGH 3"
+      },
+      "linkPPV": "https://oktagon.tv/cs/event/oktagon-72/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/video-tv/live/weitere-live-events/oktagon-72-vemola-vs-vegh-3-14-06-2025-1023545?utm_source=oktagonmma&utm_medium=corporation&utm_…[zkráceno pro fixture]",
+          "destinationTitle": "RTL+"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-72-VEMOLA-vs-VEGH-3",
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=r67K3KN9OKI",
+        "de": "      ",
+        "en": "      "
+      },
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD",
+        "youtubeListId": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {},
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=v2hcnAc__O0&t=52s"
+    },
+    "description": {
+      "cs": "<h4></h4><div data-youtube-video=\"\"><iframe width=\"640\" height=\"480\" allowfullscreen=\"true\" autoplay=\"false\" disablekbcontrols=\"false\" enableiframeapi…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 884
+    },
+    "fighter1WeightKg": 83.5,
+    "fighter2WeightKg": 83.8,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self",
+    "refereeName": "Marc Goddard",
+    "scoreCards": [
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 9
+            },
+            "fighter2": {
+              "points": 10
+            }
+          }
+        ],
+        "judgeName": "Clemens Werner"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Piotr Jarosz"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 9
+            },
+            "fighter2": {
+              "points": 10
+            }
+          }
+        ],
+        "judgeName": "Vojtěch Novák"
+      }
+    ]
+  },
+  {
+    "id": 1021,
+    "titleFight": true,
+    "result": "FIGHTER_2_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 5,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 551,
+      "legacyId": 64733,
+      "slugs": [
+        "kerim-engizek"
+      ],
+      "slug": "kerim-engizek",
+      "firstName": "Kerim",
+      "lastName": "Engizek",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy OKTAGON MMA. Reprezentant renomovaného UFD Gymu z německého Düsseldorfu, Engizek patří dlouhodobě mezi absolutní elitu …[zkráceno pro fixture]",
+        "de": "<p>Ehemaliger OKTAGON MMA Mittelgewichtschampion. Als Repräsentant des renommierten UFD Gyms aus Düsseldorf gehört Engizek seit langem zur absoluten E…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON MMA middleweight champion. A representative of the renowned UFD Gym in Düsseldorf, Germany, Engizek has long been among the absolute…[zkráceno pro fixture]",
+        "pl": "<p>Były mistrz wagi średniej OKTAGON MMA. Reprezentant renomowanego UFD Gymu z niemieckiego Düsseldorfu, Engizek od dawna należy do absolutnej elity e…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 24,
+          "losses": 6,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1991,
+      "monthOfBirth": 5,
+      "dayOfBirth": 13,
+      "heightCm": 183,
+      "nationality": "TR",
+      "imageProfile": {
+        "id": "c3395a4f-e24e-412d-ae79-ca89aea4a100",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/c3395a4f-e24e-412d-ae79-ca89aea4a100/cs.1783943680110.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "04cd58c6-349a-4d4a-8a00-63fb1bc088e0",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/04cd58c6-349a-4d4a-8a00-63fb1bc088e0/cs.1698748612129.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 1,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 8,
+          "positionChange": 0
+        }
+      ]
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 92,
+      "slugs": [
+        "oktagon-62"
+      ],
+      "slug": "oktagon-62",
+      "startDate": "2024-10-12T15:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "de": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "en": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "sk": ""
+      },
+      "linkPPV": "https://oktagon.tv/cs/event/oktagon-62/",
+      "linkPPVRedirectRules": null,
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=VltISrpwEdA",
+        "de": "https://www.youtube.com/watch?v=KScwREnyeVs",
+        "en": "https://www.youtube.com/watch?v=vMtxqCYRXRg",
+        "sk": ""
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "TICKET",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD",
+        "youtubeListId": {
+          "cs": "",
+          "de": "",
+          "en": "",
+          "sk": ""
+        }
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 62",
+        "de": "OKTAGON 62",
+        "en": "OKTAGON 62",
+        "sk": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=jMRlA7Wxc2s",
+      "en": ""
+    },
+    "description": {
+      "cs": "<h4>PŘÍBĚH ZÁPASU</h4><oktyoutubecomponent url=\"https://www.youtube.com/watch?v=VltISrpwEdA\"></oktyoutubecomponent><p>Pirát, Lohoré, Vémola, Wawrzynia…[zkráceno pro fixture]",
+      "de": "<h4 style=\"text-align: center\"><strong>GESCHICHTE DES SPIELS</strong></h4><oktyoutubecomponent url=\"https://www.youtube.com/watch?v=kmFl_ss6GQ8\"></okt…[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><oktyoutubecomponent url=\"https://www.youtube.com/watch?v=bm0D2OHDBHk&amp;feature=youtu.be\"></oktyoutubecomponent><p>Pirate…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 778,
+      "fighter2TbaTitle": {
+        "cs": "",
+        "en": ""
+      },
+      "fighter2TbaSubtitle": {
+        "cs": "",
+        "en": ""
+      }
+    },
+    "fighter1WeightKg": 83.8,
+    "fighter2WeightKg": 83.7,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 878,
+    "titleFight": true,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "SUB",
+    "time": "1:50",
+    "numRounds": 3,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 677,
+      "slugs": [
+        "piotr-wawrzyniak"
+      ],
+      "slug": "piotr-wawrzyniak",
+      "firstName": "Piotr",
+      "lastName": "Wawrzyniak",
+      "description": {
+        "cs": "<p>Piotr Wawrzyniak je jednou z nejlepších středních vah v celém Polsku.  Jeho domovským klubem je Czerwony Smok, sídlící&nbsp;v&nbsp;Poznaňi.</p>",
+        "de": "<p>Piotr Wawrzyniak ist einer der besten Mittelgewichtler in ganz Polen. Sein Heimatverein ist Czerwony Smok mit Sitz in Poznan.</p>",
+        "en": "<p>Piotr Wawrzyniak is one of the best middleweights in all of Poland.  His home club is Czerwony Smok, based in Poznan.</p>"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 14,
+          "losses": 7,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1991,
+      "monthOfBirth": 2,
+      "dayOfBirth": 23,
+      "heightCm": 180,
+      "nationality": "PL",
+      "imageProfile": {
+        "id": "45fc4e8f-a18d-4d65-b52f-afd0874d4515",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/45fc4e8f-a18d-4d65-b52f-afd0874d4515/cs.1718290616201.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 5,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 85,
+      "slugs": [
+        "oktagon-54-tipsport-gamechanger-2"
+      ],
+      "slug": "oktagon-54-tipsport-gamechanger-2",
+      "startDate": "2024-03-02T17:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 54: KINCL vs. WAWRZYNIAK",
+        "de": "",
+        "en": "",
+        "sk": ""
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-54/",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-54-Ostrava",
+      "linkYoutubeVideo": {
+        "cs": "https://youtu.be/kdQgv6rWgH8?si=O5i8506BzjxHraos ",
+        "de": " ",
+        "en": "https://youtu.be/OXo7-FkWKKo?si=q5CyWjixxkwMbAhv",
+        "sk": ""
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "PPV",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 54",
+        "de": "",
+        "en": "",
+        "sk": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=Hx-2wEjKSeQ",
+      "de": "https://www.youtube.com/watch?v=Hx-2wEjKSeQ",
+      "en": "https://www.youtube.com/watch?v=Hx-2wEjKSeQ"
+    },
+    "description": {
+      "cs": "<h4>příběh zápasu</h4><p><strong>Patrik KINCL</strong>, šampion střední váhy, světová #46 a nejlepší bojovník OKTAGON MMA bez rozdílu vah jde do 3. ob…[zkráceno pro fixture]",
+      "de": "<h4 style=\"text-align: center\"><strong>GESCHICHTE DES SPIELS</strong></h4><p style=\"text-align: center\"><strong>Patrik KINCL</strong>, Mittelgewichts-…[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><p><strong>Patrik KINCL</strong>, middleweight champion, world #46 and the best fighter of OKTAGON MMA without any weight d…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 687,
+      "fighter2TbaTitle": {
+        "cs": ""
+      },
+      "fighter2TbaSubtitle": {
+        "cs": ""
+      }
+    },
+    "fighter1WeightKg": 83.8,
+    "fighter2WeightKg": 83.8,
+    "weighInVideoUrl": "https://www.youtube.com/live/KMFdhzTedcE?si=4goJhkugLD3VFBte&t=3277",
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 607,
+    "legacyId": 62414,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 5,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 121,
+      "legacyId": 2342,
+      "slugs": [
+        "karlos-vemola"
+      ],
+      "slug": "karlos-vemola",
+      "firstName": "Karlos",
+      "lastName": "Vémola",
+      "nickName": "Terminátor",
+      "description": {
+        "cs": "<p>Jeden z nejpopulárnějších <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/fighters/\"><u>českých MMA zápasníků…[zkráceno pro fixture]",
+        "de": "<p>Einer der bekanntesten tschechischen MMA-Kämpfer: Karlos Vémola, ehemaliger Mittel- und Halbschwergewichts-Champion von OKTAGON. Träger mehrerer Ti…[zkráceno pro fixture]",
+        "en": "<p>One of the most popular Czech MMA fighters. Karlos Vémola, former OKTAGON middleweight and light heavyweight champion. Holder of several middleweig…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 3,
+        "legacyId": 57,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Light heavyweight",
+        "weightLbs": 205,
+        "weightKg": 93
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 38,
+          "losses": 9,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1985,
+      "monthOfBirth": 7,
+      "dayOfBirth": 1,
+      "heightCm": 183,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "ff7b6235-8956-4278-83ad-0251dcf52154",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/ff7b6235-8956-4278-83ad-0251dcf52154/cs.1735761748620.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "d5a6fbc3-5d82-49e2-aba4-d3024547fecf",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/d5a6fbc3-5d82-49e2-aba4-d3024547fecf/cs.1696754441749.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 62,
+      "slugs": [
+        "oktagon-43",
+        "oktagon-43-praha"
+      ],
+      "slug": "oktagon-43",
+      "legacyId": 61578,
+      "startDate": "2023-05-20T18:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 43: Kincl vs. Vémola 2",
+        "de": "OKTAGON 43: KINCL vs. VÉMOLA 2",
+        "en": "OKTAGON 43: Kincl vs. Vémola 2"
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-43/",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-43",
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=H7XKHoEmsgA",
+        "de": "",
+        "en": ""
+      },
+      "metadata": {
+        "preferredCta": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 43",
+        "de": "OKTAGON 43",
+        "en": "OKTAGON 43"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=Bcd4JtdgzOY",
+      "de": "https://www.youtube.com/watch?v=FMjNAa6pS-I",
+      "en": "https://www.youtube.com/watch?v=Ifq8yFDT9ug"
+    },
+    "description": {
+      "cs": "<h4>PŘÍBĚH ZÁPASU</h4><p>ZÚČTOVÁNÍ je tady!</p><p>V prvním vzájemném zápase prohrál Kincl na body, ačkoliv ve 3. kole Vémolovi pořádně zatopil a natre…[zkráceno pro fixture]",
+      "de": "",
+      "en": "<h4>STORY OF THE MATCH</h4><p>Accounting is here!</p><p>Kincl lost on points in their first match, although he gave Vémola a good fight in the 3rd rou…[zkráceno pro fixture]"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 494,
+    "legacyId": 58736,
+    "titleFight": true,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "TKO",
+    "time": "1:54",
+    "numRounds": 1,
+    "fighter1": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 301,
+      "legacyId": 51635,
+      "slugs": [
+        "alex-lohore"
+      ],
+      "slug": "alex-lohore",
+      "firstName": "Alex",
+      "lastName": "Lohoré",
+      "nickName": "DA KILLA KING",
+      "description": {
+        "cs": "Bojovník původem z Francie, trénující v Anglii. 5násobný světový MMA šampion a 2násobný titulový vyzyvatel střední váhy OKTAGONu. „Da Killa King“ má v…[zkráceno pro fixture]",
+        "de": "Ein Kämpfer, der ursprünglich aus Frankreich stammt und in England trainiert. 5-facher MMA-Weltmeister und 2-facher OKTAGON-Titelherausforderer im Mit…[zkráceno pro fixture]",
+        "en": "A fighter originally from France, training in England. 5 times world MMA champion and 2 times OKTAGON middleweight title challenger. \"Da Killa King\" h…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 1,
+        "legacyId": 55,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Welterweight",
+        "weightLbs": 170,
+        "weightKg": 77.1
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 23,
+          "losses": 10,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1990,
+      "heightCm": 185,
+      "nationality": "FR",
+      "imageProfile": {
+        "id": "8b774b2b-de97-46e3-9752-fd52840a0aef",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/8b774b2b-de97-46e3-9752-fd52840a0aef/cs.1698420398337.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "d318733c-a383-4772-b925-88eb80d0a833",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/d318733c-a383-4772-b925-88eb80d0a833/cs.1698420398524.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 51,
+      "slugs": [
+        "oktagon-35",
+        "oktagon-35-brno"
+      ],
+      "slug": "oktagon-35",
+      "legacyId": 58649,
+      "startDate": "2022-09-17T18:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 35: KINCL vs. LOHORÉ"
+      },
+      "linkPPV": "https://oktagon.tv/#/",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.ticketportal.cz/event/OKTAGON-35",
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=GBlPYypzOZY"
+      },
+      "metadata": {
+        "preferredCta": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 35"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://youtu.be/8QL6Y9yUAVs"
+    },
+    "metadata": {}
+  },
+  {
+    "id": 439,
+    "legacyId": 56961,
+    "titleFight": false,
+    "result": "FIGHTER_2_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 5,
+    "fighter1": {
+      "id": 2,
+      "legacyId": 1758,
+      "slugs": [
+        "samuel-kristofic"
+      ],
+      "slug": "samuel-kristofic",
+      "firstName": "Samuel",
+      "lastName": "Krištofič",
+      "nickName": "PIRÁT",
+      "description": {
+        "cs": "<p>Výherce OKTAGON Výzvy, který se navždy zapsal do historie OKTAGON MMA. V jeho  zápase proti Karlovi Vémolovi předvedl neuvěřitelný výkon a zaslouže…[zkráceno pro fixture]",
+        "de": "<p>Gewinner der OKTAGON Challenge, der sich für immer in die Geschichte von OKTAGON MMA eingeschrieben hat. In seinem  Kampf gegen Karlos Vémola zeigt…[zkráceno pro fixture]",
+        "en": "<p>Winner of the OKTAGON Challenge, who has forever etched his name in the history of OKTAGON MMA. In his  fight against Karlos Vémola, he delivered a…[zkráceno pro fixture]"
+      },
+      "official": false,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 17,
+          "losses": 8,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 8,
+      "dayOfBirth": 15,
+      "heightCm": 185,
+      "nationality": "SK",
+      "imageProfile": {
+        "id": "e3bb2b00-f54b-405c-9404-5452e4fb699f",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/e3bb2b00-f54b-405c-9404-5452e4fb699f/cs.1742300283587.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "d357ce0f-f933-4d3c-b124-17c65873d2ad",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/d357ce0f-f933-4d3c-b124-17c65873d2ad/cs.1690578750771.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 385,
+      "legacyId": 56682,
+      "slugs": [
+        "patrik-kincl"
+      ],
+      "slug": "patrik-kincl",
+      "firstName": "Patrik",
+      "lastName": "Kincl",
+      "nickName": "Inspektor",
+      "description": {
+        "cs": "<p>Bývalý šampion střední váhy <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://oktagonmma.com/cs/\"><u>OKTAGON</u></a>u a jeden z n…[zkráceno pro fixture]",
+        "de": "<p>Ehemalige OKTAGON-Meister im Mittelgewicht und einer der besten, bekanntesten und technisch versiertesten tschechischen Kämpfer. Im Laufe seiner Ka…[zkráceno pro fixture]",
+        "en": "<p>Former OKTAGON middleweight champion and one of the best, most famous and most technical Czech fighters. During his career he has been through seve…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 2,
+        "legacyId": 56,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Middleweight",
+        "weightLbs": 185,
+        "weightKg": 83.9
+      },
+      "scores": {
+        "MMA_PROFI": {
+          "wins": 30,
+          "losses": 12,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1989,
+      "monthOfBirth": 7,
+      "dayOfBirth": 21,
+      "heightCm": 180,
+      "nationality": "CZ",
+      "imageProfile": {
+        "id": "68ad85a7-98a4-4415-99de-d98b0099ef35",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/68ad85a7-98a4-4415-99de-d98b0099ef35/cs.1742297929499.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "ac5245f1-084e-4e1e-9be8-947e7bea311e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/ac5245f1-084e-4e1e-9be8-947e7bea311e/cs.1698680323063.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 2,
+            "legacyId": 56,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Middleweight",
+            "weightLbs": 185,
+            "weightKg": 83.9
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 9,
+          "positionChange": 0
+        }
+      ]
+    },
+    "weightClass": {
+      "id": 2,
+      "legacyId": 56,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Middleweight",
+      "weightLbs": 185,
+      "weightKg": 83.9
+    },
+    "event": {
+      "id": 45,
+      "slugs": [
+        "oktagon-31"
+      ],
+      "slug": "oktagon-31",
+      "legacyId": 56941,
+      "startDate": "2022-02-26T18:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 31: Krištofič vs. Kincl",
+        "en": "OKTAGON 31: Krištofič vs. Kincl"
+      },
+      "linkPPV": "https://oktagon.tv/#/",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.o2arena.cz/events/oktagon-31/",
+      "linkYoutubeVideo": {
+        "cs": "",
+        "en": ""
+      },
+      "metadata": {
+        "preferredCta": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 31",
+        "en": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://youtu.be/XbDL4oVhSQ4"
+    },
+    "metadata": {}
+  }
+]

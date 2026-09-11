@@ -1,0 +1,1518 @@
+[
+  {
+    "id": 1476,
+    "titleFight": true,
+    "fighter1": {
+      "id": 844,
+      "slugs": [
+        "igor-severino"
+      ],
+      "slug": "igor-severino",
+      "firstName": "Igor",
+      "lastName": "Severino",
+      "description": {
+        "cs": "<p>Šampion bantamové váhy OKTAGON MMA. Igor Severino vstupuje do klece s působivým skóre. Tento bojovník ukončil všechny své soupeře ve svých 10 profe…[zkráceno pro fixture]",
+        "de": "<p>OKTAGON MMA Champion im Bantamgewicht. Igor Severino betritt den Käfig mit einer beeindruckenden Bilanz. Der Kämpfer hat alle seine Gegner in seine…[zkráceno pro fixture]",
+        "en": "<p>OKTAGON MMA bantamweight champion. Igor Severino enters the cage with an impressive record. The fighter has finished all of his opponents in his 10…[zkráceno pro fixture]",
+        "pl": "<p>Mistrz wagi koguciej OKTAGON MMA. Igor Severino wchodzi do klatki z imponującym bilansem. Zawodnik zakończył wszystkie swoje 10 zawodowych zwycięst…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 9,
+        "legacyId": 52,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Bantamweight",
+        "weightLbs": 135,
+        "weightKg": 61.2
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 10,
+          "losses": 1,
+          "draws": 0,
+          "noContests": 1
+        }
+      },
+      "yearOfBirth": 2003,
+      "monthOfBirth": 4,
+      "dayOfBirth": 21,
+      "heightCm": 170,
+      "nationality": "BR",
+      "imageProfile": {
+        "id": "ea4224c0-bcab-4f75-8901-04dc1f7cc321",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/ea4224c0-bcab-4f75-8901-04dc1f7cc321/cs.1773325107050.png"
+        }
+      },
+      "champion": true,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": "champion",
+          "weightClass": {
+            "id": 9,
+            "legacyId": 52,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Bantamweight",
+            "weightLbs": 135,
+            "weightKg": 61.2
+          }
+        }
+      ],
+      "otherRankings": [
+        {
+          "type": "P4P",
+          "position": 4,
+          "positionChange": 0
+        }
+      ]
+    },
+    "fighter2": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 9,
+      "legacyId": 52,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Bantamweight",
+      "weightLbs": 135,
+      "weightKg": 61.2
+    },
+    "event": {
+      "id": 146,
+      "slugs": [
+        "oktagon-97-hannover"
+      ],
+      "slug": "oktagon-97-hannover",
+      "startDate": "2026-11-07T17:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 97: SEVERINO VS. HOLZER",
+        "de": "OKTAGON 97: SEVERINO VS. HOLZER",
+        "en": "OKTAGON 97: SEVERINO VS. HOLZER",
+        "pl": "OKTAGON 97: SEVERINO VS. HOLZER"
+      },
+      "linkPPV": "https://oktagon.tv/event/oktagon-97/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-mma-main-root-service-f_19?utm_source=oktagonmma&utm_medium=corporation&utm_campaign=general",
+          "destinationTitle": "RTL+"
+        },
+        {
+          "countries": [
+            "PL"
+          ],
+          "redirectUrl": "https://sport.tvp.pl/transmisje",
+          "destinationTitle": "TVP.sport"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/679956",
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 97",
+        "de": "OKTAGON 97",
+        "en": "OKTAGON 97",
+        "pl": "OKTAGON 97"
+      },
+      "programShowButton": false,
+      "weighInShowButton": false
+    },
+    "metadata": {},
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 1417,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "TKO",
+    "time": "3:14",
+    "numRounds": 1,
+    "fighter1": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 872,
+      "slugs": [
+        "khalid-taha"
+      ],
+      "slug": "khalid-taha",
+      "firstName": "Khalid",
+      "lastName": "Taha",
+      "nickName": "THE WARRIOR",
+      "description": {
+        "cs": "<p><span>Khalid Taha je profesionální bojovník organizace OKTAGON MMA. Jeho domovským klubem je </span>Elite Fit Zone Sportscenter Dortmund<span>.</sp…[zkráceno pro fixture]",
+        "de": "<p>Khalid Taha ist professioneller Kämpfer der OKTAGON MMA. Sein Heimatgym ist Elite Fit Zone Sportscenter Dortmund.</p><p></p>",
+        "en": "<p>Khalid Taha is a professional fighter of OKTAGON MMA. His home gym is Elite Fit Zone Sportscenter Dortmund.</p><p></p>",
+        "pl": "<p>Khalid Taha jest zawodowym zawodnikiem organizacji OKTAGON MMA. Jego macierzystym klubem jest Elite Fit Zone Sportscenter Dortmund.</p>"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 16,
+          "losses": 6,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1993,
+      "monthOfBirth": 2,
+      "dayOfBirth": 15,
+      "heightCm": 165,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "77d4fbef-d65b-4c7a-a3ed-b37897befe44",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/77d4fbef-d65b-4c7a-a3ed-b37897befe44/cs.1743862180775.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 6,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 7,
+      "legacyId": 53,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Featherweight",
+      "weightLbs": 145,
+      "weightKg": 65.8
+    },
+    "event": {
+      "id": 133,
+      "slugs": [
+        "oktagon-88-hannover"
+      ],
+      "slug": "oktagon-88-hannover",
+      "startDate": "2026-05-16T16:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 88: HOLZER VS. TAHA",
+        "de": "OKTAGON 88: HOLZER VS. TAHA",
+        "en": "OKTAGON 88: HOLZER VS. TAHA",
+        "pl": "OKTAGON 88: HOLZER VS. TAHA"
+      },
+      "linkPPV": "https://oktagon.tv/cs/event/oktagon-88/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/rtlplus-root/oktagon-88-main-root-service-f_155",
+          "destinationTitle": "RTL+"
+        },
+        {
+          "countries": [
+            "PL"
+          ],
+          "redirectUrl": "https://sport.tvp.pl/transmisje",
+          "destinationTitle": "TVP sport "
+        }
+      ],
+      "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/649564",
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 88"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "description": {
+      "cs": "<h4></h4><p><strong>MAX HOLZER</strong> nikam neodchází… a při jeho comebacku jde hned o všechno. Silnější po zranění a ve formě svého života, zatímco…[zkráceno pro fixture]",
+      "de": "<h4></h4><p><strong>MAX HOLZER</strong> geht nirgendwo hin… und bei seinem Comeback geht es gleich um alles. Stärker nach seiner Verletzung und in der…[zkráceno pro fixture]",
+      "en": "<h4></h4><p><strong>MAX HOLZER</strong> isn’t going anywhere… and in his comeback, everything is on the line. Stronger after his injury and in the sha…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 1059,
+      "tipsportId": 7947663
+    },
+    "fighter1WeightKg": 66.2,
+    "fighter2WeightKg": 66.3,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self",
+    "refereeName": "Marc Goddard"
+  },
+  {
+    "id": 1104,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "SUB",
+    "time": "4:14",
+    "numRounds": 4,
+    "fighter1": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 556,
+      "legacyId": 64780,
+      "slugs": [
+        "deniz-ilbay"
+      ],
+      "slug": "deniz-ilbay",
+      "firstName": "Deniz",
+      "lastName": "Ilbay",
+      "nickName": "EL PISTOLERO",
+      "description": {
+        "cs": "<p>Německý zápasník organizace OKTAGON MMA. Kariéru MMA zahájil v roce 2021. Jeho domovským klubem je UFD GYM, sídlící v Dusseldorfu.</p>",
+        "de": "<p>Deutscher Kämpfer der OKTAGON MMA Organisation. Er begann seine MMA-Karriere im Jahr 2021. Sein Heimatverein ist UFD GYM mit Sitz in Düsseldorf.</p…[zkráceno pro fixture]",
+        "en": "<p>German fighter of OKTAGON MMA organization. He started his MMA career in 2021. His home club is UFD GYM, based in Dusseldorf.</p>"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 9,
+          "losses": 3,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 1995,
+      "monthOfBirth": 1,
+      "dayOfBirth": 22,
+      "heightCm": 169,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "79e0bac6-b4f4-49e2-958b-6aac1684316f",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/79e0bac6-b4f4-49e2-958b-6aac1684316f/cs.1743710593170.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "be996a84-1a6d-4bd3-8d86-d1cf41f9f66e",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/be996a84-1a6d-4bd3-8d86-d1cf41f9f66e/cs.1698163869323.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 7,
+      "legacyId": 53,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Featherweight",
+      "weightLbs": 145,
+      "weightKg": 65.8
+    },
+    "event": {
+      "id": 106,
+      "slugs": [
+        "oktagon-69"
+      ],
+      "slug": "oktagon-69",
+      "startDate": "2025-04-05T16:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 69: HOLZER vs. ILBAY",
+        "de": "OKTAGON 69: HOLZER vs. ILBAY",
+        "en": "OKTAGON 69: HOLZER vs. ILBAY"
+      },
+      "linkPPV": "https://oktagon.tv/cs/",
+      "linkPPVRedirectRules": [
+        {
+          "countries": [
+            "DE",
+            "AT",
+            "CH",
+            "LU",
+            "LI"
+          ],
+          "redirectUrl": "https://plus.rtl.de/video-tv/live/weitere-live-events/oktagon-69-05-04-2025-1022035?utm_source=oktagonmma&utm_medium=corporation&utm_campaign=oktagon6…[zkráceno pro fixture]",
+          "destinationTitle": "RTL+"
+        }
+      ],
+      "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/590076",
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=LgyyzDejR1c",
+        "de": "https://www.youtube.com/watch?v=ctgdeYQUQxY",
+        "en": "https://www.youtube.com/watch?v=_0L27wQ5eR8"
+      },
+      "metadata": {
+        "preferredCta": {},
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=0UY-nGISyQo"
+    },
+    "description": {
+      "cs": "<h4>ZÁPAS, na který všichni čekali!</h4><p>Stoupající MMA naděje <strong>Max HOLZER</strong> už několikrát ukázal, že je bojovníkem, kterého je třeba …[zkráceno pro fixture]",
+      "de": "<h4>Der Kampf, auf den alle gewartet haben!</h4><p>Das aufstrebende MMA-Talent <strong>Max HOLZER</strong> hat bereits mehrfach gezeigt, dass er ein K…[zkráceno pro fixture]",
+      "en": "<h4>The fight you’ve all been waiting for!</h4><p>Rising MMA prospect <strong>Max HOLZER</strong> has already shown multiple times that he’s a fighter…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 853,
+      "fighter2TbaTitle": {},
+      "fighter2TbaSubtitle": {}
+    },
+    "fighter1WeightKg": 66.2,
+    "fighter2WeightKg": 66.2,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self",
+    "refereeName": "Václav Přibyl",
+    "scoreCards": [
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Nic Skunde"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Eva Borodáčová"
+      },
+      {
+        "rounds": [
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          },
+          {
+            "fighter1": {
+              "points": 10
+            },
+            "fighter2": {
+              "points": 9
+            }
+          }
+        ],
+        "judgeName": "Vojtěch Novák"
+      }
+    ]
+  },
+  {
+    "id": 1084,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "DEC",
+    "time": "5:00",
+    "numRounds": 3,
+    "fighter1": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 843,
+      "slugs": [
+        "eugen-black-dell"
+      ],
+      "slug": "eugen-black-dell",
+      "firstName": "Eugen",
+      "lastName": "Black-Dell",
+      "description": {
+        "cs": "<p>Black-Dell je bývalým šampionem německé organizace v lehké váze. Sedm z jeho jedenácti vítězství přišlo předčasně – čtyři knockoutem a tři submisí.…[zkráceno pro fixture]",
+        "de": "<p>Black-Dell ist ein ehemaliger Leichtgewichts-Champion der deutschen Organisation. Sieben seiner elf Siege erzielte er vorzeitig – vier durch Knocko…[zkráceno pro fixture]",
+        "en": "<p>Black-Dell is a former lightweight champion of the German organization. Seven of his eleven victories came early – four by knockout and three by su…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 11,
+          "losses": 9,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "heightCm": 168,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "5be5d23c-6d4e-4e95-bf35-fa81a0d129cc",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/5be5d23c-6d4e-4e95-bf35-fa81a0d129cc/cs.1743863013859.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 66,
+      "legacyId": 151,
+      "gender": "MALE",
+      "type": "MMA_CUSTOM",
+      "title": "Catchweight 68kg",
+      "weightLbs": 150,
+      "weightKg": 68
+    },
+    "event": {
+      "id": 100,
+      "slugs": [
+        "oktagon-64"
+      ],
+      "slug": "oktagon-64",
+      "startDate": "2024-12-07T17:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 64: MOEIL vs. TODEV 2",
+        "de": "OKTAGON 64: MOEIL vs. TODEV 2",
+        "en": "OKTAGON 64: MOEIL vs. TODEV 2"
+      },
+      "linkPPV": "https://oktagonmma.com/events/oktagon-64/ppv ",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.ticket-onlineshop.com/ols/oktagon/de/oktagon/channel/shop/areaplan/venue/event/580833",
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=Jwx1CHLmqbA",
+        "de": "https://www.youtube.com/watch?v=MUhitvfjbeo",
+        "en": "https://www.youtube.com/watch?v=MEGqKxn4RcY"
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "PPV",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD",
+        "youtubeListId": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 64",
+        "de": "OKTAGON 64",
+        "en": "OKTAGON 64"
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {},
+    "description": {
+      "cs": "<h4>příběh zápasu</h4><p>Buzz Lightyear, Batman, Talahon…<strong> Max HOLZER</strong> už během svých nástupů ztvárnil mnoho rolí. Jeho pravé já se vša…[zkráceno pro fixture]",
+      "de": "<h4 style=\"text-align: center\"><strong>GESCHICHTE DES SPIELS</strong></h4><p style=\"text-align: center\">Buzz Lightyear, Batman, Talahon.. <strong>Max …[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><p>Buzz Lightyear, Batman, Talahon... <strong>Max HOLZER</strong> has already taken on many roles during his walkouts. His …[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 796,
+      "tipsportId": 6618299,
+      "fighter2TbaTitle": {},
+      "fighter2TbaSubtitle": {}
+    },
+    "fighter1WeightKg": 67.9,
+    "fighter2WeightKg": 67.8,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 1043,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "TKO",
+    "time": "3:37",
+    "numRounds": 3,
+    "fighter1": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 825,
+      "slugs": [
+        "mohammed-trabelsi"
+      ],
+      "slug": "mohammed-trabelsi",
+      "firstName": "Mohammed",
+      "middleName": "Sadok ",
+      "lastName": "Trabelsi",
+      "nickName": "MOMO",
+      "description": {
+        "cs": "<p>Německý bojovník Mohammed Trabelsi má na svém kontě 12 vítězství a 7 ukončení. Trabelsi je známý svými nemilosrdnými kopy a neuvěřitelnou výdrží.  …[zkráceno pro fixture]",
+        "de": "<p>Der deutsche Kämpfer Mohammed Trabelsi hat 12 Siege und 7 Niederschläge vorzuweisen. Trabelsi ist bekannt für seine rücksichtslosen Tritte und sein…[zkráceno pro fixture]",
+        "en": "<p>German fighter Mohammed Trabelsi has 12 wins and 7 stoppages. Trabelsi is known for his ruthless kicks and incredible stamina.  His home club is Mu…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 8,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "heightCm": 180,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "713fee88-69df-4bb5-9928-c7cb54b9367b",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/713fee88-69df-4bb5-9928-c7cb54b9367b/cs.1728484860922.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 7,
+      "legacyId": 53,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Featherweight",
+      "weightLbs": 145,
+      "weightKg": 65.8
+    },
+    "event": {
+      "id": 92,
+      "slugs": [
+        "oktagon-62"
+      ],
+      "slug": "oktagon-62",
+      "startDate": "2024-10-12T15:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "de": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "en": "OKTAGON 62: Eckerlin vs. Jungwirth",
+        "sk": ""
+      },
+      "linkPPV": "https://oktagon.tv/cs/event/oktagon-62/",
+      "linkPPVRedirectRules": null,
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=VltISrpwEdA",
+        "de": "https://www.youtube.com/watch?v=KScwREnyeVs",
+        "en": "https://www.youtube.com/watch?v=vMtxqCYRXRg",
+        "sk": ""
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "TICKET",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD",
+        "youtubeListId": {
+          "cs": "",
+          "de": "",
+          "en": "",
+          "sk": ""
+        }
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 62",
+        "de": "OKTAGON 62",
+        "en": "OKTAGON 62",
+        "sk": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=XzgTtuKO52w",
+      "de": "https://www.youtube.com/watch?v=XzgTtuKO52w"
+    },
+    "description": {
+      "cs": "<h4>příběh zápasu</h4><p><strong>Max HOLZER</strong>, 22 let, neudělal ve svých osmi zápasech jedinou chybu. Je považován za velký talent německého MM…[zkráceno pro fixture]",
+      "de": "<h4 style=\"text-align: center\"><strong>GESCHICHTE DES SPIELS</strong></h4><p style=\"text-align: center\"><strong>Max HOLZER</strong>, 22 Jahre alt, hat…[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><p><strong>Max HOLZER</strong>, 22 years old, hasn't made a single mistake in his eight fights. He is considered a major ta…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 773,
+      "fighter2TbaTitle": {},
+      "fighter2TbaSubtitle": {}
+    },
+    "fighter1WeightKg": 65.9,
+    "fighter2WeightKg": 66,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 938,
+    "titleFight": false,
+    "result": "FIGHTER_1_WIN",
+    "resultType": "SUB",
+    "time": "1:53",
+    "numRounds": 2,
+    "fighter1": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 753,
+      "slugs": [
+        "eemil-kurhela"
+      ],
+      "slug": "eemil-kurhela",
+      "firstName": "Eemil",
+      "lastName": "Kurhela",
+      "nickName": "SERGEANT",
+      "description": {
+        "cs": "<p>Finská naděje Eemil Kurhela. 8 vítězství, 7 ukončení, 5 v&nbsp;1. kole a úžasná komplexnost. Jeho domovským klubem je&nbsp;03 Fight Team.</p>",
+        "de": "<p>Der finnische Anwärter Eemil Kurhela. 8 Siege, 7 Finishes, 5 in Runde 1 und erstaunliche Komplexität. Sein Heimatverein ist 03 Fight Team.</p>",
+        "en": "<p>Finnish prospect Eemil Kurhela. 8 wins, 7 finishes, 5 in round 1 and amazing complexity. His home club is 03 Fight Team.</p>"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 8,
+          "losses": 4,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "heightCm": 180,
+      "nationality": "FI",
+      "imageProfile": {
+        "id": "88dd4372-33dc-4579-80eb-f96adb8aacbf",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/88dd4372-33dc-4579-80eb-f96adb8aacbf/cs.1757087655685.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 66,
+      "legacyId": 151,
+      "gender": "MALE",
+      "type": "MMA_CUSTOM",
+      "title": "Catchweight 68kg",
+      "weightLbs": 150,
+      "weightKg": 68
+    },
+    "event": {
+      "id": 89,
+      "slugs": [
+        "oktagon-57"
+      ],
+      "slug": "oktagon-57",
+      "startDate": "2024-05-04T16:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 57: ECKERLIN VS. BROŽ",
+        "de": "OKTAGON 57: ECKERLIN VS. BROŽ",
+        "en": "OKTAGON 57: ECKERLIN VS. BROŽ",
+        "sk": ""
+      },
+      "linkPPV": "https://oktagon.tv/",
+      "linkPPVRedirectRules": null,
+      "linkYoutubeVideo": {
+        "cs": "https://www.youtube.com/watch?v=xqpMyfeKqMI",
+        "de": "https://www.youtube.com/watch?v=2yLN6-Aw6hI",
+        "en": "  https://www.youtube.com/watch?v=IbKHTWFDqGE",
+        "sk": ""
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "PPV",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD",
+        "youtubeListId": {}
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 57",
+        "de": "OKTAGON 57",
+        "en": "OKTAGON 57",
+        "sk": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=7-EgnalBW90",
+      "de": "https://www.youtube.com/watch?v=7-EgnalBW90",
+      "en": "https://www.youtube.com/watch?v=7-EgnalBW90"
+    },
+    "description": {
+      "cs": "<h4>PŘÍBĚH ZÁPASU</h4><p>Bezchybný <strong>MAX HOLZER</strong> s 6 zářezy před limitem a 5 submisemi dosud nenašel přemožitele. 21letý nevídaný neuvěř…[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><p>The flawless <strong>MAX HOLZER</strong> with 6 stoppages before the limit and 5 submissions has not yet found an oppone…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 718,
+      "fighter2TbaTitle": {
+        "cs": "",
+        "en": ""
+      },
+      "fighter2TbaSubtitle": {
+        "cs": "",
+        "en": ""
+      }
+    },
+    "fighter1WeightKg": 67.8,
+    "fighter2WeightKg": 67.9,
+    "promotionBeforeTarget": "_self",
+    "promotionAfterTarget": "_self"
+  },
+  {
+    "id": 832,
+    "titleFight": false,
+    "result": "FIGHTER_2_WIN",
+    "resultType": "SUB",
+    "time": "2:12",
+    "numRounds": 2,
+    "fighter1": {
+      "id": 597,
+      "legacyId": 65364,
+      "slugs": [
+        "corey-fry"
+      ],
+      "slug": "corey-fry",
+      "firstName": "Corey",
+      "lastName": "Fry",
+      "description": {
+        "cs": "<p>Profesionální MMA zápasník organizace OKTAGON MMA. Svou profesionální kariéru začal v roce 2021. Jeho domovským klubem je&nbsp;North West Fight Aca…[zkráceno pro fixture]",
+        "de": "<p>Professioneller MMA-Kämpfer der Organisation OKTAGON MMA. Er begann seine Profikarriere im Jahr 2021. Sein Heimatverein ist die North West Fight Ac…[zkráceno pro fixture]",
+        "en": "<p>Professional MMA fighter of OKTAGON MMA organization. He started his professional career in 2021. His home club is North West Fight Academy, based …[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 6,
+          "losses": 4,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "nationality": "GB",
+      "region": "gb-eng",
+      "imageProfile": {
+        "id": "8720598f-0378-451e-aa03-395de75006d6",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/8720598f-0378-451e-aa03-395de75006d6/cs.1725886515296.png"
+        }
+      },
+      "imageFightCard": {
+        "id": "19cdfa10-913b-400f-8a68-190eed5789ae",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_FIGHT_CARD_IMAGE/19cdfa10-913b-400f-8a68-190eed5789ae/cs.1698163869992.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [],
+      "otherRankings": []
+    },
+    "fighter2": {
+      "id": 678,
+      "slugs": [
+        "max-holzer"
+      ],
+      "slug": "max-holzer",
+      "firstName": "Max",
+      "lastName": "Holzer",
+      "nickName": "MADE IN GERMANY",
+      "description": {
+        "cs": "<p>Max Holzer alias „Made in Germany“ má 12 výher v řadě, 0 proher, 10 zářezů před limitem, z toho 7 submisí. Jeho domovským klubem je&nbsp;Fightschoo…[zkráceno pro fixture]",
+        "de": "<p>Max Holzer alias „Made in Germany“ hat 12 Siege in Folge, 0 Niederlagen und 10 vorzeitige Siege, davon 7 durch Submission. Sein Heimatgym ist Fight…[zkráceno pro fixture]",
+        "en": "<p>Max Holzer, aka “Made in Germany”, has 12 consecutive wins, 0 losses, and 10 finishes before the limit, including 7 submissions. His home gym is Fi…[zkráceno pro fixture]",
+        "pl": "<p>Max Holzer, znany jako „Made in Germany”, ma na koncie 12 zwycięstw z rzędu, 0 porażek oraz 10 wygranych przed czasem, w tym 7 poddań. Jego macierz…[zkráceno pro fixture]"
+      },
+      "official": true,
+      "weightClass": {
+        "id": 7,
+        "legacyId": 53,
+        "gender": "MALE",
+        "type": "MMA_STANDARD",
+        "title": "Featherweight",
+        "weightLbs": 145,
+        "weightKg": 65.8
+      },
+      "scores": {
+        "MMA_AMATEUR": {
+          "wins": 0,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        },
+        "MMA_PROFI": {
+          "wins": 12,
+          "losses": 0,
+          "draws": 0,
+          "noContests": 0
+        }
+      },
+      "yearOfBirth": 2002,
+      "monthOfBirth": 1,
+      "dayOfBirth": 2,
+      "heightCm": 170,
+      "nationality": "DE",
+      "imageProfile": {
+        "id": "bc16ef6a-d8cb-4809-9d31-12ffafbc1abb",
+        "url": {
+          "cs": "https://assets.oktagonmma.com/FIGHTER_PROFILE_IMAGE/bc16ef6a-d8cb-4809-9d31-12ffafbc1abb/cs.1786619482621.png"
+        }
+      },
+      "champion": false,
+      "interimChampion": false,
+      "rankings": [
+        {
+          "type": "OFFICIAL",
+          "position": 2,
+          "positionChange": 0,
+          "weightClass": {
+            "id": 7,
+            "legacyId": 53,
+            "gender": "MALE",
+            "type": "MMA_STANDARD",
+            "title": "Featherweight",
+            "weightLbs": 145,
+            "weightKg": 65.8
+          }
+        }
+      ],
+      "otherRankings": []
+    },
+    "weightClass": {
+      "id": 7,
+      "legacyId": 53,
+      "gender": "MALE",
+      "type": "MMA_STANDARD",
+      "title": "Featherweight",
+      "weightLbs": 145,
+      "weightKg": 65.8
+    },
+    "event": {
+      "id": 81,
+      "slugs": [
+        "oktagon-52"
+      ],
+      "slug": "oktagon-52",
+      "startDate": "2024-01-27T17:00:00.000Z",
+      "title": {
+        "cs": "OKTAGON 52: Mågård vs. Cartwright",
+        "de": "OKTAGON 52: Mågård vs. Cartwright",
+        "en": "OKTAGON 52: Mågård vs. Cartwright",
+        "sk": ""
+      },
+      "linkPPV": "https://oktagon.tv/",
+      "linkPPVRedirectRules": null,
+      "linkBuyTicket": "https://www.ticketmaster.co.uk/event/1F005F75B887423E",
+      "linkYoutubeVideo": {
+        "cs": "https://youtu.be/_NCFqnhVQRs",
+        "de": " ",
+        "en": "https://youtu.be/pS5zGzKiFRw?si=P9PHNgb4gZVtTauB",
+        "sk": ""
+      },
+      "metadata": {
+        "preferredCta": {
+          "cs": "PPV",
+          "de": "PPV",
+          "en": "PPV"
+        },
+        "ticketBuyType": "STANDARD"
+      },
+      "organizationId": "OKTAGON_MMA",
+      "shortTitle": {
+        "cs": "OKTAGON 52",
+        "de": "",
+        "en": "",
+        "sk": ""
+      },
+      "programShowButton": true,
+      "weighInShowButton": true
+    },
+    "youtubeVideoUrl": {
+      "cs": "https://www.youtube.com/watch?v=Mr1m3Lwm0cw",
+      "de": "",
+      "en": ""
+    },
+    "description": {
+      "cs": "<h4>příběh zápasu</h4><p>„Brzy budu v top 10 a postupně si dojdu pro titul,“ řekl <strong>Fry</strong> před svým debutem na OKTAGONu 49. A tak také ud…[zkráceno pro fixture]",
+      "de": "<h4>Geschichte des Spiels</h4><p>\"Ich werde bald in den Top 10 sein und mich Schritt für Schritt zum Titel kämpfen,\" sagte <strong>FRY </strong>vor se…[zkráceno pro fixture]",
+      "en": "<h4>story of the match</h4><p>\"I'll be in the top 10 very soon making my way to the title step by step,\" said <strong>Fry </strong>before his debut at…[zkráceno pro fixture]"
+    },
+    "metadata": {
+      "esportsId": 661
+    },
+    "fighter1WeightKg": 66.2,
+    "fighter2WeightKg": 67.1,
+    "weighInVideoUrl": "https://www.youtube.com/live/Lu2TFtqUIFA?si=iC-OV4GW26dNnR8U&t=981"
+  }
+]
