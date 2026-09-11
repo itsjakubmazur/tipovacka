@@ -165,3 +165,106 @@ položku s vyplněným `result` vzít `event.slug`/`event.startDate` (galavečer
 soupeře (druhý `fighter{1,2}`), `resultType`, `time` (ošetřit oba formáty),
 `numRounds` (= kolo ukončení) a `outcome` odvozený porovnáním `result` se
 slotem (`fighter1`/`fighter2`), ve kterém náš bojovník figuruje.
+
+## Dodatek: další statistiky z profilu (finish %, výhry na body, sig. údery)
+
+Doplněno na základě dotazu, kam by šlo v appce zapracovat i další čísla,
+která web u bojovníka ukazuje vedle "posledních 5 zápasů" — "PROCENTO
+UKONČENÍ", "VÝHRY NA BODY", "SIGNIFIKANTNÍ ÚDERY" (viz
+`docs/oktagon-fighter-profile-web.jpg`).
+
+### Odkud ta čísla jdou
+
+Jiný zdroj než historie zápasů výše — v `_next/data/.../cs/fighters/
+<slug>.json` je vedle `['fights', 'list', ...]` ještě dotaz
+`['statistics', 'fighter', <id>]`, jehož `highlights` objekt obsahuje přesně
+tahle čísla (ověřeno na Patriku Kinclovi, hodnoty sedí 1:1 se screenshotem):
+
+```json
+{
+  "highlights": {
+    "finishRate": 50,
+    "finishEndTypePercentageWins": { "decision": 50, "technical_knockout": 17, "submission": 33, ... },
+    "hitTypePercentage": { "significant": 53, "insignificant": 47 },
+    "hitResultPercentage": { "landed": 100, "defended": 0 },
+    "lastFightsResults": ["W", "W", "L", "L", "W", "W", "W", "W"]
+  },
+  "matchCount": 8, "winCount": 6, "lossCount": 2, "drawCount": 0,
+  "endTypeCount": { ... }, "endTypeCountWins": { ... }, "endTypeCountLosses": { ... },
+  "hitTypeCount": [...], "hitResultCount": [...], "hitTargetCount": [...]
+}
+```
+
+Mapování na UI štítky:
+
+| Štítek na webu | Pole |
+| --- | --- |
+| PROCENTO UKONČENÍ | `highlights.finishRate` |
+| VÝHRY NA BODY | `highlights.finishEndTypePercentageWins.decision` (% ze všech výher, co byly na body) |
+| SIGNIFIKANTNÍ ÚDERY | `highlights.hitTypePercentage.significant` |
+| POSLEDNÍCH 5 ZÁPASŮ (W/L odznaky) | prvních 5 z `highlights.lastFightsResults` (pole je řazené **od nejnovějšího**) |
+
+Plná odpověď (i s rozpadem podle kola — `hitTypeCount`/`hitResultCount`/
+`hitTargetCount` po kolech, hlava/tělo/nohy) je jen v `highlights` a nad ním
+agregovaná struktura pro celou kariéru — tohle vypadá jako jediný zdroj
+těchto konkrétních čísel, žádná náhrada se nenašla.
+
+**Přesná REST cesta na `api.oktagonmma.com` se nepodařilo ověřit** (na rozdíl
+od `/v1/fights` výše, který je potvrzený). Vyzkoušené tvary vrátily 404
+(`/v1/statistics/fighter/{id}`, `/v1/fighters/{id}/statistics`,
+`/v1/fighter-statistics/{id}`, `/v1/fighters/{id}/highlights`) — jedna cesta,
+`/v1/fights/statistics`, evidentně existuje (vrací 400 misto 404), ale
+nenašel jsem správný formát parametrů (`fighterId`/`fighterIds` ani prosté,
+ani jako pole nesedí — pořád `"Validation failed (numeric string is
+expected)"`). Je to vedlejší zjištění, ne blokující: **"posledních 5
+zápasů" umíme spočítat sami** z dat, co už stahujeme přes `/v1/fights?
+fighterId=` (viz sekce výše) — netřeba kvůli tomu tenhle endpoint řešit.
+Pro finish %/výhry na body %/signifikantní údery % by ale bylo potřeba buď
+dohledat správný tvar téhle cesty (další kolo zkoušení parametrů), nebo to
+brát přímo z `_next/data/.../cs/fighters/<slug>.json?id=<slug>` webu
+(funguje bez auth, ale je to interní, nezdokumentované rozhraní webu, ne
+veřejné API — křehčí volba na dlouhodobé použití).
+
+### Kam s tím v appce — stav dnes a doporučení
+
+Zjištěno z kódu (`src/`, bez úprav):
+
+- **Bio** se dnes zobrazuje jen inline v `fight-tip-card.tsx` — tlačítko
+  "Bio" rozbalí (`Reveal`) dvousloupcový grid s prostým odstavcem textu za
+  každého bojovníka. Žádná samostatná komponenta pro bio neexistuje.
+- **Tale-of-the-tape** (`fight-matchup.tsx`, `FightMatchup`) mezi jmény
+  bojovníků ukazuje rank, rekord, kurzy, váhu/výšku/věk — sdílené mezi
+  kartou zápasu, detailem tipujícího a porovnáním. Je to už teď natěsno
+  (řádky se renderují jen když aspoň jedna strana má data) — souhlas, že
+  sem další čísla nepatří.
+  Po ukončení zápasu se tahle tape stejně nahrazuje výsledkem.
+- **Žádná samostatná stránka/modal bojovníka neexistuje.** Jediný analogický
+  vzor v appce je detail tipujícího na leaderboardu — intercepting route
+  `src/app/leaderboard/@modal/(.)u/` + `src/app/leaderboard/u/[userId]/`,
+  postavené na obecné modal komponentě `src/components/modal.tsx`
+  (focus-trap, zavírání přes Escape/`router.back()`).
+- Vizuální jazyk appky: `.glass-surface`/`.glass-pill` pro karty a
+  pilulky (bez blur, kvůli výkonu na iOS), skutečný `backdrop-filter`
+  blur jen pro plovoucí panely/nav/modaly (`.glass-floating`,
+  `.glass-chrome`). Cokoliv nového by mělo tenhle vzor respektovat.
+
+Dvě cesty, kam nová čísla dát:
+
+1. **Rozšířit stávající "Bio" panel v kartě zápasu** o malý řádek se třemi
+   glass-pill štítky (finish % / výhry na body % / sig. údery %) a 5
+   W/L bublinkami nad nebo pod textem bia. Nejlevnější — žádná nová
+   route, žádné nové navigační chování, jen o kousek větší rozbalovací
+   panel, který tam uživatel už zná.
+2. **Postavit pořádnou detailovou stránku/modal bojovníka** podle vzoru,
+   co appka už má u tipujících (intercepting route + `modal.tsx`). Tam by
+   šlo bio, tyhle statistiky i (časem) celá historie zápasů z první části
+   tohoto dokumentu ukázat pohromadě, místo aby se to nabalovalo do
+   jednoho rozbalovacího panelu určeného na rychlý kontext před tipem.
+
+Osobně bych šel na **variantu 2** — bio, statistiky i historie zápasů
+tematicky patří k sobě (jsou to všechno "informace o bojovníkovi", ne
+"kontext k tomuhle konkrétnímu zápasu") a appka na tenhle vzor (modal přes
+intercepting route) už má precedens u tipujících. Navíc pokud se někdy bude
+chtít ukázat i celá historie zápasů uživatelům (ne jen pro interní import),
+bio panel v kartě zápasu by na to nebyl vhodné místo tak jako tak. Varianta
+1 dává smysl jako levný mezikrok, pokud je čas teď omezený.
