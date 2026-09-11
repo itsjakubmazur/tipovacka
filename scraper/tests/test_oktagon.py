@@ -3,6 +3,9 @@ likely to break silently when OKTAGON changes their payload shape.
 Fixtures mirror the real /v1 response structure documented in
 oktagon.py's module docstring."""
 
+import json
+import pathlib
+
 from oktagon import (
     _birth_date,
     _card_segment,
@@ -178,3 +181,36 @@ class TestHelpers:
             "otherRankings": [{"type": "P4P", "position": 3}],
         }
         assert _rank_label(fighter) == "P4P #3"
+
+
+class TestFightcardExtras:
+    """Two details the fight card carries that only matter once the fight is
+    over - checked against real cards 10 years apart."""
+
+    def _card(self, name: str) -> list[dict]:
+        path = pathlib.Path(__file__).parent / "fixtures" / name
+        return [
+            fight
+            for card in json.loads(path.read_text())
+            for fight in card.get("fights", [])
+        ]
+
+    def test_picks_up_the_stats_join_key(self):
+        fights = self._card("fightcard_oktagon_88.json")
+        normalized = normalize_fight(fights[0], 0, len(fights), "main_card")
+        assert normalized["oktagon_esports_id"] == 1059
+
+    def test_old_cards_have_no_stats_join_key(self):
+        # OKTAGON 1 (2016) predates the tracking system entirely - every
+        # fight there has an empty `metadata`.
+        fights = self._card("fightcard_oktagon_1.json")
+        normalized = normalize_fight(fights[0], 0, len(fights), "main_card")
+        assert normalized["oktagon_esports_id"] is None
+
+    def test_finish_time_is_normalized_across_both_card_formats(self):
+        recent = self._card("fightcard_oktagon_88.json")
+        old = self._card("fightcard_oktagon_1.json")
+
+        assert normalize_fight(recent[0], 0, 1, "main_card")["result_time"] == "3:14"
+        # Stored as a raw second count on the old card ("227").
+        assert normalize_fight(old[0], 0, 1, "main_card")["result_time"] == "3:47"

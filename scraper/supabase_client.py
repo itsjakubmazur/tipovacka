@@ -40,6 +40,25 @@ class SupabaseClient:
         _raise_with_body(resp)
         return resp.json()
 
+    def upsert(self, table: str, rows: list[dict], on_conflict: str) -> list[dict]:
+        """Insert-or-replace on the given conflict target. Used by the
+        importers that re-read the same rows on every run, where an
+        insert/update decision per row would be a request per row."""
+        if not rows:
+            return []
+        headers = {
+            **self.headers,
+            "Prefer": "resolution=merge-duplicates,return=representation",
+        }
+        resp = requests.post(
+            f"{self.url}/rest/v1/{table}",
+            headers=headers,
+            params={"on_conflict": on_conflict},
+            json=rows,
+        )
+        _raise_with_body(resp)
+        return resp.json()
+
     def update(self, table: str, values: dict, filters: dict) -> list[dict]:
         headers = {**self.headers, "Prefer": "return=representation"}
         resp = requests.patch(f"{self.url}/rest/v1/{table}", headers=headers, params=filters, json=values)

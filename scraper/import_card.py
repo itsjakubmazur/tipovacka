@@ -41,6 +41,7 @@ def upsert_fighter(db: SupabaseClient, fighter: dict) -> str:
         "oktagon_rank": fighter["oktagon_rank"],
         "oktagon_rank_change": fighter["oktagon_rank_change"],
         "oktagon_slug": fighter["oktagon_slug"],
+        "oktagon_legacy_id": fighter["oktagon_legacy_id"],
     }
     if existing:
         db.update("fighters", patch, {"id": f"eq.{existing[0]['id']}"})
@@ -188,6 +189,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                 "is_main_event": fight["is_main_event"],
                 "card_order": fight["card_order"],
                 "card_segment": fight["card_segment"],
+                "oktagon_esports_id": fight["oktagon_esports_id"],
             }
             # a fight we cancelled earlier is back on OKTAGON's card
             # (temporary API hiccup or a reversed cancellation) - revive it
@@ -219,6 +221,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                 "is_main_event": fight["is_main_event"],
                 "card_order": fight["card_order"],
                 "card_segment": fight["card_segment"],
+                "oktagon_esports_id": fight["oktagon_esports_id"],
             }
             # Only ever raise the round count here, never lower it: a
             # five-round fight without a belt on the line is invisible in the
@@ -247,6 +250,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                     "rounds": 5 if fight["is_title_fight"] else 3,
                     "card_order": fight["card_order"],
                     "card_segment": fight["card_segment"],
+                    "oktagon_esports_id": fight["oktagon_esports_id"],
                     "status": "scheduled",
                 }
             ],

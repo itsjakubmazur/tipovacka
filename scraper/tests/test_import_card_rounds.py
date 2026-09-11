@@ -55,6 +55,7 @@ def _fight(is_title_fight):
         "is_main_event": True,
         "card_order": 1,
         "card_segment": "main_card",
+        "oktagon_esports_id": 4242,
     }
 
 

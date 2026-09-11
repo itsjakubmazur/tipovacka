@@ -64,6 +64,8 @@ from zoneinfo import ZoneInfo
 import requests
 
 from import_card import import_card, update_odds
+from import_fight_stats import import_fight_stats
+from import_fighter_history import import_fighter_history
 from import_results import import_results
 from oktagon import fetch_upcoming_tournaments
 from push import log_push, send_to_all, send_to_user
@@ -319,6 +321,27 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
         db.update("events", {"hype_notified_at": now.isoformat()}, {"id": f"eq.{event['id']}"})
 
 
+def _refresh_fighter_history(event_id: str) -> None:
+    """Who the fighters on this card have faced in OKTAGON before. Pure
+    decoration around the tip card, so a failure here is logged and dropped
+    rather than allowed to take the rest of the tick down with it."""
+    try:
+        with log_run("cron_fighter_history", event_id):
+            import_fighter_history(event_id)
+    except Exception as exc:
+        print(f"Historii bojovníků se nepodařilo doplnit: {exc}")
+
+
+def _refresh_fight_stats(event_id: str) -> None:
+    """Per-fight tracking stats, from a third-party system with no promises
+    towards us - same deal: best effort, never fatal."""
+    try:
+        with log_run("cron_fight_stats", event_id):
+            import_fight_stats(event_id)
+    except Exception as exc:
+        print(f"Statistiky zápasů se nepodařilo doplnit: {exc}")
+
+
 def import_new_cards(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
@@ -351,6 +374,10 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
         now_iso = datetime.now(timezone.utc).isoformat()
         db.update("events", {"card_checked_at": now_iso}, {"id": f"eq.{event['id']}"})
         if created > 0:
+            # Guarded the same way the push is: an event whose card yielded
+            # nothing new stays in this selection on every tick, and two dozen
+            # API calls per tick is not the price of a decoration.
+            _refresh_fighter_history(event["id"])
             db.update("events", {"card_notified_at": now_iso}, {"id": f"eq.{event['id']}"})
             send_to_all(
                 db,
@@ -414,6 +441,8 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
             {"card_checked_at": datetime.now(timezone.utc).isoformat()},
             {"id": f"eq.{event['id']}"},
         )
+        if created > 0:
+            _refresh_fighter_history(event["id"])
         if (created > 0 or cancelled > 0) and event["status"] != "draft":
             # The card keeps being imported either way - only the push is
             # capped. A fight that flaps between imported and cancelled would
@@ -673,6 +702,15 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
 
         refreshed = db.select("events", {"id": f"eq.{event['id']}", "select": "status"})[0]
         if refreshed["status"] == "completed":
+            # Only on the tick the gala actually finishes on. An event sits
+            # here uncompleted for as long as it takes an admin to enter the
+            # Fight of the Night, and refreshing two dozen fighters' history
+            # every tick for days is not what "best effort" should mean.
+            # Stats that land in the external system late are picked up by
+            # recheck_event_results instead.
+            _refresh_fight_stats(event["id"])
+            _refresh_fighter_history(event["id"])
+
             body = "Turnaj je za námi, podívej se na výsledky tipovačky i s Fight of the Night!"
             if event.get("payouts_enabled", True):
                 body += " QR platbu pro vítěze startovného najdeš na stránce galavečera."
@@ -724,6 +762,7 @@ def recheck_event_results(db: SupabaseClient, now: datetime, event: dict) -> Non
             import_results(event["id"])
         except SystemExit:
             print(f"Rekontrola výsledků pro {event_label(event)} selhala, pokračuji.")
+    _refresh_fight_stats(event["id"])
     db.update(
         "events",
         {"results_rechecked_at": now.isoformat()},

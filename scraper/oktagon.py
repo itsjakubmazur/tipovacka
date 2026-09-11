@@ -50,6 +50,25 @@ USER_AGENT = (
 API_BASE_URL = "https://api.oktagonmma.com/v1"
 BASE_URL = "https://oktagonmma.com"
 
+# Per-fight tracking stats (hits, takedowns, submission attempts) do NOT live
+# on api.oktagonmma.com - oktagonmma.com's own fight-statistics widget pulls
+# them from this third-party tracking system, keyed by `metadata.esportsId`.
+# It is somebody else's domain with no SLA towards OKTAGON, the data only goes
+# back to roughly mid-2024, and any single fight may simply not be there - so
+# every caller has to survive it returning nothing.
+ESPORTS_EXPORT_URL = "https://oktagon.sh12w3.esports.cz/api/export"
+
+OUTCOME_BY_RESULT = {
+    ("FIGHTER_1_WIN", "a"): "win",
+    ("FIGHTER_1_WIN", "b"): "loss",
+    ("FIGHTER_2_WIN", "a"): "loss",
+    ("FIGHTER_2_WIN", "b"): "win",
+    ("DRAW", "a"): "draw",
+    ("DRAW", "b"): "draw",
+    ("NO_CONTEST", "a"): "no_contest",
+    ("NO_CONTEST", "b"): "no_contest",
+}
+
 RESULT_TYPE_TO_METHOD = {
     "KO": "KO/TKO",
     "TKO": "KO/TKO",
@@ -293,6 +312,7 @@ def normalize_fighter(fighter: dict | None) -> dict:
     if fighter is None:
         return {
             "oktagon_fighter_id": None,
+            "oktagon_legacy_id": None,
             "name": "TBA",
             "nickname": None,
             "photo_url": None,
@@ -317,6 +337,10 @@ def normalize_fighter(fighter: dict | None) -> dict:
 
     return {
         "oktagon_fighter_id": fighter["id"],
+        # Only fighters carried over from OKTAGON's previous system have this;
+        # anyone signed since roughly 2024 has no legacyId at all. It is the
+        # join key towards the external stats system, nothing else.
+        "oktagon_legacy_id": fighter.get("legacyId"),
         "name": name,
         "nickname": (fighter.get("nickName") or "").strip() or None,
         "photo_url": _localized((fighter.get("imageProfile") or {}).get("url")),
@@ -367,7 +391,7 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
         method = RESULT_TYPE_TO_METHOD.get(fight.get("resultType"))
         if method and method != "DECISION":
             result_round = fight.get("numRounds")
-        result_time = fight.get("time") or None
+        result_time = parse_end_time(fight.get("time"))
 
     return {
         "oktagon_fight_id": fight["id"],
@@ -383,7 +407,221 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
         "method": method,
         "result_round": result_round,
         "result_time": result_time,
+        "oktagon_esports_id": (fight.get("metadata") or {}).get("esportsId"),
     }
+
+
+def parse_end_time(value: object) -> str | None:
+    """The clock reading at the finish. OKTAGON changed formats somewhere
+    along the way: recent fights carry "3:14", older ones the raw number of
+    seconds as a string ("227" on the OKTAGON 1 card). Both end up as M:SS."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    if ":" in text:
+        return text
+    try:
+        seconds = int(text)
+    except ValueError:
+        return None
+    return f"{seconds // 60}:{seconds % 60:02d}"
+
+
+def fetch_fighter_history(oktagon_fighter_id: int) -> list[dict]:
+    """Every OKTAGON fight of one fighter, newest first, in a single request -
+    no paging, and the upcoming (undecided) fight is included. Confirmed
+    against two fighters with 7 and 16 fights going back to 2016."""
+    data = fetch_json(f"/fights?fighterId={oktagon_fighter_id}")
+    return data if isinstance(data, list) else []
+
+
+def normalize_history_fight(fight: dict, oktagon_fighter_id: int) -> dict | None:
+    """One past fight as seen FROM THIS FIGHTER'S SIDE. Returns None for
+    anything that isn't a finished fight of theirs.
+
+    A fight that hasn't happened yet has no `result` key at all (not a null
+    one), which is also how the upcoming bout gets filtered out here."""
+    result = fight.get("result")
+    if not result:
+        return None
+
+    fighter_1 = fight.get("fighter1") or {}
+    fighter_2 = fight.get("fighter2") or {}
+    if fighter_1.get("id") == oktagon_fighter_id:
+        side, opponent = "a", fighter_2
+    elif fighter_2.get("id") == oktagon_fighter_id:
+        side, opponent = "b", fighter_1
+    else:
+        return None
+
+    outcome = OUTCOME_BY_RESULT.get((result, side))
+    if not outcome:
+        return None
+
+    event = fight.get("event") or {}
+    event_label = _localized(event.get("shortTitle")) or _localized(event.get("title"))
+    start_date = event.get("startDate")
+    if not (event_label and start_date):
+        return None
+
+    opponent_name = (
+        f"{(opponent.get('firstName') or '').strip()} {(opponent.get('lastName') or '').strip()}".strip()
+    )
+    slugs = opponent.get("slugs") or ([] if not opponent.get("slug") else [opponent["slug"]])
+
+    return {
+        "oktagon_fight_id": fight["id"],
+        "event_date": start_date,
+        "event_label": event_label,
+        "event_number": _event_number(event),
+        "opponent_name": opponent_name or "TBA",
+        "opponent_oktagon_fighter_id": opponent.get("id"),
+        "opponent_slug": slugs[0] if slugs else None,
+        "opponent_photo_url": _localized((opponent.get("imageProfile") or {}).get("url")),
+        "outcome": outcome,
+        # Raw, not mapped onto our three-way `method`: in a history list the
+        # difference between a KO and a TKO is information, not noise.
+        "result_type": fight.get("resultType"),
+        # OKTAGON calls this `numRounds`, but it is the round the fight ENDED
+        # in - a decision over three rounds and a submission in round three
+        # both say 3. Verified against a card where finishes in round one all
+        # read 1 while the five-round title fight read 5.
+        "end_round": fight.get("numRounds"),
+        "end_time": parse_end_time(fight.get("time")),
+        "title_fight": bool(fight.get("titleFight")),
+        "weight_class": (fight.get("weightClass") or {}).get("title"),
+    }
+
+
+def fetch_match_stats(esports_match_id: int) -> dict | None:
+    """Per-fight tracking data from the external system. Returns None for
+    anything but a 200 - a missing fight there is the normal case, not an
+    error worth failing an import over."""
+    try:
+        resp = requests.get(
+            f"{ESPORTS_EXPORT_URL}/matches/{esports_match_id}",
+            headers={"User-Agent": USER_AGENT},
+            timeout=30,
+        )
+    except requests.RequestException as exc:
+        print(f"Statistiky zápasu {esports_match_id} se nepodařilo stáhnout: {exc}")
+        return None
+    if resp.status_code != 200:
+        return None
+    try:
+        return resp.json()
+    except ValueError:
+        return None
+
+
+def _normalized_name(value: str | None) -> str:
+    return " ".join((value or "").split()).casefold()
+
+
+def _stats_side_map(
+    payload: dict,
+    fighter_a: dict,
+    fighter_b: dict,
+) -> dict[int, str] | None:
+    """Maps the tracking system's own fighter ids onto our a/b sides.
+
+    Its `externalId` is OKTAGON's `legacyId`, which fighters signed in the
+    last couple of years simply don't have - so names are the fallback. If
+    neither matches, we give up rather than guess from the ordering and
+    silently attribute every punch to the wrong man."""
+    sides: dict[int, str] = {}
+    for key in ("fighter1", "fighter2"):
+        entry = payload.get(key) or {}
+        entry_id = entry.get("id")
+        if entry_id is None:
+            return None
+        name = _normalized_name(f"{entry.get('firstname') or ''} {entry.get('lastname') or ''}")
+        external_id = entry.get("externalId")
+        for side, ours in (("a", fighter_a), ("b", fighter_b)):
+            legacy_id = ours.get("oktagon_legacy_id")
+            if (external_id is not None and external_id == legacy_id) or (
+                name and name == _normalized_name(ours.get("name"))
+            ):
+                sides[entry_id] = side
+                break
+        else:
+            return None
+    return sides if len(set(sides.values())) == 2 else None
+
+
+def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> dict | None:
+    """Totals (and a per-round breakdown) of what the tracking system logged:
+    every individual hit, takedown and submission attempt of the fight.
+
+    `fighter_a`/`fighter_b` are our own rows - name plus oktagon_legacy_id -
+    and decide which side each logged event belongs to."""
+    sides = _stats_side_map(payload, fighter_a, fighter_b)
+    if not sides:
+        return None
+
+    def blank() -> dict[str, int]:
+        return {
+            "hits": 0,
+            "significant_hits": 0,
+            "takedowns": 0,
+            "takedown_attempts": 0,
+            "submission_attempts": 0,
+        }
+
+    totals = {"a": blank(), "b": blank()}
+    per_round: dict[int, dict[str, dict[str, int]]] = {}
+
+    def bucket(entry: dict) -> tuple[dict[str, int], dict[str, int]] | None:
+        attacker_id = (entry.get("attacker") or {}).get("id")
+        side = sides.get(attacker_id)
+        if side is None:
+            return None
+        round_no = entry.get("matchRound")
+        if not isinstance(round_no, int):
+            return totals[side], blank()
+        slot = per_round.setdefault(round_no, {"a": blank(), "b": blank()})
+        return totals[side], slot[side]
+
+    for hit in payload.get("hits") or []:
+        # The only value seen in real payloads is "landed"; the field name
+        # implies others exist, so anything explicitly defended is not a hit.
+        if hit.get("result") == "defended":
+            continue
+        target = bucket(hit)
+        if not target:
+            continue
+        for counter in target:
+            counter["hits"] += 1
+            if hit.get("type") == "significant":
+                counter["significant_hits"] += 1
+
+    for takedown in payload.get("takedowns") or []:
+        target = bucket(takedown)
+        if not target:
+            continue
+        for counter in target:
+            counter["takedown_attempts"] += 1
+            if takedown.get("result") == "completed":
+                counter["takedowns"] += 1
+
+    for attempt in payload.get("submissionAttempts") or []:
+        target = bucket(attempt)
+        if not target:
+            continue
+        for counter in target:
+            counter["submission_attempts"] += 1
+
+    row = {"esports_match_id": payload.get("id")}
+    for side in ("a", "b"):
+        for key, value in totals[side].items():
+            row[f"fighter_{side}_{key}"] = value
+    row["rounds"] = [
+        {"round": round_no, "a": slot["a"], "b": slot["b"]}
+        for round_no, slot in sorted(per_round.items())
+    ]
+    return row
 
 
 def fetch_betting_odds(oktagon_event_id: int) -> dict[int, dict]:
