@@ -1,0 +1,49 @@
+name: Backfill fight stats
+
+# One-off: pulls post-fight stats (hits, takedowns, submission attempts) for
+# galas that are already over. A finished card never gets re-imported, so its
+# fights have no link to the tracking system yet - this fills that in first,
+# then fetches whatever the system has.
+#
+# Only ever writes fights.oktagon_esports_id and the fight_stats table;
+# results, statuses and scoring are not touched.
+on:
+  workflow_dispatch:
+    inputs:
+      event_id:
+        description: "Jen tenhle galavečer (UUID). Prázdné = všechny odehrané."
+        required: false
+        type: string
+
+concurrency:
+  group: backfill-fight-stats
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+
+      - name: Backfill
+        working-directory: scraper
+        run: |
+          if [ -n "${{ inputs.event_id }}" ]; then
+            python backfill_fight_stats.py --event-id "${{ inputs.event_id }}"
+          else
+            python backfill_fight_stats.py
+          fi
