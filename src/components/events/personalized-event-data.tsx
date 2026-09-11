@@ -18,6 +18,7 @@ import { Confetti } from "@/components/confetti";
 import { CARD_SEGMENT_LABELS } from "@/lib/card-segments";
 import type { Fight, Prediction } from "@/lib/types";
 import type { EventRow, CommentRow, FinalStandingRow, ConsensusPick } from "@/lib/data/event-detail";
+import type { CardExtras } from "@/lib/data/card-extras";
 
 /** Everything about this gala that's specific to the logged-in viewer: their
  * own predictions, bold pick, FOTN pick, rank, admin flags - fetched fresh on
@@ -32,6 +33,7 @@ export async function PersonalizedEventData({
   comments,
   finalStandings,
   allPredictions,
+  cardExtras,
   locked,
   viewModeCookie,
 }: {
@@ -42,6 +44,7 @@ export async function PersonalizedEventData({
   comments: CommentRow[];
   finalStandings: FinalStandingRow[];
   allPredictions: ConsensusPick[];
+  cardExtras: CardExtras;
   locked: boolean;
   viewModeCookie: string | undefined;
 }) {
@@ -316,6 +319,9 @@ export async function PersonalizedEventData({
                       initialIsBold={boldFightId === fight.id}
                       locked={locked}
                       consensus={total > 0 ? { fighterANames, fighterBNames } : undefined}
+                      history={cardExtras.historyByFighter}
+                      previousMeeting={cardExtras.previousMeetingByFight[fight.id]}
+                      stats={cardExtras.statsByFight[fight.id]}
                       revealIndex={cardIndex}
                     />
                   </div>
@@ -362,6 +368,7 @@ export async function PersonalizedEventData({
                     initialPrediction={predictionByFight.get(fight.id) ?? null}
                     locked={locked}
                     initialIsBold={boldFightId === fight.id}
+                    history={cardExtras.historyByFighter}
                   />
                 </div>
               ))}

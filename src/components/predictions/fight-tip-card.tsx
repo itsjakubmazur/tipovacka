@@ -12,7 +12,12 @@ import { METHOD_LABELS } from "@/lib/method-labels";
 import { pointsLabel } from "@/lib/score-breakdown";
 import { X, ChevronDown, Star, HelpCircle, Check, TriangleAlert } from "lucide-react";
 import { persistTip } from "@/lib/persist-tip";
-import type { Fight, Method, Prediction } from "@/lib/types";
+import { FighterForm } from "@/components/fighters/fighter-form";
+import { FighterSheet } from "@/components/fighters/fighter-sheet";
+import { FightStatsPanel, hasAnyStats } from "@/components/fights/fight-stats-panel";
+import { describeHistoryResult, formatOktagonRecord } from "@/lib/fighter-history";
+import type { FighterCardSummary, PreviousMeeting } from "@/lib/data/card-extras";
+import type { Fight, Fighter, FightStats, Method, Prediction } from "@/lib/types";
 
 function Pill({
   active,
@@ -128,6 +133,9 @@ export function FightTipCard({
   initialIsBold,
   locked,
   consensus,
+  history,
+  previousMeeting,
+  stats,
   revealIndex = 0,
 }: {
   fight: Fight;
@@ -137,6 +145,12 @@ export function FightTipCard({
   initialIsBold?: boolean;
   locked: boolean;
   consensus?: { fighterANames: string[]; fighterBNames: string[] };
+  /** record and recent form in OKTAGON, keyed by fighter id */
+  history?: Record<string, FighterCardSummary>;
+  /** these two have already met in the cage */
+  previousMeeting?: PreviousMeeting;
+  /** what the tracking system logged - only ever present once it's over */
+  stats?: FightStats;
   /** position on the card - the graded result bars wipe in one after another
    * down the page, so coming back mid-gala reads as a sequence of results
    * rather than a wall of green and red */
@@ -156,6 +170,8 @@ export function FightTipCard({
   const [isBold, setIsBold] = useState(initialIsBold ?? false);
   const [boldHelpOpen, setBoldHelpOpen] = useState(false);
   const [biosOpen, setBiosOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const [sheetFighter, setSheetFighter] = useState<Fighter | null>(null);
   const [saving, setSaving] = useState(false);
   const [flash, setFlash] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -326,6 +342,22 @@ export function FightTipCard({
 
   const fighterA = fight.fighter_a;
   const fighterB = fight.fighter_b;
+
+  const previousMeetingHint = previousMeeting
+    ? (() => {
+        const entry = previousMeeting.entry;
+        const winner =
+          entry.outcome === "win"
+            ? fight.fighter_a.name
+            : entry.outcome === "loss"
+              ? entry.opponent_name
+              : null;
+        const how = describeHistoryResult(entry);
+        return winner
+          ? `${entry.event_label}: vyhrál ${winner} (${how})`
+          : `${entry.event_label}: ${how}`;
+      })()
+    : null;
   return (
     <div
       className={cn(
@@ -352,6 +384,14 @@ export function FightTipCard({
             <Badge variant="default" className="shrink-0">Main event</Badge>
           ) : null}
           {voided && <Badge variant="outline" className="shrink-0">Zrušeno / NC</Badge>}
+          {/* Two men who have already fought each other is the single most
+              useful thing the history knows at tipping time - it belongs on
+              the card, not three taps deep. */}
+          {!voided && previousMeeting && (
+            <Badge variant="info" className="shrink-0" title={previousMeetingHint ?? undefined}>
+              Odveta
+            </Badge>
+          )}
           {!voided && hasTba && <Badge variant="outline" className="shrink-0">Soupeři ještě nejsou známí</Badge>}
           {fight.weight_class && (
             <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
@@ -531,11 +571,16 @@ export function FightTipCard({
           medallions on a button between them. Both were a whole row of card
           for a handful of words. */}
       {(() => {
-        const withBio = [fighterA, fighterB].filter((f) => !f.is_tba && f.bio);
+        // A fighter with no bio can still have a record and a run of results,
+        // and that is the half of this panel people actually came for.
+        const withInfo = [fighterA, fighterB].filter(
+          (f) => !f.is_tba && (f.bio || (history?.[f.id]?.form.length ?? 0) > 0)
+        );
+        const showStats = hasAnyStats(stats);
         const total = consensus
           ? consensus.fighterANames.length + consensus.fighterBNames.length
           : 0;
-        if (withBio.length === 0 && total === 0) return null;
+        if (withInfo.length === 0 && total === 0 && !showStats && !previousMeetingHint) return null;
         return (
           <div className="border-t border-black/5 dark:border-white/10">
             <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2 px-4 py-2">
@@ -544,26 +589,46 @@ export function FightTipCard({
               ) : (
                 <span />
               )}
-              {withBio.length > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => setBiosOpen((v) => !v)}
-                  aria-expanded={biosOpen}
-                  aria-label={
-                    looksFeminine(fighterA.name) || looksFeminine(fighterB.name)
-                      ? "O zápasnicích"
-                      : "O zápasnících"
-                  }
-                  className="flex shrink-0 items-center gap-0.5 justify-self-center self-start text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
-                >
-                  Bio
-                  <ChevronDown
-                    className={cn(
-                      "size-3 transition-transform duration-500 ease-out motion-reduce:transition-none",
-                      biosOpen && "rotate-180"
-                    )}
-                  />
-                </button>
+              {withInfo.length > 0 || previousMeetingHint || showStats ? (
+                <span className="flex shrink-0 items-center gap-3 justify-self-center self-start">
+                  {(withInfo.length > 0 || previousMeetingHint) && (
+                    <button
+                      type="button"
+                      onClick={() => setBiosOpen((v) => !v)}
+                      aria-expanded={biosOpen}
+                      aria-label={
+                        looksFeminine(fighterA.name) || looksFeminine(fighterB.name)
+                          ? "O zápasnicích"
+                          : "O zápasnících"
+                      }
+                      className="flex items-center gap-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
+                    >
+                      Bio
+                      <ChevronDown
+                        className={cn(
+                          "size-3 transition-transform duration-500 ease-out motion-reduce:transition-none",
+                          biosOpen && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  )}
+                  {showStats && (
+                    <button
+                      type="button"
+                      onClick={() => setStatsOpen((v) => !v)}
+                      aria-expanded={statsOpen}
+                      className="flex items-center gap-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
+                    >
+                      Statistiky
+                      <ChevronDown
+                        className={cn(
+                          "size-3 transition-transform duration-500 ease-out motion-reduce:transition-none",
+                          statsOpen && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  )}
+                </span>
               ) : (
                 <span />
               )}
@@ -579,15 +644,58 @@ export function FightTipCard({
               )}
             </div>
             <Reveal open={biosOpen}>
+              {previousMeetingHint && (
+                // The badge in the header is the signal; this is the fact.
+                // A `title` tooltip would never be seen - nine out of ten
+                // people here are on a phone.
+                <p className="px-4 pb-2 text-xs text-neutral-600 dark:text-neutral-300">
+                  <span className="font-semibold">Už se potkali.</span> {previousMeetingHint}
+                </p>
+              )}
               <div className="grid gap-4 px-4 pb-3 sm:grid-cols-2">
-                {withBio.map((f) => (
-                  <div key={f.id}>
-                    <p className="mb-1 text-xs font-semibold">{f.name}</p>
-                    <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">{f.bio}</p>
-                  </div>
-                ))}
+                {withInfo.map((f) => {
+                  const summary = history?.[f.id];
+                  return (
+                    <div key={f.id}>
+                      {/* The name is the way in to everything else we know
+                          about him. Deliberately here and not on the photo
+                          above: up there the whole half of the card is the
+                          pick target, and tipping fast beats a second tap
+                          target competing with it. */}
+                      <button
+                        type="button"
+                        onClick={() => setSheetFighter(f)}
+                        className="mb-1 flex items-center gap-1 text-xs font-semibold underline decoration-dotted underline-offset-2 transition-colors hover:text-black dark:hover:text-white"
+                      >
+                        {f.name}
+                        <ChevronDown className="size-3 -rotate-90" aria-hidden />
+                      </button>
+                      {summary && summary.record.total > 0 && (
+                        <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                          <span className="text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                            V OKTAGONU{" "}
+                            <span className="font-bold tabular-nums text-black dark:text-white">
+                              {formatOktagonRecord(summary.record)}
+                            </span>
+                          </span>
+                          <FighterForm form={summary.form} />
+                        </div>
+                      )}
+                      {f.bio && (
+                        <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
+                          {f.bio}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </Reveal>
+            {showStats && (
+              <Reveal open={statsOpen}>
+                <FightStatsPanel fight={fight} stats={stats} />
+              </Reveal>
+            )}
           </div>
         );
       })()}
@@ -624,6 +732,10 @@ export function FightTipCard({
           </span>
         ) : null}
       </div>
+
+      {sheetFighter && (
+        <FighterSheet fighter={sheetFighter} onClose={() => setSheetFighter(null)} />
+      )}
     </div>
   );
 }

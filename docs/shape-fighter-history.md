@@ -90,21 +90,42 @@ z cizí domény bez jakéhokoli závazku vůči OKTAGONu.
   nepočítá. V reálných vzorcích se jiná hodnota než `"landed"` nevyskytla, ale
   název pole napovídá, že existovat může.
 
-## UI — zatím nepostavené
+## UI
 
-Datová vrstva je hotová a nezávislá na tom, jak se to nakonec ukáže. Plán:
+**1. Bilance a forma v „Bio" panelu karty zápasu** (`fight-tip-card.tsx`).
+U každého bojovníka řádek `V OKTAGONU 4-1` a posledních pět zápasů jako
+bublinky V/P/R, s popiskem soupeře a způsobu ukončení v `title`. Panel se nově
+otevírá i bojovníkům, kteří nemají bio — bilance a forma jsou to, kvůli čemu
+ho lidi rozbalují.
 
-1. **V „Bio" panelu karty zápasu** (`fight-tip-card.tsx`) jeden řádek na
-   bojovníka: bilance v OKTAGONU (`4-1`) a posledních pět zápasů jako W/L
-   bublinky. Rychlý signál při tipování, jeden řádek navíc.
-2. **Detail bojovníka jako modal** — kliknutí na jméno/foto v matchupu.
-   Appka na to má precedens u detailu tipujícího (`src/app/leaderboard/@modal/(.)u/`
-   nad `src/components/modal.tsx`). Tam patří bio, tape a celá historie zápasů.
-   Cpát pět řádků historie za oba bojovníky do rozbalovacího panelu uvnitř
-   karty znamená na mobilu kartu na dvě obrazovky — proti principu „rychlost
-   tipování nad vším".
-3. **Pozápasové statistiky** až do výsledkové části zápasu (`fight-matchup.tsx`
-   po odzápasení), ne do tipovací karty. Vždy s tichým fallbackem „data nejsou".
-4. **Odveta** — když oba bojovníci nadcházejícího zápasu sdílí `oktagon_fight_id`
-   v historii, karta umí říct „Odveta — v OKTAGONU 81 vyhrál Kincl na body".
-   Jeden dotaz, a pro tipování cennější než celá historie.
+**2. Detail bojovníka jako modal** (`components/fighters/fighter-sheet.tsx`).
+Vstup je **jméno v Bio panelu**, ne fotka v matchupu: tam je celá polovina
+karty tipovací tlačítko a druhý cíl vedle něj by šel proti „rychlost tipování
+nad vším". Uvnitř foto, ranking, kariérní i oktagonní bilance, bio a **celá
+historie zápasů** — víc, než ukazuje oficiální profil na oktagonmma.com.
+Historie se dotahuje až při otevření, ne s kartou: deset karet na mobilu by
+jinak s sebou táhlo dvě stovky řádků, na které se nikdo nedívá. Stojí na
+sdílené `components/modal.tsx` (focus trap, Escape), která kvůli tomu dostala
+nepovinné `onClose` — modal otevřený z karty nemá vlastní routu, kam by se dalo
+vrátit.
+
+**3. Odveta.** Když spolu už dva bojovníci v OKTAGONU nastoupili, karta má
+v hlavičce odznak *Odveta* a v Bio panelu větu „Už se potkali. OKTAGON 81:
+vyhrál Kincl (na body)". Hledá se v historii strany A podle OKTAGON id soupeře,
+**jen v galavečerech starších než tenhle** — po odzápasení je totiž dnešní
+zápas sám v historii obou a karta by se jinak hlásila jako odveta sama na sebe.
+
+**4. Pozápasové statistiky** (`components/fights/fight-stats-panel.tsx`) jako
+druhý přepínač „Statistiky" v patičce karty, vedle „Bio". Čtyři řádky (zásahy,
+tvrdé zásahy, takedowny, pokusy o submisi) jako dvojice pruhů rostoucích od
+středu ke své straně, s čísly jako přímými popisky. Zobrazí se jen tehdy, když
+k zápasu data vůbec jsou — a ta vznikají až po odzápasení.
+
+Barvy: značková žlutá proti modré, tedy stejná dvojice, jakou appka používá pro
+dva bojovníky jinde. Validátor palety hlásí u té dvojice odstup ΔE 46 (protanopie)
+a 52 (normální vidění), tedy hluboko nad prahem rozlišitelnosti; band check
+lightness neprojde a neprojde s žádnou použitelnou žlutou proti modré, takže je
+to vědomá odchylka. Identitu navíc nese strana pruhu a jméno nad ním, ne jen barva.
+
+Per-round rozpad statistik se ukládá (`fight_stats.rounds`), ale zatím se
+nikde nezobrazuje — v kartě zápasu na mobilu by to byla zeď čísel.

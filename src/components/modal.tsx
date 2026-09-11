@@ -4,13 +4,23 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+export function Modal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  /** For a dialog that isn't a route of its own (opened from inside a card
+   * rather than navigated to). Without it, dismissing goes back in history,
+   * which is what the intercepting-route modals want. */
+  onClose?: () => void;
+}) {
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement>(null);
 
   const onDismiss = useCallback(() => {
-    router.back();
-  }, [router]);
+    if (onClose) onClose();
+    else router.back();
+  }, [onClose, router]);
 
   useEffect(() => {
     // Remember what had focus so we can hand it back when the dialog closes -

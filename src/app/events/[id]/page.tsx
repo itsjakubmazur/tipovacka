@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getEventShared } from "@/lib/data/event-detail";
+import { getCardExtras } from "@/lib/data/card-extras";
 import { VIEW_MODE_COOKIE } from "@/lib/view-mode";
 import { SegmentJump } from "@/components/predictions/segment-jump";
 import { PersonalizedEventData } from "@/components/events/personalized-event-data";
@@ -43,6 +44,12 @@ export default async function EventDetailPage({
   const locked =
     event.status === "completed" ||
     (event.lock_at ? new Date(event.lock_at) <= new Date() : false);
+
+  // Fighter history and post-fight stats: shared by every viewer like the
+  // shell above, but invalidated by different writes (the scraper busts one
+  // fighter at a time), so it gets its own cache entry rather than riding
+  // along in getEventShared.
+  const cardExtras = await getCardExtras(id, event.event_date, fights);
 
   // Draft galas are only visible to admins - that check needs the caller's
   // profile, which is per-user and therefore fetched inside the
@@ -183,6 +190,7 @@ export default async function EventDetailPage({
           comments={comments}
           finalStandings={finalStandings}
           allPredictions={allPredictions}
+          cardExtras={cardExtras}
           locked={locked}
           viewModeCookie={cookieStore.get(VIEW_MODE_COOKIE)?.value}
         />
