@@ -88,6 +88,31 @@ def main(number: int) -> None:
             f"birth={b['birth_date']!r} weight={b['weight_kg']!r})"
         )
 
+    # A fight that has a link but no stats row means the sides could not be
+    # matched - print what the external system thinks the names are, because
+    # that is the only way to see why ours did not line up.
+    unmatched = [
+        f for f in fights if f.get("oktagon_esports_id") and f["id"] not in stats_by_fight
+    ]
+    if unmatched:
+        from oktagon import fetch_match_stats
+
+        print("\nZápasy s napojením, ale bez statistik:")
+        for f in unmatched:
+            payload = fetch_match_stats(f["oktagon_esports_id"])
+            if not payload:
+                print(f"  esports={f['oktagon_esports_id']}: externí systém nic nevrátil.")
+                continue
+            for key in ("fighter1", "fighter2"):
+                entry = payload.get(key) or {}
+                print(
+                    f"  esports={f['oktagon_esports_id']} {key}: "
+                    f"{entry.get('firstname')!r} {entry.get('lastname')!r} "
+                    f"externalId={entry.get('externalId')!r}"
+                )
+            a, b = fighters_by_id[f["fighter_a_id"]], fighters_by_id[f["fighter_b_id"]]
+            print(f"    u nás: {a['name']!r} / {b['name']!r}")
+
     all_fighters = db.select(
         "fighters",
         {"select": "id,name,oktagon_fighter_id"},
