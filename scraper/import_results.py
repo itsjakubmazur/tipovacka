@@ -330,12 +330,31 @@ def import_results(event_id: str) -> None:
         {
             "event_id": f"eq.{event_id}",
             "select": (
-                "id,oktagon_fight_id,fighter_a_id,fighter_b_id,status,result_locked,"
-                "winner_fighter_id,method,result_round,result_time"
+                "id,oktagon_fight_id,oktagon_esports_id,fighter_a_id,fighter_b_id,status,"
+                "result_locked,winner_fighter_id,method,result_round,result_time"
             ),
         },
     )
     by_oktagon_id = {f["oktagon_fight_id"]: f for f in fights_in_db if f.get("oktagon_fight_id")}
+
+    # The external tracking system only assigns a fight its id once it is
+    # actually being tracked, so an upcoming card carries none - which means
+    # import_card, the only other writer, can never fill this in: by the time
+    # the id exists, the card is locked and never re-imported. Right here,
+    # reading the finished card, is the first moment it can be had.
+    linked = 0
+    for fight in fights_data:
+        db_fight = by_oktagon_id.get(fight["oktagon_fight_id"])
+        esports_id = fight.get("oktagon_esports_id")
+        if not db_fight or not esports_id:
+            continue
+        if db_fight.get("oktagon_esports_id") == esports_id:
+            continue
+        db.update("fights", {"oktagon_esports_id": esports_id}, {"id": f"eq.{db_fight['id']}"})
+        db_fight["oktagon_esports_id"] = esports_id
+        linked += 1
+    if linked:
+        print(f"Napojeno {linked} zápasů na pozápasové statistiky.")
 
     updated = 0
     corrected: list[str] = []
