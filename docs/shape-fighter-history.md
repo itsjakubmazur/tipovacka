@@ -97,8 +97,12 @@ z cizí domény bez jakéhokoli závazku vůči OKTAGONu.
 - **Statistiky nejdou párovat pozicí.** Externí systém má vlastní `fighter1`/
   `fighter2` a vlastní id bojovníků; párujeme přes `externalId` (= OKTAGON
   `legacyId`), a když ten chybí (kdokoli podepsaný v posledních dvou letech ho
-  nemá), přes jméno. Když nesedí ani jedno, statistiky se **zahodí** — zrcadlově
-  prohozená čísla jsou horší než žádná.
+  nemá), přes jméno — a ani to nemusí sednout, protože ten systém vynechává
+  prostřední jména („Dávid Komár" proti našemu „Dávid Dániel Komár"). Zápasníci
+  jsou ale v zápase dva, takže jakmile je jistá jedna strana, druhá plyne
+  vylučovací metodou. Když nesedí ani jedna, nebo obě ukazují na tutéž,
+  statistiky se **zahodí** — zrcadlově prohozená čísla jsou horší než žádná
+  a z pořadí `fighter1`/`fighter2` se nic neodvozuje.
 - `hits` se počítají jako doručené zásahy; položka s `result: "defended"` se
   nepočítá. V reálných vzorcích se jiná hodnota než `"landed"` nevyskytla, ale
   název pole napovídá, že existovat může.
