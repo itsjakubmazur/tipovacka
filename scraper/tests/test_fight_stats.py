@@ -72,15 +72,19 @@ def test_sides_can_be_matched_by_name_when_there_is_no_legacy_id():
     assert stats["fighter_a_takedowns"] == 1
 
 
-def test_gives_up_rather_than_guessing_which_side_is_which():
+def test_one_recognisable_side_places_the_other_by_elimination():
     stats = summarize_match_stats(
         _fixture("esports_match_stats_submission_1093.json"),
         {"name": "Někdo Jiný", "oktagon_legacy_id": None},
         {"name": "Hojat Khajevand", "oktagon_legacy_id": None},
     )
 
-    # Mirrored stats would be worse than none.
-    assert stats is None
+    # Only Khajevand's name lined up - but a fight has two men in it, so the
+    # other entry cannot be anybody else. Mirroring is impossible here, which
+    # is the thing that would have been worse than no stats at all.
+    assert stats is not None
+    assert stats["fighter_a_takedowns"] == 1
+    assert stats["fighter_b_takedowns"] == 0
 
 
 def test_sides_follow_our_own_fighter_order():
@@ -92,3 +96,52 @@ def test_sides_follow_our_own_fighter_order():
 
     assert flipped["fighter_b_takedowns"] == straight["fighter_a_takedowns"] == 1
     assert flipped["fighter_a_hits"] == straight["fighter_b_hits"]
+
+
+class TestSideMatching:
+    """The two systems don't always agree on a fighter's name."""
+
+    def test_one_side_is_enough_to_place_both(self):
+        # OKTAGON 93 for real: the tracking system had "Dávid Komár" where we
+        # have "Dávid Dániel Komár", so only Kincl's side matched by name -
+        # and a fight has exactly two men in it.
+        stats = summarize_match_stats(
+            _fixture("esports_match_stats_submission_1093.json"),
+            {"name": "Patrik Kincl", "oktagon_legacy_id": None},
+            {"name": "Hojat Sayed Khajevand", "oktagon_legacy_id": None},
+        )
+
+        assert stats is not None
+        assert stats["fighter_a_takedowns"] == 1
+        assert stats["fighter_b_takedowns"] == 0
+
+    def test_a_middle_name_on_the_other_side_works_the_same(self):
+        stats = summarize_match_stats(
+            _fixture("esports_match_stats_submission_1093.json"),
+            {"name": "Patrik Josef Kincl", "oktagon_legacy_id": None},
+            KHAJEVAND,
+        )
+
+        assert stats is not None
+        assert stats["fighter_a_takedowns"] == 1
+
+    def test_still_gives_up_when_neither_side_is_recognisable(self):
+        stats = summarize_match_stats(
+            _fixture("esports_match_stats_submission_1093.json"),
+            {"name": "Někdo Jiný", "oktagon_legacy_id": None},
+            {"name": "Ještě Někdo Jiný", "oktagon_legacy_id": None},
+        )
+
+        assert stats is None
+
+    def test_gives_up_when_both_entries_point_at_the_same_side(self):
+        # One side matching both entries - here by name on one and by legacy
+        # id on the other - makes the elimination meaningless. Better nothing
+        # than a coin flip.
+        stats = summarize_match_stats(
+            _fixture("esports_match_stats_submission_1093.json"),
+            {"name": "Patrik Kincl", "oktagon_legacy_id": 59766},
+            {"name": "Nikdo Odsud", "oktagon_legacy_id": None},
+        )
+
+        assert stats is None

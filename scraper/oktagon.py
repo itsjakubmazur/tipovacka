@@ -528,15 +528,24 @@ def _stats_side_map(
     """Maps the tracking system's own fighter ids onto our a/b sides.
 
     Its `externalId` is OKTAGON's `legacyId`, which fighters signed in the
-    last couple of years simply don't have - so names are the fallback. If
-    neither matches, we give up rather than guess from the ordering and
-    silently attribute every punch to the wrong man."""
-    sides: dict[int, str] = {}
+    last couple of years simply don't have, so names are the fallback - and
+    those don't always agree either: the tracking system drops middle names
+    ("Dávid Komár" for our "Dávid Dániel Komár").
+
+    Hence the last step: a fight has exactly two men in it, so once one side
+    is pinned down the other one follows by elimination. That is not a guess,
+    unlike reading anything into the fighter1/fighter2 ordering - which is
+    why an unresolved pair is still dropped rather than assumed."""
+    entries = []
     for key in ("fighter1", "fighter2"):
         entry = payload.get(key) or {}
         entry_id = entry.get("id")
         if entry_id is None:
             return None
+        entries.append((entry_id, entry))
+
+    sides: dict[int, str] = {}
+    for entry_id, entry in entries:
         name = _normalized_name(f"{entry.get('firstname') or ''} {entry.get('lastname') or ''}")
         external_id = entry.get("externalId")
         for side, ours in (("a", fighter_a), ("b", fighter_b)):
@@ -546,8 +555,12 @@ def _stats_side_map(
             ):
                 sides[entry_id] = side
                 break
-        else:
-            return None
+
+    if len(sides) == 1:
+        matched_id, matched_side = next(iter(sides.items()))
+        other_id = next(eid for eid, _ in entries if eid != matched_id)
+        sides[other_id] = "b" if matched_side == "a" else "a"
+
     return sides if len(set(sides.values())) == 2 else None
 
 
