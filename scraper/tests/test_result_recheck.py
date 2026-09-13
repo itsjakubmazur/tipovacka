@@ -180,3 +180,49 @@ def test_recheck_does_not_reannounce_the_payout(monkeypatch):
         table == "events" and values.get("status") == "completed"
         for table, values, _ in db.updates
     )
+
+
+class TestStatsLink:
+    """The link into the external tracking system can only be picked up here.
+
+    A fight has no `esportsId` until it has actually been tracked, so the card
+    import - which only ever runs before the gala - never sees one, and by the
+    time it exists the card is locked and never re-imported.
+    """
+
+    def test_links_a_finished_fight_to_its_tracking_id(self, monkeypatch):
+        db = FakeDB(_event(), [_db_fight(oktagon_esports_id=None)])
+        _wire(monkeypatch, db, [_api_fight(winner_side="a", oktagon_esports_id=1093)])
+
+        import_results.import_results("evt-1")
+
+        assert ("fights", {"oktagon_esports_id": 1093}, {"id": "eq.fight-1"}) in db.updates
+
+    def test_does_not_rewrite_a_link_it_already_has(self, monkeypatch):
+        db = FakeDB(_event(), [_db_fight(oktagon_esports_id=1093)])
+        _wire(monkeypatch, db, [_api_fight(winner_side="a", oktagon_esports_id=1093)])
+
+        import_results.import_results("evt-1")
+
+        assert not [u for u in db.updates if "oktagon_esports_id" in u[1]]
+
+    def test_a_card_without_tracking_ids_writes_nothing(self, monkeypatch):
+        # Anything before roughly mid-2024 has no ids at all.
+        db = FakeDB(_event(), [_db_fight(oktagon_esports_id=None)])
+        _wire(monkeypatch, db, [_api_fight(winner_side="a", oktagon_esports_id=None)])
+
+        import_results.import_results("evt-1")
+
+        assert not [u for u in db.updates if "oktagon_esports_id" in u[1]]
+
+    def test_links_even_a_fight_whose_result_an_admin_locked(self, monkeypatch):
+        # The link is not a result - a hand-corrected fight still deserves
+        # its stats, and the result_locked guard below must not swallow it.
+        db = FakeDB(_event(), [_db_fight(oktagon_esports_id=None, result_locked=True)])
+        _wire(monkeypatch, db, [_api_fight(winner_side="b", oktagon_esports_id=1093)])
+
+        import_results.import_results("evt-1")
+
+        assert ("fights", {"oktagon_esports_id": 1093}, {"id": "eq.fight-1"}) in db.updates
+        # ...while the locked result itself stays untouched
+        assert not [u for u in db.updates if "winner_fighter_id" in u[1]]

@@ -16,22 +16,54 @@ from supabase_client import SupabaseClient
 def main(number: int) -> None:
     db = SupabaseClient()
 
-    events = db.select("events", {"number": f"eq.{number}", "select": "id,number,name"})
+    events = db.select(
+        "events",
+        {
+            "number": f"eq.{number}",
+            "select": "id,number,name,status,lock_at,actual_fotn_fight_id,results_rechecked_at",
+        },
+    )
     if not events:
         print(f"OKTAGON {number} nenalezen v DB.")
         return
-    event_id = events[0]["id"]
+    event = events[0]
+    event_id = event["id"]
     print(f"event_id={event_id}")
+    # Both the fight-stats and the fighter-history refresh hang off the event
+    # reaching `completed`, which itself waits on the admin entering the Fight
+    # of the Night - so these four fields explain most "why is it not there".
+    print(
+        f"status={event['status']!r} lock_at={event['lock_at']!r} "
+        f"fotn={event['actual_fotn_fight_id']!r} "
+        f"rechecked={event.get('results_rechecked_at')!r}"
+    )
 
     fights = db.select(
         "fights",
         {
             "event_id": f"eq.{event_id}",
-            "select": "id,oktagon_fight_id,fighter_a_id,fighter_b_id,card_order,status",
+            "select": (
+                "id,oktagon_fight_id,oktagon_esports_id,fighter_a_id,fighter_b_id,"
+                "card_order,status"
+            ),
             "order": "card_order.desc",
         },
     )
     print(f"{len(fights)} zápasů.")
+
+    # The link into the external tracking system, and whether stats actually
+    # landed. A fight whose card was imported before that column existed has
+    # no link at all and can never get stats.
+    stats_rows = db.select(
+        "fight_stats",
+        {
+            "fight_id": f"in.({','.join(f['id'] for f in fights)})",
+            "select": "fight_id,esports_match_id,fighter_a_hits,fighter_b_hits",
+        },
+    ) if fights else []
+    stats_by_fight = {row["fight_id"]: row for row in stats_rows}
+    linked = sum(1 for f in fights if f.get("oktagon_esports_id"))
+    print(f"napojení na statistiky: {linked}/{len(fights)}, uložené statistiky: {len(stats_rows)}")
 
     fighter_ids = sorted({fid for f in fights for fid in (f["fighter_a_id"], f["fighter_b_id"])})
     fighters = db.select(
@@ -46,7 +78,10 @@ def main(number: int) -> None:
     for f in fights:
         a, b = fighters_by_id[f["fighter_a_id"]], fighters_by_id[f["fighter_b_id"]]
         print(
-            f"[{f['card_order']}] id={f['id']} status={f['status']} oktagon_fight_id={f['oktagon_fight_id']!r} | "
+            f"[{f['card_order']}] id={f['id']} status={f['status']} "
+            f"oktagon_fight_id={f['oktagon_fight_id']!r} "
+            f"esports={f.get('oktagon_esports_id')!r} "
+            f"stats={'ano' if f['id'] in stats_by_fight else 'ne'} | "
             f"{a['name']} (oktagon_id={a['oktagon_fighter_id']!r} height={a['height_cm']!r} "
             f"birth={a['birth_date']!r} weight={a['weight_kg']!r}) vs "
             f"{b['name']} (oktagon_id={b['oktagon_fighter_id']!r} height={b['height_cm']!r} "

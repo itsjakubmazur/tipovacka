@@ -68,6 +68,7 @@ galavečera.
 | `scraper/import_fighter_history.py --event-id <id>` | po importu karty a po importu výsledků (cron) |
 | `scraper/import_fighter_history.py --all` | ručně, jednorázový backfill |
 | `scraper/import_fight_stats.py --event-id <id>` | po importu výsledků a při jejich rekontrole (cron) |
+| `scraper/backfill_fight_stats.py` | ručně, pro galavečery odehrané dřív, než tohle vzniklo |
 
 Historie stojí jeden request na bojovníka, tedy ~24 na galavečer. Statistiky
 jeden request na odehraný zápas. Obojí visí v `cron.py` na `_refresh_fighter_history`
@@ -87,6 +88,12 @@ z cizí domény bez jakéhokoli závazku vůči OKTAGONu.
   filtr „co patří do historie".
 - **`scoreCards` nejsou spolehlivé** — Holzer vs. Ilbay skončil submisí ve 4.
   kole a má vyplněné karty na 3 kola. Nepoužívají se na nic.
+- **`esportsId` na kartě před galavečerem není.** Externí systém ho zápasu
+  přidělí, až když ho začne trackovat — takže import karty, který běží jen
+  před galavečerem, ho nemá kde vzít, a po uzávěrce se karta už znovu nečte.
+  Doplňuje ho proto `import_results`, které kartu po galavečeru stahuje tak
+  jako tak; tohle je první okamžik, kdy ten klíč vůbec existuje. (Stálo to
+  jeden galavečer bez statistik, než se na to přišlo.)
 - **Statistiky nejdou párovat pozicí.** Externí systém má vlastní `fighter1`/
   `fighter2` a vlastní id bojovníků; párujeme přes `externalId` (= OKTAGON
   `legacyId`), a když ten chybí (kdokoli podepsaný v posledních dvou letech ho
