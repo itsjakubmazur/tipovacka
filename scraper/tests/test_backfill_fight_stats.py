@@ -47,7 +47,7 @@ def _run(monkeypatch, db, stats_calls):
 
 
 def test_links_finished_fights_to_the_tracking_system(monkeypatch):
-    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": None}])
+    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": None, "oktagon_legacy_id": None}])
     calls = []
     linked, _ = _run(monkeypatch, db, calls)
 
@@ -60,16 +60,20 @@ def test_links_finished_fights_to_the_tracking_system(monkeypatch):
 
 
 def test_leaves_a_fight_that_is_already_linked_alone(monkeypatch):
-    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": 1059}])
+    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": 1059, "oktagon_legacy_id": None}])
     linked, _ = _run(monkeypatch, db, [])
 
     assert linked == 0
     assert db.updates == []
 
 
-def test_skips_a_fight_the_tracking_system_never_had(monkeypatch):
-    # OKTAGON 1 (2016) predates it: every fight there has an empty metadata.
-    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1, "oktagon_esports_id": None}])
+def test_links_an_old_fight_through_the_legacy_key(monkeypatch):
+    # OKTAGON 1 (2016) has no esportsId - but the tracking system does know
+    # it, under the fight's legacyId. That is the whole point of the second
+    # column: without it everything before 2023 was unaskable.
+    db = FakeDB(
+        [{"id": "f1", "oktagon_fight_id": 1, "oktagon_esports_id": None, "oktagon_legacy_id": None}]
+    )
     monkeypatch.setattr(backfill, "resolve_event_id", lambda _db, _e: 11)
 
     raw = [
@@ -87,12 +91,12 @@ def test_skips_a_fight_the_tracking_system_never_had(monkeypatch):
     monkeypatch.setattr(backfill, "import_fight_stats", lambda _e: 0)
 
     linked, _ = backfill.backfill_event(db, EVENT)
-    assert linked == 0
-    assert db.updates == []
+    assert linked == 1
+    assert db.updates == [("fights", {"oktagon_legacy_id": 1898}, {"id": "eq.f1"})]
 
 
 def test_survives_a_card_that_cannot_be_fetched(monkeypatch):
-    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": None}])
+    db = FakeDB([{"id": "f1", "oktagon_fight_id": 1417, "oktagon_esports_id": None, "oktagon_legacy_id": None}])
     monkeypatch.setattr(backfill, "resolve_event_id", lambda _db, _e: 133)
 
     def boom(_id):

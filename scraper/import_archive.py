@@ -129,6 +129,7 @@ def _import_card(db: SupabaseClient, event_id: str, fights_data: list[dict]) -> 
             "event_id": event_id,
             "oktagon_fight_id": fight["oktagon_fight_id"],
             "oktagon_esports_id": fight["oktagon_esports_id"],
+            "oktagon_legacy_id": fight["oktagon_legacy_id"],
             "fighter_a_id": fighter_a_id,
             "fighter_b_id": fighter_b_id,
             "weight_class": fight["weight_class"],
