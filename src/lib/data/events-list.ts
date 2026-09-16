@@ -17,6 +17,8 @@ export type EventsListRow = {
   lock_at: string | null;
   image_url: string | null;
   watch_party_enabled: boolean;
+  /** a historical gala nobody tipped - see docs/shape-oktagon-archive.md */
+  is_archive: boolean;
 };
 
 /** Every gala (drafts included) plus each one's fight count - identical for
@@ -28,10 +30,10 @@ export const getEventsListShared = unstable_cache(
       supabase
         .from("events")
         .select(
-          "id, number, name, subtitle, event_date, location, status, lock_at, image_url, watch_party_enabled"
+          "id, number, name, subtitle, event_date, location, status, lock_at, image_url, watch_party_enabled, is_archive"
         )
-        // Archive galas are not ours - they get their own listing.
-        .eq("is_archive", false)
+        // The archive is part of the same listing, one season at a time -
+        // it is the gala overview, not the tipping overview.
         .order("event_date", { ascending: false }),
       supabase.from("event_fight_counts").select("event_id, fight_count"),
     ]);
