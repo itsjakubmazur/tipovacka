@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { cn } from "@/lib/utils";
 
 /** The tracking system's own three areas, in the order a body has them.
@@ -82,17 +83,6 @@ export function StrikeFigure({
   );
 }
 
-function Count({ value, percent }: { value: number; percent: number }) {
-  return (
-    <>
-      <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
-        {percent} %
-      </span>
-      <span className="text-sm font-bold tabular-nums">{value}</span>
-    </>
-  );
-}
-
 /** Both fighters' areas as one table: the three labels run down the middle
  * and each side's numbers sit on its own side, with the figures on the
  * outside.
@@ -114,22 +104,28 @@ export function StrikeComparison({
     <div className={cn("flex items-center justify-between gap-2", className)}>
       <StrikeFigure targets={a} side="a" />
 
-      <dl className="flex min-w-0 flex-1 flex-col gap-2">
+      {/* One grid for all three rows, not a grid per row: with a grid each,
+          every row sized its own columns, so "HLAVA" and "TĚLO" were
+          different widths and the numbers either side drifted out of line.
+          Five shared columns line the whole block up vertically. */}
+      <dl className="grid min-w-0 flex-1 grid-cols-[1fr_auto_auto_auto_1fr] items-baseline gap-x-2 gap-y-2.5">
         {STRIKE_AREAS.map((area) => (
-          <div key={area} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <Fragment key={area}>
             {/* mirrored on purpose: the bold count hugs the label on both
                 sides, so the eye compares the two numbers across one word
                 instead of across the whole row */}
-            <dd className="flex items-baseline justify-end gap-1.5 whitespace-nowrap">
-              <Count value={a[area] ?? 0} percent={Math.round(share(a, area) * 100)} />
+            <dd className="text-right text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+              {Math.round(share(a, area) * 100)} %
             </dd>
+            <dd className="text-right text-sm font-bold tabular-nums">{a[area] ?? 0}</dd>
             <dt className="text-center text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               {areaLabel(area)}
             </dt>
-            <dd className="flex flex-row-reverse items-baseline justify-end gap-1.5 whitespace-nowrap">
-              <Count value={b[area] ?? 0} percent={Math.round(share(b, area) * 100)} />
+            <dd className="text-left text-sm font-bold tabular-nums">{b[area] ?? 0}</dd>
+            <dd className="text-left text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+              {Math.round(share(b, area) * 100)} %
             </dd>
-          </div>
+          </Fragment>
         ))}
       </dl>
 
@@ -154,17 +150,17 @@ export function StrikeMap({
   return (
     <div className={cn("flex items-center gap-4", className)}>
       <StrikeFigure targets={targets} side={side} />
-      <dl className="flex min-w-0 flex-col gap-2 text-sm">
+      <dl className="grid min-w-0 grid-cols-[auto_auto_auto] items-baseline gap-x-2 gap-y-2.5">
         {STRIKE_AREAS.map((area) => (
-          <div key={area} className="flex items-baseline gap-2 whitespace-nowrap">
-            <dt className="w-10 shrink-0 text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <Fragment key={area}>
+            <dt className="text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               {areaLabel(area)}
             </dt>
-            <dd className="font-bold tabular-nums">{targets[area] ?? 0}</dd>
-            <dd className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+            <dd className="text-right text-sm font-bold tabular-nums">{targets[area] ?? 0}</dd>
+            <dd className="text-right text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
               {Math.round(share(targets, area) * 100)} %
             </dd>
-          </div>
+          </Fragment>
         ))}
       </dl>
     </div>
