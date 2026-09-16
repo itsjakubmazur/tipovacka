@@ -119,5 +119,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    with log_run("fight_stats_backfill", args.event_id or (str(args.year) if args.year else None)):
+    mode = f"fight_stats_backfill_{args.year}" if args.year else "fight_stats_backfill"
+    with log_run(mode, args.event_id):
         backfill_fight_stats(args.event_id, args.year)
