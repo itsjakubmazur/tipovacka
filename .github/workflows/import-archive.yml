@@ -1,0 +1,50 @@
+name: Import archive
+
+# Doimportuje historické galavečery OKTAGONU jako read-only archiv
+# (is_archive = true). Po dávkách, protože celá historie se do jednoho
+# běhu nevejde - jeden turnaj je jeden request na kartu plus zápisy za
+# každý zápas a bojovníka.
+#
+# Pořadí při první instalaci:
+#   1. tenhle workflow po dávkách (1-20, 21-40, ...)
+#   2. Backfill fighter history (--all)   - historie bojovníků
+# Statistiky se doplňují průběžně přímo tímhle importem.
+on:
+  workflow_dispatch:
+    inputs:
+      number_from:
+        description: "Od čísla OKTAGONu"
+        required: true
+        type: string
+      number_to:
+        description: "Do čísla OKTAGONu včetně"
+        required: true
+        type: string
+
+concurrency:
+  group: import-archive
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+
+      - name: Import
+        working-directory: scraper
+        run: python import_archive.py --from "${{ inputs.number_from }}" --to "${{ inputs.number_to }}"

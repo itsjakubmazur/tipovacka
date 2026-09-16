@@ -180,7 +180,11 @@ def auto_create_events(db: SupabaseClient, now: datetime) -> None:
         return
 
     existing = db.select(
-        "events", {"select": "id,oktagon_event_id,status,event_date,subtitle,subtitle_locked"}
+        "events",
+        {
+            "is_archive": "eq.false",
+            "select": "id,oktagon_event_id,status,event_date,subtitle,subtitle_locked",
+        },
     )
     existing_ids = {e["oktagon_event_id"] for e in existing if e["oktagon_event_id"]}
     future_count = sum(
@@ -290,6 +294,7 @@ def send_hype_notifications(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "neq.completed",
             "hype_notified_at": "is.null",
             "select": "id,number,name,subtitle,event_date",
@@ -346,6 +351,7 @@ def import_new_cards(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "number": "not.is.null",
             # not just "neq.draft" - a stale card_notified_at on an
             # already-locked/completed event (e.g. hit by this same bug
@@ -418,6 +424,7 @@ def recheck_cards(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "number": "not.is.null",
             "status": "neq.completed",
             "or": f"(card_checked_at.is.null,card_checked_at.lte.{cutoff})",
@@ -473,6 +480,7 @@ def refresh_odds(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "oktagon_event_id": "not.is.null",
             "card_notified_at": "not.is.null",
             "status": "not.in.(draft,completed)",
@@ -495,6 +503,7 @@ def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "not.in.(draft,completed)",
             "reminder_sent_at": "is.null",
             "lock_at": f"lte.{(now + LOCK_REMINDER_WINDOW).isoformat()}",
@@ -582,6 +591,7 @@ def send_lock_notifications(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "not.in.(draft,completed)",
             "lock_notified_at": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
@@ -685,6 +695,7 @@ def check_results(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "not.in.(draft,completed)",
             "lock_at": f"lt.{now.isoformat()}",
             "number": "not.is.null",
@@ -736,6 +747,7 @@ def recheck_completed_results(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "eq.completed",
             "number": "not.is.null",
             "select": "id,number,name,subtitle,event_date,results_rechecked_at",
@@ -782,6 +794,7 @@ def send_fotn_reminders(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "not.in.(draft,completed)",
             "actual_fotn_fight_id": "is.null",
             "lock_at": f"lte.{now.isoformat()}",
@@ -846,6 +859,7 @@ def send_payout_settled_notifications(db: SupabaseClient, now: datetime) -> None
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "eq.completed",
             "payouts_enabled": "eq.true",
             "payout_all_paid_notified_at": "is.null",
@@ -907,7 +921,10 @@ def _followup_at(event_date: datetime) -> datetime:
 def _next_event_text(db: SupabaseClient, now: datetime) -> str:
     # Drafts are only hidden from the public site - we already know the date,
     # so include them here instead of saying "we don't know yet".
-    events = db.select("events", {"select": "id,number,name,subtitle,event_date"})
+    events = db.select(
+        "events",
+        {"is_archive": "eq.false", "select": "id,number,name,subtitle,event_date"},
+    )
     future = [e for e in events if e["event_date"] and _parse_dt(e["event_date"]) > now]
     if not future:
         return "Termín dalšího galavečeru ještě nevíme, sledujte upozornění."
@@ -922,6 +939,7 @@ def send_followup_notifications(db: SupabaseClient, now: datetime) -> None:
     events = db.select(
         "events",
         {
+            "is_archive": "eq.false",
             "status": "neq.draft",
             "followup_notified_at": "is.null",
             "select": "id,number,name,subtitle,event_date",

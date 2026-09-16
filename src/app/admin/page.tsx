@@ -68,6 +68,8 @@ export default async function AdminPage() {
   const { data: events } = await supabase
     .from("events")
     .select("id, number, name, event_date, status")
+    // The archive is read-only - nothing here applies to it.
+    .eq("is_archive", false)
     .order("event_date", { ascending: false });
 
   // The manual broadcast is the one push nobody can reconstruct from the

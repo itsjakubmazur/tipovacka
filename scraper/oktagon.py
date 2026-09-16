@@ -193,6 +193,37 @@ def _extract_subtitle(title: str | None, number: int) -> str | None:
     return _normalize_billing(remainder) if remainder else None
 
 
+def fetch_all_tournaments(limit: int = 200) -> list[dict]:
+    """Every numbered fight card OKTAGON has ever held or announced.
+
+    The listing defaults to the ~20 most recent; `limit` widens it and is
+    capped server-side somewhere between 200 and 500 (a bigger number is a
+    400). At 150 it already returns everything from oktagon-1 (2016) on, so
+    no paging is needed. The cover image is in the listing itself, which is
+    the only place an old gala's poster can still be had - the homepage
+    scrape behind import_image only knows about current ones."""
+    items = fetch_json(f"/events/?limit={limit}")
+    tournaments = []
+    for item in items:
+        if item.get("type") != "TOURNAMENT":
+            continue
+        number = _event_number(item)
+        if number is None:
+            continue
+        tournaments.append(
+            {
+                "oktagon_event_id": item["id"],
+                "number": number,
+                "name": _localized(item.get("title")) or _localized(item.get("shortTitle")) or f"OKTAGON {number}",
+                "subtitle": _extract_subtitle(_localized(item.get("title")), number),
+                "event_date": item.get("startDate"),
+                "location": _location_label(item),
+                "image_url": _localized((item.get("coverImage") or {}).get("url")),
+            }
+        )
+    return tournaments
+
+
 def fetch_upcoming_tournaments() -> list[dict]:
     """The /events/ listing also includes non-fightcard entries (weigh-ins,
     press conferences, unrelated shows) - only `type == "TOURNAMENT"`

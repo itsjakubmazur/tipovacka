@@ -38,6 +38,7 @@ export async function StartovneStats({ userId }: { userId: string }) {
   const { data: events } = await supabase
     .from("events")
     .select("id")
+    .eq("is_archive", false)
     .eq("status", "completed")
     .eq("payouts_enabled", true);
 
