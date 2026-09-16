@@ -82,7 +82,7 @@ def api_fight(number: int) -> dict | None:
     """Syrový JSON hlavního zápasu daného turnaje - hlavně kvůli tomu, co je
     v `metadata` a jestli tam náhodou nevisí i něco statistického."""
     print(f"\n=== 2. api.oktagonmma.com: OKTAGON {number} ===")
-    events = fetch_json("/events/?limit=500")
+    events = fetch_json("/events/?limit=200")
     target, prefix = f"oktagon-{number}", f"oktagon-{number}-"
     match = next(
         (
@@ -185,21 +185,58 @@ def esports_probe(esports_id) -> None:
             print(f"  {key}: {len(payload.get(key) or [])}")
 
 
+def safely(label: str, fn, *args):
+    """Sonda má projít celá - spadlá sekce je sama o sobě výsledek."""
+    try:
+        return fn(*args)
+    except Exception as exc:  # noqa: BLE001 - tohle je diagnostika, ne provoz
+        print(f"\n!! {label} spadlo: {type(exc).__name__}: {exc}")
+        return None
+
+
+def fighter_history_probe(fight: dict) -> None:
+    """Historii zápasníka bereme z /fights?fighterId=. Když u starých zápasů
+    nese jiné id než fightcard (nebo něco navíc), je to další stopa."""
+    print("\n=== 6. /fights?fighterId= u bojovníka z hlavního zápasu ===")
+    fighter = fight.get("fighter1") or {}
+    if not fighter.get("id"):
+        print("  Bojovník nemá id.")
+        return
+    rows = fetch_json(f"/fights?fighterId={fighter['id']}")
+    rows = rows if isinstance(rows, list) else (rows.get("data") or [])
+    print(f"  {len(rows)} zápasů v historii")
+    if rows:
+        print(f"  klíče záznamu={sorted(rows[0].keys())}")
+        print(f"  první záznam={_short(rows[0], 900)}")
+    with_meta = [r for r in rows if (r.get("metadata") or {}).get("esportsId")]
+    print(f"  z toho s esportsId: {len(with_meta)}")
+    print(f"\n  /fighters/{fighter['id']}/stats:")
+    resp = _get(f"{API_BASE_URL}/fighters/{fighter['id']}/stats")
+    if resp is not None:
+        print(f"    {resp.status_code}")
+        if resp.status_code == 200:
+            try:
+                print(f"    {_short(resp.json(), 900)}")
+            except ValueError:
+                print("    (nejde o JSON)")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--number", type=int, default=28, help="číslo OKTAGONu (výchozí 28)")
     args = parser.parse_args()
 
-    db_coverage()
-    found = api_fight(args.number)
+    safely("databáze", db_coverage)
+    found = safely("api", api_fight, args.number)
     if not found:
         return
     fight, event = found["fight"], found["event"]
-    api_probe(fight.get("id"), event.get("id"))
+    safely("zkusmé endpointy", api_probe, fight.get("id"), event.get("id"))
     slugs = event.get("slugs") or []
     if slugs:
-        web_page(slugs[0])
-    esports_probe((fight.get("metadata") or {}).get("esportsId"))
+        safely("web", web_page, slugs[0])
+    safely("tracking", esports_probe, (fight.get("metadata") or {}).get("esportsId"))
+    safely("historie zápasníka", fighter_history_probe, fight)
 
 
 if __name__ == "__main__":
