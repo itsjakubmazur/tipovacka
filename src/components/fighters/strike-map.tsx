@@ -24,21 +24,23 @@ export function hasStrikeMap(targets: Record<string, number> | undefined): boole
   return Boolean(targets) && totalStrikes(targets!) > 0;
 }
 
-/** Where the punches landed, as a figure rather than three more numbers in a
- * list - which is the one thing a body diagram does better than a table: you
- * read "he went downstairs all night" at a glance.
+function share(targets: Record<string, number>, area: string): number {
+  const total = totalStrikes(targets);
+  return total > 0 ? (targets[area] ?? 0) / total : 0;
+}
+
+/** The figure itself: where the punches landed, as a body rather than three
+ * more numbers in a list - which is the one thing a diagram does better than
+ * a table: you read "he went downstairs all night" at a glance.
  *
  * Deliberately a diagram, not a photo-real silhouette: a circle, a torso and
  * two legs are unmistakably a person at 120px tall, and pretending to anatomy
  * we don't have would only invite questions about which shin took what.
  *
- * The share drives opacity, but every zone also prints its count - colour
- * alone never carries a number here, and at low contrast an almost-empty zone
- * would otherwise be indistinguishable from a missing one. */
-export function StrikeMap({
+ * The shares drive opacity, but the counts are always printed next to it -
+ * colour alone never carries a number here. */
+export function StrikeFigure({
   targets,
-  /** which fighter's colour the zones take - matches the fight card's own
-   * accent/blue pairing */
   side = "a",
   className,
 }: {
@@ -46,67 +48,124 @@ export function StrikeMap({
   side?: "a" | "b";
   className?: string;
 }) {
-  const total = totalStrikes(targets);
-  if (total === 0) return null;
-
-  const share = (area: string) => (targets[area] ?? 0) / total;
-
   // A zone with a single hit in a busy fight would round to invisible, so the
   // floor is "clearly tinted" rather than "technically non-zero".
-  const fill = (area: string) => {
-    const value = targets[area] ?? 0;
-    if (value === 0) return 0.08;
-    return 0.25 + share(area) * 0.75;
-  };
-
-  const zoneClass = side === "a" ? "fill-accent" : "fill-blue-600 dark:fill-blue-500";
+  const fill = (area: string) => ((targets[area] ?? 0) === 0 ? 0.08 : 0.25 + share(targets, area) * 0.75);
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <svg
-        viewBox="0 0 60 120"
-        className="h-28 w-14 shrink-0"
-        role="img"
-        aria-label={STRIKE_AREAS.map((a) => `${areaLabel(a)}: ${targets[a] ?? 0}`).join(", ")}
-      >
-        {/* the body underneath, so an untouched zone still reads as part of a
-            figure instead of a hole in it */}
-        <g className="fill-black/10 dark:fill-white/15">
-          <circle cx="30" cy="12" r="10" />
-          <rect x="17" y="25" width="26" height="34" rx="7" />
-          <rect x="4" y="27" width="9" height="30" rx="4.5" />
-          <rect x="47" y="27" width="9" height="30" rx="4.5" />
+    <svg
+      viewBox="0 0 60 120"
+      className={cn("h-24 w-12 shrink-0", className)}
+      role="img"
+      aria-label={STRIKE_AREAS.map((a) => `${areaLabel(a)}: ${targets[a] ?? 0}`).join(", ")}
+    >
+      {/* the body underneath, so an untouched zone still reads as part of a
+          figure instead of a hole in it */}
+      <g className="fill-black/10 dark:fill-white/15">
+        <circle cx="30" cy="12" r="10" />
+        <rect x="17" y="25" width="26" height="34" rx="7" />
+        <rect x="4" y="27" width="9" height="30" rx="4.5" />
+        <rect x="47" y="27" width="9" height="30" rx="4.5" />
+        <rect x="19" y="62" width="9" height="54" rx="4.5" />
+        <rect x="32" y="62" width="9" height="54" rx="4.5" />
+      </g>
+
+      <g className={side === "a" ? "fill-accent" : "fill-blue-600 dark:fill-blue-500"}>
+        <circle cx="30" cy="12" r="10" opacity={fill("head")} />
+        <rect x="17" y="25" width="26" height="34" rx="7" opacity={fill("body")} />
+        <g opacity={fill("legs")}>
           <rect x="19" y="62" width="9" height="54" rx="4.5" />
           <rect x="32" y="62" width="9" height="54" rx="4.5" />
         </g>
+      </g>
+    </svg>
+  );
+}
 
-        <g className={zoneClass}>
-          <circle cx="30" cy="12" r="10" opacity={fill("head")} />
-          <g opacity={fill("body")}>
-            <rect x="17" y="25" width="26" height="34" rx="7" />
-          </g>
-          <g opacity={fill("legs")}>
-            <rect x="19" y="62" width="9" height="54" rx="4.5" />
-            <rect x="32" y="62" width="9" height="54" rx="4.5" />
-          </g>
-        </g>
-      </svg>
+function Count({ value, percent }: { value: number; percent: number }) {
+  return (
+    <>
+      <span className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+        {percent} %
+      </span>
+      <span className="text-sm font-bold tabular-nums">{value}</span>
+    </>
+  );
+}
 
-      <dl className="flex min-w-0 flex-col gap-1 text-xs">
-        {STRIKE_AREAS.map((area) => {
-          const value = targets[area] ?? 0;
-          return (
-            <div key={area} className="flex items-baseline gap-2">
-              <dt className="w-10 shrink-0 text-neutral-500 dark:text-neutral-400">
-                {areaLabel(area)}
-              </dt>
-              <dd className="font-bold tabular-nums">{value}</dd>
-              <dd className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
-                {total > 0 ? `${Math.round(share(area) * 100)} %` : null}
-              </dd>
-            </div>
-          );
-        })}
+/** Both fighters' areas as one table: the three labels run down the middle
+ * and each side's numbers sit on its own side, with the figures on the
+ * outside.
+ *
+ * Same shape as the totals above it, deliberately - two separate figure+list
+ * blocks meant the words "Hlava / Tělo / Nohy" appeared twice and each side's
+ * percentages had so little room they wrapped onto a second line. One centre
+ * column says it once and gives the numbers the width they needed. */
+export function StrikeComparison({
+  a,
+  b,
+  className,
+}: {
+  a: Record<string, number>;
+  b: Record<string, number>;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex items-center justify-between gap-2", className)}>
+      <StrikeFigure targets={a} side="a" />
+
+      <dl className="flex min-w-0 flex-1 flex-col gap-2">
+        {STRIKE_AREAS.map((area) => (
+          <div key={area} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            {/* mirrored on purpose: the bold count hugs the label on both
+                sides, so the eye compares the two numbers across one word
+                instead of across the whole row */}
+            <dd className="flex items-baseline justify-end gap-1.5 whitespace-nowrap">
+              <Count value={a[area] ?? 0} percent={Math.round(share(a, area) * 100)} />
+            </dd>
+            <dt className="text-center text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              {areaLabel(area)}
+            </dt>
+            <dd className="flex flex-row-reverse items-baseline justify-end gap-1.5 whitespace-nowrap">
+              <Count value={b[area] ?? 0} percent={Math.round(share(b, area) * 100)} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <StrikeFigure targets={b} side="b" />
+    </div>
+  );
+}
+
+/** One fighter's areas - the career panel, where there is nothing to compare
+ * against, so the label and its numbers simply read left to right. */
+export function StrikeMap({
+  targets,
+  side = "a",
+  className,
+}: {
+  targets: Record<string, number>;
+  side?: "a" | "b";
+  className?: string;
+}) {
+  if (totalStrikes(targets) === 0) return null;
+
+  return (
+    <div className={cn("flex items-center gap-4", className)}>
+      <StrikeFigure targets={targets} side={side} />
+      <dl className="flex min-w-0 flex-col gap-2 text-sm">
+        {STRIKE_AREAS.map((area) => (
+          <div key={area} className="flex items-baseline gap-2 whitespace-nowrap">
+            <dt className="w-10 shrink-0 text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              {areaLabel(area)}
+            </dt>
+            <dd className="font-bold tabular-nums">{targets[area] ?? 0}</dd>
+            <dd className="text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400">
+              {Math.round(share(targets, area) * 100)} %
+            </dd>
+          </div>
+        ))}
       </dl>
     </div>
   );

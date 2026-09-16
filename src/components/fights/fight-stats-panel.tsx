@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { StrikeMap, hasStrikeMap } from "@/components/fighters/strike-map";
+import { StrikeComparison, hasStrikeMap } from "@/components/fighters/strike-map";
 import type { Fight, FightStats, FightStatsSide } from "@/lib/types";
 
 type Row = { label: string; a: number; b: number };
@@ -75,10 +75,7 @@ export function FightStatsPanel({ fight, stats }: { fight: Fight; stats: FightSt
           <p className="mb-2 text-center text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             Zásahy podle oblasti
           </p>
-          <div className="flex items-start justify-between gap-3">
-            <StrikeMap targets={stats.a.targets} side="a" />
-            <StrikeMap targets={stats.b.targets} side="b" className="flex-row-reverse" />
-          </div>
+          <StrikeComparison a={stats.a.targets} b={stats.b.targets} />
         </div>
       )}
     </div>
