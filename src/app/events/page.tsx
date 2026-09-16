@@ -148,16 +148,22 @@ export default async function EventsPage({
         Galavečery
       </PageHeading>
 
+      {/* Stejná kapsle jako nad žebříčkem - `glass-floating` a p-1 kolem
+          segmentů je to, co z řady pilulek dělá jeden ovladač. Bez ní tu
+          sedělo pět volných tlačítek, která s ničím jiným v appce
+          nekorespondovala. */}
       {seasons.length > 1 && (
-        <SegmentedControl
-          ariaLabel="Sezóna"
-          value={String(season)}
-          segments={seasons.map((year) => ({
-            key: String(year),
-            label: String(year),
-            href: `/events?sezona=${year}`,
-          }))}
-        />
+        <div className="glass-floating inline-flex max-w-full rounded-full p-1">
+          <SegmentedControl
+            ariaLabel="Sezóna"
+            value={String(season)}
+            segments={seasons.map((year) => ({
+              key: String(year),
+              label: String(year),
+              href: `/events?sezona=${year}`,
+            }))}
+          />
+        </div>
       )}
 
       {user && <WelcomeCard />}
