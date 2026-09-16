@@ -12,14 +12,28 @@ name: Import archive
 on:
   workflow_dispatch:
     inputs:
-      number_from:
-        description: "Od čísla OKTAGONu"
+      mode:
+        description: "Co importovat"
         required: true
+        default: "range"
+        type: choice
+        options:
+          - range
+          - unnumbered
+          - all
+      number_from:
+        description: "Od čísla OKTAGONu (jen pro mode=range)"
+        required: false
         type: string
       number_to:
-        description: "Do čísla OKTAGONu včetně"
-        required: true
+        description: "Do čísla OKTAGONu včetně (jen pro mode=range)"
+        required: false
         type: string
+      list_only:
+        description: "Jen vypsat, nic nezapisovat"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: import-archive
@@ -47,4 +61,17 @@ jobs:
 
       - name: Import
         working-directory: scraper
-        run: python import_archive.py --from "${{ inputs.number_from }}" --to "${{ inputs.number_to }}"
+        env:
+          MODE: ${{ inputs.mode }}
+          NUMBER_FROM: ${{ inputs.number_from }}
+          NUMBER_TO: ${{ inputs.number_to }}
+          LIST_ONLY: ${{ inputs.list_only }}
+        run: |
+          args=""
+          case "$MODE" in
+            unnumbered) args="--unnumbered" ;;
+            all)        args="--all" ;;
+            *)          args="--from $NUMBER_FROM --to $NUMBER_TO" ;;
+          esac
+          if [ "$LIST_ONLY" = "true" ]; then args="$args --list"; fi
+          python import_archive.py $args
