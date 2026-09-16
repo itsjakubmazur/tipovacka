@@ -45,8 +45,20 @@ je přesně to, co v téhle appce jednou skončilo výpadkem.
 
 ## Import
 
-`scraper/import_archive.py --from N --to M` (workflow *Import archive*, po
-dávkách kvůli limitu běhu). Pro každý odehraný turnaj:
+`scraper/import_archive.py` (workflow *Import archive*, po dávkách kvůli
+limitu běhu) ve třech režimech: rozsah čísel, jen nečíslované show, nebo
+všechno. `--list` jen vypíše, co by se importovalo, a nic nezapíše.
+
+Bere se **jen to, co pořádá OKTAGON** (`organizationId = OKTAGON_MMA`).
+Listing `/v1/events/` je totiž sdílený s dalšími promocemi — PML, THE RING,
+FNC. FABRIQ je nedůsledný: první dvě karty jsou označené jako OKTAGON_MMA
+a třetí jako FABRIQ_MMA, takže první dvě v archivu jsou a třetí ne.
+
+Karta se stahuje **dřív** než se zakládá event: OKTAGON si drží placeholdery
+po přesunutých turnajích („OKTAGON PRIME 4 - SE PŘESOUVÁ") a archivní event
+s prázdnou kartou je jen šum ve výpisu.
+
+Pro každý odehraný turnaj:
 
 1. založí/aktualizuje event (`is_archive`, `status=completed`, plakát z
    `coverImage` v `/v1/events/` — jediné místo, kde se poster starého

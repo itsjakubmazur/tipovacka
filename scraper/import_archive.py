@@ -26,6 +26,12 @@ from supabase_client import SupabaseClient
 
 # Set on every archive event so no notification path can ever pick it up,
 # whatever its filters say.
+# Whose shows belong in an OKTAGON archive. Deliberately not "everything the
+# API returns": the /v1/events/ listing is shared with other promotions.
+# FABRIQ is inconsistent - its first two cards are tagged OKTAGON_MMA and the
+# third FABRIQ_MMA - so those two come along and the third does not.
+ORGANIZATIONS = {"OKTAGON_MMA"}
+
 NOTIFICATION_MARKERS = (
     "hype_notified_at",
     "card_notified_at",
@@ -96,11 +102,9 @@ def _upsert_event(db: SupabaseClient, tournament: dict, now: str) -> str | None:
     return db.insert("events", [_event_row(tournament, now)])[0]["id"]
 
 
-def _import_card(db: SupabaseClient, event_id: str, oktagon_event_id: int) -> int:
+def _import_card(db: SupabaseClient, event_id: str, fights_data: list[dict]) -> int:
     """The whole card at once, results included - an archive gala is over,
     so there is no reason to write it as scheduled and grade it afterwards."""
-    fights_data = fetch_fightcard(oktagon_event_id)
-
     existing = db.select(
         "fights",
         {"event_id": f"eq.{event_id}", "select": "id,oktagon_fight_id"},
@@ -161,6 +165,9 @@ def import_archive(
     now = datetime.now(timezone.utc).isoformat()
 
     tournaments = [t for t in fetch_all_tournaments() if t.get("event_date")]
+    # The listing carries other promotions too - PML, THE RING, FNC and one
+    # FABRIQ card are all in there. An archive of OKTAGON is OKTAGON's own.
+    tournaments = [t for t in tournaments if t.get("organization_id") in ORGANIZATIONS]
     past = [t for t in tournaments if t["event_date"] < now]
     if unnumbered_only:
         past = [t for t in past if t.get("number") is None]
@@ -193,15 +200,24 @@ def import_archive(
     fights = 0
     for tournament in past:
         label = _label(tournament)
+
+        # The card comes first: OKTAGON keeps placeholder entries for galas
+        # that got moved or called off ("OKTAGON PRIME 4 - SE PŘESOUVÁ"), and
+        # an archive event with no fights in it is just noise in the listing.
+        try:
+            fights_data = fetch_fightcard(tournament["oktagon_event_id"])
+        except Exception as exc:
+            print(f"{label}: kartu se nepodařilo stáhnout ({exc}), pokračuji.")
+            continue
+        if not fights_data:
+            print(f"{label}: prázdná karta, přeskakuji.")
+            continue
+
         event_id = _upsert_event(db, tournament, now)
         if not event_id:
             continue
 
-        try:
-            written = _import_card(db, event_id, tournament["oktagon_event_id"])
-        except Exception as exc:
-            print(f"{label}: kartu se nepodařilo naimportovat ({exc}), pokračuji.")
-            continue
+        written = _import_card(db, event_id, fights_data)
 
         events += 1
         fights += written
