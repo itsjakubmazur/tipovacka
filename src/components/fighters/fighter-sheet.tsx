@@ -1,35 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Modal } from "@/components/modal";
-import { FighterForm } from "@/components/fighters/fighter-form";
-import {
-  describeHistoryResult,
-  formatOktagonRecord,
-  oktagonRecord,
-  recentForm,
-} from "@/lib/fighter-history";
-import { cn } from "@/lib/utils";
+import { FighterIdentity } from "@/components/fighters/fighter-identity";
+import { FighterHistoryList } from "@/components/fighters/fighter-history-list";
+import { oktagonRecord } from "@/lib/fighter-history";
 import type { Fighter, FighterHistoryEntry } from "@/lib/types";
-
-const NEUTRAL_CHIP =
-  "border-black/10 bg-black/[0.06] text-neutral-600 dark:border-white/15 dark:bg-white/10 dark:text-neutral-300";
-
-const OUTCOME_CHIPS: Record<string, string> = {
-  win: "glass-green",
-  loss: "glass-danger",
-  draw: NEUTRAL_CHIP,
-  no_contest: NEUTRAL_CHIP,
-};
-
-const OUTCOME_WORDS: Record<string, string> = {
-  win: "Výhra",
-  loss: "Prohra",
-  draw: "Remíza",
-  no_contest: "No contest",
-};
 
 /** Everything we know about one fighter, on top of the card rather than on a
  * page of its own: bio, record in the promotion, and every OKTAGON fight
@@ -37,7 +16,10 @@ const OUTCOME_WORDS: Record<string, string> = {
  *
  * The history is fetched when the sheet opens rather than shipped with the
  * fight card: ten cards on a phone would otherwise carry two hundred rows
- * nobody asked to see. */
+ * nobody asked to see.
+ *
+ * Renders the same blocks as /fighters/[id] - the sheet is the same profile
+ * with less room, not a second design of it. */
 export function FighterSheet({ fighter, onClose }: { fighter: Fighter; onClose: () => void }) {
   const supabase = createClient();
   const [history, setHistory] = useState<FighterHistoryEntry[] | null>(null);
@@ -68,61 +50,15 @@ export function FighterSheet({ fighter, onClose }: { fighter: Fighter; onClose: 
   }, [supabase, fighter.id]);
 
   const record = history ? oktagonRecord(history) : null;
-  const photo = fighter.photo_url ?? fighter.fight_card_photo_url;
 
   return (
     <Modal onClose={onClose}>
-      <div className="flex items-start gap-3 pr-8">
-        {photo && (
-          <div className="relative size-16 shrink-0 overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
-            <Image
-              src={photo}
-              alt={fighter.name}
-              fill
-              sizes="64px"
-              className="object-cover object-top"
-            />
-          </div>
-        )}
-        <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-lg font-extrabold uppercase leading-tight tracking-tight">
-            {fighter.flag_code && (
-              <Image
-                src={`https://flagcdn.com/h20/${fighter.flag_code}.png`}
-                alt={fighter.nationality ?? ""}
-                width={20}
-                height={14}
-                unoptimized
-                className="h-auto w-5 shrink-0"
-              />
-            )}
-            <span className="truncate">{fighter.name}</span>
-          </h2>
-          {fighter.nickname && (
-            <p className="text-xs italic text-neutral-500 dark:text-neutral-400">
-              {`„${fighter.nickname}“`}
-            </p>
-          )}
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
-            {fighter.oktagon_rank && <span>{fighter.oktagon_rank}</span>}
-            {fighter.record && (
-              <span>
-                Kariéra <span className="font-bold tabular-nums text-black dark:text-white">{fighter.record}</span>
-              </span>
-            )}
-            {record && record.total > 0 && (
-              <span>
-                V OKTAGONU{" "}
-                <span className="font-bold tabular-nums text-black dark:text-white">
-                  {formatOktagonRecord(record)}
-                </span>
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {history && history.length > 0 && <FighterForm form={recentForm(history)} />}
+      <FighterIdentity
+        fighter={fighter}
+        history={history}
+        record={record}
+        className="pr-8"
+      />
 
       {fighter.bio && (
         <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">{fighter.bio}</p>
@@ -148,43 +84,20 @@ export function FighterSheet({ fighter, onClose }: { fighter: Fighter; onClose: 
           </p>
         )}
 
-        {history && history.length > 0 && (
-          <ul className="glass-surface divide-y divide-black/5 rounded-xl border dark:divide-white/5">
-            {history.map((entry) => (
-              <li
-                key={entry.oktagon_fight_id}
-                className="flex items-center justify-between gap-3 px-3 py-2"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{entry.opponent_name}</p>
-                  <p className="truncate text-[11px] text-neutral-500 dark:text-neutral-400">
-                    {entry.event_label} · {new Date(entry.event_date).getFullYear()}
-                    {entry.title_fight && " · o titul"}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span
-                    className={cn(
-                      "rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
-                      OUTCOME_CHIPS[entry.outcome] ?? NEUTRAL_CHIP
-                    )}
-                  >
-                    {OUTCOME_WORDS[entry.outcome] ?? "—"}
-                  </span>
-                  {/* For a draw or a no contest the chip above already is
-                      the whole story - repeating the word under it read like
-                      a rendering slip. */}
-                  {(entry.outcome === "win" || entry.outcome === "loss") && (
-                    <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                      {describeHistoryResult(entry)}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        {history && history.length > 0 && <FighterHistoryList history={history} />}
       </div>
+
+      {/* Ven z dialogu až na konec: kdo si rozklikl bojovníka uprostřed
+          tipování, většinou chtěl jen mrknout na formu a vrátit se ke kartě.
+          Kdo chce víc - statistiky kariéry, proklik na soupeře - najde cestu
+          tady, ne místo toho, co si otevřel. */}
+      <Link
+        href={`/fighters/${fighter.id}`}
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-yellow-600 outline-none transition-colors hover:text-yellow-700 focus-visible:ring-2 focus-visible:ring-accent dark:text-accent dark:hover:text-yellow-300"
+      >
+        Celý profil bojovníka
+        <ArrowRight className="size-4" />
+      </Link>
     </Modal>
   );
 }

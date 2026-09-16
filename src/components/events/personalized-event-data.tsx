@@ -174,7 +174,22 @@ export async function PersonalizedEventData({
             <h2 className="hidden text-sm font-bold uppercase tracking-wide text-neutral-500 lg:block dark:text-neutral-400">
               Přehled
             </h2>
-            {countableFights.length > 0 && (
+            {/* Archivní turnaj se neodehrál v tipovačce - časomíra o
+                tipování, bodech a pořadí by u něj jen lhala nulami. Místo ní
+                jedna věta, proč tu ten galavečer vlastně je. */}
+            {event.is_archive && (
+              <div className="glass-surface rounded-xl border p-4">
+                <p className="text-sm font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                  Archiv OKTAGONU
+                </p>
+                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+                  Tenhle turnaj jsme netipovali - je tu kvůli výsledkům, kartě a
+                  historii zápasníků.
+                </p>
+              </div>
+            )}
+
+            {!event.is_archive && countableFights.length > 0 && (
               <EventStatusTimeline
                 locked={locked}
                 completed={event.status === "completed"}

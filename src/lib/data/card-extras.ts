@@ -37,7 +37,7 @@ const EMPTY: CardExtras = { historyByFighter: {}, previousMeetingByFight: {}, st
 type StatsRow = {
   fight_id: string;
   rounds: FightStats["rounds"];
-} & Record<string, number | string | FightStats["rounds"]>;
+} & Record<string, number | string | Record<string, number> | FightStats["rounds"]>;
 
 function side(row: StatsRow, prefix: "fighter_a" | "fighter_b"): FightStatsSide {
   return {
@@ -46,6 +46,7 @@ function side(row: StatsRow, prefix: "fighter_a" | "fighter_b"): FightStatsSide 
     takedowns: Number(row[`${prefix}_takedowns`] ?? 0),
     takedown_attempts: Number(row[`${prefix}_takedown_attempts`] ?? 0),
     submission_attempts: Number(row[`${prefix}_submission_attempts`] ?? 0),
+    targets: (row[`${prefix}_targets`] as Record<string, number> | null) ?? {},
   };
 }
 

@@ -200,12 +200,21 @@ class TestFightcardExtras:
         normalized = normalize_fight(fights[0], 0, len(fights), "main_card")
         assert normalized["oktagon_esports_id"] == 1059
 
-    def test_old_cards_have_no_stats_join_key(self):
-        # OKTAGON 1 (2016) predates the tracking system entirely - every
-        # fight there has an empty `metadata`.
+    def test_old_cards_join_on_the_legacy_key_instead(self):
+        # OKTAGON 1 (2016) has an empty `metadata` - but it does carry a
+        # `legacyId`, and that is what the tracking system knows it by.
         fights = self._card("fightcard_oktagon_1.json")
         normalized = normalize_fight(fights[0], 0, len(fights), "main_card")
         assert normalized["oktagon_esports_id"] is None
+        assert normalized["oktagon_legacy_id"] == 1898
+
+    def test_recent_cards_carry_only_the_new_key(self):
+        # The two id spaces never overlap: a card new enough to have an
+        # esportsId has no legacyId at all.
+        fights = self._card("fightcard_oktagon_88.json")
+        normalized = normalize_fight(fights[0], 0, len(fights), "main_card")
+        assert normalized["oktagon_esports_id"] == 1059
+        assert normalized["oktagon_legacy_id"] is None
 
     def test_finish_time_is_normalized_across_both_card_formats(self):
         recent = self._card("fightcard_oktagon_88.json")

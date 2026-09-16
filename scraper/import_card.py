@@ -190,6 +190,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                 "card_order": fight["card_order"],
                 "card_segment": fight["card_segment"],
                 "oktagon_esports_id": fight["oktagon_esports_id"],
+                "oktagon_legacy_id": fight["oktagon_legacy_id"],
             }
             # a fight we cancelled earlier is back on OKTAGON's card
             # (temporary API hiccup or a reversed cancellation) - revive it
@@ -222,6 +223,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                 "card_order": fight["card_order"],
                 "card_segment": fight["card_segment"],
                 "oktagon_esports_id": fight["oktagon_esports_id"],
+                "oktagon_legacy_id": fight["oktagon_legacy_id"],
             }
             # Only ever raise the round count here, never lower it: a
             # five-round fight without a belt on the line is invisible in the
@@ -251,6 +253,7 @@ def import_card(event_id: str) -> tuple[int, int]:
                     "card_order": fight["card_order"],
                     "card_segment": fight["card_segment"],
                     "oktagon_esports_id": fight["oktagon_esports_id"],
+                    "oktagon_legacy_id": fight["oktagon_legacy_id"],
                     "status": "scheduled",
                 }
             ],

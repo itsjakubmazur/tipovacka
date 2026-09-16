@@ -56,6 +56,7 @@ def _fight(is_title_fight):
         "card_order": 1,
         "card_segment": "main_card",
         "oktagon_esports_id": 4242,
+        "oktagon_legacy_id": None,
     }
 
 

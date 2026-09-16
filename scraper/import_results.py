@@ -330,7 +330,8 @@ def import_results(event_id: str) -> None:
         {
             "event_id": f"eq.{event_id}",
             "select": (
-                "id,oktagon_fight_id,oktagon_esports_id,fighter_a_id,fighter_b_id,status,"
+                "id,oktagon_fight_id,oktagon_esports_id,oktagon_legacy_id,"
+                "fighter_a_id,fighter_b_id,status,"
                 "result_locked,winner_fighter_id,method,result_round,result_time"
             ),
         },
@@ -345,13 +346,17 @@ def import_results(event_id: str) -> None:
     linked = 0
     for fight in fights_data:
         db_fight = by_oktagon_id.get(fight["oktagon_fight_id"])
-        esports_id = fight.get("oktagon_esports_id")
-        if not db_fight or not esports_id:
+        if not db_fight:
             continue
-        if db_fight.get("oktagon_esports_id") == esports_id:
+        patch = {
+            column: fight.get(column)
+            for column in ("oktagon_esports_id", "oktagon_legacy_id")
+            if fight.get(column) and db_fight.get(column) != fight.get(column)
+        }
+        if not patch:
             continue
-        db.update("fights", {"oktagon_esports_id": esports_id}, {"id": f"eq.{db_fight['id']}"})
-        db_fight["oktagon_esports_id"] = esports_id
+        db.update("fights", patch, {"id": f"eq.{db_fight['id']}"})
+        db_fight.update(patch)
         linked += 1
     if linked:
         print(f"Napojeno {linked} zápasů na pozápasové statistiky.")

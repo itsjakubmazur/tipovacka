@@ -27,10 +27,13 @@ from supabase_client import SupabaseClient
 # Set on every archive event so no notification path can ever pick it up,
 # whatever its filters say.
 # Whose shows belong in an OKTAGON archive. Deliberately not "everything the
-# API returns": the /v1/events/ listing is shared with other promotions.
-# FABRIQ is inconsistent - its first two cards are tagged OKTAGON_MMA and the
-# third FABRIQ_MMA - so those two come along and the third does not.
-ORGANIZATIONS = {"OKTAGON_MMA"}
+# API returns": the /v1/events/ listing is shared with other promotions (PML,
+# THE RING, FNC), and those are somebody else's.
+#
+# FABRIQ is OKTAGON's own second brand and its cards are tagged inconsistently
+# - the first two as OKTAGON_MMA, the third as FABRIQ_MMA - so both tags are
+# listed here and all three end up in the archive together.
+ORGANIZATIONS = {"OKTAGON_MMA", "FABRIQ_MMA"}
 
 NOTIFICATION_MARKERS = (
     "hype_notified_at",
@@ -126,6 +129,7 @@ def _import_card(db: SupabaseClient, event_id: str, fights_data: list[dict]) -> 
             "event_id": event_id,
             "oktagon_fight_id": fight["oktagon_fight_id"],
             "oktagon_esports_id": fight["oktagon_esports_id"],
+            "oktagon_legacy_id": fight["oktagon_legacy_id"],
             "fighter_a_id": fighter_a_id,
             "fighter_b_id": fighter_b_id,
             "weight_class": fight["weight_class"],

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { StrikeMap, hasStrikeMap } from "@/components/fighters/strike-map";
 import type { Fight, FightStats, FightStatsSide } from "@/lib/types";
 
 type Row = { label: string; a: number; b: number };
@@ -14,7 +15,9 @@ export function FightStatsPanel({ fight, stats }: { fight: Fight; stats: FightSt
     { label: "Pokusy o submisi", a: stats.a.submission_attempts, b: stats.b.submission_attempts },
   ].filter((row) => row.a > 0 || row.b > 0);
 
-  if (rows.length === 0) return null;
+  const maps = hasStrikeMap(stats.a.targets) || hasStrikeMap(stats.b.targets);
+
+  if (rows.length === 0 && !maps) return null;
 
   return (
     <div className="px-4 pb-3">
@@ -63,6 +66,21 @@ export function FightStatsPanel({ fight, stats }: { fight: Fight; stats: FightSt
           );
         })}
       </dl>
+
+      {/* Kam ty zásahy šly. Pod čísly, ne místo nich: součty odpovídají na
+          "kdo byl aktivnější", tohle na "jak ten zápas vypadal". Dvě figury
+          vedle sebe drží stejné stranování jako celá karta. */}
+      {maps && (
+        <div className="mt-3 border-t border-black/5 pt-3 dark:border-white/10">
+          <p className="mb-2 text-center text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            Zásahy podle oblasti
+          </p>
+          <div className="flex items-start justify-between gap-3">
+            <StrikeMap targets={stats.a.targets} side="a" />
+            <StrikeMap targets={stats.b.targets} side="b" className="flex-row-reverse" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

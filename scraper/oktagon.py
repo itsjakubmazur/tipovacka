@@ -52,10 +52,19 @@ BASE_URL = "https://oktagonmma.com"
 
 # Per-fight tracking stats (hits, takedowns, submission attempts) do NOT live
 # on api.oktagonmma.com - oktagonmma.com's own fight-statistics widget pulls
-# them from this third-party tracking system, keyed by `metadata.esportsId`.
-# It is somebody else's domain with no SLA towards OKTAGON, the data only goes
-# back to roughly mid-2024, and any single fight may simply not be there - so
-# every caller has to survive it returning nothing.
+# them from this third-party tracking system. It is somebody else's domain
+# with no SLA towards OKTAGON and any single fight may simply not be there,
+# so every caller has to survive it returning nothing.
+#
+# A fight is looked up under one of two keys, and which one depends on how old
+# it is - the same fallback oktagonmma.com does in its own widget:
+#   * /matches/{id}           where id is `metadata.esportsId` from OKTAGON's
+#                             API - present on fights from roughly 2023 on
+#   * /matches/external/{id}  where id is the fight's `legacyId` - present on
+#                             the older ones, where `metadata` is just {}
+# The two id spaces are unrelated: asking /matches/ for a legacyId finds
+# either nothing or, worse, somebody else's fight. Hence `fetch_match_stats`
+# taking the key it was given rather than guessing.
 ESPORTS_EXPORT_URL = "https://oktagon.sh12w3.esports.cz/api/export"
 
 OUTCOME_BY_RESULT = {
@@ -445,6 +454,9 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
         "result_round": result_round,
         "result_time": result_time,
         "oktagon_esports_id": (fight.get("metadata") or {}).get("esportsId"),
+        # Starý zápas má prázdné `metadata` a statistiky se u něj hledají
+        # právě přes tohle - viz ESPORTS_EXPORT_URL.
+        "oktagon_legacy_id": fight.get("legacyId"),
     }
 
 
@@ -532,18 +544,23 @@ def normalize_history_fight(fight: dict, oktagon_fighter_id: int) -> dict | None
     }
 
 
-def fetch_match_stats(esports_match_id: int) -> dict | None:
+def fetch_match_stats(match_id: int, *, legacy: bool = False) -> dict | None:
     """Per-fight tracking data from the external system. Returns None for
     anything but a 200 - a missing fight there is the normal case, not an
-    error worth failing an import over."""
+    error worth failing an import over.
+
+    `legacy` picks the id space: False for `metadata.esportsId`, True for the
+    fight's `legacyId`. See ESPORTS_EXPORT_URL - the two are not
+    interchangeable."""
+    path = f"matches/external/{match_id}" if legacy else f"matches/{match_id}"
     try:
         resp = requests.get(
-            f"{ESPORTS_EXPORT_URL}/matches/{esports_match_id}",
+            f"{ESPORTS_EXPORT_URL}/{path}",
             headers={"User-Agent": USER_AGENT},
             timeout=30,
         )
     except requests.RequestException as exc:
-        print(f"Statistiky zápasu {esports_match_id} se nepodařilo stáhnout: {exc}")
+        print(f"Statistiky zápasu ({path}) se nepodařilo stáhnout: {exc}")
         return None
     if resp.status_code != 200:
         return None
@@ -551,6 +568,21 @@ def fetch_match_stats(esports_match_id: int) -> dict | None:
         return resp.json()
     except ValueError:
         return None
+
+
+def fetch_match_stats_by_key(
+    esports_id: int | None, legacy_id: int | None
+) -> dict | None:
+    """Whichever key the fight actually has. The newer one goes first: when a
+    fight carries both, `metadata.esportsId` is what OKTAGON's own widget
+    uses, and a legacyId that old is likelier to be stale."""
+    if esports_id:
+        payload = fetch_match_stats(esports_id)
+        if payload:
+            return payload
+    if legacy_id:
+        return fetch_match_stats(legacy_id, legacy=True)
+    return None
 
 
 def _normalized_name(value: str | None) -> str:
@@ -605,6 +637,9 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
     """Totals (and a per-round breakdown) of what the tracking system logged:
     every individual hit, takedown and submission attempt of the fight.
 
+    Also where the hits landed (head/body/legs), which is what OKTAGON's own
+    "údery podle oblasti zasažení" is drawn from.
+
     `fighter_a`/`fighter_b` are our own rows - name plus oktagon_legacy_id -
     and decide which side each logged event belongs to."""
     sides = _stats_side_map(payload, fighter_a, fighter_b)
@@ -622,6 +657,9 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
 
     totals = {"a": blank(), "b": blank()}
     per_round: dict[int, dict[str, dict[str, int]]] = {}
+    # Kam údery dopadaly. Jejich číselník, ne náš - co přijde, to se sečte,
+    # takže čtvrtá oblast by se objevila sama od sebe.
+    targets: dict[str, dict[str, int]] = {"a": {}, "b": {}}
 
     def bucket(entry: dict) -> tuple[dict[str, int], dict[str, int]] | None:
         attacker_id = (entry.get("attacker") or {}).get("id")
@@ -646,6 +684,10 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
             counter["hits"] += 1
             if hit.get("type") == "significant":
                 counter["significant_hits"] += 1
+        area = hit.get("target")
+        if area:
+            side = sides[(hit.get("attacker") or {}).get("id")]
+            targets[side][area] = targets[side].get(area, 0) + 1
 
     for takedown in payload.get("takedowns") or []:
         target = bucket(takedown)
@@ -667,6 +709,7 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
     for side in ("a", "b"):
         for key, value in totals[side].items():
             row[f"fighter_{side}_{key}"] = value
+        row[f"fighter_{side}_targets"] = targets[side]
     row["rounds"] = [
         {"round": round_no, "a": slot["a"], "b": slot["b"]}
         for round_no, slot in sorted(per_round.items())

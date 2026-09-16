@@ -5,13 +5,20 @@ name: Backfill fight stats
 # fights have no link to the tracking system yet - this fills that in first,
 # then fetches whatever the system has.
 #
-# Only ever writes fights.oktagon_esports_id and the fight_stats table;
-# results, statuses and scoring are not touched.
+# Only ever writes fights.oktagon_esports_id / fights.oktagon_legacy_id and
+# the fight_stats table; results, statuses and scoring are not touched.
+#
+# Celý archiv je přes sto turnajů a přes tisíc zápasů, tj. tisíce requestů -
+# na to je tu `year`, ať se dá jet po sezónách.
 on:
   workflow_dispatch:
     inputs:
       event_id:
         description: "Jen tenhle galavečer (UUID). Prázdné = všechny odehrané."
+        required: false
+        type: string
+      year:
+        description: "Jen turnaje z téhle sezóny (např. 2021). Prázdné = všechny."
         required: false
         type: string
 
@@ -22,7 +29,7 @@ concurrency:
 jobs:
   backfill:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 180
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -44,6 +51,8 @@ jobs:
         run: |
           if [ -n "${{ inputs.event_id }}" ]; then
             python backfill_fight_stats.py --event-id "${{ inputs.event_id }}"
+          elif [ -n "${{ inputs.year }}" ]; then
+            python backfill_fight_stats.py --year "${{ inputs.year }}"
           else
             python backfill_fight_stats.py
           fi

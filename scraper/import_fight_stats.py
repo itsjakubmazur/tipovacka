@@ -4,7 +4,8 @@ attempts) for the fights of one gala, stored in `fight_stats`.
 The data comes from the external system oktagonmma.com's own fight-statistics
 widget uses - not from api.oktagonmma.com - so this is best-effort by design:
 a fight that isn't there, or a system that's down, leaves no row and no error.
-Anything before roughly mid-2024 has no `esportsId` at all.
+Which key a fight is found under depends on its age (see ESPORTS_EXPORT_URL);
+one without either key cannot be asked about at all.
 
 It only ever runs after a gala is over, which is also when the numbers first
 exist - there is nothing here that could help anybody's tip.
@@ -13,7 +14,7 @@ exist - there is nothing here that could help anybody's tip.
 import argparse
 from datetime import datetime, timezone
 
-from oktagon import fetch_match_stats, summarize_match_stats
+from oktagon import fetch_match_stats_by_key, summarize_match_stats
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
@@ -27,9 +28,11 @@ def import_fight_stats(event_id: str) -> int:
         "fights",
         {
             "event_id": f"eq.{event_id}",
-            "oktagon_esports_id": "not.is.null",
+            # PostgREST "or": stačí jeden z klíčů, starší zápasy mají jen ten
+            # druhý. Zápas bez obou se nemá čím zeptat.
+            "or": "(oktagon_esports_id.not.is.null,oktagon_legacy_id.not.is.null)",
             "status": "in.(completed,no_contest)",
-            "select": "id,oktagon_esports_id,fighter_a_id,fighter_b_id",
+            "select": "id,oktagon_esports_id,oktagon_legacy_id,fighter_a_id,fighter_b_id",
         },
     )
     if not fights:
@@ -47,7 +50,9 @@ def import_fight_stats(event_id: str) -> int:
     rows = []
     missing = 0
     for fight in fights:
-        payload = fetch_match_stats(fight["oktagon_esports_id"])
+        payload = fetch_match_stats_by_key(
+            fight.get("oktagon_esports_id"), fight.get("oktagon_legacy_id")
+        )
         if not payload:
             missing += 1
             continue
@@ -59,7 +64,7 @@ def import_fight_stats(event_id: str) -> int:
             # Neither the legacy id nor the name lined up, so we cannot tell
             # whose punches are whose. Better no stats than mirrored ones.
             print(
-                f"Statistiky zápasu {fight['oktagon_esports_id']} nejdou spárovat "
+                f"Statistiky zápasu {fight['id']} nejdou spárovat "
                 f"na {fighter_a.get('name')} vs {fighter_b.get('name')}, přeskakuji."
             )
             missing += 1
@@ -69,8 +74,11 @@ def import_fight_stats(event_id: str) -> int:
             {
                 **summary,
                 "fight_id": fight["id"],
-                # Ours is the id we asked for, not whatever the payload echoes.
-                "esports_match_id": fight["oktagon_esports_id"],
+                # Id trackovacího systému z jeho vlastní odpovědi. U starých
+                # zápasů se ptáme jeho `externalId` (naše oktagon_legacy_id),
+                # ale uložit chceme to, pod čím si zápas vede on sám - jinak
+                # by v jednom sloupci byla dvě různá číslování.
+                "esports_match_id": (summary.get("esports_match_id") or fight.get("oktagon_esports_id")),
                 "fetched_at": now,
             }
         )

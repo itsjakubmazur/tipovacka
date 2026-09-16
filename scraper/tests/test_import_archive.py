@@ -143,9 +143,27 @@ def test_rerunning_updates_instead_of_duplicating(monkeypatch):
     ]
 
 
+def test_takes_fabriq_whichever_way_it_is_tagged(monkeypatch):
+    # OKTAGON's own second brand, tagged both ways across its three cards.
+    db = FakeDB()
+    _wire(
+        monkeypatch,
+        db,
+        [
+            _tournament(number=None, organization_id="FABRIQ_MMA", name="FABRIQ 3"),
+            _tournament(number=None, organization_id="OKTAGON_MMA", name="FABRIQ 2"),
+        ],
+    )
+
+    import_archive.import_archive(None, None)
+
+    events = [rows[0] for table, rows in db.inserts if table == "events"]
+    assert sorted(e["name"] for e in events) == ["FABRIQ 2", "FABRIQ 3"]
+
+
 def test_skips_other_promotions(monkeypatch):
     # The /v1/events/ listing is shared - PML, THE RING and FNC are all in
-    # there, and an archive of OKTAGON is OKTAGON's own.
+    # there, and those are somebody else's shows.
     db = FakeDB()
     _wire(
         monkeypatch,

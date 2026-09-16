@@ -19,6 +19,7 @@ export type EventRow = {
   image_url: string | null;
   actual_fotn_fight_id: string | null;
   payouts_enabled: boolean;
+  is_archive: boolean;
   watch_party_enabled: boolean;
   watch_party_starts_at: string | null;
   watch_party_note: string | null;
@@ -53,7 +54,7 @@ export function getEventShared(eventId: string) {
         .from("events")
         .select(
           `id, number, name, subtitle, event_date, location, status, lock_at, image_url,
-           actual_fotn_fight_id, payouts_enabled,
+           actual_fotn_fight_id, payouts_enabled, is_archive,
            watch_party_enabled, watch_party_starts_at, watch_party_note`
         )
         .eq("id", eventId)
