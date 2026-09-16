@@ -194,7 +194,7 @@ def _extract_subtitle(title: str | None, number: int) -> str | None:
 
 
 def fetch_all_tournaments(limit: int = 200) -> list[dict]:
-    """Every numbered fight card OKTAGON has ever held or announced.
+    """Every fight card OKTAGON has ever held or announced, numbered or not.
 
     The listing defaults to the ~20 most recent; `limit` widens it and is
     capped server-side somewhere between 200 and 500 (a bigger number is a
@@ -207,13 +207,19 @@ def fetch_all_tournaments(limit: int = 200) -> list[dict]:
     for item in items:
         if item.get("type") != "TOURNAMENT":
             continue
+        # Unlike fetch_upcoming_tournaments, a missing number is not a reason
+        # to skip: OKTAGON also runs shows that never got one (Prime,
+        # Underground, the one-off city galas), and they are fight cards like
+        # any other. What still has to be checked is whose show it is - the
+        # listing carries other promotions' events too.
         number = _event_number(item)
-        if number is None:
-            continue
+        slugs = item.get("slugs") or []
         tournaments.append(
             {
                 "oktagon_event_id": item["id"],
                 "number": number,
+                "slug": slugs[0] if slugs else None,
+                "organization_id": item.get("organizationId"),
                 "name": _localized(item.get("title")) or _localized(item.get("shortTitle")) or f"OKTAGON {number}",
                 "subtitle": _extract_subtitle(_localized(item.get("title")), number),
                 "event_date": item.get("startDate"),

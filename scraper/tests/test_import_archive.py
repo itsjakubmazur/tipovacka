@@ -173,3 +173,71 @@ def test_a_finish_in_a_later_round_widens_the_scheduled_length(monkeypatch):
     fights = [rows[0] for table, rows in db.inserts if table == "fights"]
     assert fights[0]["rounds"] == 4
     assert all(f["rounds"] in (3, 4, 5) for f in fights)
+
+
+class TestUnnumberedShows:
+    """OKTAGON also runs galas that never got a number (Prime, Underground,
+    the one-off city shows). They are fight cards like any other."""
+
+    def _show(self, **overrides):
+        return {
+            "oktagon_event_id": 140,
+            "number": None,
+            "slug": "oktagon-prime-2",
+            "organization_id": "OKTAGON_MMA",
+            "name": "OKTAGON PRIME 2",
+            "subtitle": None,
+            "event_date": "2025-03-01T18:00:00.000Z",
+            "location": "Brno",
+            "image_url": None,
+            **overrides,
+        }
+
+    def test_a_show_without_a_number_still_gets_imported(self, monkeypatch):
+        db = FakeDB()
+        _wire(monkeypatch, db, [self._show()], card=_card("fightcard_oktagon_1.json"))
+
+        import_archive.import_archive(None, None)
+
+        event = next(rows[0] for table, rows in db.inserts if table == "events")
+        assert event["number"] is None
+        assert event["name"] == "OKTAGON PRIME 2"
+        assert event["is_archive"] is True
+        assert [rows[0] for t, rows in db.inserts if t == "fights"]
+
+    def test_it_is_matched_on_the_oktagon_id_alone(self, monkeypatch):
+        # There is no number to dedupe on, so a second run must still find it.
+        db = FakeDB(events=[{"id": "evt-prime", "is_archive": True, "oktagon_event_id": 140}])
+        _wire(monkeypatch, db, [self._show()])
+
+        import_archive.import_archive(None, None)
+
+        assert not [t for t, _ in db.inserts if t == "events"]
+        assert [f for t, _, f in db.updates if t == "events"] == [{"id": "eq.evt-prime"}]
+
+    def test_unnumbered_mode_leaves_the_numbered_ones_alone(self, monkeypatch):
+        db = FakeDB()
+        _wire(monkeypatch, db, [self._show(), _tournament(number=22)])
+
+        import_archive.import_archive(None, None, unnumbered_only=True)
+
+        events = [rows[0] for table, rows in db.inserts if table == "events"]
+        assert [e["name"] for e in events] == ["OKTAGON PRIME 2"]
+
+    def test_a_number_range_never_picks_up_a_numberless_show(self, monkeypatch):
+        db = FakeDB()
+        _wire(monkeypatch, db, [self._show(), _tournament(number=22)])
+
+        import_archive.import_archive(1, 100)
+
+        events = [rows[0] for table, rows in db.inserts if table == "events"]
+        assert [e["number"] for e in events] == [22]
+
+    def test_listing_writes_nothing(self, monkeypatch):
+        db = FakeDB()
+        _wire(monkeypatch, db, [self._show(), _tournament(number=22)])
+
+        import_archive.import_archive(None, None, list_only=True)
+
+        assert db.inserts == []
+        assert db.updates == []

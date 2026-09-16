@@ -62,6 +62,14 @@ def _event_row(tournament: dict, now: str) -> dict:
     return row
 
 
+def _label(tournament: dict) -> str:
+    return (
+        f"OKTAGON {tournament['number']}"
+        if tournament.get("number") is not None
+        else tournament.get("slug") or tournament["name"]
+    )
+
+
 def _upsert_event(db: SupabaseClient, tournament: dict, now: str) -> str | None:
     """Returns our event id, or None if this gala is one of ours and must
     not be touched."""
@@ -72,7 +80,7 @@ def _upsert_event(db: SupabaseClient, tournament: dict, now: str) -> str | None:
             "select": "id,is_archive,number",
         },
     )
-    if not existing:
+    if not existing and tournament.get("number") is not None:
         existing = db.select(
             "events", {"number": f"eq.{tournament['number']}", "select": "id,is_archive,number"}
         )
@@ -80,7 +88,7 @@ def _upsert_event(db: SupabaseClient, tournament: dict, now: str) -> str | None:
     if existing:
         event = existing[0]
         if not event["is_archive"]:
-            print(f"OKTAGON {tournament['number']}: tenhle galavečer je náš, nesahám na něj.")
+            print(f"{_label(tournament)}: tenhle galavečer je náš, nesahám na něj.")
             return None
         db.update("events", _event_row(tournament, now), {"id": f"eq.{event['id']}"})
         return event["id"]
@@ -143,26 +151,48 @@ def _import_card(db: SupabaseClient, event_id: str, oktagon_event_id: int) -> in
     return written
 
 
-def import_archive(number_from: int | None, number_to: int | None) -> None:
+def import_archive(
+    number_from: int | None,
+    number_to: int | None,
+    unnumbered_only: bool = False,
+    list_only: bool = False,
+) -> None:
     db = SupabaseClient()
     now = datetime.now(timezone.utc).isoformat()
 
     tournaments = [t for t in fetch_all_tournaments() if t.get("event_date")]
     past = [t for t in tournaments if t["event_date"] < now]
-    if number_from is not None:
-        past = [t for t in past if number_from <= t["number"] <= (number_to or number_from)]
-    past.sort(key=lambda t: t["number"])
+    if unnumbered_only:
+        past = [t for t in past if t.get("number") is None]
+    elif number_from is not None:
+        past = [
+            t
+            for t in past
+            if t.get("number") is not None
+            and number_from <= t["number"] <= (number_to or number_from)
+        ]
+    # A show with no number sorts by date; the numbered ones keep their order.
+    past.sort(key=lambda t: (t["number"] is None, t["number"] or 0, t["event_date"]))
 
     if not past:
         print("Žádné galavečery v zadaném rozsahu.")
         return
 
-    print(f"Zpracovávám {len(past)} galavečerů (OKTAGON {past[0]['number']}–{past[-1]['number']}).")
+    print(f"Zpracovávám {len(past)} galavečerů.")
+
+    if list_only:
+        for t in past:
+            print(
+                f"  {t['event_date'][:10]}  {_label(t):<28} org={t.get('organization_id')!r}  "
+                f"{t['name']}"
+            )
+        print(f"Celkem {len(past)} galavečerů (nic se nezapisovalo).")
+        return
 
     events = 0
     fights = 0
     for tournament in past:
-        label = f"OKTAGON {tournament['number']}"
+        label = _label(tournament)
         event_id = _upsert_event(db, tournament, now)
         if not event_id:
             continue
@@ -192,8 +222,19 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--all", action="store_true", help="všechny odehrané galavečery")
     group.add_argument("--from", dest="number_from", type=int, help="od čísla OKTAGONu")
+    group.add_argument(
+        "--unnumbered", action="store_true", help="jen turnaje bez čísla (Prime, Underground, …)"
+    )
     parser.add_argument("--to", dest="number_to", type=int, help="do čísla OKTAGONu včetně")
+    parser.add_argument(
+        "--list", action="store_true", dest="list_only", help="jen vypsat, nic neimportovat"
+    )
     args = parser.parse_args()
 
     with log_run("archive_import"):
-        import_archive(None if args.all else args.number_from, args.number_to)
+        import_archive(
+            None if (args.all or args.unnumbered) else args.number_from,
+            args.number_to,
+            unnumbered_only=args.unnumbered,
+            list_only=args.list_only,
+        )
