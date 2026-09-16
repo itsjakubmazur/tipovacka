@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { StandalonePing } from "@/components/standalone-ping";
@@ -56,6 +57,14 @@ export async function NavBar() {
           </Link>
           <div className="flex items-center gap-2">
             <DesktopNav isAdmin={isAdmin} />
+            <Link
+              href="/fighters"
+              aria-label="Najít bojovníka"
+              title="Najít bojovníka"
+              className="flex size-8 items-center justify-center rounded-full text-white/80 outline-none transition-colors hover:bg-white/10 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <Search className="size-5" />
+            </Link>
             {/* a hairline keeps "where do I go" apart from "my account" */}
             <span className="hidden h-5 w-px bg-white/15 md:block" />
             <div className="hidden items-center md:flex">

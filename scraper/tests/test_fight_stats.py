@@ -149,6 +149,29 @@ class TestSideMatching:
         assert stats is None
 
 
+class TestStrikeTargets:
+    """Kam údery dopadaly - to, z čeho OKTAGON kreslí "údery podle oblasti
+    zasažení". Dřív se ta část payloadu zahazovala."""
+
+    def test_counts_each_area_per_side(self):
+        stats = summarize_match_stats(
+            _fixture("esports_match_stats_decision_981.json"), KINCL, PUKAC
+        )
+        assert stats["fighter_a_targets"] == {"legs": 3, "head": 1}
+        assert stats["fighter_b_targets"] == {"head": 4}
+
+    def test_areas_add_up_to_the_hit_count(self):
+        # Kdyby se oblast počítala jinde než zásah, rozešly by se - a graf by
+        # pak tvrdil něco jiného než číslo nad ním.
+        for name, a, b in (
+            ("esports_match_stats_decision_981.json", KINCL, PUKAC),
+            ("esports_match_stats_submission_1093.json", KINCL, KHAJEVAND),
+        ):
+            stats = summarize_match_stats(_fixture(name), a, b)
+            for side in ("a", "b"):
+                assert sum(stats[f"fighter_{side}_targets"].values()) == stats[f"fighter_{side}_hits"]
+
+
 class TestWhichEndpointAFightIsAskedFor:
     """Trackovací systém zná zápas pod jedním ze dvou nezávislých čísel a
     která cesta se použije, záleží na stáří zápasu. Splést je znamená buď

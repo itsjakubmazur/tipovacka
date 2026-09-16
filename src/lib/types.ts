@@ -86,6 +86,11 @@ export type FightStatsSide = {
   takedowns: number;
   takedown_attempts: number;
   submission_attempts: number;
+  /** Where those hits landed, keyed by the tracking system's own area names
+   * ("head" | "body" | "legs"). Their vocabulary, not ours - hence a map
+   * rather than three fields. Empty for anything logged before we started
+   * keeping it. */
+  targets: Record<string, number>;
 };
 
 export type FightStats = {

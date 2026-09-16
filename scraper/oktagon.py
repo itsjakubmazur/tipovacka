@@ -637,6 +637,9 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
     """Totals (and a per-round breakdown) of what the tracking system logged:
     every individual hit, takedown and submission attempt of the fight.
 
+    Also where the hits landed (head/body/legs), which is what OKTAGON's own
+    "údery podle oblasti zasažení" is drawn from.
+
     `fighter_a`/`fighter_b` are our own rows - name plus oktagon_legacy_id -
     and decide which side each logged event belongs to."""
     sides = _stats_side_map(payload, fighter_a, fighter_b)
@@ -654,6 +657,9 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
 
     totals = {"a": blank(), "b": blank()}
     per_round: dict[int, dict[str, dict[str, int]]] = {}
+    # Kam údery dopadaly. Jejich číselník, ne náš - co přijde, to se sečte,
+    # takže čtvrtá oblast by se objevila sama od sebe.
+    targets: dict[str, dict[str, int]] = {"a": {}, "b": {}}
 
     def bucket(entry: dict) -> tuple[dict[str, int], dict[str, int]] | None:
         attacker_id = (entry.get("attacker") or {}).get("id")
@@ -678,6 +684,10 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
             counter["hits"] += 1
             if hit.get("type") == "significant":
                 counter["significant_hits"] += 1
+        area = hit.get("target")
+        if area:
+            side = sides[(hit.get("attacker") or {}).get("id")]
+            targets[side][area] = targets[side].get(area, 0) + 1
 
     for takedown in payload.get("takedowns") or []:
         target = bucket(takedown)
@@ -699,6 +709,7 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
     for side in ("a", "b"):
         for key, value in totals[side].items():
             row[f"fighter_{side}_{key}"] = value
+        row[f"fighter_{side}_targets"] = targets[side]
     row["rounds"] = [
         {"round": round_no, "a": slot["a"], "b": slot["b"]}
         for round_no, slot in sorted(per_round.items())
