@@ -51,6 +51,7 @@ async function findPendingWork(): Promise<string | null> {
     const { data } = await db
       .from("events")
       .select("id")
+      .eq("is_archive", false)
       .eq("status", "upcoming")
       .is("card_notified_at", null)
       .not("number", "is", null)
@@ -64,6 +65,7 @@ async function findPendingWork(): Promise<string | null> {
     const { data } = await db
       .from("events")
       .select("id")
+      .eq("is_archive", false)
       .not("status", "in", '("draft","completed")')
       .is("reminder_sent_at", null)
       .lte("lock_at", soon)
@@ -77,6 +79,7 @@ async function findPendingWork(): Promise<string | null> {
     const { data } = await db
       .from("events")
       .select("id")
+      .eq("is_archive", false)
       .not("status", "in", '("draft","completed")')
       .is("lock_notified_at", null)
       .lte("lock_at", now)
@@ -89,6 +92,7 @@ async function findPendingWork(): Promise<string | null> {
     const { data } = await db
       .from("events")
       .select("id")
+      .eq("is_archive", false)
       .not("status", "in", '("draft","completed")')
       .lte("lock_at", now)
       .not("number", "is", null)
@@ -113,6 +117,7 @@ async function findPendingWork(): Promise<string | null> {
     const { data } = await db
       .from("events")
       .select("id")
+      .eq("is_archive", false)
       .not("status", "in", '("draft","completed")')
       .gt("lock_at", now)
       .or(`card_checked_at.is.null,card_checked_at.lte.${stale}`)

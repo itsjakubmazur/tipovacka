@@ -30,6 +30,8 @@ export const getEventsListShared = unstable_cache(
         .select(
           "id, number, name, subtitle, event_date, location, status, lock_at, image_url, watch_party_enabled"
         )
+        // Archive galas are not ours - they get their own listing.
+        .eq("is_archive", false)
         .order("event_date", { ascending: false }),
       supabase.from("event_fight_counts").select("event_id, fight_count"),
     ]);

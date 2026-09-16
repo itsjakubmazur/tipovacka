@@ -53,6 +53,7 @@ export const getLeaderboardEvents = unstable_cache(
     const { data } = await supabase
       .from("events")
       .select("id, number, name, event_date, status, lock_at, image_url")
+      .eq("is_archive", false)
       .neq("status", "draft")
       .order("event_date", { ascending: false });
     return data ?? [];

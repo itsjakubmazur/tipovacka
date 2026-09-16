@@ -124,6 +124,8 @@ export async function loadSeasonStats(
   const { data: seasonEventRows } = await supabase
     .from("events")
     .select("id, number, name, subtitle, event_date, image_url, status, lock_at, payouts_enabled")
+    // A season is what the group played, not what OKTAGON held.
+    .eq("is_archive", false)
     .neq("status", "draft")
     .order("event_date", { ascending: false });
 

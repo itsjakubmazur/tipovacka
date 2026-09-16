@@ -31,6 +31,7 @@ export async function NemesisCard({ userId }: { userId: string }) {
   const { data: events } = await supabase
     .from("events")
     .select("id, event_date")
+    .eq("is_archive", false)
     .eq("status", "completed");
 
   const seasonEventIds = (events ?? [])
