@@ -51,19 +51,25 @@ class FakeDB:
         return []
 
 
-def _tournament(number=22, date="2020-06-13T18:00:00.000Z"):
+def _tournament(number=22, date="2020-06-13T18:00:00.000Z", **overrides):
     return {
         "oktagon_event_id": 40,
         "number": number,
+        "slug": f"oktagon-{number}",
+        "organization_id": "OKTAGON_MMA",
         "name": f"OKTAGON {number}: NĚKDO VS. NĚKDO",
         "subtitle": "Podtitul",
         "event_date": date,
         "location": "Praha",
         "image_url": "https://assets.oktagonmma.com/plakat.jpg",
+        **overrides,
     }
 
 
 def _wire(monkeypatch, db, tournaments, card=None):
+    # An empty card is now a reason to skip the gala entirely, so anything
+    # that expects a row written has to hand over a real one.
+    card = card if card is not None else _card("fightcard_oktagon_1.json")
     monkeypatch.setattr(import_archive, "SupabaseClient", lambda: db)
     monkeypatch.setattr(import_archive, "fetch_all_tournaments", lambda *a, **k: tournaments)
     monkeypatch.setattr(import_archive, "fetch_fightcard", lambda _id: card or [])
@@ -135,6 +141,36 @@ def test_rerunning_updates_instead_of_duplicating(monkeypatch):
     assert ("fights", "eq.fight-1") in [
         (t, f["id"]) for t, _, f in db.updates if t == "fights"
     ]
+
+
+def test_skips_other_promotions(monkeypatch):
+    # The /v1/events/ listing is shared - PML, THE RING and FNC are all in
+    # there, and an archive of OKTAGON is OKTAGON's own.
+    db = FakeDB()
+    _wire(
+        monkeypatch,
+        db,
+        [
+            _tournament(number=None, organization_id="PML", name="PML 9"),
+            _tournament(number=22),
+        ],
+    )
+
+    import_archive.import_archive(None, None)
+
+    events = [rows[0] for table, rows in db.inserts if table == "events"]
+    assert [e["number"] for e in events] == [22]
+
+
+def test_an_empty_card_creates_no_event_at_all(monkeypatch):
+    # OKTAGON keeps placeholders for galas that got moved or called off.
+    db = FakeDB()
+    _wire(monkeypatch, db, [_tournament()], card=[])
+
+    import_archive.import_archive(None, None)
+
+    assert db.inserts == []
+    assert db.updates == []
 
 
 def test_skips_galas_that_have_not_happened_yet(monkeypatch):
