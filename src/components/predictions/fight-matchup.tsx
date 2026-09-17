@@ -41,7 +41,9 @@ export function FightMatchup({
   revealIndex = 0,
 }: {
   fight: Fight;
-  /** chips pinned to a fighter's photo - stacked when several land on one */
+  /** chips pinned to a fighter's photo - stacked when several land on one.
+   * The winner's own chip is not one of these: the card decides that for
+   * itself, because only it knows whether the photos already say it. */
   tags?: { fighterId: string; label: string; tone: MatchupTone }[];
   /** washes the fighter's half of the card */
   highlight?: { fighterId: string; tone: MatchupTone }[];
@@ -71,6 +73,28 @@ export function FightMatchup({
     (!fighterA.is_tba && (fighterA.photo_url ?? fighterA.fight_card_photo_url)) ||
       (!fighterB.is_tba && (fighterB.photo_url ?? fighterB.fight_card_photo_url))
   );
+
+  /** Who won is drawn, not labelled: the loser's cut-out goes grey and dims,
+   * the winner's stays in colour. That only works when there are two photos
+   * to compare - one colour figure facing an empty half says nothing about
+   * why it is in colour. So the chip appears exactly where the picture
+   * cannot carry it, and the fights that have both photos - which is most of
+   * them - lose a badge that was only ever repeating the artwork.
+   *
+   * The screen-reader line below is not conditional. A CSS filter announces
+   * nothing, and no other text on the card names the winner - the result line
+   * gives the finish, the round and the clock, never the man. */
+  const bothPhotos = ([fighterA, fighterB] as const).every(
+    (f) => !f.is_tba && (f.photo_url ?? f.fight_card_photo_url)
+  );
+  const winner =
+    showResult && fight.winner_fighter_id
+      ? [fighterA, fighterB].find((f) => f.id === fight.winner_fighter_id) ?? null
+      : null;
+  const winnerTags =
+    winner && !bothPhotos
+      ? [{ fighterId: winner.id, label: "Vítěz", tone: "green" as const }]
+      : [];
 
   /** The rows of the tape below the odds. Weight against weight, height
    * against height - which is the whole point of a tale of the tape, and what
@@ -379,8 +403,14 @@ export function FightMatchup({
 
           {/* Several tags can land on one fighter - you tipped the one who won
               - so they stack instead of sharing a corner. */}
+          {winner && (
+            <span className="sr-only">Vítěz: {winner.name}</span>
+          )}
+
           {([fighterA, fighterB] as const).map((fighter, i) => {
-            const own = (tags ?? []).filter((t) => t.fighterId === fighter.id);
+            const own = [...winnerTags, ...(tags ?? [])].filter(
+              (t) => t.fighterId === fighter.id
+            );
             if (own.length === 0) return null;
             return (
               <span
