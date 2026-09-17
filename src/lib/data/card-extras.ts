@@ -1,12 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { createCachedClient } from "@/lib/supabase/cached";
 import { findPreviousMeeting, oktagonRecord, recentForm } from "@/lib/fighter-history";
-import type {
-  Fight,
-  FighterHistoryEntry,
-  FightStats,
-  FightStatsSide,
-} from "@/lib/types";
+import { fightStatsFromRow, type FightStatsRow } from "@/lib/fight-stats-row";
+import type { Fight, FighterHistoryEntry, FightStats } from "@/lib/types";
 import type { OktagonRecord } from "@/lib/fighter-history";
 
 const SAFETY_NET_SECONDS = 300;
@@ -33,22 +29,6 @@ export type CardExtras = {
 };
 
 const EMPTY: CardExtras = { historyByFighter: {}, previousMeetingByFight: {}, statsByFight: {} };
-
-type StatsRow = {
-  fight_id: string;
-  rounds: FightStats["rounds"];
-} & Record<string, number | string | Record<string, number> | FightStats["rounds"]>;
-
-function side(row: StatsRow, prefix: "fighter_a" | "fighter_b"): FightStatsSide {
-  return {
-    hits: Number(row[`${prefix}_hits`] ?? 0),
-    significant_hits: Number(row[`${prefix}_significant_hits`] ?? 0),
-    takedowns: Number(row[`${prefix}_takedowns`] ?? 0),
-    takedown_attempts: Number(row[`${prefix}_takedown_attempts`] ?? 0),
-    submission_attempts: Number(row[`${prefix}_submission_attempts`] ?? 0),
-    targets: (row[`${prefix}_targets`] as Record<string, number> | null) ?? {},
-  };
-}
 
 /** Everything the fight card shows *about the fighters* rather than about the
  * tipping: their record in the promotion, their recent form, whether these two
@@ -124,13 +104,8 @@ export function getCardExtras(eventId: string, eventDate: string, fights: Fight[
       }
 
       const statsByFight: CardExtras["statsByFight"] = {};
-      for (const row of (stats ?? []) as unknown as StatsRow[]) {
-        statsByFight[row.fight_id] = {
-          fight_id: row.fight_id,
-          a: side(row, "fighter_a"),
-          b: side(row, "fighter_b"),
-          rounds: Array.isArray(row.rounds) ? row.rounds : [],
-        };
+      for (const row of (stats ?? []) as unknown as FightStatsRow[]) {
+        statsByFight[row.fight_id] = fightStatsFromRow(row);
       }
 
       return { historyByFighter, previousMeetingByFight, statsByFight };

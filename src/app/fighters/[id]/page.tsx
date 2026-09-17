@@ -79,7 +79,7 @@ export default async function FighterPage({ params }: { params: Promise<{ id: st
             natáhnout.
           </div>
         ) : (
-          <FighterHistoryList history={history} linkOpponents />
+          <FighterHistoryList history={history} expandable />
         )}
       </section>
     </div>
