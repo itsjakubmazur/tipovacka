@@ -318,7 +318,6 @@ export function FightTipCard({
     );
   }
 
-  const showResult = fight.status === "completed";
   const graded = initialPrediction?.points != null;
   const hit = graded && initialPrediction!.points! > 0;
 
@@ -478,9 +477,6 @@ export function FightTipCard({
         onPick={effectiveLocked ? undefined : selectWinner}
         highlight={winnerId ? [{ fighterId: winnerId, tone: "accent" }] : undefined}
         tags={[
-          ...(showResult && fight.winner_fighter_id
-            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
-            : []),
           ...(winnerId
             ? [
                 {

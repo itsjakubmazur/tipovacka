@@ -19,7 +19,6 @@ export function TipBreakdownCard({
   isBold?: boolean;
 }) {
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
-  const showResult = fight.status === "completed";
   const graded = prediction?.points != null;
   const hit = graded && prediction!.points! > 0;
   const winnerOk = graded && prediction!.predicted_winner_id === fight.winner_fighter_id;
@@ -94,9 +93,6 @@ export function TipBreakdownCard({
           prediction ? [{ fighterId: prediction.predicted_winner_id, tone: "accent" }] : undefined
         }
         tags={[
-          ...(showResult && fight.winner_fighter_id
-            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
-            : []),
           ...(prediction
             ? [
                 {

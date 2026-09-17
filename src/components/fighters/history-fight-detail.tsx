@@ -119,16 +119,10 @@ export function HistoryFightDetail({ entry }: { entry: FighterHistoryEntry }) {
 
   return (
     <div className="flex flex-col gap-3 pb-3">
-      {/* no onPick: the photos are a picture of what happened, not a choice */}
-      <FightMatchup
-        fight={fight}
-        eager
-        tags={
-          fight.winner_fighter_id
-            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
-            : []
-        }
-      />
+      {/* no onPick: the photos are a picture of what happened, not a choice.
+          No tags either - who won is the card's own business, and there was
+          never a tip here to pin on anybody. */}
+      <FightMatchup fight={fight} eager />
 
       {hasAnyStats(stats ?? undefined) && <FightStatsPanel fight={fight} stats={stats!} />}
 

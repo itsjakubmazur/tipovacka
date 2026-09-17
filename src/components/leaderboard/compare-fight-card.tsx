@@ -29,7 +29,6 @@ export function CompareFightCard({
   boldB?: boolean;
 }) {
   const voided = fight.status === "cancelled" || fight.status === "no_contest";
-  const showResult = fight.status === "completed";
 
   function tipLine(nickname: string, prediction: Prediction | null) {
     if (!prediction) return `${nickname}: bez tipu`;
@@ -84,9 +83,6 @@ export function CompareFightCard({
             : []),
         ]}
         tags={[
-          ...(showResult && fight.winner_fighter_id
-            ? [{ fighterId: fight.winner_fighter_id, label: "Vítěz", tone: "green" as const }]
-            : []),
           ...(predictionA
             ? [
                 {
