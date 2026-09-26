@@ -57,15 +57,19 @@ function Pill({
   );
 }
 
-function tipsWord(n: number): string {
-  if (n === 1) return "tip";
-  if (n >= 2 && n <= 4) return "tipy";
-  return "tipů";
-}
-
-/** Collapsed consensus - "73 % · 4 tipy" - expanding to the actual
- * nicknames on tap, so the names list doesn't eat two lines under every
- * fighter on a 14-fight card. */
+/** Who tipped whom, spelled out.
+ *
+ * This used to collapse behind a chevron, on the reasoning that a list of
+ * names under every fighter would eat two lines on a fourteen-fight card.
+ * True in the abstract, wrong for this group: there are about a dozen of us,
+ * so the list is one or two short lines - and it only ever renders once
+ * tipping is locked, which is exactly the moment everyone wants to see who
+ * went where. A tap to reveal what is only ever a handful of nicknames is a
+ * tap for nothing.
+ *
+ * The consensus itself is still only fetched after lock (see
+ * getEventShared), so there is no window in which this could leak a pick
+ * while tips are open. */
 function ConsensusChip({
   names,
   total,
@@ -78,38 +82,29 @@ function ConsensusChip({
   label: string;
   align?: "left" | "right";
 }) {
-  const [open, setOpen] = useState(false);
   if (names.length === 0 || total === 0) return null;
 
   return (
     <div
       className={cn("flex min-w-0 flex-col gap-0.5", align === "right" ? "items-end" : "items-start")}
-      onClick={(e) => e.stopPropagation()}
     >
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-0.5 text-[11px] font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-300"
+      <p
+        className={cn(
+          "flex max-w-full items-baseline gap-1 text-[11px] font-medium text-neutral-500 dark:text-neutral-300",
+          align === "right" && "justify-end"
+        )}
       >
         <span className="truncate">{label.split(" ").pop()}</span>
-        <span className="whitespace-nowrap"> {Math.round((names.length / total) * 100)} %</span>
-        <ChevronDown
-          className={cn(
-            "size-3 shrink-0 transition-transform duration-500 ease-out motion-reduce:transition-none",
-            open && "rotate-180"
-          )}
-        />
-      </button>
-      <Reveal open={open}>
-        <span
-          className={cn(
-            "block max-w-[11rem] text-[11px] leading-snug text-neutral-400 dark:text-neutral-500",
-            align === "right" && "text-right"
-          )}
-        >
-          {names.length} {tipsWord(names.length)}: {names.join(", ")}
-        </span>
-      </Reveal>
+        <span className="whitespace-nowrap">{Math.round((names.length / total) * 100)} %</span>
+      </p>
+      <p
+        className={cn(
+          "text-[11px] leading-snug text-neutral-500 dark:text-neutral-400",
+          align === "right" && "text-right"
+        )}
+      >
+        {names.join(", ")}
+      </p>
     </div>
   );
 }
