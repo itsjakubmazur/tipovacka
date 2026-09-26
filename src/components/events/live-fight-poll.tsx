@@ -71,14 +71,24 @@ export function LiveFightPoll({
   const bVotes = votes.filter((v) => v.fighter_id === fight.fighterBId).length;
   const total = aVotes + bVotes;
   const myVote = votes.find((v) => v.user_id === userId)?.fighter_id ?? null;
-  const aPct = total > 0 ? Math.round((aVotes / total) * 100) : 50;
 
   return (
-    <div className="border-b border-black/5 px-4 py-3 dark:border-white/10">
-      <p className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
-        Kdo vezme další zápas?
+    /* Compact on purpose. Docked in the sidebar the chat is a fixed-height
+     * column, the poll never shrinks, and the message list is the only thing
+     * that gives - so every row spent here comes straight out of the
+     * conversation. The share used to be a separate bar under the buttons;
+     * painting it behind each name instead says the same thing in one row
+     * fewer, and next to the count rather than away from it. */
+    <div className="border-b border-black/5 px-4 py-2.5 dark:border-white/10">
+      <p className="flex items-baseline justify-between gap-2 text-[11px] font-medium uppercase text-neutral-500 dark:text-neutral-400">
+        <span className="truncate">Kdo vezme další zápas?</span>
+        {total > 0 && (
+          <span className="shrink-0 tabular-nums normal-case">
+            {total} {total === 1 ? "hlas" : total <= 4 ? "hlasy" : "hlasů"}
+          </span>
+        )}
       </p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
+      <div className="mt-1.5 grid grid-cols-2 gap-2">
         {[
           { id: fight.fighterAId, name: fight.fighterAName, count: aVotes },
           { id: fight.fighterBId, name: fight.fighterBName, count: bVotes },
@@ -88,29 +98,30 @@ export function LiveFightPoll({
             type="button"
             onClick={() => vote(side.id)}
             className={cn(
-              "flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+              "relative flex items-center justify-between gap-2 overflow-hidden rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors",
               myVote === side.id
                 ? "glass-accent-soft border-accent"
                 : "glass-pill border hover:border-neutral-400"
             )}
           >
-            <span className="truncate">{side.name}</span>
+            {/* the share, as the button's own fill - aria-hidden because the
+                count beside it already says it in words */}
             {total > 0 && (
-              <span className="shrink-0 text-xs tabular-nums text-neutral-500 dark:text-neutral-400">
+              <span
+                aria-hidden
+                className="absolute inset-y-0 left-0 bg-accent/20 transition-[width] duration-500 ease-out motion-reduce:transition-none"
+                style={{ width: `${Math.round((side.count / total) * 100)}%` }}
+              />
+            )}
+            <span className="relative truncate">{side.name}</span>
+            {total > 0 && (
+              <span className="relative shrink-0 text-xs tabular-nums text-neutral-500 dark:text-neutral-400">
                 {side.count}
               </span>
             )}
           </button>
         ))}
       </div>
-      {total > 0 && (
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-          <div
-            className="h-full rounded-full bg-accent transition-[width] duration-500"
-            style={{ width: `${aPct}%` }}
-          />
-        </div>
-      )}
     </div>
   );
 }

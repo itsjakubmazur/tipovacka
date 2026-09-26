@@ -372,7 +372,7 @@ export function EventComments({
             className={cn(
               "relative flex flex-col overflow-hidden",
               docked
-                ? "glass-surface min-h-[14rem] flex-1 rounded-xl border"
+                ? "glass-surface min-h-[21rem] flex-1 rounded-xl border"
                 : cn(
                     "glass-panel animate-sheet-up rounded-t-2xl border border-t",
                     sheetSettling && "glass-settling"
@@ -415,8 +415,14 @@ export function EventComments({
               </div>
             )}
 
-            {/* messages */}
-            <div className="flex min-h-0 flex-1 flex-col-reverse gap-1 overflow-y-auto overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch]">
+            {/* messages
+                min-h, not min-h-0: the header, the poll and the composer are
+                all shrink-0, so this was the only thing in the column that
+                could give - and docked in a full sidebar it gave everything.
+                A poll on screen left a strip of chat a single line tall. The
+                floor makes the panel grow (the rail scrolls) instead of
+                eating the conversation. */}
+            <div className="flex min-h-[7rem] flex-1 flex-col-reverse gap-1 overflow-y-auto overscroll-contain px-3 py-3 [-webkit-overflow-scrolling:touch]">
               {/* column-reverse, so these render below everything else - which
                   is where the message you just typed belongs */}
               {queued.map((item) => (
