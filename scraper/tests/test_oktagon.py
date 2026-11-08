@@ -148,6 +148,29 @@ class TestNormalizeFight:
         assert result["result_round"] == 2
         assert result["result_time"] == "1:12"
 
+    def test_decision_ending_mid_round_is_not_a_decision(self):
+        # OKTAGON labelled the OKTAGON 97 DQ (1st round, 2:49) a decision.
+        result = normalize_fight(
+            self.make_fight(result="FIGHTER_1_WIN", resultType="DEC", numRounds=1, time="2:49"),
+            index=0,
+            total=1,
+            card_segment="main_card",
+        )
+        assert result["method"] is None
+        assert result["result_round"] == 1
+        assert result["result_time"] == "2:49"
+
+    def test_real_decision_stays_decision(self):
+        for time in ("5:00", "300", None):
+            result = normalize_fight(
+                self.make_fight(result="FIGHTER_1_WIN", resultType="DEC", numRounds=3, time=time),
+                index=0,
+                total=1,
+                card_segment="main_card",
+            )
+            assert result["method"] == "DECISION"
+            assert result["result_round"] is None
+
     def test_draw_and_no_contest_are_no_contest(self):
         for outcome in ("DRAW", "NO_CONTEST"):
             result = normalize_fight(

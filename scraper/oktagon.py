@@ -435,13 +435,19 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
 
     if status == "completed":
         method = RESULT_TYPE_TO_METHOD.get(fight.get("resultType"))
+        result_time = parse_end_time(fight.get("time"))
+        # A decision goes the full distance, so it ends at 5:00. OKTAGON's web
+        # labelled the OKTAGON 97 disqualification (1st round, 2:49) as a
+        # decision; if the API ever does the same, grading it as one would
+        # wipe the round and hand the full 3 points to "wins by decision".
+        if method == "DECISION" and _ended_early(result_time):
+            method = None
         # Only a decision has no round. A finish we have no method for (a
         # disqualification - resultType "DQ" - or anything else OKTAGON adds)
         # still ended in a known round, and that round is a point tippers
         # can earn: dropping it here quietly cost them the round point.
         if method != "DECISION":
             result_round = fight.get("numRounds")
-        result_time = parse_end_time(fight.get("time"))
 
     return {
         "oktagon_fight_id": fight["id"],
@@ -462,6 +468,20 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
         # právě přes tohle - viz ESPORTS_EXPORT_URL.
         "oktagon_legacy_id": fight.get("legacyId"),
     }
+
+
+ROUND_SECONDS = 5 * 60
+
+
+def _ended_early(result_time: str | None) -> bool:
+    """True when the clock stopped before a round ran out. Unknown time = no."""
+    if not result_time:
+        return False
+    minutes, _, seconds = result_time.partition(":")
+    try:
+        return int(minutes) * 60 + int(seconds) < ROUND_SECONDS
+    except ValueError:
+        return False
 
 
 def parse_end_time(value: object) -> str | None:
