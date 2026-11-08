@@ -133,6 +133,21 @@ class TestNormalizeFight:
         assert result["method"] == "DECISION"
         assert result["result_round"] is None
 
+    def test_disqualification_keeps_round(self):
+        # OKTAGON 97: a DQ win has no method we map, but the round it ended in
+        # still scores - losing it cost a tipper the round point (x2 on a jistotka).
+        result = normalize_fight(
+            self.make_fight(result="FIGHTER_1_WIN", resultType="DQ", numRounds=2, time="1:12"),
+            index=0,
+            total=1,
+            card_segment="main_card",
+        )
+        assert result["status"] == "completed"
+        assert result["winner_side"] == "a"
+        assert result["method"] is None
+        assert result["result_round"] == 2
+        assert result["result_time"] == "1:12"
+
     def test_draw_and_no_contest_are_no_contest(self):
         for outcome in ("DRAW", "NO_CONTEST"):
             result = normalize_fight(
@@ -223,3 +238,11 @@ class TestFightcardExtras:
         assert normalize_fight(recent[0], 0, 1, "main_card")["result_time"] == "3:14"
         # Stored as a raw second count on the old card ("227").
         assert normalize_fight(old[0], 0, 1, "main_card")["result_time"] == "3:47"
+
+
+def test_result_description_for_unclassified_finish():
+    from import_results import _result_description
+
+    assert _result_description(None, 2, "1:12") == "ukončení ve 2. kole (1:12)"
+    assert _result_description("DECISION", None, "5:00") == "na body"
+    assert _result_description(None, None, None) == "na body"

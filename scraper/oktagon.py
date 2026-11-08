@@ -435,7 +435,11 @@ def normalize_fight(fight: dict, index: int, total: int, card_segment: str) -> d
 
     if status == "completed":
         method = RESULT_TYPE_TO_METHOD.get(fight.get("resultType"))
-        if method and method != "DECISION":
+        # Only a decision has no round. A finish we have no method for (a
+        # disqualification - resultType "DQ" - or anything else OKTAGON adds)
+        # still ended in a known round, and that round is a point tippers
+        # can earn: dropping it here quietly cost them the round point.
+        if method != "DECISION":
             result_round = fight.get("numRounds")
         result_time = parse_end_time(fight.get("time"))
 

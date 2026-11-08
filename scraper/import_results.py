@@ -22,9 +22,10 @@ METHOD_PHRASES = {
 
 
 def _result_description(method: str | None, result_round: int | None, result_time: str | None) -> str:
-    if method is None or method == "DECISION":
+    if method == "DECISION" or (method is None and not result_round):
         return "na body"
-    phrase = METHOD_PHRASES.get(method, method)
+    # No method but a round = a finish we don't classify (disqualification).
+    phrase = METHOD_PHRASES.get(method, method) if method else "ukončení"
     desc = f"{phrase} ve {result_round}. kole" if result_round else phrase
     if result_time:
         desc += f" ({result_time})"
