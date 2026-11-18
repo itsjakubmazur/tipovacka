@@ -154,10 +154,13 @@ def update_odds(
         "fights",
         {"event_id": f"eq.{event_id}", "oktagon_fight_id": "not.is.null", "select": "id,oktagon_fight_id"},
     )
+    written = 0
     for fight in fights:
         odds = odds_by_fight.get(fight["oktagon_fight_id"])
         if odds:
             db.update("fights", odds, {"id": f"eq.{fight['id']}"})
+            written += 1
+    print(f"Kurzy: {written}/{len(fights)} zápasů (API vrátilo {len(odds_by_fight)}).")
 
 
 def import_card(event_id: str) -> tuple[int, int]:

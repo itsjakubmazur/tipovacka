@@ -748,7 +748,12 @@ class BettingFormatError(ValueError):
 
 
 def fetch_betting_odds(oktagon_event_id: int) -> dict[int, dict]:
-    data = fetch_json(f"/events/{oktagon_event_id}/fightcard/betting")
+    # The betting partner is picked by the caller's country, from the IP
+    # unless `country` says otherwise. The cron runs on GitHub's US runners,
+    # which get {"provider": null, "fights": {}} - a perfectly valid, empty
+    # answer that looks exactly like "no odds posted yet". Pin it to CZ, the
+    # market the app is for.
+    data = fetch_json(f"/events/{oktagon_event_id}/fightcard/betting?country=CZ")
     return parse_betting_odds(data)
 
 
