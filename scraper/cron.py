@@ -490,8 +490,14 @@ def refresh_odds(db: SupabaseClient, now: datetime) -> None:
     for event in events:
         if event["lock_at"] and event["lock_at"] <= now.isoformat():
             continue
-        with log_run("cron_odds_refresh", event["id"]):
-            update_odds(db, event["id"], event["oktagon_event_id"])
+        # strict: an unparseable payload marks the run as an error (and
+        # alerts admins on a streak) instead of a silent "success" - but it
+        # must not take the rest of the tick (lock reminders, results) down.
+        try:
+            with log_run("cron_odds_refresh", event["id"]):
+                update_odds(db, event["id"], event["oktagon_event_id"], strict=True)
+        except Exception as exc:
+            print(f"Kurzy se nepodařilo obnovit: {exc}")
 
 
 def send_lock_reminders(db: SupabaseClient, now: datetime) -> None:

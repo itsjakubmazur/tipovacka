@@ -741,19 +741,57 @@ def summarize_match_stats(payload: dict, fighter_a: dict, fighter_b: dict) -> di
     return row
 
 
+class BettingFormatError(ValueError):
+    """The betting payload isn't shaped the way we parse it - OKTAGON
+    changed it under us. Distinct from "no odds posted yet" (which is just
+    an empty result), so callers can make it loud instead of silent."""
+
+
 def fetch_betting_odds(oktagon_event_id: int) -> dict[int, dict]:
-    """GET /events/{id}/fightcard/betting returns a dict keyed by OKTAGON's
-    fight id (matching `oktagon_fight_id`), each with `oddsFighter1`/
-    `oddsFighter2` (decimal odds, same fighter1/fighter2 order as
-    /fightcard) plus Tipsport affiliate links we don't currently use."""
     data = fetch_json(f"/events/{oktagon_event_id}/fightcard/betting")
-    return {
-        int(fight_id): {
-            "odds_fighter_a": entry.get("oddsFighter1"),
-            "odds_fighter_b": entry.get("oddsFighter2"),
+    return parse_betting_odds(data)
+
+
+def parse_betting_odds(data: object) -> dict[int, dict]:
+    """GET /events/{id}/fightcard/betting returns
+
+        {"provider": {...Tipsport branding...},
+         "fights": {"<oktagon fight id>": {"link": ..., "bets": [
+             {"type": "winner", "options": [
+                 {"key": "fighter1", "odds": 1.4, "link": ...},
+                 {"key": "fighter2", "odds": 2.74, "link": ...}]}]}}}
+
+    keyed by OKTAGON's fight id (matching `oktagon_fight_id`), fighter1/
+    fighter2 in the same order as /fightcard. Only the "winner" bet is read;
+    a fight with no winner bet (or neither price) is left out, so its stored
+    odds stay as they were.
+
+    Until early November 2026 the payload was a flat dict keyed by fight id
+    with `oddsFighter1`/`oddsFighter2`. Parsing that with this code would
+    quietly yield nothing, so anything not matching the current shape raises
+    BettingFormatError instead."""
+    if not isinstance(data, dict) or not isinstance(data.get("fights"), dict):
+        keys = list(data)[:5] if isinstance(data, dict) else type(data).__name__
+        raise BettingFormatError(f"chybí objekt 'fights' (klíče: {keys})")
+
+    result: dict[int, dict] = {}
+    for fight_id, entry in data["fights"].items():
+        bets = entry.get("bets") if isinstance(entry, dict) else None
+        if not isinstance(bets, list):
+            raise BettingFormatError(f"zápas {fight_id}: chybí seznam 'bets'")
+        winner = next((b for b in bets if isinstance(b, dict) and b.get("type") == "winner"), None)
+        if not winner:
+            continue
+        prices = {
+            option.get("key"): option.get("odds")
+            for option in winner.get("options") or []
+            if isinstance(option, dict)
         }
-        for fight_id, entry in data.items()
-    }
+        odds_a, odds_b = prices.get("fighter1"), prices.get("fighter2")
+        if odds_a is None and odds_b is None:
+            continue
+        result[int(fight_id)] = {"odds_fighter_a": odds_a, "odds_fighter_b": odds_b}
+    return result
 
 
 def fetch_fightcard(oktagon_event_id: int) -> list[dict]:

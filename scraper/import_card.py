@@ -13,7 +13,7 @@ resolved (cached onto oktagon_event_id after the first successful run).
 import argparse
 import sys
 
-from oktagon import fetch_betting_odds, fetch_fightcard, import_image, resolve_event_id
+from oktagon import BettingFormatError, fetch_betting_odds, fetch_fightcard, import_image, resolve_event_id
 from run_logger import log_run
 from supabase_client import SupabaseClient
 
@@ -127,12 +127,25 @@ def cancel_stale_fight(
     return cancelled
 
 
-def update_odds(db: SupabaseClient, event_id: str, oktagon_event_id: int) -> None:
+def update_odds(
+    db: SupabaseClient, event_id: str, oktagon_event_id: int, *, strict: bool = False
+) -> None:
     """Best-effort - betting odds aren't always posted yet (e.g. very early
     after a card goes up), so a missing/failed fetch shouldn't fail the
-    whole card import."""
+    whole card import.
+
+    With `strict`, a payload we can't parse (BettingFormatError) is raised
+    instead of printed. The cron's odds refresh runs this way, so a format
+    change marks its scraper_runs as errors and alerts the admins rather
+    than logging "success" while writing nothing - which is how OKTAGON's
+    November 2026 payload change went unnoticed for two events."""
     try:
         odds_by_fight = fetch_betting_odds(oktagon_event_id)
+    except BettingFormatError:
+        if strict:
+            raise
+        print("Kurzy mají neznámý formát, přeskakuji.")
+        return
     except Exception as exc:
         print(f"Kurzy se nepodařilo stáhnout: {exc}")
         return
